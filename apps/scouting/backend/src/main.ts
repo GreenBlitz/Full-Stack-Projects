@@ -2,7 +2,7 @@
 import express from "express";
 import { apiRouter } from "./routes";
 import { GameObject } from "../game-object";
-import { CoralEvent, AlgaeEvent, GameEventsCounter } from "./game-events";
+import { CoralEvent, AlgaeEvent, GameEventsCounter, AllPossibleGameEvents } from "./game-events";
 import { addScoring, ScoringCalculator } from "../scoring-calculator";
 import { calculatePointsCoral, calculateRPCoral } from "./game-object-coral";
 
@@ -39,11 +39,11 @@ const algae: GameObject<AlgaeEvent> = {
   gameEvents: algaeCounter
 }
 
-const scoringCalculator: ScoringCalculator = {
+const scoringCalculator: ScoringCalculator<AllPossibleGameEvents> = {
   gameObjectsScoringData: []
 }
 
-addScoring(scoringCalculator,coral,calculatePointsCoral(coral),calculateRPCoral())
+addScoring(scoringCalculator,coral,calculatePointsCoral,calculateRPCoral)
 
 
 
