@@ -43,7 +43,7 @@ const scoringCalculator: ScoringCalculator = {
   gameObjectsScoringData: []
 }
 
-addScoring(scoringCalculator,coral,calculatePointsCoral,calculateRPCoral)
+addScoring(scoringCalculator,coral,calculatePointsCoral(coral),calculateRPCoral())
 
 
 

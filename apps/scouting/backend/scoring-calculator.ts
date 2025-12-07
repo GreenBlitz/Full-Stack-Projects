@@ -2,14 +2,14 @@ import { GameObject } from "./game-object";
 import { AllPossibleGameEvents } from "./src/game-events";
 import { GameObjectScoringData } from "./src/scoring-data";
 
-export interface ScoringCalculator{
-    gameObjectsScoringData: GameObjectScoringData<AllPossibleGameEvents>[]
+export interface ScoringCalculator<T extends AllPossibleGameEvents>{
+    gameObjectsScoringData: GameObjectScoringData<T>[]
 }
 
-export function addScoring(scoringCalculator: ScoringCalculator,
-    gameObject: GameObject<AllPossibleGameEvents>, calculatePoints: ()=> number,
+export function addScoring<T extends AllPossibleGameEvents>(scoringCalculator: ScoringCalculator<T>,
+    gameObject: GameObject<T>, calculatePoints: ()=> number,
         calculateRP: ()=> number){
-        const tempGameObjectScoringData: GameObjectScoringData<AllPossibleGameEvents> = {
+        const tempGameObjectScoringData: GameObjectScoringData<T> = {
             gameObject: gameObject,
             pointsScoredWithGameObject: calculatePointsOfAGameObject(gameObject,calculatePoints),
             rpScoredWithGameObject: calculateRPOfAGameObject(gameObject, calculateRP)
@@ -17,10 +17,10 @@ export function addScoring(scoringCalculator: ScoringCalculator,
         scoringCalculator.gameObjectsScoringData.push(tempGameObjectScoringData)
 }
 
-export function calculatePointsOfAGameObject(gameObject: GameObject<AllPossibleGameEvents>, calculatePoints: ()=> number): number{
+export function calculatePointsOfAGameObject<T extends AllPossibleGameEvents>(gameObject: GameObject<T>, calculatePoints: ()=> number): number{
         return calculatePoints()
 }
 
-export function calculateRPOfAGameObject(gameObject: GameObject<AllPossibleGameEvents>, calculateRP: ()=> number): number{
+export function calculateRPOfAGameObject<T extends AllPossibleGameEvents>(gameObject: GameObject<T>, calculateRP: ()=> number): number{
         return calculateRP()
 }
