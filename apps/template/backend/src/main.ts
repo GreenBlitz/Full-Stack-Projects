@@ -1,14 +1,14 @@
-// בס"ד
+const Arr: string[] = [];
 import express from "express";
-import { apiRouter } from "./routes";
-
+import { StatusCodes } from "http-status-codes";
 const app = express();
-
-const defaultPort = 4590;
-const port = process.env.BACKEND_PORT ?? defaultPort;
-
-app.use("/api/v1", apiRouter);
-
-app.listen(port, () => {
-  console.log(`Production server running at http://localhost:${port}`);
+app.get("/name", (req, res) => {
+  res.status(StatusCodes.OK).send(Arr);
 });
+app.post("/add/:name", (req, res) => {
+  Arr.push(req.params.name);
+  res.status(StatusCodes.OK).send(Arr);
+});
+
+const port = 2220;
+app.listen(port);
