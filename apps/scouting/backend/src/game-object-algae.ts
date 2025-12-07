@@ -1,11 +1,11 @@
 import { GameObject } from "../game-object";
 import { AlgaeEvent, AllPossibleGameEvents, CoralEvent } from "./game-events";
 
-export function calculatePoints(algae: GameObject<AlgaeEvent>): number {
+export function calculatePointsAlgae(algae: GameObject<AlgaeEvent>): number {
         return algae.gameEvents.Net*NET_SCORING
         +algae.gameEvents.Processor*PROCESSOR_SCORING
     }
-export function calculateRP(): number {
+export function calculateRPAlgae(): number {
         return 0
 }
 

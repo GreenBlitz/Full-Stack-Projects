@@ -6,7 +6,7 @@ export interface ScoringCalculator{
     gameObjectsScoringData: GameObjectScoringData<AllPossibleGameEvents>[]
 }
 
-export function AddGameObject(gameObjectsScoringData: GameObjectScoringData<AllPossibleGameEvents>[],
+export function addScoring(scoringCalculator: ScoringCalculator,
     gameObject: GameObject<AllPossibleGameEvents>, calculatePoints: ()=> number,
         calculateRP: ()=> number){
         const tempGameObjectScoringData: GameObjectScoringData<AllPossibleGameEvents> = {
@@ -14,7 +14,7 @@ export function AddGameObject(gameObjectsScoringData: GameObjectScoringData<AllP
             pointsScoredWithGameObject: calculatePointsOfAGameObject(gameObject,calculatePoints),
             rpScoredWithGameObject: calculateRPOfAGameObject(gameObject, calculateRP)
         }
-        gameObjectsScoringData.push(tempGameObjectScoringData)
+        scoringCalculator.gameObjectsScoringData.push(tempGameObjectScoringData)
 }
 
 export function calculatePointsOfAGameObject(gameObject: GameObject<AllPossibleGameEvents>, calculatePoints: ()=> number): number{

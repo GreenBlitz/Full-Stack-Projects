@@ -3,6 +3,8 @@ import express from "express";
 import { apiRouter } from "./routes";
 import { GameObject } from "../game-object";
 import { CoralEvent, AlgaeEvent, GameEventsCounter } from "./game-events";
+import { addScoring, ScoringCalculator } from "../scoring-calculator";
+import { calculatePointsCoral, calculateRPCoral } from "./game-object-coral";
 
 const app = express();
 
@@ -36,3 +38,13 @@ const algae: GameObject<AlgaeEvent> = {
   name: "algae",
   gameEvents: algaeCounter
 }
+
+const scoringCalculator: ScoringCalculator = {
+  gameObjectsScoringData: []
+}
+
+addScoring(scoringCalculator,coral,calculatePointsCoral,calculateRPCoral)
+
+
+
+

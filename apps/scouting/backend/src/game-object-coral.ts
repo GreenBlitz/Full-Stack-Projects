@@ -1,13 +1,13 @@
 import { GameObject } from "../game-object";
 import { AlgaeEvent, AllPossibleGameEvents, CoralEvent } from "./game-events";
 
-export function calculatePoints(coral: GameObject<CoralEvent>): number {
+export function calculatePointsCoral(coral: GameObject<CoralEvent>): number {
         return coral.gameEvents.L1*L1_SCORING+
         coral.gameEvents.L2*L2_SCORING+
         coral.gameEvents.L3*L3_SCORING+
         coral.gameEvents.L4*L4_SCORING
     }
-export function calculateRP(): number {
+export function calculateRPCoral(): number {
         return 0
 }
 
