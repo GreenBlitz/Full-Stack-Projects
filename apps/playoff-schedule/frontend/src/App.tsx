@@ -1,13 +1,11 @@
 // בס"ד
-
-
 import type React from "react";
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { urlMatches, type MatchesSimpleType } from "./endpoints/MatchSimple";
 import { urlTeamsInEvent, type TeamsInEventType } from "./endpoints/TeamsSimple";
+import useLocalStorage from "./Hooks/LocalStorageHook";
 
 const targetTeamNumber = 4590;
-const targetTeamKey = `frc${targetTeamNumber}`;
 const backendPort = 4590;
 const refreshIntervalMs = 30000;
 const timeMultiplier = 1000;
@@ -15,8 +13,20 @@ const sliceStart = 3;
 const firstIndex = 0;
 const nextMatchLimit = 2;
 const noGap = 0;
-const matchTime = 0;
+const matchTimeDefault = 0;
+const matchTimeMissing = 0;
 const dayInSeconds = 86400;
+
+const sortABeforeB = -1;
+const sortBBeforeA = 1;
+const weightQm = 1;
+const weightEf = 2;
+const weightQf = 3;
+const weightSf = 4;
+const weightF = 5;
+const weightDefault = 99;
+
+const targetTeamKey = `frc${targetTeamNumber}`;
 const backendBaseUrl = `http://localhost:${backendPort}/fetch?url=`;
 
 const colorRedBg = "#FFEBEE";
@@ -59,28 +69,54 @@ const urlRankings = (eventKey: string) =>
 const fetchFromProxy = async <T,>(targetUrl: string): Promise<T> => {
   const fullUrl = `${backendBaseUrl}${encodeURIComponent(targetUrl)}`;
   const response = await fetch(fullUrl);
-  if (!response.ok) {
-    throw new Error(`HTTP error status: ${response.status}`);
-  }
-  return response.json() as Promise<T>;
+  
+  return response.ok 
+    ? (response.json() as Promise<T>) 
+    : Promise.reject(new Error(`HTTP error status: ${response.status}`));
 };
 
+const getLevelWeight = (level: string): number => 
+  level === 'qm' ? weightQm
+  : level === 'ef' ? weightEf
+  : level === 'qf' ? weightQf
+  : level === 'sf' ? weightSf
+  : level === 'f' ? weightF
+  : weightDefault;
+
 const App: React.FC = () => {
-  const [inputEventKey, setInputEventKey] = useState<string>("");
-  const [activeEventKey, setActiveEventKey] = useState<string>("");
+  const [activeEventKey, setActiveEventKey] = useLocalStorage<string>("dashboard_active_event", "");
+  const [inputEventKey, setInputEventKey] = useState<string>(activeEventKey);
   const [teams, setTeams] = useState<TeamsInEventType[]>([]);
   const [allMatches, setAllMatches] = useState<MatchesSimpleType[]>([]);
   const [teamRank, setTeamRank] = useState<RankItem | null>(null);
   const [searchStatus, setSearchStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
-  const performSearch = useCallback(async (eventKey: string) => {
-    if (!eventKey) return;
-    
+  const resetInSearch = () => {
     setSearchStatus("loading");
-    setActiveEventKey("");
     setAllMatches([]);
     setTeams([]);
     setTeamRank(null);
+  };
+
+  const sortMatches = useCallback((a: MatchesSimpleType, b: MatchesSimpleType) => {
+    const timeA = a.predicted_time ?? a.time ?? matchTimeDefault;
+    const timeB = b.predicted_time ?? b.time ?? matchTimeDefault;
+    const weightA = getLevelWeight(a.comp_level);
+    const weightB = getLevelWeight(b.comp_level);
+
+    return (timeA > matchTimeMissing && timeB > matchTimeMissing) ? timeA - timeB
+      : (timeA === matchTimeMissing && timeB > matchTimeMissing) ? sortABeforeB
+      : (timeA > matchTimeMissing && timeB === matchTimeMissing) ? sortBBeforeA
+      : (weightA !== weightB) 
+        ? weightA - weightB 
+        : a.match_number - b.match_number;
+  }, []);
+
+  const performSearch = useCallback(async (eventKey: string) => {
+    if (!eventKey) return;
+    
+    resetInSearch();
+    setActiveEventKey(eventKey);
 
     try {
       const teamsUrl = urlTeamsInEvent(eventKey);
@@ -93,113 +129,124 @@ const App: React.FC = () => {
         fetchFromProxy<RankingsResponse>(rankingsUrl).catch(() => ({ rankings: [] }))
       ]);
 
-      if (Array.isArray(teamsData) && Array.isArray(matchesData)) {
-        setTeams(teamsData);
-        matchesData.sort((a, b) => (a.predicted_time ?? a.time ?? noGap) - (b.predicted_time ?? b.time ?? noGap));
-        setAllMatches(matchesData);
-        
-        const myRank = rankingsData.rankings.find(r => r.team_key === targetTeamKey) ?? null;
-        setTeamRank(myRank);
+      Array.isArray(teamsData) && Array.isArray(matchesData)
+        ? (() => {
+            setTeams(teamsData);
+            matchesData.sort(sortMatches);
+            setAllMatches(matchesData);
+            setTeamRank(rankingsData.rankings.find(r => r.team_key === targetTeamKey) ?? null);
+            setSearchStatus("success");
+          })()
+        : setSearchStatus("error");
 
-        setActiveEventKey(eventKey);
-        setSearchStatus("success");
-      } else {
-        setSearchStatus("error");
-      }
     } catch {
       setSearchStatus("error");
     }
-  }, []);
+  }, [setActiveEventKey, sortMatches]);
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSearchSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
     const formattedKey = inputEventKey.trim().toLowerCase();
     void performSearch(formattedKey);
   };
 
   useEffect(() => {
-    let intervalId: number | undefined = undefined;
+    if (activeEventKey && searchStatus === "idle") {
+        void performSearch(activeEventKey);
+    }
+  }, [activeEventKey, performSearch, searchStatus]);
 
-    if (searchStatus === "success" && activeEventKey) {
-      intervalId = window.setInterval(() => {
+  useEffect(() => {
+    const intervalId: number | undefined = searchStatus === "success" && activeEventKey ? 
+      window.setInterval(() => {
         const matchesUrl = urlMatches(activeEventKey);
+        const rankingsUrl = urlRankings(activeEventKey);
+
         void fetchFromProxy<MatchesSimpleType[]>(matchesUrl).then(data => {
            if (Array.isArray(data)) {
-             data.sort((a, b) => (a.predicted_time ?? a.time ?? noGap) - (b.predicted_time ?? b.time ?? noGap));
+             data.sort(sortMatches);
              setAllMatches(data);
            }
         }).catch(console.error);
-      }, refreshIntervalMs);
-    }
+
+        void fetchFromProxy<RankingsResponse>(rankingsUrl).then(data => {
+            const myRank = data.rankings.find(r => r.team_key === targetTeamKey) ?? null;
+            setTeamRank(myRank);
+        }).catch(console.error);
+
+      }, refreshIntervalMs) : undefined;
 
     return () => {
       if (intervalId !== undefined) {
         window.clearInterval(intervalId);
       }
     };
-  }, [activeEventKey, searchStatus]);
+  }, [activeEventKey, searchStatus, sortMatches]);
 
   const teamNameMap = useMemo(() => {
     const map: Map<string, string> = new Map();
-    teams.forEach(t => map.set(t.key, t.nickname));
+    teams.forEach(team => map.set(team.key, team.nickname));
     return map;
   }, [teams]);
 
   const { currentGlobalMatch, targetTeamMatches, isEventOver, isTeamDone, isFutureEvent } = useMemo(() => {
-    
-//     testing 2025isios
-//   const currentTimeSecs = Math.floor(new Date("2025-10-08T10:44:00").getTime() / timeMultiplier);
-//     testing 2025iscmp
-//     const currentTimeSecs = Math.floor(new Date("2025-03-26T17:00:00").getTime() / timeMultiplier);
-//     normal one
-    const currentTimeSecs = Math.floor(Date.now() / timeMultiplier);
+// normal one
+const currentTimeSecs = Math.floor(Date.now() / timeMultiplier);
+
+// testing 2025isios
+//const currentTimeSecs = Math.floor(new Date("2025-10-08T12:44:00").getTime() / timeMultiplier);
+
+// testing 2025iscmp
+// const currentTimeSecs = Math.floor(new Date("2025-03-26T10:00:00").getTime() / timeMultiplier);
+
+// testing 2025cmptx
+//const currentTimeSecs = Math.floor(new Date("2025-04-19T10:00:00").getTime() / timeMultiplier);
 
 
-    const getMatchTime = (m: MatchesSimpleType) => m.predicted_time ?? m.time ?? matchTime;
 
-    const futureMatches = allMatches.filter(m => {
-        const t = getMatchTime(m);
-        return t > noGap && t > currentTimeSecs;
+    const getMatchTime = (match: MatchesSimpleType) => match.predicted_time ?? match.time ?? matchTimeDefault;
+
+    const futureMatches = allMatches.filter(match => {
+        const time = getMatchTime(match);
+        return time === matchTimeMissing || time > currentTimeSecs;
     });
 
-    const pastMatches = allMatches.filter(m => {
-        const t = getMatchTime(m);
-        return t > noGap && t <= currentTimeSecs;
+    const pastMatches = allMatches.filter(match => {
+        const time = getMatchTime(match);
+        return time > matchTimeMissing && time <= currentTimeSecs;
     });
+
+    futureMatches.sort(sortMatches);
 
     const currentMatch = futureMatches.length > noGap 
       ? futureMatches[firstIndex] 
       : undefined;
 
-    const teamFutureMatches = futureMatches.filter(m => 
-      m.alliances.blue.team_keys.includes(targetTeamKey) || 
-      m.alliances.red.team_keys.includes(targetTeamKey)
+    const teamFutureMatches = futureMatches.filter(match => 
+      match.alliances.blue.team_keys.includes(targetTeamKey) || 
+      match.alliances.red.team_keys.includes(targetTeamKey)
     );
 
-    const teamPastMatches = pastMatches.filter(m => 
-      m.alliances.blue.team_keys.includes(targetTeamKey) || 
-      m.alliances.red.team_keys.includes(targetTeamKey)
+    const teamPastMatches = pastMatches.filter(match => 
+      match.alliances.blue.team_keys.includes(targetTeamKey) || 
+      match.alliances.red.team_keys.includes(targetTeamKey)
     );
 
     const hasEventEnded = futureMatches.length === noGap && allMatches.length > noGap;
     const hasTeamDone = !hasEventEnded && teamFutureMatches.length === noGap && teamPastMatches.length > noGap;
     
-    let isItFutureEvent = false;
-    if (currentMatch) {
-      const t = getMatchTime(currentMatch);
-      if (t > currentTimeSecs + dayInSeconds) {
-        isItFutureEvent = true;
-      }
-    }
+    const isNextMatchInFarFuture = currentMatch 
+      ? (getMatchTime(currentMatch) > currentTimeSecs + dayInSeconds && getMatchTime(currentMatch) !== matchTimeMissing)
+      : false;
 
     return {
       currentGlobalMatch: currentMatch,
       targetTeamMatches: hasTeamDone ? [] : teamFutureMatches.slice(firstIndex, nextMatchLimit),
       isEventOver: hasEventEnded,
       isTeamDone: hasTeamDone,
-      isFutureEvent: isItFutureEvent
+      isFutureEvent: isNextMatchInFarFuture
     };
-  }, [allMatches]);
+  }, [allMatches, sortMatches]);
 
   return (
     <div style={{ fontFamily: "'Segoe UI', Roboto, Helvetica, Arial, sans-serif", backgroundColor: colorNeutralBg, minHeight: "100vh", paddingBottom: "40px" }}>
@@ -212,7 +259,7 @@ const App: React.FC = () => {
               type="text" 
               placeholder="Event ID (e.g., 2025isios)" 
               value={inputEventKey}
-              onChange={(e) => { setInputEventKey(e.target.value); }}
+              onChange={(event) => { setInputEventKey(event.target.value); }}
               style={{ padding: "12px", fontSize: "16px", flexGrow: 1, border: "none", borderRadius: "6px", outline: "none" }}
             />
             <button 
@@ -293,10 +340,9 @@ const App: React.FC = () => {
                     ? new Date(effectiveTime * timeMultiplier).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
                     : "TBD";
 
-                  let matchesAway = noGap;
-                  if (currentGlobalMatch !== undefined && match.comp_level === currentGlobalMatch.comp_level) {
-                    matchesAway = match.match_number - currentGlobalMatch.match_number;
-                  }
+                  const matchesAway = (currentGlobalMatch !== undefined && match.comp_level === currentGlobalMatch.comp_level)
+                    ? match.match_number - currentGlobalMatch.match_number
+                    : noGap;
 
                   const isRedAlliance = match.alliances.red.team_keys.includes(targetTeamKey);
 
@@ -328,15 +374,15 @@ const App: React.FC = () => {
                       <div style={{ display: "flex" }}>
                         <div style={{ flex: 1, backgroundColor: isRedAlliance ? colorRedBg : colorCardBg, borderTop: `4px solid ${colorRedBorder}`, padding: "15px" }}>
                           <div style={{ color: colorRedText, fontWeight: "bold", marginBottom: "10px", fontSize: "0.9rem", textTransform: "uppercase" }}>Red Alliance</div>
-                          {match.alliances.red.team_keys.map(key => {
-                            const num = key.slice(sliceStart);
-                            const name = teamNameMap.get(key) ?? "Unknown";
-                            const isMe = key === targetTeamKey;
+                          {match.alliances.red.team_keys.map(teamKey => {
+                            const teamNumber = teamKey.slice(sliceStart);
+                            const teamName = teamNameMap.get(teamKey) ?? "Unknown";
+                            const isTargetTeam = teamKey === targetTeamKey;
                             return (
-                              <div key={key} style={{ display: "flex", alignItems: "center", marginBottom: "6px", fontWeight: isMe ? "bold" : "normal" }}>
-                                <span style={{ width: "50px", fontWeight: "bold", color: colorTextMain }}>{num}</span>
-                                <span style={{ fontSize: "0.9rem", color: colorTextSub, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{name}</span>
-                                {isMe && <span style={{ marginLeft: "auto", fontSize: "0.7rem", backgroundColor: colorRedText, color: "white", padding: "2px 6px", borderRadius: "4px" }}>YOU</span>}
+                              <div key={teamKey} style={{ display: "flex", alignItems: "center", marginBottom: "6px", fontWeight: isTargetTeam ? "bold" : "normal" }}>
+                                <span style={{ width: "50px", fontWeight: "bold", color: colorTextMain }}>{teamNumber}</span>
+                                <span style={{ fontSize: "0.9rem", color: colorTextSub, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{teamName}</span>
+                                {isTargetTeam && <span style={{ marginLeft: "auto", fontSize: "0.7rem", backgroundColor: colorRedText, color: "white", padding: "2px 6px", borderRadius: "4px" }}>YOU</span>}
                               </div>
                             );
                           })}
@@ -344,15 +390,15 @@ const App: React.FC = () => {
 
                         <div style={{ flex: 1, backgroundColor: !isRedAlliance ? colorBlueBg : colorCardBg, borderTop: `4px solid ${colorBlueBorder}`, padding: "15px", borderLeft: "1px solid #eee" }}>
                           <div style={{ color: colorBlueText, fontWeight: "bold", marginBottom: "10px", fontSize: "0.9rem", textTransform: "uppercase" }}>Blue Alliance</div>
-                          {match.alliances.blue.team_keys.map(key => {
-                            const num = key.slice(sliceStart);
-                            const name = teamNameMap.get(key) ?? "Unknown";
-                            const isMe = key === targetTeamKey;
+                          {match.alliances.blue.team_keys.map(teamKey => {
+                            const teamNumber = teamKey.slice(sliceStart);
+                            const teamName = teamNameMap.get(teamKey) ?? "Unknown";
+                            const isTargetTeam = teamKey === targetTeamKey;
                             return (
-                              <div key={key} style={{ display: "flex", alignItems: "center", marginBottom: "6px", fontWeight: isMe ? "bold" : "normal" }}>
-                                <span style={{ width: "50px", fontWeight: "bold", color: colorTextMain }}>{num}</span>
-                                <span style={{ fontSize: "0.9rem", color: colorTextSub, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{name}</span>
-                                {isMe && <span style={{ marginLeft: "auto", fontSize: "0.7rem", backgroundColor: colorBlueText, color: "white", padding: "2px 6px", borderRadius: "4px" }}>YOU</span>}
+                              <div key={teamKey} style={{ display: "flex", alignItems: "center", marginBottom: "6px", fontWeight: isTargetTeam ? "bold" : "normal" }}>
+                                <span style={{ width: "50px", fontWeight: "bold", color: colorTextMain }}>{teamNumber}</span>
+                                <span style={{ fontSize: "0.9rem", color: colorTextSub, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{teamName}</span>
+                                {isTargetTeam && <span style={{ marginLeft: "auto", fontSize: "0.7rem", backgroundColor: colorBlueText, color: "white", padding: "2px 6px", borderRadius: "4px" }}>YOU</span>}
                               </div>
                             );
                           })}

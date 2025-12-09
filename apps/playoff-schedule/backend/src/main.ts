@@ -7,6 +7,7 @@ const app = express();
 app.use(cors({
     origin: "*"
 }));
+
 app.use("/api/v1", apiRouter);
 
 const defaultPort = 4590;
@@ -20,7 +21,6 @@ const statusBadUser = 400;
 
 // enter a valid api key
 const apiKey = "YOUR_API_KEY";
-
 
 
 export const fetchData = async (url: string): Promise<unknown> => {
