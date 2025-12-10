@@ -60,8 +60,8 @@ const algaeWithPoints: GameObjectWithPoints<AlgaeEvent> = {
     calculateRP: calculateRPAlgae
 }
 
-addScoring(scoringCalculator,coral,calculatePointsCoral,calculateRPCoral)
-addScoring(scoringCalculator,algae,calculatePointsAlgae,calculateRPAlgae)
+addScoring(scoringCalculator,coralWithPoints)
+addScoring(scoringCalculator,algaeWithPoints)
 
 
 
