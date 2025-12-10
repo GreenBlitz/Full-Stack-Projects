@@ -8,3 +8,8 @@ export interface GameObject<T extends AllPossibleGameEvents>{
 export function addGameEvent<T extends AllPossibleGameEvents>(gameObject: GameObject<T> , event: T): void {
     gameObject.gameEvents[event]++
 }
+
+export interface GameObjectWithPoints<T extends AllPossibleGameEvents> extends GameObject<T>{
+     calculatePoints: (gameObject: GameObject<T>) => number,
+     calculateRP: (gameObject: GameObject<T>) => number
+}

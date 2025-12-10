@@ -5,7 +5,7 @@ export function calculatePointsAlgae(algae: GameObject<AlgaeEvent>): number {
         return algae.gameEvents.Net*NET_SCORING
         +algae.gameEvents.Processor*PROCESSOR_SCORING
     }
-export function calculateRPAlgae(): number {
+export function calculateRPAlgae(algae: GameObject<AlgaeEvent>): number {
         return 0
 }
 

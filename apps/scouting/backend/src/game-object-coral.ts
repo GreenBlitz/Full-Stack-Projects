@@ -6,8 +6,8 @@ export function calculatePointsCoral(coral: GameObject<CoralEvent>): number {
         coral.gameEvents.L2*L2_SCORING+
         coral.gameEvents.L3*L3_SCORING+
         coral.gameEvents.L4*L4_SCORING
-    }
-export function calculateRPCoral(): number {
+}
+export function calculateRPCoral(coral: GameObject<CoralEvent>): number {
         return 0
 }
 
