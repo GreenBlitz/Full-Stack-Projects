@@ -49,15 +49,13 @@ addGameEvent(coral, "L2")
 addGameEvent(algae, "Net")
 
 const coralWithPoints: GameObjectWithPoints<CoralEvent> = {
-    name: "coral",
-    gameEvents: coralCounter,
+    gameObject: coral,
     calculatePoints: calculatePointsCoral,
     calculateRP: calculateRPCoral
 }
 
 const algaeWithPoints: GameObjectWithPoints<AlgaeEvent> = {
-    name: "algae",
-    gameEvents: algaeCounter,
+    gameObject: algae,
     calculatePoints: calculateRPAlgae,
     calculateRP: calculateRPAlgae
 }
