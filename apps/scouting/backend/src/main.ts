@@ -45,6 +45,8 @@ const scoringCalculator: ScoringCalculator<AllPossibleGameEvents> = {
 
 addScoring(scoringCalculator,coral,calculatePointsCoral,calculateRPCoral)
 
+console.log("asdasdasdwad")
+
 
 
 
