@@ -11,16 +11,8 @@ export function addScoring<T extends AllPossibleGameEvents>(scoringCalculator: S
         calculateRP: (gameObject: GameObject<T>)=> number){
         const tempGameObjectScoringData: GameObjectScoringData<T> = {
             gameObject: gameObject,
-            pointsScoredWithGameObject: calculatePointsOfAGameObject(gameObject, calculatePoints),
-            rpScoredWithGameObject: calculateRPOfAGameObject(gameObject, calculateRP)
+            pointsScoredWithGameObject: calculatePoints(gameObject),
+            rpScoredWithGameObject: calculateRP(gameObject)
         }
         scoringCalculator.gameObjectsScoringData.push(tempGameObjectScoringData)
-}
-
-export function calculatePointsOfAGameObject<T extends AllPossibleGameEvents>(gameObject: GameObject<T>, calculatePoints: (gameObject: GameObject<T>)=> number): number{
-        return calculatePoints(gameObject)
-}
-
-export function calculateRPOfAGameObject<T extends AllPossibleGameEvents>(gameObject: GameObject<T>, calculateRP: (gameObject: GameObject<T>)=> number): number{
-        return calculateRP(gameObject)
 }
