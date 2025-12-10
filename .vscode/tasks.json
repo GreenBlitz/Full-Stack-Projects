@@ -13,7 +13,8 @@
     {
       "label": "dev",
       "type": "shell",
-      "command": "./node_modules/.bin/dotenv -e .dev.env -e .public.env -e .secret.env -- 'turbo run dev --filter=${input:project}-frontend --filter=${input:project}-backend'"
+      "command": "./node_modules/.bin/dotenv -e .dev.env -e .public.env -e .secret.env -- 'turbo run dev --filter=${input:project}-frontend --filter=${input:project}-backend'",
+      "problemMatcher": []
     },
     {
       "label": "serve",
@@ -23,7 +24,10 @@
     {
       "label": "deploy",
       "type": "shell",
-      "dependsOn": ["build", "serve"],
+      "dependsOn": [
+        "build",
+        "serve"
+      ],
       "dependsOrder": "sequence"
     },
     {
@@ -42,7 +46,7 @@
       "id": "project",
       "description": "Full Stack Projects worth running",
       "type": "pickString",
-      "options": ["template", "test"]
+      "options": ["template", "test", "gb-limelight-recorder"]
     },
     {
       "id": "workspace",
