@@ -1,4 +1,4 @@
-import { GameObject } from "../game-object";
+import { GameObject } from "./game-object";
 import { AlgaeEvent, AllPossibleGameEvents, CoralEvent } from "./game-events";
 
 export function calculatePointsCoral(coral: GameObject<CoralEvent>): number {

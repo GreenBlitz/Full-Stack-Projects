@@ -1,4 +1,4 @@
-import { AllPossibleGameEvents, GameEventsCounter } from "./src/game-events";
+import { AllPossibleGameEvents, GameEventsCounter } from "./game-events";
 
 export interface GameObject<T extends AllPossibleGameEvents>{
     name: string;

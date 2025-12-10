@@ -1,6 +1,6 @@
 import { GameObject } from "./game-object";
-import { AllPossibleGameEvents } from "./src/game-events";
-import { GameObjectScoringData } from "./src/scoring-data";
+import { AllPossibleGameEvents } from "./game-events";
+import { GameObjectScoringData } from "./scoring-data";
 
 export interface ScoringCalculator<T extends AllPossibleGameEvents>{
     gameObjectsScoringData: GameObjectScoringData<T>[]
