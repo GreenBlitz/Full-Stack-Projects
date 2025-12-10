@@ -46,9 +46,11 @@ const scoringCalculator: ScoringCalculator<AllPossibleGameEvents> = {
 
 addGameEvent(coral, "L1")
 addGameEvent(coral, "L2")
-
+addGameEvent(algae, "Net")
 
 addScoring(scoringCalculator,coral,calculatePointsCoral,calculateRPCoral)
+addScoring(scoringCalculator,algae,calculatePointsAlgae,calculateRPAlgae)
+
 
 
 console.log(scoringCalculator)
