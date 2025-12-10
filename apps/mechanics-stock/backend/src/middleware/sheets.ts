@@ -14,13 +14,7 @@ const auth = new google.auth.GoogleAuth({
 
 const sheets = google.sheets({ version: "v4", auth });
 
-export const testSheets = () => {
+export const getSheetRangeValues = async (range: string): Promise<any[][]> =>
   sheets.spreadsheets.values
-    .get({ spreadsheetId: sheetID, range: "פילמנט" })
-    .then((data) => {
-      console.log(data.data.values);
-    })
-    .catch((error: unknown) => {
-      console.error(error);
-    });
-};
+    .get({ spreadsheetId: sheetID, range })
+    .then((data) => data.data.values ?? []);
