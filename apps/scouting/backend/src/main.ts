@@ -1,10 +1,11 @@
 // בס"ד
 import express from "express";
 import { apiRouter } from "./routes";
-import { GameObject } from "../game-object";
+import { GameObject, addGameEvent } from "../game-object";
 import { CoralEvent, AlgaeEvent, GameEventsCounter, AllPossibleGameEvents } from "./game-events";
 import { addScoring, ScoringCalculator } from "../scoring-calculator";
 import { calculatePointsCoral, calculateRPCoral } from "./game-object-coral";
+import { calculatePointsAlgae, calculateRPAlgae } from "./game-object-algae";
 
 const app = express();
 
@@ -43,9 +44,14 @@ const scoringCalculator: ScoringCalculator<AllPossibleGameEvents> = {
   gameObjectsScoringData: []
 }
 
+addGameEvent(coral, "L1")
+addGameEvent(coral, "L2")
+
+
 addScoring(scoringCalculator,coral,calculatePointsCoral,calculateRPCoral)
 
-console.log("asdasdasdwad")
+
+console.log(scoringCalculator)
 
 
 
