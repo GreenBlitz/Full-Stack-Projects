@@ -2,3 +2,4 @@ node_modules
 .turbo
 dist
 .secret.env
+mechanics-stock-keys.json
