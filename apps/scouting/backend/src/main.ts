@@ -56,7 +56,7 @@ const coralWithPoints: GameObjectWithPoints<CoralEvent> = {
 
 const algaeWithPoints: GameObjectWithPoints<AlgaeEvent> = {
     gameObject: algae,
-    calculatePoints: calculateRPAlgae,
+    calculatePoints: calculatePointsAlgae,
     calculateRP: calculateRPAlgae
 }
 
