@@ -1,13 +1,11 @@
 // בס"ד
 
+import type { Unit } from "./units";
+
 export const productTypes = ["gear", "aluminium"] as const;
 export type ProductType = (typeof productTypes)[number];
 
-interface Unit {
-  type: "weight" | "length" | "area";
-}
-
-interface Stock {
+export interface Stock {
   amount: number;
   unit: Unit;
 }
