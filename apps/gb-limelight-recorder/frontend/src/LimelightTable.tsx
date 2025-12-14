@@ -1,16 +1,27 @@
 //בס"ד
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 import type React from "react";
+import type { HTMLAttributes } from "react";
 
 interface LimelightTableProps {
   robotOnline: boolean;
   cameras: boolean[];
 }
 
+declare module "react" {
+  interface InputHTMLAttributes<T> extends HTMLAttributes<T> {
+    webkitdirectory?: boolean;
+  }
+}
+
 const zero = 0;
 const one = 1;
 
-async function doThingy(robotOnline, cameraStatus, index) {
+async function doThingy(
+  robotOnline: boolean,
+  cameraStatus: boolean,
+  index: number
+) {
   const camera = index === zero ? "left" : index === one ? "object" : "right";
   if (robotOnline && cameraStatus) {
     await fetch(`http://localhost:5000/record/start/${camera}`, {
@@ -23,17 +34,16 @@ async function doThingy(robotOnline, cameraStatus, index) {
   }
 }
 
-const LimelightTable: React.FC<LimelightTableProps> = ({
-  robotOnline,
-}) => {
-
+const LimelightTable: React.FC<LimelightTableProps> = ({ robotOnline }) => {
   const cameraStatuses = [false, false, false];
+  const [fileLocation, setFileLocation] = useState("");
+  const locationPickerRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     cameraStatuses.forEach((cameraStatus, index) => {
       doThingy(robotOnline, cameraStatus, index).catch(() => {
         console.error("Couldnt do the thingy");
-      })
+      });
     });
   }, [robotOnline]);
 
@@ -63,7 +73,18 @@ const LimelightTable: React.FC<LimelightTableProps> = ({
         </tr>
         <tr>
           <td colSpan={3}>
-            <input type="file" disabled={robotOnline} />
+            <input ref={locationPickerRef} type="file" id="locationPicker" disabled={robotOnline} webkitdirectory />
+            <br />
+            <button
+              disabled={robotOnline}
+              onClick={() => {
+                const files = locationPickerRef.current?.files;
+                const file = files?.[zero];
+                setFileLocation(file?.name ?? "");
+              }}
+            >Save Location</button>
+            <br />
+            <p>Location: {fileLocation}</p>
           </td>
         </tr>
       </table>

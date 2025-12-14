@@ -3,6 +3,8 @@ import express from "express";
 import { RecordingProcess } from "./RecordingProcess.js";
 import cors from "cors";
 import ping from "ping";
+import fs from "fs";
+import path from "path";
 
 const app = express();
 const port = 5000;
@@ -11,6 +13,20 @@ app.use(cors());
 let ffmpegProcessLeft: RecordingProcess | null = null;
 let ffmpegProcessObject: RecordingProcess | null = null;
 let ffmpegProcessRight: RecordingProcess | null = null;
+const USB_ROOT = "E:/"; // CHANGE if needed
+
+function createSessionFolder(): string {
+  if (!fs.existsSync(USB_ROOT)) {
+    throw new Error("USB drive not connected");
+  }
+
+  const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+  const sessionDir = path.join(USB_ROOT, `recording-${timestamp}`);
+
+  fs.mkdirSync(sessionDir, { recursive: true });
+  return sessionDir;
+}
+
 
 // --- HELLO ---
 app.get("/", (req, res) => {
@@ -24,35 +40,38 @@ app.listen(port, () => {
 });
 
 function startRecording() {
-  // Start left camera
-  if (!ffmpegProcessLeft) {
-    ffmpegProcessLeft = new RecordingProcess(
-      "left",
-      "../test-vids/test-recording-left.mp4",
-    );
-    ffmpegProcessLeft.startRecording();
-    console.log("Started recording: left");
+  if (ffmpegProcessLeft || ffmpegProcessObject || ffmpegProcessRight) {
+    return;
   }
 
-  // Start object camera
-  if (!ffmpegProcessObject) {
-    ffmpegProcessObject = new RecordingProcess(
-      "object",
-      "../test-vids/test-recording-object.mp4",
-    );
-    ffmpegProcessObject.startRecording();
-    console.log("Started recording: object");
+  let sessionDir: string;
+
+  try {
+    sessionDir = createSessionFolder();
+  } catch (err) {
+    console.error(err);
+    return;
   }
 
-  // Start right camera
-  if (!ffmpegProcessRight) {
-    ffmpegProcessRight = new RecordingProcess(
-      "right",
-      "../src/test-vids/test-recording-right.mp4",
-    );
-    ffmpegProcessRight.startRecording();
-    console.log("Started recording: right");
-  }
+  ffmpegProcessLeft = new RecordingProcess(
+    "left",
+    path.join(sessionDir, "left.mp4")
+  );
+  ffmpegProcessLeft.startRecording();
+
+  ffmpegProcessObject = new RecordingProcess(
+    "object",
+    path.join(sessionDir, "object.mp4")
+  );
+  ffmpegProcessObject.startRecording();
+
+  ffmpegProcessRight = new RecordingProcess(
+    "right",
+    path.join(sessionDir, "right.mp4")
+  );
+  ffmpegProcessRight.startRecording();
+
+  console.log(`Recording started in ${sessionDir}`);
 }
 
 function stopRecording() {

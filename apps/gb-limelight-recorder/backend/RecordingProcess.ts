@@ -9,16 +9,16 @@ class RecordingProcess {
   public outputFile: string;
   
   // --- CONSTRUCTOR ---
-  public constructor(
-    cameraUrl: string, 
-    outputFile: string,
-  ) {
-    this.cameraUrl = 
+  public constructor(cameraUrl: string, outputFile: string) {
+    this.outputFile = outputFile;
+
+    this.cameraUrl =
       cameraUrl === "left" ? "http://limelight-left.local:5800"
     : cameraUrl === "object" ? "http://limelight-object.local:5800"
     : cameraUrl === "right" ? "http://limelight.local:5800"
     : cameraUrl;
   }
+
   
   // --- START RECORDING ---
   public startRecording(): string {
