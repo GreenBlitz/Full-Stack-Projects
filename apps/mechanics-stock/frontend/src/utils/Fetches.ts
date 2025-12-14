@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type Dispatch } from "react";
 
-const backendURL = "http://localhost:4590/api/v1/";
+const backendURL = "/api/v1/";
 
 type HttpMethod = "GET" | "OPTIONS" | "POST" | "PUT" | "PATCH" | "DELETE";
 
@@ -14,6 +14,7 @@ export const fetchData = async (
   fetch(backendURL + endpoint, {
     method,
     body: JSON.stringify(body),
+    mode: "cors",
   }).then(async (response) => response.json());
 
 export const useFetch = <T>(
