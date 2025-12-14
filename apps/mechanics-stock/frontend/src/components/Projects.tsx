@@ -1,6 +1,6 @@
 // בס"ד
 import type { FC } from "react";
-import { fetchData, useFetch } from "../utils/Fetches";
+import { useFetchWithInterval } from "../utils/Fetches";
 import type { Project } from "../../../types/project";
 import type { Unit } from "../../../types/units";
 
@@ -8,12 +8,12 @@ interface ProjcetsProps {}
 
 const emptyProjectsLength = 0;
 
-export const Projects: FC<ProjcetsProps> = () => {
-  const [currentProjects, setNewProjects] = useFetch<{ projects: Project[] }>(
-    "projects"
-  );
+const refreshProjectsMS = 30000;
 
-  console.log(currentProjects);
+export const Projects: FC<ProjcetsProps> = () => {
+  const [currentProjects, setNewProjects] = useFetchWithInterval<{
+    projects: Project[];
+  }>(refreshProjectsMS, "projects");
 
   const formatUnit = (unit: Unit): string => {
     // Simplified display logic for brevity. A full implementation would check all nested types.
@@ -25,9 +25,7 @@ export const Projects: FC<ProjcetsProps> = () => {
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
-      <h1 className="text-3xl font-bold mb-8 text-gray-800">
-        Current Projects Overview
-      </h1>
+      <h1 className="text-3xl font-bold mb-8 text-gray-800">Projects</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {currentProjects?.projects.map((project) => (
@@ -40,7 +38,8 @@ export const Projects: FC<ProjcetsProps> = () => {
             </h2>
 
             <p className="text-gray-600 mb-4">
-              Total Products: **{project.products.length}**
+              Total Products:{" "}
+              <span className="font-bold">{project.products.length}</span>
             </p>
 
             <h3 className="text-lg font-medium mb-3 text-gray-700">

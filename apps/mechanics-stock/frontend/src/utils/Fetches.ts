@@ -32,3 +32,27 @@ export const useFetch = <T>(
 
   return [data, setData];
 };
+
+export const useFetchWithInterval = <T>(
+  timeout: number,
+  ...args: Parameters<typeof fetchData>
+): [T | undefined, Dispatch<T>] => {
+  const [data, setData] = useState<T>();
+  const update = async () =>
+    fetchData(...args)
+      .then(setData)
+      .catch((error: unknown) => {
+        console.log(error);
+      });
+  useEffect(() => {
+    update().catch((error: unknown) => {
+      console.log(error);
+    });
+    const intervalID = setInterval(update, timeout);
+    return () => {
+      clearInterval(intervalID);
+    };
+  }, []);
+
+  return [data, setData];
+};
