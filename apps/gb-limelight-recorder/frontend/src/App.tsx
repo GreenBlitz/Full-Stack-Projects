@@ -1,35 +1,53 @@
 // בס"ד
-import { useState, type FC } from "react";
+import { useEffect, useState } from "react";
+import "./App.css";
+import LimelightTable from "./LimelightTable";
 
-const counterStartingValue = 0;
-const countIncrement = 1;
-const maxCountingValue = 5;
-const App: FC = () => {
-  const [count, setCount] = useState<string | number>(counterStartingValue);
+function app() {
+  const [message, setMessage] = useState("Loading...");
+  const [isRobotOnline, setIsRobotOnline] = useState(false);
+  const twoSeconds = 2000;
+
+useEffect(() => {
+  void (async () => {
+    try {
+      const res = await fetch("http://localhost:5000/");
+      const text = await res.text();
+      setMessage(text);
+    } catch (e) {
+      setMessage("Error connecting to server");
+      console.error(e);
+    }
+  })();
+}, []);
+
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch("http://localhost:4590/");
+        const text = await res.text();
+        setMessage(text);
+        setIsRobotOnline(text.includes("Welcome"));
+      } catch {
+        setIsRobotOnline(false);
+      }
+    }, twoSeconds);
+    return () => {clearInterval(interval)};
+  }, []);
 
   return (
-    <div className="mx-auto">
-      <h1>GreenBlitz Full-Stack Project:</h1>
-      <div className="card">
-        <button
-          onClick={() => {
-            setCount((prevCount) =>
-              typeof prevCount === "number"
-                ? prevCount >= maxCountingValue
-                  ? "MI BOMBO"
-                  : prevCount + countIncrement
-                : prevCount + "!"
-            );
-          }}
-        >
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+    <>
+      <div>
+        <img src="\src\assets\greenblitz.png" className="logo" alt="Logo" />
+        <p>{message}</p>
       </div>
-    </div>
+      <LimelightTable
+        robotOnline={isRobotOnline}
+        cameras={[false, false, false]}
+      />
+    </>
   );
-};
+}
 
-export default App;
+export default app;
