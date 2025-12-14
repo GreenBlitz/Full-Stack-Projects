@@ -14,7 +14,7 @@ const auth = new google.auth.GoogleAuth({
 
 const sheets = google.sheets({ version: "v4", auth });
 
-export const getSheetRangeValues = async (range: string): Promise<any[][]> =>
+export const getSheetRangeValues = async (range: string): Promise<string[][]> =>
   sheets.spreadsheets.values
     .get({ spreadsheetId: sheetID, range })
     .then((data) => data.data.values ?? []);

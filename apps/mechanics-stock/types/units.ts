@@ -2,6 +2,7 @@
 export interface UnitBase<T extends string, K> {
   class: T;
   type: K;
+  amount: number;
 }
 type LengthUnit = UnitBase<
   "length",
@@ -25,3 +26,6 @@ export type Unit =
   | VolumeUnit
   | UnitBase<"weight", "gram" | "kilogram" | "pound">
   | UnitBase<"none", "amount">;
+
+export type UnitClass = Unit["class"];
+export type UnitType = Unit["type"];

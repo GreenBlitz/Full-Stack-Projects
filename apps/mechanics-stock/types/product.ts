@@ -12,6 +12,6 @@ export interface Stock {
 
 export interface Product {
   type: ProductType;
-  stock: number;
+  stock: Stock;
   id: number;
 }
