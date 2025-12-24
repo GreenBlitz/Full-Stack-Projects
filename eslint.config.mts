@@ -61,7 +61,7 @@ export default defineConfig([
       "@typescript-eslint/method-signature-style": ["error", "property"],
       "@typescript-eslint/naming-convention": [
         "error",
-        { selector: "variableLike", format: ["camelCase"] },
+        { selector: "variableLike", format: ["camelCase", "UPPER_CASE"] },
         { selector: "parameter", format: ["camelCase"] },
         {
           selector: "variable",
@@ -74,7 +74,7 @@ export default defineConfig([
         {
           selector: "variable",
           types: ["function"],
-          format: ["camelCase", "PascalCase", "UPPER_CASE"],
+          format: ["camelCase", "PascalCase"],
         },
       ],
       "no-array-constructor": "off",
