@@ -1,23 +1,8 @@
 // בס"ד
 import { rangeArr, BitArray, bitArrayLength } from "./BitArray";
+import type { Deserializer, FieldsRecordSerde, RecordDeserializer, RecordSerializer, Serde, Serializer } from "./types";
 
-type Serializer<T> = (seriailzedData: BitArray, data: T) => void;
-// return field name, and its appropriate Serializer
-type RecordSerializer<T> = Record<string, Serializer<T>>;
 
-// returns the deserializedData
-type Deserializer<T> = (serializedData: BitArray) => T;
-// return field name, and its appropriate Deserializer
-type RecordDeserializer<T> = Record<string, Deserializer<T>>;
-
-interface FieldsRecordSerde<T> {
-  serializer: RecordSerializer<T>;
-  deserializer: RecordDeserializer<T>;
-}
-interface Serde<T> {
-  serializer: Serializer<T>;
-  deserializer: Deserializer<T>;
-}
 
 const binaryTrueValue = 1;
 const binaryModulus = 2;
