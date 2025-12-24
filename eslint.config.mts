@@ -74,7 +74,7 @@ export default defineConfig([
         {
           selector: "variable",
           types: ["function"],
-          format: ["camelCase", "PascalCase"],
+          format: ["camelCase", "PascalCase", "UPPER_CASE"],
         },
       ],
       "no-array-constructor": "off",

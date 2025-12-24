@@ -1,13 +1,21 @@
-import { GameObject } from "./game-object";
-import { AlgaeEvent, AllPossibleGameEvents, CoralEvent } from "./game-events";
+// בס"ד
+import type { GameObject } from "./game-object";
+import type {
+  AlgaeEvent,
+  AllPossibleGameEvents,
+  CoralEvent,
+} from "./game-events";
+
+const PROCESSOR_SCORING: number = 6;
+const NET_SCORING: number = 4;
 
 export function calculatePointsAlgae(algae: GameObject<AlgaeEvent>): number {
-        return algae.gameEvents.Net*NET_SCORING
-        +algae.gameEvents.Processor*PROCESSOR_SCORING
-    }
-export function calculateRPAlgae(algae: GameObject<AlgaeEvent>): number {
-        return 0
+  return (
+    algae.gameEvents.Net * NET_SCORING +
+    algae.gameEvents.Processor * PROCESSOR_SCORING
+  );
 }
-
-const PROCESSOR_SCORING: number = 6
-const NET_SCORING: number = 4
+export function calculateRPAlgae(algae: GameObject<AlgaeEvent>): number {
+  const noRP = 0;
+  return noRP;
+}
