@@ -3,23 +3,23 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import LimelightTable from "./LimelightTable";
 
-function app() {
+const App = () => {
   const [message, setMessage] = useState("Loading...");
   const [isRobotOnline, setIsRobotOnline] = useState(false);
   const twoSeconds = 2000;
 
-useEffect(() => {
-  void (async () => {
-    try {
-      const res = await fetch("http://localhost:5000/");
-      const text = await res.text();
-      setMessage(text);
-    } catch (e) {
-      setMessage("Error connecting to server");
-      console.error(e);
-    }
-  })();
-}, []);
+  useEffect(() => {
+    void (async () => {
+      try {
+        const res = await fetch("http://localhost:5000/");
+        const text = await res.text();
+        setMessage(text);
+      } catch (e) {
+        setMessage("Error connecting to server");
+        console.error(e);
+      }
+    })();
+  }, []);
 
 
   useEffect(() => {
@@ -50,4 +50,4 @@ useEffect(() => {
   );
 }
 
-export default app;
+export default App;
