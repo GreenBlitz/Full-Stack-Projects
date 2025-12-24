@@ -6,8 +6,8 @@ import type {
   CoralEvent,
 } from "./game-events";
 
-const PROCESSOR_SCORING: number = 6;
-const NET_SCORING: number = 4;
+const PROCESSOR_SCORING = 6;
+const NET_SCORING = 4;
 
 export function calculatePointsAlgae(algae: GameObject<AlgaeEvent>): number {
   return (

@@ -6,10 +6,10 @@ import type {
   CoralEvent,
 } from "./game-events";
 
-const L1_SCORING: number = 2;
-const L2_SCORING: number = 3;
-const L3_SCORING: number = 4;
-const L4_SCORING: number = 5;
+const L1_SCORING = 2;
+const L2_SCORING = 3;
+const L3_SCORING = 4;
+const L4_SCORING = 5;
 export function calculatePointsCoral(coral: GameObject<CoralEvent>): number {
   return (
     coral.gameEvents.L1 * L1_SCORING +
