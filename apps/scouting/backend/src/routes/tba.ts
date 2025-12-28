@@ -3,6 +3,7 @@ import axios, { type AxiosRequestConfig } from "axios";
 import { Router } from "express";
 import * as t from "io-ts";
 import { verifyBody } from "../middleware/verification";
+import { MatchesProps, matchesProps } from "../../../common/types/TBA";
 
 export const tbaRouter = Router();
 
@@ -18,14 +19,6 @@ const fetchTba = async <T>(
   });
 };
 
-const matchesProps = t.type({
-  event: t.string,
-});
-
-type MatchesProps = t.Type<typeof matchesProps>;
-
-
-
 tbaRouter.post("/matches", verifyBody(matchesProps), (req, res) => {
-  const body: MatchesProps = req.body as unknown;
+  return {}
 });
