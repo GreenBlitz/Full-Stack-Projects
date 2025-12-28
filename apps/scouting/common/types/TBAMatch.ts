@@ -5,4 +5,8 @@ export const matchesProps = t.type({
   event: t.string,
 });
 
-export type MatchesProps = t.Type<typeof matchesProps>;
+export type MatchesProps = t.TypeOf<typeof matchesProps>;
+
+export interface Match {
+  
+}
