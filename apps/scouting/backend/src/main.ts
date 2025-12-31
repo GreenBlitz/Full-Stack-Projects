@@ -21,55 +21,56 @@ const app = express();
 const defaultPort = 4590;
 const port = process.env.BACKEND_PORT ?? defaultPort;
 
+app.use(express.json());
 app.use("/api/v1", apiRouter);
 
 app.listen(port, () => {
   console.log(`Production server running at http://localhost:${port}`);
 });
 
-const coralCounter: GameEventsCounter<CoralEvent> = {
-  L1: 0,
-  L2: 0,
-  L3: 0,
-  L4: 0,
-};
+// const coralCounter: GameEventsCounter<CoralEvent> = {
+//   L1: 0,
+//   L2: 0,
+//   L3: 0,
+//   L4: 0,
+// };
 
-const algaeCounter: GameEventsCounter<AlgaeEvent> = {
-  Processor: 0,
-  Net: 0,
-};
+// const algaeCounter: GameEventsCounter<AlgaeEvent> = {
+//   Processor: 0,
+//   Net: 0,
+// };
 
-const coral: GameObject<CoralEvent> = {
-  name: "coral",
-  gameEvents: coralCounter,
-};
+// const coral: GameObject<CoralEvent> = {
+//   name: "coral",
+//   gameEvents: coralCounter,
+// };
 
-const algae: GameObject<AlgaeEvent> = {
-  name: "algae",
-  gameEvents: algaeCounter,
-};
+// const algae: GameObject<AlgaeEvent> = {
+//   name: "algae",
+//   gameEvents: algaeCounter,
+// };
 
-const scoringCalculator: ScoringCalculator<AllPossibleGameEvents> = {
-  gameObjectsScoringData: [],
-};
+// const scoringCalculator: ScoringCalculator<AllPossibleGameEvents> = {
+//   gameObjectsScoringData: [],
+// };
 
-addGameEvent(coral, "L1");
-addGameEvent(coral, "L2");
-addGameEvent(algae, "Net");
+// addGameEvent(coral, "L1");
+// addGameEvent(coral, "L2");
+// addGameEvent(algae, "Net");
 
-const coralWithPoints: GameObjectWithPoints<CoralEvent> = {
-  gameObject: coral,
-  calculatePoints: calculatePointsCoral,
-  calculateRP: calculateRPCoral,
-};
+// const coralWithPoints: GameObjectWithPoints<CoralEvent> = {
+//   gameObject: coral,
+//   calculatePoints: calculatePointsCoral,
+//   calculateRP: calculateRPCoral,
+// };
 
-const algaeWithPoints: GameObjectWithPoints<AlgaeEvent> = {
-  gameObject: algae,
-  calculatePoints: calculatePointsAlgae,
-  calculateRP: calculateRPAlgae,
-};
+// const algaeWithPoints: GameObjectWithPoints<AlgaeEvent> = {
+//   gameObject: algae,
+//   calculatePoints: calculatePointsAlgae,
+//   calculateRP: calculateRPAlgae,
+// };
 
-addScoring(scoringCalculator, coralWithPoints);
-addScoring(scoringCalculator, algaeWithPoints);
+// addScoring(scoringCalculator, coralWithPoints);
+// addScoring(scoringCalculator, algaeWithPoints);
 
-console.log(scoringCalculator);
+// console.log(scoringCalculator);

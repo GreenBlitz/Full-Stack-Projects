@@ -9,9 +9,10 @@ export const verifyBody =
   <U extends Props>(typeToCheck: TypeC<U>): RequestHandler =>
   (req, res, next): void => {
     const result = typeToCheck.decode(req.body);
+
     if (isLeft(result)) {
       res
-        .status(StatusCodes.BAD_REQUEST)
+        .status(StatusCodes.NOT_ACCEPTABLE)
         .json({ errors: PathReporter.report(result) });
     } else {
       next();
