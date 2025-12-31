@@ -9,6 +9,7 @@ import {
 } from "../../../common/types/TBAMatch";
 import { StatusCodes } from "http-status-codes";
 import type { ScoreBreakdown2025 } from "../../../common/types/ScoreBreakdown2025";
+import type { BodiedRequest } from "../../../common/types/Express";
 
 export const tbaRouter = Router();
 
@@ -29,7 +30,7 @@ const fetchTba = async <T>(
 tbaRouter.post(
   "/matches",
   verifyBody(matchesProps),
-  (req: Request<any, any, TBAMatchesProps>, res) => {
+  (req: BodiedRequest<TBAMatchesProps>, res) => {
     fetchTba<TBAMatch<ScoreBreakdown2025>>(`/event/${req.body.event}/matches`)
       .then((value) => {
         console.log(value);
