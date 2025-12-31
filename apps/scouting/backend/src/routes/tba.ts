@@ -1,6 +1,6 @@
 // בס"ד
 import axios, { type AxiosRequestConfig } from "axios";
-import { type Request, Router } from "express";
+import { Router } from "express";
 import { verifyBody } from "../middleware/verification";
 import {
   type TBAMatch,
