@@ -1,12 +1,13 @@
 // בס"ד
 import axios, { type AxiosRequestConfig } from "axios";
-import { Router } from "express";
+import { type Request, Router } from "express";
 import * as t from "io-ts";
 import { verifyBody } from "../middleware/verification";
 import {
   type MatchesProps,
   matchesProps,
 } from "../../../common/types/TBAMatch";
+import { StatusCodes } from "http-status-codes";
 
 export const tbaRouter = Router();
 
@@ -22,14 +23,17 @@ const fetchTba = async <T>(
   });
 };
 
-tbaRouter.post("/matches", verifyBody(matchesProps), (req, res) => {
-  const props: MatchesProps = req.body as unknown;
-
-  fetchTba<Matches>(`event/${props.event}/matches`)
-    .then((value) => {
-      console.log(value);
-    })
-    .catch((error: unknown) => {
-      console.error(error);
-    });
-});
+tbaRouter.post(
+  "/matches",
+  verifyBody(matchesProps),
+  (req: Request<{}, any, MatchesProps>, res) => {
+    fetchTba(`/event/${req.body.event}/matches`)
+      .then((value) => {
+        console.log(value);
+        res.status(StatusCodes.OK).json({value})
+      })
+      .catch((error: unknown) => {
+        console.error(error);
+      });
+  }
+);
