@@ -3,10 +3,12 @@ import axios, { type AxiosRequestConfig } from "axios";
 import { type Request, Router } from "express";
 import { verifyBody } from "../middleware/verification";
 import {
-  type MatchesProps,
+  type TBAMatch,
+  type TBAMatchesProps,
   matchesProps,
 } from "../../../common/types/TBAMatch";
 import { StatusCodes } from "http-status-codes";
+import type { ScoreBreakdown2025 } from "../../../common/types/ScoreBreakdown2025";
 
 export const tbaRouter = Router();
 
@@ -27,8 +29,8 @@ const fetchTba = async <T>(
 tbaRouter.post(
   "/matches",
   verifyBody(matchesProps),
-  (req: Request<any, any, MatchesProps>, res) => {
-    fetchTba(`/event/${req.body.event}/matches`)
+  (req: Request<any, any, TBAMatchesProps>, res) => {
+    fetchTba<TBAMatch<ScoreBreakdown2025>>(`/event/${req.body.event}/matches`)
       .then((value) => {
         console.log(value);
         res.status(StatusCodes.OK).json({ value });
