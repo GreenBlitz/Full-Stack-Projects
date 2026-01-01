@@ -6,4 +6,3 @@ export const simpleAlliance = t.type({
   surrogate_team_keys: t.array(t.string),
   team_keys: t.array(t.string),
 });
-type SimpleAllianceType = typeof simpleAlliance._A;

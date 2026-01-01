@@ -1,6 +1,6 @@
 // בס"ד
 import * as t from "io-ts";
-import { numberOrNull, stringOrNull } from "../utils/TypeUtils";
+import { stringOrNull } from "../utils/TypeUtils";
 
 export const simpleEventsInYear = t.type({
   //did

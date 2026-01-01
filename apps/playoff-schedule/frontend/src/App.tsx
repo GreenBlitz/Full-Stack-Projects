@@ -2,7 +2,10 @@
 import type React from "react";
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { urlMatches, type MatchesSimpleType } from "./endpoints/MatchSimple";
-import { urlTeamsInEvent, type TeamsInEventType } from "./endpoints/TeamsSimple";
+import {
+  urlTeamsInEvent,
+  type TeamsInEventType,
+} from "./endpoints/TeamsSimple";
 import useLocalStorage from "./Hooks/LocalStorageHook";
 
 const targetTeamNumber = 4590;
@@ -16,6 +19,7 @@ const noGap = 0;
 const matchTimeDefault = 0;
 const matchTimeMissing = 0;
 const dayInSeconds = 86400;
+const notFoundIndex = -1;
 
 const sortABeforeB = -1;
 const sortBBeforeA = 1;
@@ -28,24 +32,6 @@ const weightDefault = 99;
 
 const targetTeamKey = `frc${targetTeamNumber}`;
 const backendBaseUrl = `http://localhost:${backendPort}/fetch?url=`;
-
-const colorRedBg = "#FFEBEE";
-const colorRedBorder = "#EF5350";
-const colorRedText = "#C62828";
-const colorBlueBg = "#E3F2FD";
-const colorBlueBorder = "#42A5F5";
-const colorBlueText = "#1565C0";
-const colorNeutralBg = "#f5f5f5";
-const colorCardBg = "#ffffff";
-const colorHeaderBg = "#263238";
-const colorTextMain = "#333333";
-const colorTextSub = "#666666";
-const colorAccent = "#FFA000";
-const colorFuture = "#2196F3";
-const colorButtonBg = "#00E676";
-const colorButtonText = "#1B5E20";
-const colorRankBg = "#E8EAF6";
-const colorRankText = "#3F51B5";
 
 interface TeamRecord {
   wins: number;
@@ -63,33 +49,61 @@ interface RankingsResponse {
   rankings: RankItem[];
 }
 
-const urlRankings = (eventKey: string) => 
+const urlRankings = (eventKey: string) =>
   `https://www.thebluealliance.com/api/v3/event/${eventKey}/rankings`;
 
 const fetchFromProxy = async <T,>(targetUrl: string): Promise<T> => {
   const fullUrl = `${backendBaseUrl}${encodeURIComponent(targetUrl)}`;
   const response = await fetch(fullUrl);
-  
-  return response.ok 
-    ? (response.json() as Promise<T>) 
+
+  return response.ok
+    ? (response.json() as Promise<T>)
     : Promise.reject(new Error(`HTTP error status: ${response.status}`));
 };
 
-const getLevelWeight = (level: string): number => 
-  level === 'qm' ? weightQm
-  : level === 'ef' ? weightEf
-  : level === 'qf' ? weightQf
-  : level === 'sf' ? weightSf
-  : level === 'f' ? weightF
-  : weightDefault;
+const getLevelWeight = (level: string): number =>
+  level === "qm"
+    ? weightQm
+    : level === "ef"
+      ? weightEf
+      : level === "qf"
+        ? weightQf
+        : level === "sf"
+          ? weightSf
+          : level === "f"
+            ? weightF
+            : weightDefault;
+
+const getMatchDisplayName = (match: MatchesSimpleType): string => {
+  const level = match.comp_level.toUpperCase();
+  switch (level) {
+    case "QM":
+      return `Quals ${match.match_number}`;
+    case "QF":
+      return `Quarterfinal ${match.set_number}, Match ${match.match_number}`;
+    case "SF":
+      return `Semifinal ${match.set_number}, Match ${match.match_number}`;
+    case "F":
+      return `Finals Match ${match.match_number}`;
+    case "EF":
+      return `Octofinal ${match.set_number}, Match ${match.match_number}`;
+    default:
+      return `${level} ${match.match_number}`;
+  }
+};
 
 const App: React.FC = () => {
-  const [activeEventKey, setActiveEventKey] = useLocalStorage<string>("dashboard_active_event", "");
+  const [activeEventKey, setActiveEventKey] = useLocalStorage<string>(
+    "dashboard_active_event",
+    ""
+  );
   const [inputEventKey, setInputEventKey] = useState<string>(activeEventKey);
   const [teams, setTeams] = useState<TeamsInEventType[]>([]);
   const [allMatches, setAllMatches] = useState<MatchesSimpleType[]>([]);
   const [teamRank, setTeamRank] = useState<RankItem | null>(null);
-  const [searchStatus, setSearchStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [searchStatus, setSearchStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
 
   const resetInSearch = () => {
     setSearchStatus("loading");
@@ -98,51 +112,71 @@ const App: React.FC = () => {
     setTeamRank(null);
   };
 
-  const sortMatches = useCallback((a: MatchesSimpleType, b: MatchesSimpleType) => {
-    const timeA = a.predicted_time ?? a.time ?? matchTimeDefault;
-    const timeB = b.predicted_time ?? b.time ?? matchTimeDefault;
-    const weightA = getLevelWeight(a.comp_level);
-    const weightB = getLevelWeight(b.comp_level);
+  const sortMatches = useCallback(
+    (a: MatchesSimpleType, b: MatchesSimpleType) => {
+      const timeA = a.predicted_time ?? a.time ?? matchTimeDefault;
+      const timeB = b.predicted_time ?? b.time ?? matchTimeDefault;
+      const weightA = getLevelWeight(a.comp_level);
+      const weightB = getLevelWeight(b.comp_level);
 
-    return (timeA > matchTimeMissing && timeB > matchTimeMissing) ? timeA - timeB
-      : (timeA === matchTimeMissing && timeB > matchTimeMissing) ? sortABeforeB
-      : (timeA > matchTimeMissing && timeB === matchTimeMissing) ? sortBBeforeA
-      : (weightA !== weightB) 
-        ? weightA - weightB 
-        : a.match_number - b.match_number;
-  }, []);
+      if (timeA > matchTimeMissing && timeB > matchTimeMissing) {
+        return timeA - timeB;
+      } else if (timeA > matchTimeMissing && timeB === matchTimeMissing) {
+        return sortABeforeB;
+      } else if (timeA === matchTimeMissing && timeB > matchTimeMissing) {
+        return sortBBeforeA;
+      } else if (weightA !== weightB) {
+        return weightA - weightB;
+      } else if (a.comp_level !== "qm") {
+        if (a.set_number !== b.set_number) {
+          return a.set_number - b.set_number;
+        }
+        return a.match_number - b.match_number;
+      }
 
-  const performSearch = useCallback(async (eventKey: string) => {
-    if (!eventKey) return;
-    
-    resetInSearch();
-    setActiveEventKey(eventKey);
+      return a.match_number - b.match_number;
+    },
+    []
+  );
 
-    try {
-      const teamsUrl = urlTeamsInEvent(eventKey);
-      const matchesUrl = urlMatches(eventKey);
-      const rankingsUrl = urlRankings(eventKey);
+  const performSearch = useCallback(
+    async (eventKey: string) => {
+      if (!eventKey) return;
 
-      const [teamsData, matchesData, rankingsData] = await Promise.all([
-        fetchFromProxy<TeamsInEventType[]>(teamsUrl),
-        fetchFromProxy<MatchesSimpleType[]>(matchesUrl),
-        fetchFromProxy<RankingsResponse>(rankingsUrl).catch(() => ({ rankings: [] }))
-      ]);
+      resetInSearch();
+      setActiveEventKey(eventKey);
 
-      Array.isArray(teamsData) && Array.isArray(matchesData)
-        ? (() => {
-            setTeams(teamsData);
-            matchesData.sort(sortMatches);
-            setAllMatches(matchesData);
-            setTeamRank(rankingsData.rankings.find(r => r.team_key === targetTeamKey) ?? null);
-            setSearchStatus("success");
-          })()
-        : setSearchStatus("error");
+      try {
+        const teamsUrl = urlTeamsInEvent(eventKey);
+        const matchesUrl = urlMatches(eventKey);
+        const rankingsUrl = urlRankings(eventKey);
 
-    } catch {
-      setSearchStatus("error");
-    }
-  }, [setActiveEventKey, sortMatches]);
+        const [teamsData, matchesData, rankingsData] = await Promise.all([
+          fetchFromProxy<TeamsInEventType[]>(teamsUrl),
+          fetchFromProxy<MatchesSimpleType[]>(matchesUrl),
+          fetchFromProxy<RankingsResponse>(rankingsUrl).catch(() => ({
+            rankings: [],
+          })),
+        ]);
+
+        if (Array.isArray(teamsData) && Array.isArray(matchesData)) {
+          setTeams(teamsData);
+          matchesData.sort(sortMatches);
+          setAllMatches(matchesData);
+          setTeamRank(
+            rankingsData.rankings.find((r) => r.team_key === targetTeamKey) ??
+              null
+          );
+          setSearchStatus("success");
+        } else {
+          setSearchStatus("error");
+        }
+      } catch {
+        setSearchStatus("error");
+      }
+    },
+    [setActiveEventKey, sortMatches]
+  );
 
   const handleSearchSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -152,29 +186,36 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (activeEventKey && searchStatus === "idle") {
-        void performSearch(activeEventKey);
+      void performSearch(activeEventKey);
     }
   }, [activeEventKey, performSearch, searchStatus]);
 
   useEffect(() => {
-    const intervalId: number | undefined = searchStatus === "success" && activeEventKey ? 
-      window.setInterval(() => {
-        const matchesUrl = urlMatches(activeEventKey);
-        const rankingsUrl = urlRankings(activeEventKey);
+    const intervalId: number | undefined =
+      searchStatus === "success" && activeEventKey
+        ? window.setInterval(() => {
+            const matchesUrl = urlMatches(activeEventKey);
+            const rankingsUrl = urlRankings(activeEventKey);
 
-        void fetchFromProxy<MatchesSimpleType[]>(matchesUrl).then(data => {
-           if (Array.isArray(data)) {
-             data.sort(sortMatches);
-             setAllMatches(data);
-           }
-        }).catch(console.error);
+            void fetchFromProxy<MatchesSimpleType[]>(matchesUrl)
+              .then((data) => {
+                if (Array.isArray(data)) {
+                  data.sort(sortMatches);
+                  setAllMatches(data);
+                }
+              })
+              .catch(console.error);
 
-        void fetchFromProxy<RankingsResponse>(rankingsUrl).then(data => {
-            const myRank = data.rankings.find(r => r.team_key === targetTeamKey) ?? null;
-            setTeamRank(myRank);
-        }).catch(console.error);
-
-      }, refreshIntervalMs) : undefined;
+            void fetchFromProxy<RankingsResponse>(rankingsUrl)
+              .then((data) => {
+                const myRank =
+                  data.rankings.find((r) => r.team_key === targetTeamKey) ??
+                  null;
+                setTeamRank(myRank);
+              })
+              .catch(console.error);
+          }, refreshIntervalMs)
+        : undefined;
 
     return () => {
       if (intervalId !== undefined) {
@@ -185,220 +226,337 @@ const App: React.FC = () => {
 
   const teamNameMap = useMemo(() => {
     const map: Map<string, string> = new Map();
-    teams.forEach(team => map.set(team.key, team.nickname));
+    teams.forEach((team) => map.set(team.key, team.nickname));
     return map;
   }, [teams]);
 
-  const { currentGlobalMatch, targetTeamMatches, isEventOver, isTeamDone, isFutureEvent } = useMemo(() => {
-// normal one
-const currentTimeSecs = Math.floor(Date.now() / timeMultiplier);
+  const {
+    currentGlobalMatch,
+    targetTeamMatches,
+    futureMatches,
+    isEventOver,
+    isTeamDone,
+    isFutureEvent,
+  } = useMemo(() => {
+    // normal one
+    // const currentTimeSecs = Math.floor(Date.now() / timeMultiplier);
 
-// testing 2025isios
-//const currentTimeSecs = Math.floor(new Date("2025-10-08T12:44:00").getTime() / timeMultiplier);
+    // testing 2025isios
+    // const currentTimeSecs = Math.floor(
+    //   new Date("2025-10-08T13:44:00").getTime() / timeMultiplier
+    // );
 
-// testing 2025iscmp
-// const currentTimeSecs = Math.floor(new Date("2025-03-26T10:00:00").getTime() / timeMultiplier);
+    // testing 2025iscmp
+    // const currentTimeSecs = Math.floor(
+    //   new Date("2025-03-27T10:00:00").getTime() / timeMultiplier
+    // );
 
-// testing 2025cmptx
-//const currentTimeSecs = Math.floor(new Date("2025-04-19T10:00:00").getTime() / timeMultiplier);
-
-
-
-    const getMatchTime = (match: MatchesSimpleType) => match.predicted_time ?? match.time ?? matchTimeDefault;
-
-    const futureMatches = allMatches.filter(match => {
-        const time = getMatchTime(match);
-        return time === matchTimeMissing || time > currentTimeSecs;
-    });
-
-    const pastMatches = allMatches.filter(match => {
-        const time = getMatchTime(match);
-        return time > matchTimeMissing && time <= currentTimeSecs;
-    });
-
-    futureMatches.sort(sortMatches);
-
-    const currentMatch = futureMatches.length > noGap 
-      ? futureMatches[firstIndex] 
-      : undefined;
-
-    const teamFutureMatches = futureMatches.filter(match => 
-      match.alliances.blue.team_keys.includes(targetTeamKey) || 
-      match.alliances.red.team_keys.includes(targetTeamKey)
+    // testing 2024iscmp
+    const currentTimeSecs = Math.floor(
+      new Date("2024-03-21T18:00:00").getTime() / timeMultiplier
     );
 
-    const teamPastMatches = pastMatches.filter(match => 
-      match.alliances.blue.team_keys.includes(targetTeamKey) || 
-      match.alliances.red.team_keys.includes(targetTeamKey)
+    // testing 2025cmptx
+    //const currentTimeSecs = Math.floor(new Date("2025-04-19T10:00:00").getTime() / timeMultiplier);
+
+    const getMatchTime = (match: MatchesSimpleType) =>
+      match.predicted_time ?? match.time ?? matchTimeDefault;
+
+    const futureMatchesArr = allMatches.filter((match) => {
+      const time = getMatchTime(match);
+      return time === matchTimeMissing || time > currentTimeSecs;
+    });
+
+    const pastMatchesArr = allMatches.filter((match) => {
+      const time = getMatchTime(match);
+      return time > matchTimeMissing && time <= currentTimeSecs;
+    });
+
+    futureMatchesArr.sort(sortMatches);
+
+    const currentMatch =
+      futureMatchesArr.length > noGap
+        ? futureMatchesArr[firstIndex]
+        : undefined;
+
+    const teamFutureMatches = futureMatchesArr.filter(
+      (match) =>
+        match.alliances.blue.team_keys.includes(targetTeamKey) ||
+        match.alliances.red.team_keys.includes(targetTeamKey)
     );
 
-    const hasEventEnded = futureMatches.length === noGap && allMatches.length > noGap;
-    const hasTeamDone = !hasEventEnded && teamFutureMatches.length === noGap && teamPastMatches.length > noGap;
-    
-    const isNextMatchInFarFuture = currentMatch 
-      ? (getMatchTime(currentMatch) > currentTimeSecs + dayInSeconds && getMatchTime(currentMatch) !== matchTimeMissing)
+    const teamPastMatches = pastMatchesArr.filter(
+      (match) =>
+        match.alliances.blue.team_keys.includes(targetTeamKey) ||
+        match.alliances.red.team_keys.includes(targetTeamKey)
+    );
+
+    const hasEventEnded =
+      futureMatchesArr.length === noGap && allMatches.length > noGap;
+
+    const hasTeamDone =
+      !hasEventEnded &&
+      teamFutureMatches.length === noGap &&
+      teamPastMatches.length > noGap;
+
+    const isNextMatchInFarFuture = currentMatch
+      ? getMatchTime(currentMatch) > currentTimeSecs + dayInSeconds &&
+        getMatchTime(currentMatch) !== matchTimeMissing
       : false;
 
     return {
       currentGlobalMatch: currentMatch,
-      targetTeamMatches: hasTeamDone ? [] : teamFutureMatches.slice(firstIndex, nextMatchLimit),
+      targetTeamMatches: hasTeamDone
+        ? []
+        : teamFutureMatches.slice(firstIndex, nextMatchLimit),
+      futureMatches: futureMatchesArr,
       isEventOver: hasEventEnded,
       isTeamDone: hasTeamDone,
-      isFutureEvent: isNextMatchInFarFuture
+      isFutureEvent: isNextMatchInFarFuture,
     };
   }, [allMatches, sortMatches]);
 
   return (
-    <div style={{ fontFamily: "'Segoe UI', Roboto, Helvetica, Arial, sans-serif", backgroundColor: colorNeutralBg, minHeight: "100vh", paddingBottom: "40px" }}>
-      
-      <div style={{ backgroundColor: colorHeaderBg, color: "white", padding: "20px 0", boxShadow: "0 2px 5px rgba(0,0,0,0.2)" }}>
-        <div style={{ maxWidth: "800px", margin: "0 auto", padding: "0 20px" }}>
-          <h1 style={{ margin: "0 0 15px 0", fontSize: "1.8rem" }}>FRC Dashboard</h1>
-          <form onSubmit={handleSearchSubmit} style={{ display: "flex", gap: "10px" }}>
-            <input 
-              type="text" 
-              placeholder="Event ID (e.g., 2025isios)" 
+    <div className="min-h-screen bg-neutral-100 pb-10 font-sans text-gray-900">
+      <div className="bg-slate-700 py-5 text-white shadow-md">
+        <div className="mx-auto max-w-4xl px-5">
+          <h1 className="mb-4 text-3xl font-normal">FRC Dashboard</h1>
+          <form onSubmit={handleSearchSubmit} className="flex gap-2">
+            <input
+              type="text"
+              placeholder="Event ID (e.g., 2025isios)"
               value={inputEventKey}
-              onChange={(event) => { setInputEventKey(event.target.value); }}
-              style={{ padding: "12px", fontSize: "16px", flexGrow: 1, border: "none", borderRadius: "6px", outline: "none" }}
+              onChange={(event) => {
+                setInputEventKey(event.target.value);
+              }}
+              className="flex-1 rounded-md p-3 text-base text-white-900 outline-none ring-2 focus:ring-slate-500 ring-gray-600 search-input"
             />
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={searchStatus === "loading"}
-              style={{ padding: "12px 25px", fontSize: "16px", backgroundColor: colorButtonBg, color: colorButtonText, border: "none", borderRadius: "6px", cursor: "pointer", fontWeight: "bold" }}
+              className="rounded-md bg-white-500 px-6 py-3 text-base font-bold text-white-400 transition hover:bg-white-200 disabled:opacity-70"
             >
               {searchStatus === "loading" ? "..." : "Load"}
             </button>
           </form>
 
           {searchStatus === "error" && (
-            <div style={{ marginTop: "15px", padding: "10px", backgroundColor: colorRedBg, color: colorRedText, borderRadius: "4px", fontSize: "0.9rem" }}>
+            <div className="mt-4 rounded border border-red-200 bg-red-50 p-3 text-sm text-red-800">
               Event not found.
             </div>
           )}
         </div>
       </div>
 
-      <div style={{ maxWidth: "800px", margin: "20px auto", padding: "0 20px" }}>
+      <div className="mx-auto mt-6 max-w-4xl px-5">
         {searchStatus === "success" && (
           <>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", color: colorTextSub, fontSize: "0.9rem" }}>
-              <span><strong>Event:</strong> {activeEventKey}</span>
-              <span><strong>Teams:</strong> {teams.length}</span>
+            <div className="mb-5 flex items-center justify-between text-sm text-gray-500">
+              <span>
+                <strong>Event:</strong> {activeEventKey}
+              </span>
+              <span>
+                <strong>Teams:</strong> {teams.length}
+              </span>
             </div>
 
-            <div style={{ backgroundColor: colorCardBg, padding: "20px", borderRadius: "12px", marginBottom: "30px", boxShadow: "0 4px 6px rgba(0,0,0,0.05)", borderLeft: `5px solid ${isFutureEvent ? colorFuture : colorAccent}` }}>
-              <h2 style={{ margin: "0 0 5px 0", fontSize: "1rem", color: isFutureEvent ? colorFuture : colorAccent, textTransform: "uppercase", letterSpacing: "1px" }}>
+            <div
+              className={`mb-8 rounded-xl bg-white p-5 shadow-sm border-l-[6px] ${
+                isFutureEvent ? "border-blue-500" : "border-amber-500"
+              }`}
+            >
+              <h2
+                className={`mb-1 text-sm font-bold uppercase tracking-wider ${
+                  isFutureEvent ? "text-blue-500" : "text-amber-500"
+                }`}
+              >
                 {isFutureEvent ? "Upcoming Event" : "Current Field Status"}
               </h2>
               {currentGlobalMatch !== undefined ? (
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <span style={{ fontSize: "2rem", fontWeight: "800", color: colorTextMain }}>
-                    {currentGlobalMatch.comp_level.toUpperCase()}-{currentGlobalMatch.match_number}
+                <div className="flex items-center justify-between">
+                  <span className="text-3xl font-extrabold text-gray-800">
+                    {getMatchDisplayName(currentGlobalMatch)}
                   </span>
-                  <span style={{ padding: "5px 12px", backgroundColor: isFutureEvent ? "#E3F2FD" : "#FFF3E0", color: isFutureEvent ? colorFuture : "#E65100", borderRadius: "20px", fontSize: "0.85rem", fontWeight: "bold" }}>
+                  <span
+                    className={`rounded-full px-3 py-1 text-xs font-bold ${
+                      isFutureEvent
+                        ? "bg-blue-50 text-blue-500"
+                        : "bg-orange-50 text-orange-700"
+                    }`}
+                  >
                     {isFutureEvent ? "SCHEDULED" : "IN PROGRESS"}
                   </span>
                 </div>
               ) : (
-                <p style={{ color: "#999", fontStyle: "italic" }}>{allMatches.length > noGap ? "Event Concluded" : "No matches scheduled"}</p>
+                <p className="italic text-gray-400">
+                  {allMatches.length > noGap
+                    ? "Event Concluded"
+                    : "No matches scheduled"}
+                </p>
               )}
             </div>
 
-            <h2 style={{ fontSize: "1.4rem", color: colorTextMain, borderBottom: "2px solid #ddd", paddingBottom: "10px", marginBottom: "20px" }}>
-              {isEventOver ? `Final Results: Team ${targetTeamNumber}` : `Upcoming: Team ${targetTeamNumber}`}
+            <h2 className="mb-5 border-b-2 border-gray-200 pb-2 text-2xl text-gray-800">
+              {isEventOver
+                ? `Final Results: Team ${targetTeamNumber}`
+                : `Upcoming: Team ${targetTeamNumber}`}
             </h2>
-            
+
             {isEventOver ? (
-              <div style={{ backgroundColor: colorCardBg, borderRadius: "12px", padding: "30px", textAlign: "center", boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}>
+              <div className="rounded-xl bg-white p-8 text-center shadow-md">
                 {teamRank ? (
-                   <>
-                     <div style={{ fontSize: "1rem", color: colorTextSub, textTransform: "uppercase", letterSpacing: "1px", marginBottom: "10px" }}>Final Rank</div>
-                     <div style={{ fontSize: "4rem", fontWeight: "bold", color: colorRankText, lineHeight: "1" }}>#{teamRank.rank}</div>
-                     <div style={{ marginTop: "20px", display: "inline-block", backgroundColor: colorRankBg, padding: "8px 20px", borderRadius: "20px", color: colorRankText, fontWeight: "bold" }}>
-                       Record: {teamRank.record.wins}-{teamRank.record.losses}-{teamRank.record.ties}
-                     </div>
-                   </>
+                  <>
+                    <div className="mb-2 text-base uppercase tracking-wider text-gray-500">
+                      Final Rank
+                    </div>
+                    <div className="text-6xl font-bold leading-none text-indigo-700">
+                      #{teamRank.rank}
+                    </div>
+                    <div className="mt-5 inline-block rounded-full bg-indigo-50 px-5 py-2 font-bold text-indigo-700">
+                      Record: {teamRank.record.wins}-{teamRank.record.losses}-
+                      {teamRank.record.ties}
+                    </div>
+                  </>
                 ) : (
-                   <p style={{ color: colorTextSub, fontStyle: "italic" }}>Rank data not available for this event.</p>
+                  <p className="italic text-gray-500">
+                    Rank data not available for this event.
+                  </p>
                 )}
               </div>
             ) : (
               <>
                 {targetTeamMatches.length === noGap && (
-                  <div style={{ textAlign: "center", padding: "40px", color: "#888", backgroundColor: colorCardBg, borderRadius: "12px" }}>
-                    {isTeamDone 
-                      ? <p>Team {targetTeamNumber} has completed all scheduled matches for this event (or for today).</p>
-                      : <p>No upcoming matches found for Team {targetTeamNumber}.</p>
-                    }
+                  <div className="rounded-xl bg-white p-10 text-center text-gray-400">
+                    {isTeamDone ? (
+                      <p>
+                        Team {targetTeamNumber} has completed all scheduled
+                        matches for this event (or for today).
+                      </p>
+                    ) : (
+                      <p>
+                        No upcoming matches found for Team {targetTeamNumber}.
+                      </p>
+                    )}
                   </div>
                 )}
 
                 {targetTeamMatches.map((match) => {
                   const effectiveTime = match.predicted_time ?? match.time;
-                  const predictedDate = effectiveTime 
-                    ? new Date(effectiveTime * timeMultiplier).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+                  const predictedDate = effectiveTime
+                    ? new Date(
+                        effectiveTime * timeMultiplier
+                      ).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
                     : "TBD";
 
-                  const matchesAway = (currentGlobalMatch !== undefined && match.comp_level === currentGlobalMatch.comp_level)
-                    ? match.match_number - currentGlobalMatch.match_number
-                    : noGap;
+                  const matchIndex = futureMatches.findIndex(
+                    (m) => m.key === match.key
+                  );
+                  const matchesAway =
+                    matchIndex > notFoundIndex ? matchIndex : noGap;
 
-                  const isRedAlliance = match.alliances.red.team_keys.includes(targetTeamKey);
+                  const isRedAlliance =
+                    match.alliances.red.team_keys.includes(targetTeamKey);
 
                   return (
-                    <div key={match.key} style={{ 
-                      backgroundColor: colorCardBg, 
-                      borderRadius: "12px", 
-                      marginBottom: "20px", 
-                      boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-                      overflow: "hidden"
-                    }}>
-                      <div style={{ padding: "15px 20px", borderBottom: "1px solid #eee", display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "#fafafa" }}>
+                    <div
+                      key={match.key}
+                      className="mb-5 overflow-hidden rounded-xl bg-white shadow-sm transition-shadow hover:shadow-md"
+                    >
+                      <div className="flex items-center justify-between border-b border-gray-100 bg-gray-50 px-5 py-4">
                         <div>
-                          <span style={{ fontSize: "1.2rem", fontWeight: "bold", color: colorTextMain }}>
-                            {match.comp_level.toUpperCase()} - {match.match_number}
+                          <span className="text-xl font-bold text-gray-800">
+                            {getMatchDisplayName(match)}
                           </span>
                         </div>
-                        <div style={{ textAlign: "right", display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
-                          <div style={{ fontSize: "0.9rem", color: colorTextSub, display: "flex", alignItems: "center", gap: "10px" }}>
+                        <div className="flex flex-col items-end text-right">
+                          <div className="flex items-center gap-2 text-sm text-gray-500">
                             {predictedDate}
                           </div>
-                          
-                          <div style={{ color: matchesAway <= nextMatchLimit ? colorRedText : colorTextSub, fontWeight: "bold", fontSize: "0.85rem", marginTop: "4px" }}>
-                              {matchesAway <= noGap ? "PLAYING NOW" : `IN ${matchesAway} MATCHES`}
+                          <div
+                            className={`mt-1 text-sm font-bold ${
+                              matchesAway <= nextMatchLimit
+                                ? "text-red-700"
+                                : "text-gray-500"
+                            }`}
+                          >
+                            {matchesAway <= noGap
+                              ? "PLAYING NOW"
+                              : `IN ${matchesAway} MATCHES`}
                           </div>
                         </div>
                       </div>
 
-                      <div style={{ display: "flex" }}>
-                        <div style={{ flex: 1, backgroundColor: isRedAlliance ? colorRedBg : colorCardBg, borderTop: `4px solid ${colorRedBorder}`, padding: "15px" }}>
-                          <div style={{ color: colorRedText, fontWeight: "bold", marginBottom: "10px", fontSize: "0.9rem", textTransform: "uppercase" }}>Red Alliance</div>
-                          {match.alliances.red.team_keys.map(teamKey => {
+                      <div className="flex">
+                        <div
+                          className={`flex-1 border-t-4 border-red-400 p-4 ${
+                            isRedAlliance ? "bg-red-50" : "bg-white"
+                          }`}
+                        >
+                          <div className="mb-2 text-sm font-bold uppercase text-red-700">
+                            Red Alliance
+                          </div>
+                          {match.alliances.red.team_keys.map((teamKey) => {
                             const teamNumber = teamKey.slice(sliceStart);
-                            const teamName = teamNameMap.get(teamKey) ?? "Unknown";
+                            const teamName =
+                              teamNameMap.get(teamKey) ?? "Unknown";
                             const isTargetTeam = teamKey === targetTeamKey;
                             return (
-                              <div key={teamKey} style={{ display: "flex", alignItems: "center", marginBottom: "6px", fontWeight: isTargetTeam ? "bold" : "normal" }}>
-                                <span style={{ width: "50px", fontWeight: "bold", color: colorTextMain }}>{teamNumber}</span>
-                                <span style={{ fontSize: "0.9rem", color: colorTextSub, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{teamName}</span>
-                                {isTargetTeam && <span style={{ marginLeft: "auto", fontSize: "0.7rem", backgroundColor: colorRedText, color: "white", padding: "2px 6px", borderRadius: "4px" }}>YOU</span>}
+                              <div
+                                key={teamKey}
+                                className={`mb-1.5 flex items-center ${
+                                  isTargetTeam ? "font-bold" : "font-normal"
+                                }`}
+                              >
+                                <span className="w-12 font-bold text-gray-800">
+                                  {teamNumber}
+                                </span>
+                                <span className="truncate text-sm text-gray-600">
+                                  {teamName}
+                                </span>
+                                {isTargetTeam && (
+                                  <span className="ml-auto rounded bg-red-700 px-1.5 py-0.5 text-[10px] text-white">
+                                    YOU
+                                  </span>
+                                )}
                               </div>
                             );
                           })}
                         </div>
 
-                        <div style={{ flex: 1, backgroundColor: !isRedAlliance ? colorBlueBg : colorCardBg, borderTop: `4px solid ${colorBlueBorder}`, padding: "15px", borderLeft: "1px solid #eee" }}>
-                          <div style={{ color: colorBlueText, fontWeight: "bold", marginBottom: "10px", fontSize: "0.9rem", textTransform: "uppercase" }}>Blue Alliance</div>
-                          {match.alliances.blue.team_keys.map(teamKey => {
+                        <div
+                          className={`flex-1 border-l border-t-4 border-gray-100 border-t-blue-400 p-4 ${
+                            !isRedAlliance ? "bg-blue-50" : "bg-white"
+                          }`}
+                        >
+                          <div className="mb-2 text-sm font-bold uppercase text-blue-700">
+                            Blue Alliance
+                          </div>
+                          {match.alliances.blue.team_keys.map((teamKey) => {
                             const teamNumber = teamKey.slice(sliceStart);
-                            const teamName = teamNameMap.get(teamKey) ?? "Unknown";
+                            const teamName =
+                              teamNameMap.get(teamKey) ?? "Unknown";
                             const isTargetTeam = teamKey === targetTeamKey;
                             return (
-                              <div key={teamKey} style={{ display: "flex", alignItems: "center", marginBottom: "6px", fontWeight: isTargetTeam ? "bold" : "normal" }}>
-                                <span style={{ width: "50px", fontWeight: "bold", color: colorTextMain }}>{teamNumber}</span>
-                                <span style={{ fontSize: "0.9rem", color: colorTextSub, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{teamName}</span>
-                                {isTargetTeam && <span style={{ marginLeft: "auto", fontSize: "0.7rem", backgroundColor: colorBlueText, color: "white", padding: "2px 6px", borderRadius: "4px" }}>YOU</span>}
+                              <div
+                                key={teamKey}
+                                className={`mb-1.5 flex items-center ${
+                                  isTargetTeam ? "font-bold" : "font-normal"
+                                }`}
+                              >
+                                <span className="w-12 font-bold text-gray-800">
+                                  {teamNumber}
+                                </span>
+                                <span className="truncate text-sm text-gray-600">
+                                  {teamName}
+                                </span>
+                                {isTargetTeam && (
+                                  <span className="ml-auto rounded bg-blue-700 px-1.5 py-0.5 text-[10px] text-white">
+                                    YOU
+                                  </span>
+                                )}
                               </div>
                             );
                           })}
