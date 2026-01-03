@@ -12,7 +12,6 @@ const getApiKey = (): string => {
   return key;
 };
 
-
 export const fetchData = async (url: string): Promise<unknown> => {
   const response = await fetch(url, {
     method: "GET",
@@ -27,24 +26,19 @@ export const fetchData = async (url: string): Promise<unknown> => {
   }
 
   const data = await response.json();
-  console.log("TBA data:", data);
   return data;
 };
-
 
 tbaRouter.get("/fetch", async (req, res) => {
   try {
     const encodedUrl = req.query.url;
 
     if (!encodedUrl || typeof encodedUrl !== "string") {
-      res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({ error: "missing url param" });
+      res.status(StatusCodes.BAD_REQUEST).json({ error: "missing url param" });
       return;
     }
 
     const fullUrl = decodeURIComponent(encodedUrl);
-    console.log("Incoming /tba/fetch with url:", fullUrl);
 
     const data = await fetchData(fullUrl);
     res.status(StatusCodes.OK).json(data);

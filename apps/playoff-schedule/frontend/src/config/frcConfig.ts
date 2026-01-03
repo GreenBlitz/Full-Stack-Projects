@@ -24,7 +24,14 @@ export const weightQf = 3;
 export const weightSf = 4;
 export const weightF = 5;
 export const weightDefault = 99;
-export const defaultLevelWeight =1;
-export const levelWeights = {1:weightQm,2:weightEf,3:weightQf,4:weightSf,5:weightF}
+export const defaultLevelWeight = 1;
+export const levelWeights = {
+  1: weightQm,
+  2: weightEf,
+  3: weightQf,
+  4: weightSf,
+  5: weightF,
+};
 export const targetTeamKey = `frc${targetTeamNumber}`;
 export const backendBaseUrl = `http://localhost:${backendPort}/fetch?url=`;
+export const notFoundIndex = -1;
