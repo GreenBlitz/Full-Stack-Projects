@@ -25,28 +25,28 @@ export const useMatchProcessing = (
   allMatches: MatchesSimpleType[]
 ): UseMatchProcessingReturn => {
   return useMemo(() => {
- // i will leave this here so you can check the code with different dates.
+    // i will leave this here so you can check the code with different dates.
 
-// normal one
- const currentTimeSecs = Math.floor(Date.now() / timeMultiplier);
+    // normal one
+    const currentTimeSecs = Math.floor(Date.now() / timeMultiplier);
 
-// testing 2025isios
-// const currentTimeSecs = Math.floor(
-//   new Date("2025-10-08T13:44:00").getTime() / timeMultiplier
-// );
+    // testing 2025isios
+    // const currentTimeSecs = Math.floor(
+    //   new Date("2025-10-08T13:44:00").getTime() / timeMultiplier
+    // );
 
-// testing 2025iscmp
-// const currentTimeSecs = Math.floor(
-//   new Date("2025-03-27T10:00:00").getTime() / timeMultiplier
-// );
+    // testing 2025iscmp
+    // const currentTimeSecs = Math.floor(
+    //   new Date("2025-03-27T10:00:00").getTime() / timeMultiplier
+    // );
 
-// testing 2024iscmp
-// const currentTimeSecs = Math.floor(
-// new Date("2024-03-21T18:00:00").getTime() / timeMultiplier
-// );
+    // testing 2024iscmp
+    // const currentTimeSecs = Math.floor(
+    // new Date("2024-03-21T15:00:00").getTime() / timeMultiplier
+    // );
 
-// testing 2025cmptx
-//const currentTimeSecs = Math.floor(new Date("2025-04-19T10:00:00").getTime() / timeMultiplier);
+    // testing 2025cmptx
+    //const currentTimeSecs = Math.floor(new Date("2025-04-19T10:00:00").getTime() / timeMultiplier);
 
     const futureMatchesArr = allMatches.filter((match) => {
       const time = getMatchTime(match);

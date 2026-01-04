@@ -18,12 +18,16 @@ export const CurrentMatchStatus: React.FC<CurrentMatchStatusProps> = ({
   return (
     <div
       className={`mb-8 rounded-xl border-l-[6px] bg-white dark:bg-gray-800 p-5 shadow-sm ${
-        isFutureEvent ? "border-blue-500 dark:border-blue-400" : "border-amber-500 dark:border-amber-400"
+        isFutureEvent
+          ? "border-blue-500 dark:border-blue-400"
+          : "border-amber-500 dark:border-amber-400"
       }`}
     >
       <h2
         className={`mb-1 text-sm font-bold uppercase tracking-wider ${
-          isFutureEvent ? "text-blue-500 dark:text-blue-400" : "text-amber-500 dark:text-amber-400"
+          isFutureEvent
+            ? "text-blue-500 dark:text-blue-400"
+            : "text-amber-500 dark:text-amber-400"
         }`}
       >
         {isFutureEvent ? "Upcoming Event" : "Current Field Status"}
