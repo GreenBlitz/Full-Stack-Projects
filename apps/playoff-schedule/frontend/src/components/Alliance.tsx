@@ -4,7 +4,7 @@ import { targetTeamKey, sliceStart } from "../config/frcConfig";
 
 interface AllianceProps {
   teamKeys: string[];
-  teamNameMap: Map<string, string>;
+  teamNameMap: Record<string, string>;
   allianceColor: "red" | "blue";
   isTargetTeamInAlliance: boolean;
 }
@@ -43,7 +43,7 @@ export const Alliance: React.FC<AllianceProps> = ({
       </div>
       {teamKeys.map((teamKey) => {
         const teamNumber = teamKey.slice(sliceStart);
-        const teamName = teamNameMap.get(teamKey) ?? "Unknown";
+        const teamName = teamNameMap[teamKey] ?? "Unknown";
         const isTargetTeam = teamKey === targetTeamKey;
         return (
           <div

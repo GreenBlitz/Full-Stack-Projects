@@ -1,11 +1,15 @@
 // בס"ד
 import { backendBaseUrl } from "../config/frcConfig";
 
-export const fetchFromProxy = async <T>(targetUrl: string): Promise<T> => {
-  const fullUrl = `${backendBaseUrl}${encodeURIComponent(targetUrl)}`;
-  const response = await fetch(fullUrl);
+const joinUrl = (path: string): string =>
+  `${backendBaseUrl}${path.startsWith("/") ? path : `/${path}`}`;
 
-  return response.ok
-    ? (response.json() as Promise<T>)
-    : Promise.reject(new Error(`HTTP error status: ${response.status}`));
+export const fetchFromProxy = async <T>(targetPath: string): Promise<T> => {
+  const fullUrl = joinUrl(targetPath);
+  return fetch(fullUrl).then((response) => {
+    if (response.ok) {
+      return response.json() as Promise<T>;
+    }
+    throw new Error(`HTTP error status: ${response.status}`);
+  });
 };

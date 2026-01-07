@@ -14,7 +14,7 @@ import {
 
 interface MatchCardProps {
   match: MatchesSimpleType;
-  teamNameMap: Map<string, string>;
+  teamNameMap: Record<string, string>;
   futureMatches: MatchesSimpleType[];
 }
 

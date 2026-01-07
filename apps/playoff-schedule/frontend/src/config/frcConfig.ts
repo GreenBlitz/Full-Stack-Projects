@@ -33,5 +33,5 @@ export const levelWeights = {
   5: weightF,
 };
 export const targetTeamKey = `frc${targetTeamNumber}`;
-export const backendBaseUrl = `http://localhost:${backendPort}/fetch?url=`;
+export const backendBaseUrl = `http://localhost:${backendPort}/api/v1/tba`;
 export const notFoundIndex = -1;

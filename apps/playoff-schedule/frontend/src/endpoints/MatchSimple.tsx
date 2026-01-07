@@ -23,5 +23,5 @@ export const matchSimple = t.type({
 export type MatchesSimpleType = typeof matchSimple._A;
 
 export const urlMatches = (eventKey: string) =>
-  `https://www.thebluealliance.com/api/v3/event/${eventKey}/matches/simple`;
+  `/events/${eventKey}/matches`;
 

@@ -32,9 +32,11 @@ const App: React.FC = () => {
   } = useMatchProcessing(allMatches);
 
   const teamNameMap = useMemo(() => {
-    const map = new Map<string, string>();
-    teams.forEach((team) => map.set(team.key, team.nickname));
-    return map;
+    const record: Record<string, string> = {};
+    teams.forEach((team) => {
+      record[team.key] = team.nickname;
+    });
+    return record;
   }, [teams]);
 
   const handleSearchSubmit = (event: React.FormEvent) => {

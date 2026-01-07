@@ -13,7 +13,7 @@ export const getMatchDisplayName = (match: MatchesSimpleType): string => {
     case "F":
       return `Finals Match ${match.match_number}`;
     case "EF":
-      return `Octofinal ${match.set_number}, Match ${match.match_number}`;
+      return `First Round ${match.set_number}, Match ${match.match_number}`;
     default:
       return `${level} ${match.match_number}`;
   }

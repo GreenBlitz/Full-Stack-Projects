@@ -11,7 +11,7 @@ import { sortMatches } from "../utils/matchUtils";
 import type { RankItem, RankingsResponse } from "../types";
 import { targetTeamKey, refreshIntervalMs } from "../config/frcConfig";
 
-type SearchStatus = "idle" | "searching" | "success" | "error";
+export type SearchStatus = "idle" | "searching" | "success" | "error";
 
 interface UseEventDataReturn {
   teams: TeamsInEventType[];
@@ -38,6 +38,20 @@ export const useEventData = (
     setTeamRank(null);
   }, []);
 
+  const fetchEventData = useCallback(async (eventKey: string) => {
+    const teamsUrl = urlTeamsInEvent(eventKey);
+    const matchesUrl = urlMatches(eventKey);
+    const rankingsUrl = urlRankings(eventKey);
+
+    return Promise.all([
+      fetchFromProxy<TeamsInEventType[]>(teamsUrl),
+      fetchFromProxy<MatchesSimpleType[]>(matchesUrl),
+      fetchFromProxy<RankingsResponse>(rankingsUrl).catch(() => ({
+        rankings: [],
+      })),
+    ]);
+  }, []);
+
   const performSearch = useCallback(
     async (eventKey: string) => {
       if (!eventKey) return;
@@ -46,17 +60,8 @@ export const useEventData = (
       setActiveEventKey(eventKey);
 
       try {
-        const teamsUrl = urlTeamsInEvent(eventKey);
-        const matchesUrl = urlMatches(eventKey);
-        const rankingsUrl = urlRankings(eventKey);
-
-        const [teamsData, matchesData, rankingsData] = await Promise.all([
-          fetchFromProxy<TeamsInEventType[]>(teamsUrl),
-          fetchFromProxy<MatchesSimpleType[]>(matchesUrl),
-          fetchFromProxy<RankingsResponse>(rankingsUrl).catch(() => ({
-            rankings: [],
-          })),
-        ]);
+        const [teamsData, matchesData, rankingsData] =
+          await fetchEventData(eventKey);
 
         if (Array.isArray(teamsData) && Array.isArray(matchesData)) {
           setTeams(teamsData);
@@ -74,7 +79,7 @@ export const useEventData = (
         setSearchStatus("error");
       }
     },
-    [setActiveEventKey, resetSearch]
+    [setActiveEventKey, resetSearch, fetchEventData]
   );
 
   useEffect(() => {
@@ -84,37 +89,33 @@ export const useEventData = (
   }, [activeEventKey, performSearch, searchStatus]);
 
   useEffect(() => {
-    const intervalId: number | undefined =
-      searchStatus === "success" && activeEventKey
-        ? window.setInterval(() => {
-            const matchesUrl = urlMatches(activeEventKey);
-            const rankingsUrl = urlRankings(activeEventKey);
+    if (!(searchStatus === "success" && activeEventKey)) {
+      return;
+    }
 
-            void fetchFromProxy<MatchesSimpleType[]>(matchesUrl)
-              .then((data) => {
-                if (Array.isArray(data)) {
-                  data.sort(sortMatches);
-                  setAllMatches(data);
-                }
-              })
-              .catch(console.error);
+    const intervalId = window.setInterval(() => {
+      const matchesUrl = urlMatches(activeEventKey);
+      const rankingsUrl = urlRankings(activeEventKey);
 
-            void fetchFromProxy<RankingsResponse>(rankingsUrl)
-              .then((data) => {
-                const myRank =
-                  data.rankings.find((r) => r.team_key === targetTeamKey) ??
-                  null;
-                setTeamRank(myRank);
-              })
-              .catch(console.error);
-          }, refreshIntervalMs)
-        : undefined;
+      void fetchFromProxy<MatchesSimpleType[]>(matchesUrl)
+        .then((data) => {
+          if (Array.isArray(data)) {
+            data.sort(sortMatches);
+            setAllMatches(data);
+          }
+        })
+        .catch(console.error);
 
-    return () => {
-      if (intervalId !== undefined) {
-        window.clearInterval(intervalId);
-      }
-    };
+      void fetchFromProxy<RankingsResponse>(rankingsUrl)
+        .then((data) => {
+          const myRank =
+            data.rankings.find((r) => r.team_key === targetTeamKey) ?? null;
+          setTeamRank(myRank);
+        })
+        .catch(console.error);
+    }, refreshIntervalMs);
+
+    return () => window.clearInterval(intervalId);
   }, [activeEventKey, searchStatus]);
 
   return {
