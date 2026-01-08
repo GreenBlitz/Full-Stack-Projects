@@ -90,10 +90,10 @@ export const useEventData = (
 
   useEffect(() => {
     if (!(searchStatus === "success" && activeEventKey)) {
-      return;
+      return undefined;
     }
 
-    const intervalId = window.setInterval(() => {
+    const intervalId = setInterval(() => {
       const matchesUrl = urlMatches(activeEventKey);
       const rankingsUrl = urlRankings(activeEventKey);
 
@@ -115,7 +115,9 @@ export const useEventData = (
         .catch(console.error);
     }, refreshIntervalMs);
 
-    return () => window.clearInterval(intervalId);
+    return () => {
+      clearInterval(intervalId);
+    };
   }, [activeEventKey, searchStatus]);
 
   return {

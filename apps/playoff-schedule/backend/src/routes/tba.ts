@@ -3,13 +3,12 @@ import { Router, type Request, type Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { fetchTba } from "../utils/tbaClient";
 
-const tbaRouter = Router();
+export const tbaRouter = Router();
 
-const tbaHandler =
-  (pathBuilder: (req: Request) => string) =>
+const createTbaHandler = (name: string, suffix?: string) =>
   async (req: Request, res: Response): Promise<void> => {
     try {
-      const path = pathBuilder(req);
+      const path = `/event/${req.params.eventKey}/${name}${suffix ? `/${suffix}` : ''}`;
       const data = await fetchTba(path);
       res.status(StatusCodes.OK).json(data);
     } catch (error) {
@@ -22,17 +21,15 @@ const tbaHandler =
 
 tbaRouter.get(
   "/events/:eventKey/teams",
-  tbaHandler((req) => `/event/${req.params.eventKey}/teams/simple`)
+  createTbaHandler("teams", "simple")
 );
 
 tbaRouter.get(
   "/events/:eventKey/matches",
-  tbaHandler((req) => `/event/${req.params.eventKey}/matches/simple`)
+  createTbaHandler("matches", "simple")
 );
 
 tbaRouter.get(
   "/events/:eventKey/rankings",
-  tbaHandler((req) => `/event/${req.params.eventKey}/rankings`)
+  createTbaHandler("rankings")
 );
-
-export { tbaRouter, tbaHandler };

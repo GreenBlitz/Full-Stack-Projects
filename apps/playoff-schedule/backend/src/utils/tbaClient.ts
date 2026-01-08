@@ -10,7 +10,7 @@ const getApiKey = (): string => {
 };
 
 export const fetchTba = async <T>(path: string): Promise<T> => {
-  const response = await fetch(`${TBA_API_BASE}${path}`, {
+  const response = await fetch(TBA_API_BASE + path, {
     method: "GET",
     headers: {
       "X-TBA-Auth-Key": getApiKey(),
@@ -24,4 +24,3 @@ export const fetchTba = async <T>(path: string): Promise<T> => {
 
   return response.json() as Promise<T>;
 };
-

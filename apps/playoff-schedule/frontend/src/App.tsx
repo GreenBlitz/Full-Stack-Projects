@@ -1,5 +1,6 @@
 // בס"ד
-import React, { useState, useMemo } from "react";
+import type React from "react";
+import { useState, useMemo } from "react";
 import useLocalStorage from "./Hooks/LocalStorageHook";
 import { useEventData } from "./Hooks/useEventData";
 import { useMatchProcessing } from "./Hooks/useMatchProcessing";

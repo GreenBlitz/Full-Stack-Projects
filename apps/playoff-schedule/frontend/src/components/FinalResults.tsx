@@ -3,7 +3,7 @@ import type React from "react";
 import type { RankItem } from "../types";
 
 interface FinalResultsProps {
-  teamRank: RankItem | null;
+  teamRank: RankItem|null;
 }
 
 export const FinalResults: React.FC<FinalResultsProps> = ({ teamRank }) => {
