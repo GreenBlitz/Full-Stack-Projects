@@ -5,23 +5,47 @@ import isOdd from "is-odd";
 
 export const serdeUnsignedInt = (bitCount: number): Serde<number> => ({
   serializer(serialiedData: BitArray, unsignedInt: number) {
-    const arr = new BitArray();
+    const array = new BitArray();
 
     rangeArr(bitCount).forEach((i) => {
-      arr.insertBool(isOdd(unsignedInt >> i));
+      array.insertBool(isOdd(unsignedInt >> i));
     });
-    serialiedData.insertBitArray(arr);
+    serialiedData.insertBitArray(array);
   },
   deserializer(serializedData: BitArray): number {
     const sumStartingValue = 0;
 
     const sum = rangeArr(bitCount).reduce(
-      (acc) => acc + Number(serializedData.consumeBool()),
+      (acc, i) => acc + (Number(serializedData.consumeBool()) << i),
       sumStartingValue
     );
     return sum;
   },
 });
+
+const signDifferentatior = 0;
+const isNegative = (signedInteger: number) =>
+  signedInteger < signDifferentatior;
+
+export const serdeSignedInt = (bitCount: number): Serde<number> => {
+  const signBits = 1;
+  const unsignedBitCount = bitCount - signBits;
+  const serdeUnsigned = serdeUnsignedInt(unsignedBitCount);
+  return {
+    serializer(serialiedData: BitArray, signedInt: number) {
+      const unsignedInt = Math.abs(signedInt);
+
+      serialiedData.insertBool(isNegative(signedInt));
+      serdeUnsigned.serializer(serialiedData, unsignedInt);
+    },
+    deserializer(serializedData: BitArray): number {
+      const isSignNegative = serializedData.consumeBool();
+      const unsignedInt = serdeUnsigned.deserializer(serializedData);
+
+      return isSignNegative ? -unsignedInt : unsignedInt;
+    },
+  };
+};
 
 export const serdeStringifiedNum = (bitCount: number): Serde<string> => ({
   serializer: (seriailzedData: BitArray, num: string) => {
