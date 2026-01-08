@@ -1,17 +1,14 @@
 // בס"ד
 import { BitArray, rangeArr } from "../BitArray";
 import type { Serde } from "../types";
+import isOdd from "is-odd";
 
-const binaryTrueValue = 1;
-const binaryModulus = 2;
-// TODO add signed support!
 export const serdeUnsignedInt = (bitCount: number): Serde<number> => ({
-  serializer(serialiedData: BitArray, num: number) {
+  serializer(serialiedData: BitArray, unsignedInt: number) {
     const arr = new BitArray();
 
-    rangeArr(bitCount).forEach(() => {
-      arr.insertBool(num % binaryModulus === binaryTrueValue);
-      num = Math.floor(num / binaryModulus);
+    rangeArr(bitCount).forEach((i) => {
+      arr.insertBool(isOdd(unsignedInt >> i));
     });
     serialiedData.insertBitArray(arr);
   },

@@ -1,5 +1,5 @@
 // בס"ד
-import {type BitArray, rangeArr } from "../BitArray";
+import { type BitArray, rangeArr } from "../BitArray";
 import type { Serde } from "../types";
 import { serdeUnsignedInt } from "./serde-number";
 
@@ -10,10 +10,10 @@ export const serdeArray = <T>(
 ): Serde<T[]> => {
   const arrayLengthSerde = serdeUnsignedInt(bitCount);
   return {
-    serializer(serializedData: BitArray, arr: T[]) {
+    serializer(serializedData: BitArray, array: T[]) {
       const itemSerializer = itemSerde.serializer;
-      arrayLengthSerde.serializer(serializedData, arr.length);
-      arr.forEach((value) => {
+      arrayLengthSerde.serializer(serializedData, array.length);
+      array.forEach((value) => {
         itemSerializer(serializedData, value);
       });
     },
@@ -21,15 +21,10 @@ export const serdeArray = <T>(
       const itemDeserializer = itemSerde.deserializer;
       const arrayLength = arrayLengthSerde.deserializer(serializedData);
 
-      const arr = rangeArr(arrayLength).map(() =>
-        itemDeserializer(serializedData)
-      );
-      return arr;
+      return rangeArr(arrayLength).map(() => itemDeserializer(serializedData));
     },
   };
 };
-
-
 
 export const serdeStringifiedArray = <T>(
   itemSerde: Serde<T>
