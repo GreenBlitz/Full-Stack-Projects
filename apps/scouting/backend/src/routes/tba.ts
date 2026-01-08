@@ -20,11 +20,11 @@ const fetchTba = async <T>(
   config?: AxiosRequestConfig
 ): Promise<T> => {
   return axios
-    .get(`https://www.thebluealliance.com/api/v3${route}`, {
+    .get<T>(`https://www.thebluealliance.com/api/v3${route}`, {
       headers: { "X-TBA-Auth-Key": TBA_KEY },
       ...config,
     })
-    .then((value) => value.data as T);
+    .then((value) => value.data);
 };
 
 tbaRouter.post(
