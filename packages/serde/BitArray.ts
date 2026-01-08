@@ -1,13 +1,15 @@
 // בס"ד
 
 const defaultRangeStart = 0;
-export const rangeArr = (length: number, rangeStart = defaultRangeStart): number[] => {
+export const rangeArr = (
+  length: number,
+  rangeStart = defaultRangeStart
+): number[] => {
   return Array.from({ length }).map((zero, i) => i + rangeStart);
 };
 
-export const bitArrayLength = 8;
-const singleShift = 1;
-const shouldntInsert = 0;
+export const BIT_ARRAY_LENGTH = 8;
+const FIRST_BIT_SELECTOR = 1;
 
 export class BitArray {
   private boolArr: boolean[];
@@ -17,16 +19,16 @@ export class BitArray {
     this.bitCount = 0;
     this.boolArr = [];
     if (arr) {
-      this.insertUInt8Array(arr, arr.length * bitArrayLength);
+      this.insertUInt8Array(arr, arr.length * BIT_ARRAY_LENGTH);
     }
   }
 
   public insertUInt8Array(data: Uint8Array, totalBitCount: number): void {
     rangeArr(totalBitCount).forEach((i) => {
+      const currentNumber = data[Math.floor(i / BIT_ARRAY_LENGTH)];
+      const bitSelector = FIRST_BIT_SELECTOR << i % BIT_ARRAY_LENGTH;
       this.boolArr.push(
-        (data[Math.floor(i / bitArrayLength)] &
-          (singleShift << i % bitArrayLength)) !==
-          shouldntInsert
+        Boolean((currentNumber & bitSelector))
       );
     });
     this.bitCount += totalBitCount;
@@ -37,10 +39,10 @@ export class BitArray {
   }
 
   public consumeBits(bitCount: number): Uint8Array {
-    const returnedArr = new Uint8Array(Math.ceil(bitCount / bitArrayLength));
+    const returnedArr = new Uint8Array(Math.ceil(bitCount / BIT_ARRAY_LENGTH));
     rangeArr(bitCount).forEach((i) => {
-      returnedArr[Math.floor(i / bitArrayLength)] |=
-        Number(this.boolArr.shift()) << i % bitArrayLength;
+      returnedArr[Math.floor(i / BIT_ARRAY_LENGTH)] |=
+        Number(this.boolArr.shift()) << i % BIT_ARRAY_LENGTH;
     });
     this.bitCount -= bitCount;
     return returnedArr;

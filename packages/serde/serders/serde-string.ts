@@ -1,5 +1,5 @@
 // בס"ד
-import { bitArrayLength, type BitArray } from "../BitArray";
+import { BIT_ARRAY_LENGTH, type BitArray } from "../BitArray";
 import type { Serde } from "../types";
 import { serdeUnsignedInt } from "./serde-number";
 
@@ -14,14 +14,14 @@ export const serdeString = (): Serde<string> => ({
     );
     serializedData.insertUInt8Array(
       encodedString,
-      encodedString.length * bitArrayLength
+      encodedString.length * BIT_ARRAY_LENGTH
     );
   },
   deserializer(serializedData: BitArray): string {
     const encodedStringLength =
       serdeUnsignedInt(stringLengthBitCount).deserializer(serializedData);
     const encodedString = serializedData.consumeBits(
-      encodedStringLength * bitArrayLength
+      encodedStringLength * BIT_ARRAY_LENGTH
     );
     return new TextDecoder().decode(encodedString);
   },
