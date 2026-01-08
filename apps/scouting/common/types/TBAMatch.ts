@@ -8,9 +8,8 @@ export const matchesProps = t.type({
 
 export type TBAMatchesProps = t.TypeOf<typeof matchesProps>;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const maxTeamsInAlliance = 3;
-type TeamKeys = AtMost<string, typeof maxTeamsInAlliance>;
+type MaxTeamsInAlliance = 3;
+type TeamKeys = AtMost<string, MaxTeamsInAlliance>;
 
 export interface TBAAlliance {
   score: number;
@@ -18,7 +17,6 @@ export interface TBAAlliance {
   surrogate_team_keys: TeamKeys;
   dq_team_keys: TeamKeys;
 }
-
 
 export interface TBAMatch<AllianceBreakdown, MiscBreakdown = {}> {
   key: "string";

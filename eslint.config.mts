@@ -109,7 +109,7 @@ export default defineConfig([
       "no-magic-numbers": "off",
       "@typescript-eslint/no-magic-numbers": [
         "error",
-        { ignoreTypeIndexes: true },
+        { ignoreTypeIndexes: true, ignoreNumericLiteralTypes: true },
       ],
       "@typescript-eslint/no-meaningless-void-operator": "error",
       "@typescript-eslint/no-misused-new": "error",
