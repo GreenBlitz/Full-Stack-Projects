@@ -15,8 +15,7 @@ const indexHTML = path.join(distDirectory, "index.html");
 
 app.use(express.static(distDirectory));
 
-const allRoutes = /^(.*)$/;
-app.get(allRoutes, (req, res) => {
+app.get(/^(.*)$/, (req, res) => {
   res.sendFile(indexHTML);
 });
 
