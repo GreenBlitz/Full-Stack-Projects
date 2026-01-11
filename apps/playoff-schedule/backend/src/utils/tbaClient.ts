@@ -1,5 +1,5 @@
-// Shared TBA fetcher to avoid duplicating auth + headers
-const TBA_API_BASE = "https://www.thebluealliance.com/api/v3";
+// בס"ד
+const tbaApiBase = "https://www.thebluealliance.com/api/v3";
 
 const getApiKey = (): string => {
   const key = process.env.TBA_API_KEY;
@@ -10,7 +10,7 @@ const getApiKey = (): string => {
 };
 
 export const fetchTba = async <T>(path: string): Promise<T> => {
-  const response = await fetch(TBA_API_BASE + path, {
+  const response = await fetch(tbaApiBase + path, {
     method: "GET",
     headers: {
       "X-TBA-Auth-Key": getApiKey(),
