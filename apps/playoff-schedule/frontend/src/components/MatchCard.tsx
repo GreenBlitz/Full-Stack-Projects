@@ -78,7 +78,7 @@ export const MatchCard: React.FC<MatchCardProps> = ({
         />
       </div>
 
-      {isPlayoffMatch && (nextMatches.ifWin || nextMatches.ifLoss) && (
+      {isPlayoffMatch && (nextMatches.ifWin ?? nextMatches.ifLoss) && (
         <div className="px-5 py-4 bg-gray-50 dark:bg-gray-700/30 border-t border-gray-200 dark:border-gray-700">
           <PotentialMatches nextMatches={nextMatches} />
         </div>

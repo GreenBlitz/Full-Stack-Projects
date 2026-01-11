@@ -14,8 +14,11 @@ export interface NextMatches {
   ifLoss: PotentialMatch | null;
 }
 
+const emptyMatchesLength = 0;
+
 export function getPotentialNextMatches(
   currentMatch: MatchesSimpleType,
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   _isRedAlliance: boolean,
   allMatches: MatchesSimpleType[]
 ): NextMatches {
@@ -25,7 +28,8 @@ export function getPotentialNextMatches(
   };
 
   const playoffMatches = allMatches.filter(
-    (m) => m.comp_level !== "qm" && m.comp_level !== "ef" && m.comp_level !== "qf"
+    (m) =>
+      m.comp_level !== "qm" && m.comp_level !== "ef" && m.comp_level !== "qf"
   );
 
   const fMatches = playoffMatches
@@ -33,8 +37,8 @@ export function getPotentialNextMatches(
     .sort((a, b) => a.match_number - b.match_number);
 
   if (currentMatch.comp_level === "sf") {
-    if (fMatches.length > 0) {
-      const nextFinals = fMatches[0];
+    if (fMatches.length > emptyMatchesLength) {
+      const [nextFinals] = fMatches;
       result.ifWin = {
         matchLabel: `Finals Match ${nextFinals.match_number}`,
         matchKey: nextFinals.key,

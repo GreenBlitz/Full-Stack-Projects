@@ -6,10 +6,9 @@ const joinUrl = (path: string): string =>
 
 export const fetchFromProxy = async <T>(targetPath: string): Promise<T> => {
   const fullUrl = joinUrl(targetPath);
-  return fetch(fullUrl).then((response) => {
-    if (response.ok) {
-      return response.json() as Promise<T>;
-    }
-    throw new Error(`HTTP error status: ${response.status}`);
-  });
+  const response = await fetch(fullUrl);
+  if (response.ok) {
+    return (await response.json()) as T;
+  }
+  throw new Error(`HTTP error status: ${response.status}`);
 };

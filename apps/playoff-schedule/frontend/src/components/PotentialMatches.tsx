@@ -25,11 +25,11 @@ export const PotentialMatches: React.FC<PotentialMatchesProps> = ({
               If Win:
             </span>
             <span
-              className={`${
+              className={
                 nextMatches.ifWin.isPlaceholder
                   ? "italic text-gray-500 dark:text-gray-400 border-b border-dashed border-gray-400 dark:border-gray-500"
                   : "text-gray-800 dark:text-gray-200"
-              }`}
+              }
             >
               {nextMatches.ifWin.matchLabel}
             </span>
@@ -41,11 +41,11 @@ export const PotentialMatches: React.FC<PotentialMatchesProps> = ({
               If Loss:
             </span>
             <span
-              className={`${
+              className={
                 nextMatches.ifLoss.isPlaceholder
                   ? "italic text-gray-500 dark:text-gray-400 border-b border-dashed border-gray-400 dark:border-gray-500"
                   : "text-gray-800 dark:text-gray-200"
-              }`}
+              }
             >
               {nextMatches.ifLoss.matchLabel}
             </span>
