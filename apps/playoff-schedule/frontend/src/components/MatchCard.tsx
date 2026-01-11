@@ -4,6 +4,8 @@ import type { MatchesSimpleType } from "../endpoints/MatchSimple";
 import { getMatchDisplayName } from "../utils/matchDisplayUtils";
 import { formatMatchTime } from "../utils/matchDisplayUtils";
 import { Alliance } from "./Alliance";
+import { PotentialMatches } from "./PotentialMatches";
+import { getPotentialNextMatches } from "../utils/bracketUtils";
 import {
   targetTeamKey,
   timeMultiplier,
@@ -16,12 +18,14 @@ interface MatchCardProps {
   match: MatchesSimpleType;
   teamNameMap: Record<string, string>;
   futureMatches: MatchesSimpleType[];
+  allMatches: MatchesSimpleType[];
 }
 
 export const MatchCard: React.FC<MatchCardProps> = ({
   match,
   teamNameMap,
   futureMatches,
+  allMatches,
 }) => {
   const effectiveTime = match.predicted_time ?? match.time ?? undefined;
   const predictedDate = formatMatchTime(effectiveTime, timeMultiplier);
@@ -30,6 +34,12 @@ export const MatchCard: React.FC<MatchCardProps> = ({
   const matchesAway = matchIndex > notFoundIndex ? matchIndex : noGap;
 
   const isRedAlliance = match.alliances.red.team_keys.includes(targetTeamKey);
+
+  const isPlayoffMatch =
+    match.comp_level === "sf" || match.comp_level === "f";
+  const nextMatches = isPlayoffMatch
+    ? getPotentialNextMatches(match, isRedAlliance, allMatches)
+    : { ifWin: null, ifLoss: null };
 
   return (
     <div className="mb-5 overflow-hidden rounded-xl bg-white dark:bg-gray-800 shadow-sm transition-shadow hover:shadow-md">
@@ -67,6 +77,12 @@ export const MatchCard: React.FC<MatchCardProps> = ({
           isTargetTeamInAlliance={!isRedAlliance}
         />
       </div>
+
+      {isPlayoffMatch && (nextMatches.ifWin || nextMatches.ifLoss) && (
+        <div className="px-5 py-4 bg-gray-50 dark:bg-gray-700/30 border-t border-gray-200 dark:border-gray-700">
+          <PotentialMatches nextMatches={nextMatches} />
+        </div>
+      )}
     </div>
   );
 };

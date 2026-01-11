@@ -82,6 +82,7 @@ const App: React.FC = () => {
                     match={match}
                     teamNameMap={teamNameMap}
                     futureMatches={futureMatches}
+                    allMatches={allMatches}
                   />
                 ))}
               </>
