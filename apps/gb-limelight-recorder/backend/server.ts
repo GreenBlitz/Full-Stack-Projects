@@ -5,23 +5,32 @@ import cors from "cors";
 import ping from "ping";
 import fs from "fs";
 import path from "path";
+import { pingCameras } from "./PingRobot.js";
+import { useEffect } from "react";
+
 
 const app = express();
 const port = 5000;
 app.use(cors());
 
-let ffmpegProcessLeft: RecordingProcess | null = null;
-let ffmpegProcessObject: RecordingProcess | null = null;
-let ffmpegProcessRight: RecordingProcess | null = null;
-const USB_ROOT = "E:/"; // CHANGE if needed
+const ffmpegProcessLeft: RecordingProcess | null = null;
+const ffmpegProcessObject: RecordingProcess | null = null;
+const ffmpegProcessRight: RecordingProcess | null = null;
+const ffmpegProcesses = [
+  ffmpegProcessLeft as RecordingProcess | null, 
+  ffmpegProcessObject as RecordingProcess | null, 
+  ffmpegProcessRight as RecordingProcess | null,
+];
+const cameraNames = ["left", "object", "right"];
+const usbRoot = "E:/"; // CHANGE if needed
 
 function createSessionFolder(): string {
-  if (!fs.existsSync(USB_ROOT)) {
+  if (!fs.existsSync(usbRoot)) {
     throw new Error("USB drive not connected");
   }
 
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-  const sessionDir = path.join(USB_ROOT, `recording-${timestamp}`);
+  const sessionDir = path.join(usbRoot, `recording-${timestamp}`);
 
   fs.mkdirSync(sessionDir, { recursive: true });
   return sessionDir;
@@ -44,81 +53,33 @@ function startRecording() {
     return;
   }
 
-  let sessionDir: string;
+  const sessionDir = createSessionFolder();
 
-  try {
-    sessionDir = createSessionFolder();
-  } catch (err) {
-    console.error(err);
-    return;
+  for (let i = 0; i < ffmpegProcesses.length; i++) {
+    ffmpegProcesses[i] = new RecordingProcess(
+      cameraNames[i],
+      path.join(sessionDir, `${cameraNames[i]}.mp4`)
+    );
+    ffmpegProcesses[i]?.startRecording();
   }
-
-  ffmpegProcessLeft = new RecordingProcess(
-    "left",
-    path.join(sessionDir, "left.mp4")
-  );
-  ffmpegProcessLeft.startRecording();
-
-  ffmpegProcessObject = new RecordingProcess(
-    "object",
-    path.join(sessionDir, "object.mp4")
-  );
-  ffmpegProcessObject.startRecording();
-
-  ffmpegProcessRight = new RecordingProcess(
-    "right",
-    path.join(sessionDir, "right.mp4")
-  );
-  ffmpegProcessRight.startRecording();
-
-  console.log(`Recording started in ${sessionDir}`);
 }
 
 function stopRecording() {
-  // Stop left camera
-  if (ffmpegProcessLeft) {
-    ffmpegProcessLeft.stopRecording();
-    ffmpegProcessLeft = null;
-    console.log("Stopped recording: left");
-  }
-
-  // Stop object camera
-  if (ffmpegProcessObject) {
-    ffmpegProcessObject.stopRecording();
-    ffmpegProcessObject = null;
-    console.log("Stopped recording: object");
-  }
-
-  // Stop right camera
-  if (ffmpegProcessRight) {
-    ffmpegProcessRight.stopRecording();
-    ffmpegProcessRight = null;
-    console.log("Stopped recording: right");
+  for (let i = 0; i < ffmpegProcesses.length; i++) {
+    if (ffmpegProcesses[i]) {
+      ffmpegProcesses[i]?.stopRecording();
+      ffmpegProcesses[i] = null;
+      console.log(`Stopped recording: ${cameraNames[i]}`);
+    }
   }
 }
 
 const oneSecond = 1000;
-async function pingRobot(robotIp: string) {
-  const result = await ping.promise.probe(robotIp, { timeout: 10 });
-  return result;
-}
-// --- PING CAMERAS ---
-setInterval(() => {
-  async function pingCameras () {
-    const robotIp = "10.45.90.2";
-    const isUp = await pingRobot(robotIp).then((res) => res);
+useEffect(() => {
+  const intervalId = setInterval(() => {
+    pingCameras()
+      .catch(console.error);
+  }, oneSecond);
 
-    if (isUp.alive) {
-      console.log(`Robot at ${robotIp} is online.`);
-      startRecording();
-    }
-
-    if (!isUp.alive) {
-      console.log(`Robot at ${robotIp} is offline.`);
-      stopRecording();
-    }
-  }
-  pingCameras().catch(() => {
-    console.error("Couldnt ping cameras");
-  })
-}, oneSecond);
+  return () => {clearInterval(intervalId)};
+}, []);

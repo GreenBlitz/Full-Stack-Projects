@@ -1,6 +1,7 @@
 //בס"ד
 import type { ChildProcess } from "child_process";
 import { spawn } from "child_process";
+import { timeStamp } from "console";
 import ffmpegPath from "ffmpeg-static";
 
 class RecordingProcess {
@@ -10,7 +11,13 @@ class RecordingProcess {
   
   // --- CONSTRUCTOR ---
   public constructor(cameraUrl: string, outputFile: string) {
-    this.outputFile = outputFile;
+    const time: Date = new Date();
+    this.outputFile = outputFile
+      + "/timestamp_"
+      + time.getHours()
+      + ":"
+      + time.getMinutes()
+      + ".mp4";
 
     this.cameraUrl =
       cameraUrl === "left" ? "http://limelight-left.local:5800"
