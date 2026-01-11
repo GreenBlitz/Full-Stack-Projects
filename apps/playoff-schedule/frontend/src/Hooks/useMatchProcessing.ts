@@ -28,7 +28,7 @@ export const useMatchProcessing = (
     // i will leave this here so you can check the code with different dates.
 
     // normal one
-    const currentTimeSecs = Math.floor(Date.now() / timeMultiplier);
+    //const currentTimeSecs = Math.floor(Date.now() / timeMultiplier);
 
     // testing 2025isios
     // const currentTimeSecs = Math.floor(
@@ -36,9 +36,9 @@ export const useMatchProcessing = (
     // );
 
     //testing 2025iscmp
-    // const currentTimeSecs = Math.floor(
-    //   new Date("2025-03-27T11:00:00").getTime() / timeMultiplier
-    // );
+    const currentTimeSecs = Math.floor(
+      new Date("2025-03-27T11:00:00").getTime() / timeMultiplier
+    );
 
     // // testing 2024iscmp
     // const currentTimeSecs = Math.floor(
