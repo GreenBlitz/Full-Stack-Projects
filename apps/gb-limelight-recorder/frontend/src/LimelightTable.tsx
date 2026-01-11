@@ -14,15 +14,15 @@ declare module "react" {
   }
 }
 
-const zero = 0;
-const one = 1;
+const leftCamIndex = 0;
+const rightCamIndex = 1;
 
 async function doThingy(
   robotOnline: boolean,
   cameraStatus: boolean,
   index: number
 ) {
-  const camera = index === zero ? "left" : index === one ? "object" : "right";
+  const camera = index === leftCamIndex ? "left" : index === rightCamIndex ? "object" : "right";
   if (robotOnline && cameraStatus) {
     await fetch(`http://localhost:5000/record/start/${camera}`, {
       method: "POST",
@@ -79,7 +79,7 @@ const LimelightTable: React.FC<LimelightTableProps> = ({ robotOnline }) => {
               disabled={robotOnline}
               onClick={() => {
                 const files = locationPickerRef.current?.files;
-                const file = files?.[zero];
+                const file = files?.[leftCamIndex];
                 setFileLocation(file?.name ?? "");
               }}
             >Save Location</button>
