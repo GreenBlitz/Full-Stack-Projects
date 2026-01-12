@@ -6,6 +6,10 @@ import {
   type TeamsInEventType,
 } from "../endpoints/TeamsSimple";
 import { urlRankings } from "../utils/rankingsUtils";
+import {
+  urlAlliances,
+  type AllianceSimpleType,
+} from "../endpoints/AlliancesSimple";
 import { fetchFromProxy } from "../utils/apiUtils";
 import { sortMatches } from "../utils/matchUtils";
 import type { RankItem, RankingsResponse } from "../types";
@@ -16,6 +20,7 @@ export type SearchStatus = "idle" | "searching" | "success" | "error";
 interface UseEventDataReturn {
   teams: TeamsInEventType[];
   allMatches: MatchesSimpleType[];
+  alliances: AllianceSimpleType[];
   teamRank: RankItem | null;
   searchStatus: SearchStatus;
   performSearch: (eventKey: string) => Promise<void>;
@@ -28,6 +33,7 @@ export const useEventData = (
 ): UseEventDataReturn => {
   const [teams, setTeams] = useState<TeamsInEventType[]>([]);
   const [allMatches, setAllMatches] = useState<MatchesSimpleType[]>([]);
+  const [alliances, setAlliances] = useState<AllianceSimpleType[]>([]);
   const [teamRank, setTeamRank] = useState<RankItem | null>(null);
   const [searchStatus, setSearchStatus] = useState<SearchStatus>("idle");
 
@@ -35,6 +41,7 @@ export const useEventData = (
     setSearchStatus("searching");
     setAllMatches([]);
     setTeams([]);
+    setAlliances([]);
     setTeamRank(null);
   }, []);
 
@@ -42,6 +49,7 @@ export const useEventData = (
     const teamsUrl = urlTeamsInEvent(eventKey);
     const matchesUrl = urlMatches(eventKey);
     const rankingsUrl = urlRankings(eventKey);
+    const alliancesUrl = urlAlliances(eventKey);
 
     return Promise.all([
       fetchFromProxy<TeamsInEventType[]>(teamsUrl),
@@ -49,6 +57,7 @@ export const useEventData = (
       fetchFromProxy<RankingsResponse>(rankingsUrl).catch(() => ({
         rankings: [],
       })),
+      fetchFromProxy<AllianceSimpleType[]>(alliancesUrl).catch(() => []),
     ]);
   }, []);
 
@@ -60,13 +69,14 @@ export const useEventData = (
       setActiveEventKey(eventKey);
 
       try {
-        const [teamsData, matchesData, rankingsData] =
+        const [teamsData, matchesData, rankingsData, alliancesData] =
           await fetchEventData(eventKey);
 
         if (Array.isArray(teamsData) && Array.isArray(matchesData)) {
           setTeams(teamsData);
           matchesData.sort(sortMatches);
           setAllMatches(matchesData);
+          setAlliances(Array.isArray(alliancesData) ? alliancesData : []);
           setTeamRank(
             rankingsData.rankings.find((r) => r.team_key === targetTeamKey) ??
               null
@@ -123,6 +133,7 @@ export const useEventData = (
   return {
     teams,
     allMatches,
+    alliances,
     teamRank,
     searchStatus,
     performSearch,

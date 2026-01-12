@@ -39,3 +39,7 @@ export const match10 = 10;
 export const match11 = 11;
 export const match12 = 12;
 export const match13 = 13;
+
+export const matchNumberRegex = /Match (\d+)/;
+export const allianceNumberRegex = /Alliance (\d+)/i;
+export const parseIntRadix = 10;

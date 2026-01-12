@@ -1,6 +1,7 @@
 // בס"ד
 import type React from "react";
 import type { MatchesSimpleType } from "../endpoints/MatchSimple";
+import type { AllianceSimpleType } from "../endpoints/AlliancesSimple";
 import { getMatchDisplayName } from "../utils/matchDisplayUtils";
 import { formatMatchTime } from "../utils/matchDisplayUtils";
 import { Alliance } from "./Alliance";
@@ -21,6 +22,7 @@ interface MatchCardProps {
   teamNameMap: Record<string, string>;
   futureMatches: MatchesSimpleType[];
   allMatches: MatchesSimpleType[];
+  alliances: AllianceSimpleType[];
 }
 
 export const MatchCard: React.FC<MatchCardProps> = ({
@@ -28,6 +30,7 @@ export const MatchCard: React.FC<MatchCardProps> = ({
   teamNameMap,
   futureMatches,
   allMatches,
+  alliances,
 }) => {
   const effectiveTime = match.predicted_time ?? match.time ?? undefined;
   const predictedDate = formatMatchTime(effectiveTime, timeMultiplier);
@@ -87,6 +90,7 @@ export const MatchCard: React.FC<MatchCardProps> = ({
             nextMatches={nextMatches}
             teamNameMap={teamNameMap}
             isRedAlliance={isRedAlliance}
+            alliances={alliances}
           />
         </div>
       )}

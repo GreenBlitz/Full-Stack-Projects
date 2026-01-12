@@ -33,3 +33,8 @@ tbaRouter.get(
   "/events/:eventKey/rankings",
   createTbaHandler("rankings")
 );
+
+tbaRouter.get(
+  "/events/:eventKey/alliances",
+  createTbaHandler("alliances")
+);

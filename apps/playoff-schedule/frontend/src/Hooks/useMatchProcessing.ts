@@ -36,14 +36,14 @@ export const useMatchProcessing = (
     // );
 
     //testing 2025iscmp
-    const currentTimeSecs = Math.floor(
-      new Date("2025-03-27T11:00:00").getTime() / timeMultiplier
-    );
+    // const currentTimeSecs = Math.floor(
+    //   new Date("2025-03-27T11:00:00").getTime() / timeMultiplier
+    // );
 
     // // testing 2024iscmp
-    // const currentTimeSecs = Math.floor(
-    // new Date("2024-03-21T15:00:00").getTime() / timeMultiplier
-    // );
+    const currentTimeSecs = Math.floor(
+    new Date("2024-03-21T15:00:00").getTime() / timeMultiplier
+    );
 
     // testing 2025cmptx
     //const currentTimeSecs = Math.floor(new Date("2025-04-19T10:00:00").getTime() / timeMultiplier);

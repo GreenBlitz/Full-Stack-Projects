@@ -20,8 +20,14 @@ const App: React.FC = () => {
   );
   const [inputEventKey, setInputEventKey] = useState<string>(activeEventKey);
 
-  const { teams, allMatches, teamRank, searchStatus, performSearch } =
-    useEventData(activeEventKey, setActiveEventKey);
+  const {
+    teams,
+    allMatches,
+    alliances,
+    teamRank,
+    searchStatus,
+    performSearch,
+  } = useEventData(activeEventKey, setActiveEventKey);
 
   const {
     currentGlobalMatch,
@@ -83,6 +89,7 @@ const App: React.FC = () => {
                     teamNameMap={teamNameMap}
                     futureMatches={futureMatches}
                     allMatches={allMatches}
+                    alliances={alliances}
                   />
                 ))}
               </>
