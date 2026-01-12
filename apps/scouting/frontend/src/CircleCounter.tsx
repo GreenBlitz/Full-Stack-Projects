@@ -1,10 +1,8 @@
 // בס"ד
 import React, { useState, useRef, useCallback, type FC } from "react";
 
-const startingCountValue = 0;
-
 export const CircularDragCounter: FC = () => {
-  const [count, setCount] = useState(startingCountValue);
+  const [count, setCount] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const circleRef = useRef<HTMLDivElement>(null);
   const lastAngleRef = useRef<number | null>(null);
@@ -135,18 +133,56 @@ export const CircularDragCounter: FC = () => {
     handleTouchEnd,
   ]);
 
+  // Generate notch positions (10 notches for 10 segments)
+  const notches = Array.from({ length: 10 }, (_, i) => {
+    const angle = i * 36 - 90; // Start from top (0 degrees is right, -90 is top)
+    return angle;
+  });
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-900 to-slate-800">
-      <div className="text-center">
-        <div
-          ref={circleRef}
-          onMouseDown={handleMouseDown}
-          onTouchStart={handleTouchStart}
-          className={`w-64 h-64 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 shadow-2xl flex items-center justify-center cursor-grab ${
-            isDragging ? "cursor-grabbing scale-105" : ""
-          } transition-transform select-none touch-none`}
-        >
-          <div className="text-white text-6xl font-bold">{count}</div>
+      <div
+        className={`text-center cursor-grab ${
+          isDragging ? "cursor-grabbing scale-105" : ""
+        }`}
+        ref={circleRef}
+        onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
+      >
+        <div className="relative w-64 h-64">
+          {/* Notches */}
+          {notches.map((angle, i) => (
+            <div
+              key={i}
+              className="absolute top-1/2 left-1/2"
+              style={{
+                transform: `translate(-50%, -50%) rotate(${angle}deg)`,
+                width: "256px",
+                height: "2px",
+                zIndex: 1,
+              }}
+            >
+              <div className="absolute right-0 w-8 h-1 bg-white rounded-full"></div>
+            </div>
+          ))}
+
+          {/* Donut circle */}
+          <div
+            className={`absolute inset-0 rounded-full transition-transform select-none touch-none`}
+            style={{
+              background:
+                "conic-gradient(from 0deg, #3b82f6, #8b5cf6, #3b82f6)",
+              WebkitMaskImage:
+                "radial-gradient(circle, transparent 0%, transparent 55%, black 55%, black 100%)",
+              maskImage:
+                "radial-gradient(circle, transparent 0%, transparent 55%, black 55%, black 100%)",
+            }}
+          ></div>
+
+          {/* Counter in the center */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="text-white text-6xl font-bold">{count}</div>
+          </div>
         </div>
         <p className="mt-8 text-gray-300 text-sm">
           Drag in a circle to change the counter
