@@ -1,5 +1,6 @@
 // בס"ד
 import React, { useState, useRef, useCallback, type FC } from "react";
+import { useVibrate } from "./VibrateHook";
 
 export const CircularDragCounter: FC = () => {
   const [count, setCount] = useState(0);
@@ -20,6 +21,7 @@ export const CircularDragCounter: FC = () => {
 
     return Math.atan2(dy, dx);
   }, []);
+  const vibrationTime = 1;
 
   const handleStart = useCallback(
     (clientX: number, clientY: number) => {
@@ -29,6 +31,7 @@ export const CircularDragCounter: FC = () => {
     },
     [getAngle]
   );
+  const { vibrate, stop, isSupported } = useVibrate();
 
   const handleMove = useCallback(
     (clientX: number, clientY: number) => {
@@ -53,13 +56,18 @@ export const CircularDragCounter: FC = () => {
         const increments = Math.floor(
           accumulatedRotationRef.current / tenthRotation
         );
+
         setCount((c) => c + increments);
+        vibrate(vibrationTime);
+
         accumulatedRotationRef.current -= increments * tenthRotation;
       } else if (accumulatedRotationRef.current <= -tenthRotation) {
         const decrements = Math.floor(
           Math.abs(accumulatedRotationRef.current) / tenthRotation
         );
         setCount((c) => c - decrements);
+        vibrate(vibrationTime);
+
         accumulatedRotationRef.current += decrements * tenthRotation;
       }
 
@@ -108,6 +116,7 @@ export const CircularDragCounter: FC = () => {
 
   const handleTouchEnd = useCallback(() => {
     handleEnd();
+    stop();
   }, [handleEnd]);
 
   // Set up global event listeners
@@ -148,6 +157,10 @@ export const CircularDragCounter: FC = () => {
         ref={circleRef}
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
+        onMouseDownCapture={() => {
+          setCount((prev) => prev + 1);
+          vibrate(vibrationTime);
+        }}
       >
         <div className="relative w-64 h-64">
           {/* Notches */}
@@ -162,7 +175,7 @@ export const CircularDragCounter: FC = () => {
                 zIndex: 1,
               }}
             >
-              <div className="absolute right-0 w-8 h-1 bg-white rounded-full"></div>
+              <div className="absolute right-0 w-16 h-1 bg-white rounded-full"></div>
             </div>
           ))}
 
@@ -173,9 +186,9 @@ export const CircularDragCounter: FC = () => {
               background:
                 "conic-gradient(from 0deg, #3b82f6, #8b5cf6, #3b82f6)",
               WebkitMaskImage:
-                "radial-gradient(circle, transparent 0%, transparent 55%, black 55%, black 100%)",
+                "radial-gradient(circle, transparent 0%, transparent 35%, black 35%, black 100%)",
               maskImage:
-                "radial-gradient(circle, transparent 0%, transparent 55%, black 55%, black 100%)",
+                "radial-gradient(circle, transparent 0%, transparent 35%, black 35%, black 100%)",
             }}
           ></div>
 
@@ -187,6 +200,14 @@ export const CircularDragCounter: FC = () => {
         <p className="mt-8 text-gray-300 text-sm">
           Drag in a circle to change the counter
         </p>
+        <button
+          type="button"
+          value="Reset"
+          className="mt-8"
+          onClick={() => {
+            setCount(0);
+          }}
+        />
       </div>
     </div>
   );
