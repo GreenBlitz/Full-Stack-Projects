@@ -2,6 +2,11 @@
 import type React from "react";
 import type { NextMatches } from "../utils/bracketUtils";
 import { sliceStart } from "../config/frcConfig";
+import {
+  opponentTeamsLength,
+  firstMatchIndex,
+  nextMatchIndex,
+} from "../utils/bracketConstants";
 
 interface PotentialMatchesProps {
   nextMatches: NextMatches;
@@ -12,15 +17,12 @@ interface PotentialMatchesProps {
 export const PotentialMatches: React.FC<PotentialMatchesProps> = ({
   nextMatches,
   teamNameMap,
-  isRedAlliance,
 }) => {
   if (!nextMatches.ifWin && !nextMatches.ifLoss) {
     return null;
   }
 
-  const renderMatchInfo = (
-    match: NextMatches["ifWin"] | NextMatches["ifLoss"]
-  ) => {
+  const renderMatchInfo = (match: NextMatches[keyof NextMatches]) => {
     if (!match) return null;
 
     if (match.isPlaceholder) {
@@ -39,14 +41,13 @@ export const PotentialMatches: React.FC<PotentialMatchesProps> = ({
       );
     }
 
-    const matchName = match.matchLabel.split(" vs ")[0];
+    const matchName = match.matchLabel.split(" vs ")[firstMatchIndex];
     const nextMatchNumberMatch = matchName.match(/Match (\d+)/);
     const nextMatchNumber = nextMatchNumberMatch
-      ? `Match ${nextMatchNumberMatch[1]}`
+      ? `Match ${nextMatchNumberMatch[nextMatchIndex]}`
       : matchName.includes("Finals")
-      ? "Finals"
-      : null;
-
+        ? "Finals"
+        : null;
     return (
       <div className="space-y-3">
         {nextMatchNumber && (
@@ -54,35 +55,36 @@ export const PotentialMatches: React.FC<PotentialMatchesProps> = ({
             {nextMatchNumber}
           </div>
         )}
-        {match.opponentTeams && match.opponentTeams.length > 0 && (
-          <div className="pl-2 space-y-1.5">
-            {match.opponentTeams.map((teamKey) => {
-              const teamNumber = teamKey.slice(sliceStart);
-              const teamName = teamNameMap[teamKey] ?? "Unknown";
-              return (
-                <div
-                  key={teamKey}
-                  className="flex items-center gap-3 text-base"
-                >
-                  <span className="w-14 font-bold text-gray-800 dark:text-gray-200">
-                    {teamNumber}
-                  </span>
-                  <span className="text-gray-700 dark:text-gray-300">
-                    {teamName}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        )}
+        {match.opponentTeams &&
+          match.opponentTeams.length > opponentTeamsLength && (
+            <div className="pl-2 space-y-1.5">
+              {match.opponentTeams.map((teamKey) => {
+                const teamNumber = teamKey.slice(sliceStart);
+                const teamName = teamNameMap[teamKey] ?? "Unknown";
+                return (
+                  <div
+                    key={teamKey}
+                    className="flex items-center gap-3 text-base"
+                  >
+                    <span className="w-14 font-bold text-gray-800 dark:text-gray-200">
+                      {teamNumber}
+                    </span>
+                    <span className="text-gray-700 dark:text-gray-300">
+                      {teamName}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
       </div>
     );
   };
 
   return (
     <div className="mt-4 border-t-2 border-gray-300 dark:border-gray-600 pt-4">
-      <div className="text-sm font-bold uppercase text-gray-700 dark:text-gray-300 mb-4">
-        Predictive Path
+      <div className="text-md font-bold uppercase text-gray-700 dark:text-gray-300 mb-4">
+        <u>Predictions for the next Match</u>
       </div>
       <div className="space-y-4">
         {nextMatches.ifWin && (
@@ -96,18 +98,18 @@ export const PotentialMatches: React.FC<PotentialMatchesProps> = ({
                   You are in:{" "}
                   <span
                     className={`font-bold ${
-                      nextMatches.ifWin?.ourAlliance === "red"
+                      nextMatches.ifWin.ourAlliance === "red"
                         ? "text-red-700 dark:text-red-400"
-                        : nextMatches.ifWin?.ourAlliance === "blue"
-                        ? "text-blue-700 dark:text-blue-400"
-                        : "text-gray-500 dark:text-gray-400"
+                        : nextMatches.ifWin.ourAlliance === "blue"
+                          ? "text-blue-700 dark:text-blue-400"
+                          : "text-gray-500 dark:text-gray-400"
                     }`}
                   >
-                    {nextMatches.ifWin?.ourAlliance === "red"
+                    {nextMatches.ifWin.ourAlliance === "red"
                       ? "Red"
-                      : nextMatches.ifWin?.ourAlliance === "blue"
-                      ? "Blue"
-                      : "TBD"}{" "}
+                      : nextMatches.ifWin.ourAlliance === "blue"
+                        ? "Blue"
+                        : "TBD"}{" "}
                     Alliance
                   </span>
                 </div>
@@ -127,18 +129,18 @@ export const PotentialMatches: React.FC<PotentialMatchesProps> = ({
                   You are in:{" "}
                   <span
                     className={`font-bold ${
-                      nextMatches.ifLoss?.ourAlliance === "red"
+                      nextMatches.ifLoss.ourAlliance === "red"
                         ? "text-red-700 dark:text-red-400"
-                        : nextMatches.ifLoss?.ourAlliance === "blue"
-                        ? "text-blue-700 dark:text-blue-400"
-                        : "text-gray-500 dark:text-gray-400"
+                        : nextMatches.ifLoss.ourAlliance === "blue"
+                          ? "text-blue-700 dark:text-blue-400"
+                          : "text-gray-500 dark:text-gray-400"
                     }`}
                   >
-                    {nextMatches.ifLoss?.ourAlliance === "red"
+                    {nextMatches.ifLoss.ourAlliance === "red"
                       ? "Red"
-                      : nextMatches.ifLoss?.ourAlliance === "blue"
-                      ? "Blue"
-                      : "TBD"}{" "}
+                      : nextMatches.ifLoss.ourAlliance === "blue"
+                        ? "Blue"
+                        : "TBD"}{" "}
                     Alliance
                   </span>
                 </div>

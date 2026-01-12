@@ -7,7 +7,6 @@ import { Alliance } from "./Alliance";
 import { PotentialMatches } from "./PotentialMatches";
 import {
   getPotentialNextMatches,
-  getBracketMatchNumber,
 } from "../utils/bracketUtils";
 import {
   targetTeamKey,

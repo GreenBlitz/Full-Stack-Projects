@@ -30,23 +30,23 @@ export function findMatchByBracketNumber(
   allMatches: MatchesSimpleType[]
 ): MatchesSimpleType | null {
   const playoffMatches = allMatches.filter(
-    (m) =>
-      m.comp_level !== "qm" && m.comp_level !== "ef" && m.comp_level !== "qf"
+    (match: MatchesSimpleType) =>
+      match.comp_level !== "qm" && match.comp_level !== "ef" && match.comp_level !== "qf"
   );
 
   if (bracketNumber >= minBracketMatch && bracketNumber <= maxBracketMatch) {
     const sfMatch = playoffMatches.find(
-      (m) =>
-        m.comp_level === "sf" &&
-        m.set_number === bracketNumber &&
-        m.match_number === firstMatchNumber
+      (match) =>
+        match.comp_level === "sf" &&
+        match.set_number === bracketNumber &&
+        match.match_number === firstMatchNumber
     );
     if (sfMatch) {
       return sfMatch;
     }
 
     const anySfMatch = playoffMatches.find(
-      (m) => m.comp_level === "sf" && m.set_number === bracketNumber
+      (match) => match.comp_level === "sf" && match.set_number === bracketNumber
     );
     if (anySfMatch) {
       return anySfMatch;

@@ -24,7 +24,7 @@ const getLevelWeight = (level: string): number =>
   : level === 'f' ? weightF
   : weightDefault;
   
-export const sortMatches = (a: MatchesSimpleType, b: MatchesSimpleType) => {
+export const sortMatches = (a: MatchesSimpleType, b: MatchesSimpleType): number => {
   const timeA = getMatchTime(a);
   const timeB = getMatchTime(b);
   const weightA = getLevelWeight(a.comp_level);

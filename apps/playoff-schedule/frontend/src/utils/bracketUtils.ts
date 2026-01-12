@@ -2,8 +2,15 @@
 import type { MatchesSimpleType } from "../endpoints/MatchSimple";
 import type { NextMatches } from "./bracketTypes";
 import { bracketStructure } from "./bracketConstants";
-import { getBracketMatchNumber, findMatchByBracketNumber, findFinalsMatch } from "./bracketMatchFinder";
-import { getOpponentInfo, formatOpponentLabel } from "./bracketOpponentDetection";
+import {
+  getBracketMatchNumber,
+  findMatchByBracketNumber,
+  findFinalsMatch,
+} from "./bracketMatchFinder";
+import {
+  getOpponentInfo,
+  formatOpponentLabel,
+} from "./bracketOpponentDetection";
 import { finalsBracketNumber } from "./bracketConstants";
 
 export type { PotentialMatch, NextMatches } from "./bracketTypes";
@@ -53,7 +60,7 @@ export function getPotentialNextMatches(
         matchKey: finalsMatch.key,
         match: finalsMatch,
         isPlaceholder: false,
-        opponentAlliance: opponentInfo?.opponentAlliance,
+        opponentAllianceColor: opponentInfo?.opponentAlliance,
         opponentTeams: opponentInfo?.opponentTeams,
         ourAlliance: opponentInfo?.ourAlliance ?? null,
       };
@@ -90,7 +97,7 @@ export function getPotentialNextMatches(
         matchKey: nextMatch.key,
         match: nextMatch,
         isPlaceholder: false,
-        opponentAlliance: opponentInfo?.opponentAlliance,
+        opponentAllianceColor: opponentInfo?.opponentAlliance,
         opponentTeams: opponentInfo?.opponentTeams,
         ourAlliance: opponentInfo?.ourAlliance ?? null,
       };
@@ -129,7 +136,7 @@ export function getPotentialNextMatches(
         matchKey: nextMatch.key,
         match: nextMatch,
         isPlaceholder: false,
-        opponentAlliance: opponentInfo?.opponentAlliance,
+        opponentAllianceColor: opponentInfo?.opponentAlliance,
         opponentTeams: opponentInfo?.opponentTeams,
         ourAlliance: opponentInfo?.ourAlliance ?? null,
       };

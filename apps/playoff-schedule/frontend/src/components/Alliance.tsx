@@ -55,9 +55,13 @@ export const Alliance: React.FC<AllianceProps> = ({
             <span className="w-12 font-bold text-gray-800 dark:text-gray-200">
               {teamNumber}
             </span>
-            <span className={`truncate text-sm ${
-              isTargetTeam ? "text-green-600 dark:text-green-500" : "text-gray-600 dark:text-gray-300"
-            }`}>
+            <span
+              className={`truncate text-sm ${
+                isTargetTeam
+                  ? "text-green-600 dark:text-green-500"
+                  : "text-gray-600 dark:text-gray-300"
+              }`}
+            >
               {teamName}
             </span>
             {isTargetTeam && (

@@ -6,7 +6,8 @@ export interface PotentialMatch {
   matchKey?: string;
   match?: MatchesSimpleType;
   isPlaceholder: boolean;
-  opponentAlliance?: "red" | "blue";
+  opponentAllianceColor?: "red" | "blue";
+  //opponentAllianceNumber?: number;
   opponentTeams?: string[];
   ourAlliance?: "red" | "blue" | null;
 }
