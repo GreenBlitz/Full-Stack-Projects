@@ -11,6 +11,7 @@ export const SubmitButton: FC<{ test: Test }> = ({ test }) => {
         fetch("/api/v1/tests/match", {
           method: "POST",
           body: JSON.stringify(test),
+          headers: { "Content-Type": "application/json" },
         }).catch((error: unknown) => {
           alert(error);
         });

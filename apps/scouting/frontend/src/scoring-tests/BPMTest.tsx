@@ -1,13 +1,20 @@
 // בס"ד
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import type { FC } from "react";
 
 import type { TestProps } from "./TestPage";
+import type { BPMInterval } from "../../../common/types/Tests";
 
 export const BPMTest: FC<TestProps> = ({ setTest }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [marks, setMarks] = useState<Timestamp[]>([]);
+  const [intervals, setIntervals] = useState<BPMInterval[]>([]);
+
+  useEffect(() => {
+    setMarks([]);
+    setTest({ intervals });
+  }, [intervals]);
 
   const handleCapture = () => {
     if (videoRef.current) {
@@ -16,11 +23,25 @@ export const BPMTest: FC<TestProps> = ({ setTest }) => {
     }
   };
 
-  const jumpToTime = (seconds: number) => {
+  const jumpToFirst = () => {
     if (videoRef.current) {
-      videoRef.current.currentTime = seconds;
+      videoRef.current.currentTime = marks[0].time;
       videoRef.current.play();
     }
+  };
+
+  const endInterval = () => {
+    if (!videoRef.current) {
+      return;
+    }
+    const { currentTime } = videoRef.current;
+    setIntervals((prev) => [
+      ...prev,
+      {
+        time: currentTime,
+        scores: marks.map((mark) => mark.time),
+      },
+    ]);
   };
 
   const removeStamp = (id: number) => {
@@ -43,7 +64,7 @@ export const BPMTest: FC<TestProps> = ({ setTest }) => {
             ref={videoRef}
             controls
             className="w-full aspect-video"
-            src="https://www.w3schools.com/html/mov_bbb.mp4" // Replace with your .mp4 path
+            src="/2017-m1.mp4"
           />
         </div>
 
@@ -80,14 +101,24 @@ export const BPMTest: FC<TestProps> = ({ setTest }) => {
         </div>
 
         {marks.length > 0 && (
-          <button
-            onClick={() => {
-              setMarks([]);
-            }}
-            className="text-xs text-slate-400 hover:text-red-500 transition-colors text-center"
-          >
-            Clear all saved marks
-          </button>
+          <>
+            <button
+              onClick={() => {
+                endInterval();
+              }}
+              className="text-xs p-7 text-slate-400 hover:text-red-500 transition-colors text-center"
+            >
+              End Interval
+            </button>
+            <button
+              onClick={() => {
+                jumpToFirst();
+              }}
+              className="text-xs text-slate-400 hover:text-green-500 transition-colors text-center"
+            >
+              Jump To First
+            </button>
+          </>
         )}
       </div>
     </div>

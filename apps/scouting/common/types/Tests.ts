@@ -16,7 +16,7 @@ interface TimeInterval {
 }
 type TimeTest = TestBase<"time", { intervals: TimeInterval[] }>;
 
-interface BPMInterval {
+export interface BPMInterval {
   time: number;
   scores: number[];
 }
