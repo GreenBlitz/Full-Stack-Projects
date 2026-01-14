@@ -16,15 +16,23 @@ import {
 export const getMatchTime = (match: MatchesSimpleType): number =>
   match.predicted_time ?? match.time ?? matchTimeDefault;
 
-const getLevelWeight = (level: string): number => 
-  level === 'qm' ? weightQm
-  : level === 'ef' ? weightEf
-  : level === 'qf' ? weightQf
-  : level === 'sf' ? weightSf
-  : level === 'f' ? weightF
-  : weightDefault;
-  
-export const sortMatches = (a: MatchesSimpleType, b: MatchesSimpleType): number => {
+const getLevelWeight = (level: string): number =>
+  level === "qm"
+    ? weightQm
+    : level === "ef"
+      ? weightEf
+      : level === "qf"
+        ? weightQf
+        : level === "sf"
+          ? weightSf
+          : level === "f"
+            ? weightF
+            : weightDefault;
+
+export const sortMatches = (
+  a: MatchesSimpleType,
+  b: MatchesSimpleType
+): number => {
   const timeA = getMatchTime(a);
   const timeB = getMatchTime(b);
   const weightA = getLevelWeight(a.comp_level);

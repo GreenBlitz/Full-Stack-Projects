@@ -42,7 +42,7 @@ export const useMatchProcessing = (
 
     // // testing 2024iscmp
     const currentTimeSecs = Math.floor(
-    new Date("2024-03-21T15:00:00").getTime() / timeMultiplier
+      new Date("2024-03-21T15:00:00").getTime() / timeMultiplier
     );
 
     // testing 2025cmptx

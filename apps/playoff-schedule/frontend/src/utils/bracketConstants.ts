@@ -28,7 +28,7 @@ export const firstMatchNumber = 1;
 export const emptyArrayLength = 0;
 export const finalsBracketNumber = 0;
 export const firstArrayIndex = 0;
-export const twoPotentialOpponents = 2; 
+export const twoPotentialOpponents = 2;
 
 export const match1 = 1;
 export const match2 = 2;

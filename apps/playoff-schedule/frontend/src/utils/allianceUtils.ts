@@ -1,11 +1,16 @@
 // בס"ד
 import type { PotentialMatch } from "./bracketTypes";
 import type { AllianceSimpleType } from "../endpoints/AlliancesSimple";
-import { alliancesLength, allianceNumberRegex, parseIntRadix, opponentTeamsLength } from "./bracketConstants";
+import {
+  alliancesLength,
+  allianceNumberRegex,
+  parseIntRadix,
+  opponentTeamsLength,
+} from "./bracketConstants";
 
 const allianceNumberMatchIndex = 1;
 
-export const getOpponentAllianceNumber=(
+export const getOpponentAllianceNumber = (
   match: PotentialMatch,
   alliances: AllianceSimpleType[]
 ): number | null => {
@@ -45,4 +50,4 @@ export const getOpponentAllianceNumber=(
   }
 
   return null;
-}
+};

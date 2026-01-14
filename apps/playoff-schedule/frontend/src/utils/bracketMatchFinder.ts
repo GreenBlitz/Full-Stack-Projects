@@ -31,7 +31,9 @@ export function findMatchByBracketNumber(
 ): MatchesSimpleType | null {
   const playoffMatches = allMatches.filter(
     (match: MatchesSimpleType) =>
-      match.comp_level !== "qm" && match.comp_level !== "ef" && match.comp_level !== "qf"
+      match.comp_level !== "qm" &&
+      match.comp_level !== "ef" &&
+      match.comp_level !== "qf"
   );
 
   if (bracketNumber >= minBracketMatch && bracketNumber <= maxBracketMatch) {

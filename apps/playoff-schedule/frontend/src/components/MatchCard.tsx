@@ -6,9 +6,7 @@ import { getMatchDisplayName } from "../utils/matchDisplayUtils";
 import { formatMatchTime } from "../utils/matchDisplayUtils";
 import { Alliance } from "./Alliance";
 import { PotentialMatches } from "./PotentialMatches";
-import {
-  getPotentialNextMatches,
-} from "../utils/bracketUtils";
+import { getPotentialNextMatches } from "../utils/bracketUtils";
 import {
   targetTeamKey,
   timeMultiplier,

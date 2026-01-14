@@ -13,5 +13,5 @@ export const simpleTeamsInEvent = t.type({
 });
 export type TeamsInEventType = typeof simpleTeamsInEvent._A;
 
-export const urlTeamsInEvent = (eventKey: string):string =>
+export const urlTeamsInEvent = (eventKey: string): string =>
   `/events/${eventKey}/teams`;
