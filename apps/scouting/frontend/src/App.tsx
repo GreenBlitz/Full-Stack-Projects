@@ -1,5 +1,5 @@
 // בס"ד
-import { useState, type FC } from "react";
+import type { FC } from "react";
 import { TestPage } from "./scoring-tests/TestPage";
 
 const App: FC = () => {
