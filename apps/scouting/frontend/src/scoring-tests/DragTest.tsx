@@ -174,7 +174,7 @@ export const DragTest: FC<TestProps> = ({ setTest }) => {
   return (
     <div className="text-center cursor-grab">
       <div
-        className={`relative w-64 h-64 mx-auto ${
+        className={`relative w-64 h-64 ${
           isDragging ? "cursor-grabbing scale-105" : ""
         }`}
         onMouseDown={handleMouseDown}

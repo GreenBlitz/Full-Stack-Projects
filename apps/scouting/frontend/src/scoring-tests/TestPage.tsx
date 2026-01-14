@@ -7,6 +7,8 @@ import type { ScoreMethod, Test } from "../../../common/types/Tests.ts";
 import { SubmitButton } from "./SubmitButton.tsx";
 import { ButtonTest } from "./ButtonTest.tsx";
 import { DragTest } from "./DragTest.tsx";
+import TimeTest from "./TimeTest.tsx";
+import { BPMTest } from "./BPMTest.tsx";
 
 export interface TestProps {
   setTest: (test: Test["test"]) => void;
@@ -24,8 +26,9 @@ export const TestPage: FC = () => {
   const setTestedData = (newTest: Test["test"]) => {
     setTest((prev) => ({ ...prev, test: newTest as any }));
   };
+
   return (
-    <div>
+    <div className="flex flex-col items-center">
       <BasicData
         setName={(name) => {
           setTest((prev) => ({ ...prev, name }));
@@ -39,6 +42,8 @@ export const TestPage: FC = () => {
       />
       {test.method === "button" && <ButtonTest setTest={setTestedData} />}
       {test.method === "drag" && <DragTest setTest={setTestedData} />}
+      {test.method === "time" && <TimeTest setTest={setTestedData} />}
+      {test.method === "bpm" && <BPMTest setTest={setTestedData} />}
       <SubmitButton test={test} />
     </div>
   );

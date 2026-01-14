@@ -17,7 +17,7 @@ export const ButtonTest: FC<TestProps> = ({ setTest }) => {
   }, [count]);
 
   return (
-    <div className="p-12 max-w-sm bg-white rounded-xl shadow-sm border border-slate-100 mx-auto">
+    <div className="p-12 max-w-sm bg-white rounded-xl shadow-sm border border-slate-100">
       <div className="text-center mb-6">
         <span className="text-sm font-semibold uppercase tracking-wider text-slate-500">
           Current Count
