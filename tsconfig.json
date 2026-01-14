@@ -20,7 +20,7 @@
     "alwaysStrict": false /* Parse in strict mode and emit "use strict" for each source file. */,
     "resolveJsonModule": true,
     "strictNullChecks": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
   },
-  "include": ["**/*.ts", "**/*.tsx", "eslint.config.mts"]
+  "include": ["**/*.ts", "**/*.tsx", "eslint.config.mts", "**/sw.js"]
 }
