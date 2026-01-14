@@ -8,7 +8,7 @@ async function pingRobot(robotIp: string) {
 
 export async function pingCameras(): Promise<boolean> {
   const robotIp = "10.45.90.2";
-  const isUp = await pingRobot(robotIp).then((res) => res);
+  const isUp = await pingRobot(robotIp);
 
   if (isUp.alive) {
     console.log(`Robot at ${robotIp} is online.`);
@@ -17,6 +17,3 @@ export async function pingCameras(): Promise<boolean> {
   console.log(`Robot at ${robotIp} is offline.`);
   return false;
 }
-
-// export default { pingCameras };
-

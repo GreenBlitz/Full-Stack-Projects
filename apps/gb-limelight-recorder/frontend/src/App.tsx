@@ -14,9 +14,9 @@ const App = () => {
         const res = await fetch("http://localhost:5000/");
         const text = await res.text();
         setMessage(text);
-      } catch (e) {
+      } catch (error) {
         setMessage("Error connecting to server");
-        console.error(e);
+        console.error(error);
       }
     })();
   }, []);
