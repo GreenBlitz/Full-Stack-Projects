@@ -6,6 +6,7 @@ import { BasicData } from "./BasicData";
 import type { ScoreMethod, Test } from "../../../common/types/Tests.ts";
 import { SubmitButton } from "./SubmitButton.tsx";
 import { ButtonTest } from "./ButtonTest.tsx";
+import { DragTest } from "./DragTest.tsx";
 
 export interface TestProps {
   setTest: (test: Test["test"]) => void;
@@ -19,6 +20,10 @@ export const TestPage: FC = () => {
       amount: 0,
     },
   });
+
+  const setTestedData = (newTest: Test["test"]) => {
+    setTest((prev) => ({ ...prev, test: newTest as any }));
+  };
   return (
     <div>
       <BasicData
@@ -32,13 +37,8 @@ export const TestPage: FC = () => {
           setTest((prev) => ({ ...prev, test: {} as any, method }));
         }}
       />
-      {test.method === "button" && (
-        <ButtonTest
-          setTest={(newTest) => {
-            setTest((prev) => ({ ...prev, test: newTest as any }));
-          }}
-        />
-      )}
+      {test.method === "button" && <ButtonTest setTest={setTestedData} />}
+      {test.method === "drag" && <DragTest setTest={setTestedData} />}
       <SubmitButton test={test} />
     </div>
   );

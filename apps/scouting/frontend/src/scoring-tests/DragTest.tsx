@@ -1,31 +1,55 @@
 // בס"ד
-import React, { useState, useRef, useCallback, type FC } from "react";
+import React, {
+  useState,
+  useRef,
+  useCallback,
+  type FC,
+  useEffect,
+} from "react";
 import { useVibrate } from "../VibrateHook";
+import type { TestProps } from "./TestPage";
 
-export const CircularDragCounter: FC = () => {
+export const DragTest: FC<TestProps> = ({ setTest }) => {
   const [count, setCount] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const circleRef = useRef<HTMLDivElement>(null);
   const lastAngleRef = useRef<number | null>(null);
   const accumulatedRotationRef = useRef(0);
 
+  useEffect(() => {
+    setTest({ amount: count });
+  }, [count]);
+
   const getAngle = useCallback((clientX: number, clientY: number) => {
     if (!circleRef.current) return 0;
 
     const rect = circleRef.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
 
-    const dx = clientX - centerX;
-    const dy = clientY - centerY;
+    // 1. Get mouse position relative to the element's top-left corner
+    const localX = clientX - rect.left;
+    const localY = clientY - rect.top;
 
+    // 2. Find the center of the element in local coordinates
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    // 3. Calculate the distance from the local center
+    const dx = localX - centerX;
+    const dy = localY - centerY;
+
+    // 4. Return radians (use * 180 / Math.PI to convert to degrees if needed)
     return Math.atan2(dy, dx);
   }, []);
   const vibrationTime = 1;
 
+  const tenthRotation = (2 * Math.PI) / 10;
+
   const handleStart = useCallback(
     (clientX: number, clientY: number) => {
       setIsDragging(true);
+
+      console.log(clientX, clientY);
+      console.log(getAngle(clientX, clientY));
       lastAngleRef.current = getAngle(clientX, clientY);
       accumulatedRotationRef.current = 0;
     },
@@ -50,7 +74,6 @@ export const CircularDragCounter: FC = () => {
       accumulatedRotationRef.current += deltaAngle;
 
       // Check if we've completed a tenth of a rotation (π/5 radians = 36 degrees)
-      const tenthRotation = (2 * Math.PI) / 10;
 
       if (accumulatedRotationRef.current >= tenthRotation) {
         const increments = Math.floor(
@@ -61,10 +84,10 @@ export const CircularDragCounter: FC = () => {
         vibrate(vibrationTime);
 
         accumulatedRotationRef.current -= increments * tenthRotation;
-      } else if (accumulatedRotationRef.current <= -tenthRotation) {
-        const decrements = Math.floor(
-          Math.abs(accumulatedRotationRef.current) / tenthRotation
-        );
+      } else if (accumulatedRotationRef.current <= 0) {
+        const decrements =
+          Math.floor(Math.abs(accumulatedRotationRef.current) / tenthRotation) +
+          1;
         setCount((c) => c - decrements);
         vibrate(vibrationTime);
 
@@ -149,65 +172,63 @@ export const CircularDragCounter: FC = () => {
   });
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-900 to-slate-800">
-      <div className="text-center cursor-grab" ref={circleRef}>
-        <div
-          className={`relative w-64 h-64 ${
-            isDragging ? "cursor-grabbing scale-105" : ""
-          }`}
-          onMouseDown={handleMouseDown}
-          onTouchStart={handleTouchStart}
-          onMouseDownCapture={() => {
-            setCount((prev) => prev + 1);
-            vibrate(vibrationTime);
-          }}
-        >
-          {/* Notches */}
-          {notches.map((angle, i) => (
-            <div
-              key={i}
-              className="absolute top-1/2 left-1/2"
-              style={{
-                transform: `translate(-50%, -50%) rotate(${angle}deg)`,
-                width: "256px",
-                height: "2px",
-                zIndex: 1,
-              }}
-            >
-              <div className="absolute right-0 w-16 h-1 bg-white rounded-full"></div>
-            </div>
-          ))}
-
-          {/* Donut circle */}
+    <div className="text-center cursor-grab">
+      <div
+        className={`relative w-64 h-64 mx-auto ${
+          isDragging ? "cursor-grabbing scale-105" : ""
+        }`}
+        onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
+        onMouseDownCapture={() => {
+          // setCount((prev) => prev + 1);
+          vibrate(vibrationTime);
+        }}
+        ref={circleRef}
+      >
+        {/* Notches */}
+        {notches.map((angle, i) => (
           <div
-            className={`absolute inset-0 rounded-full transition-transform select-none touch-none`}
+            key={i}
+            className="absolute top-1/2 left-1/2"
             style={{
-              background:
-                "conic-gradient(from 0deg, #3b82f6, #8b5cf6, #3b82f6)",
-              WebkitMaskImage:
-                "radial-gradient(circle, transparent 0%, transparent 35%, black 35%, black 100%)",
-              maskImage:
-                "radial-gradient(circle, transparent 0%, transparent 35%, black 35%, black 100%)",
+              transform: `translate(-50%, -50%) rotate(${angle}deg)`,
+              width: "256px",
+              height: "2px",
+              zIndex: 1,
             }}
-          ></div>
-
-          {/* Counter in the center */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="text-white text-6xl font-bold">{count}</div>
+          >
+            <div className="absolute right-0 w-16 h-1 bg-white rounded-full"></div>
           </div>
-        </div>
-        <p className="mt-8 text-gray-300 text-sm">
-          Drag in a circle to change the counter
-        </p>
-        <button
-          type="button"
-          value="Reset"
-          className="mt-8"
-          onClick={() => {
-            setCount(0);
+        ))}
+
+        {/* Donut circle */}
+        <div
+          className={`absolute inset-0 rounded-full transition-transform select-none touch-none`}
+          style={{
+            background: "conic-gradient(from 0deg, #3b82f6, #8b5cf6, #3b82f6)",
+            WebkitMaskImage:
+              "radial-gradient(circle, transparent 0%, transparent 35%, black 35%, black 100%)",
+            maskImage:
+              "radial-gradient(circle, transparent 0%, transparent 35%, black 35%, black 100%)",
           }}
-        />
+        ></div>
+
+        {/* Counter in the center */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="text-white text-6xl font-bold">{count}</div>
+        </div>
       </div>
+      <p className="mt-8 text-gray-300 text-sm">
+        Drag in a circle to change the counter
+      </p>
+      <button
+        type="button"
+        value="Reset"
+        className="mt-8"
+        onClick={() => {
+          setCount(0);
+        }}
+      />
     </div>
   );
 };
