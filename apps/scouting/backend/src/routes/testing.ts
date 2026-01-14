@@ -5,7 +5,7 @@ import { Router } from "express";
 import type { Test } from "../../../common/types/Tests";
 import { StatusCodes } from "http-status-codes";
 
-const testRouter = Router();
+export const testRouter = Router();
 
 const tests: Test[] = [];
 
