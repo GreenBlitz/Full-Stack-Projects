@@ -150,19 +150,18 @@ export const CircularDragCounter: FC = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-900 to-slate-800">
-      <div
-        className={`text-center cursor-grab ${
-          isDragging ? "cursor-grabbing scale-105" : ""
-        }`}
-        ref={circleRef}
-        onMouseDown={handleMouseDown}
-        onTouchStart={handleTouchStart}
-        onMouseDownCapture={() => {
-          setCount((prev) => prev + 1);
-          vibrate(vibrationTime);
-        }}
-      >
-        <div className="relative w-64 h-64">
+      <div className="text-center cursor-grab" ref={circleRef}>
+        <div
+          className={`relative w-64 h-64 ${
+            isDragging ? "cursor-grabbing scale-105" : ""
+          }`}
+          onMouseDown={handleMouseDown}
+          onTouchStart={handleTouchStart}
+          onMouseDownCapture={() => {
+            setCount((prev) => prev + 1);
+            vibrate(vibrationTime);
+          }}
+        >
           {/* Notches */}
           {notches.map((angle, i) => (
             <div
