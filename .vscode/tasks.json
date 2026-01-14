@@ -42,8 +42,9 @@
       "id": "project",
       "description": "Full Stack Projects worth running",
       "type": "pickString",
-      "options": ["template", "test", "playoff-schedule"]
+      "options": ["template", "test", "scouting", "playoff-schedule"]
     },
+    
     {
       "id": "workspace",
       "description": "Workspaces within projects",
