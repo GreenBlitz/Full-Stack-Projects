@@ -1,14 +1,16 @@
 // בס"ד
 import type { MatchesSimpleType } from "../endpoints/MatchSimple";
 
+export type AllianceColor = "red" | "blue";
+export type AllianceColorOptional = "red" | "blue" | null;
 export interface PotentialMatch {
   matchLabel: string;
   matchKey?: string;
   match?: MatchesSimpleType;
   isPlaceholder: boolean;
-  opponentAllianceColor?: "red" | "blue";
+  opponentAllianceColor?: AllianceColorOptional;
   opponentTeams?: string[];
-  ourAlliance?: "red" | "blue" | null;
+  ourAlliance?: AllianceColorOptional;
 }
 
 export interface NextMatches {
@@ -31,7 +33,7 @@ export interface OpponentInfoOptions {
 }
 
 export interface OpponentInfo {
-  opponentAlliance: "red" | "blue";
+  opponentAlliance: AllianceColor;
   opponentTeams: string[];
-  ourAlliance: "red" | "blue" | null;
+  ourAlliance: AllianceColorOptional;
 }

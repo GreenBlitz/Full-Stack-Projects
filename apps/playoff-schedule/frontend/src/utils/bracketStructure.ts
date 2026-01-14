@@ -61,27 +61,26 @@ export function getTeamsFromFeedingMatch(
     return { teams: [], alliance: null };
   }
 
-  if (feedingMatch.winning_alliance) {
-    if (isWin) {
-      const alliance = feedingMatch.winning_alliance === "red" ? "red" : "blue";
-      return {
-        teams:
-          alliance === "red"
-            ? feedingMatch.alliances.red.team_keys
-            : feedingMatch.alliances.blue.team_keys,
-        alliance,
-      };
-    } else {
-      const alliance = feedingMatch.winning_alliance === "red" ? "blue" : "red";
-      return {
-        teams:
-          alliance === "red"
-            ? feedingMatch.alliances.red.team_keys
-            : feedingMatch.alliances.blue.team_keys,
-        alliance,
-      };
-    }
+  if (!feedingMatch.winning_alliance) {
+    return { teams: [], alliance: null };
   }
 
-  return { teams: [], alliance: null };
+  if (isWin) {
+    const alliance = feedingMatch.winning_alliance === "red" ? "red" : "blue";
+    return {
+      teams:
+        alliance === "red"
+          ? feedingMatch.alliances.red.team_keys
+          : feedingMatch.alliances.blue.team_keys,
+      alliance,
+    };
+  }
+  const alliance = feedingMatch.winning_alliance === "red" ? "blue" : "red";
+  return {
+    teams:
+      alliance === "red"
+        ? feedingMatch.alliances.red.team_keys
+        : feedingMatch.alliances.blue.team_keys,
+    alliance,
+  };
 }

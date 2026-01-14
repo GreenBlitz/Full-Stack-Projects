@@ -40,13 +40,14 @@ const gatherPossibleOpponentsFromFeedingMatches = (
             allMatches,
             isWinSource
           );
-          if (teams.length > emptyArrayLength && alliance) {
-            const filtered = teams.filter(
-              (team) => !currentTeamKeys.includes(team)
-            );
-            if (filtered.length > emptyArrayLength) {
-              return [{ teams: filtered, alliance }];
-            }
+          if (teams.length <= emptyArrayLength || !alliance) {
+            return [];
+          }
+          const filtered = teams.filter(
+            (team) => !currentTeamKeys.includes(team)
+          );
+          if (filtered.length > emptyArrayLength) {
+            return [{ teams: filtered, alliance }];
           }
           return [];
         }

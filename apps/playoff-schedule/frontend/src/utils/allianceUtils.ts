@@ -5,10 +5,10 @@ import { alliancesLength, allianceNumberRegex, parseIntRadix, opponentTeamsLengt
 
 const allianceNumberMatchIndex = 1;
 
-export function getOpponentAllianceNumber(
+export const getOpponentAllianceNumber=(
   match: PotentialMatch,
   alliances: AllianceSimpleType[]
-): number | null {
+): number | null => {
   if (!match.match || !match.opponentAllianceColor || !match.opponentTeams) {
     return null;
   }

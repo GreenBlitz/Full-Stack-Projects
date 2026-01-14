@@ -5,11 +5,12 @@ import {
   potentialOpponentsFirst,
   twoPotentialOpponents,
 } from "./bracketConstants";
+import type { AllianceColor } from "./bracketTypes";
 
 export interface AllianceInfo {
-  alliance: "red" | "blue";
+  alliance: AllianceColor;
   teams: string[];
-  opponent?: "red" | "blue";
+  opponent?: AllianceColor;
 }
 
 export const checkDirectlyScheduledOpponent = (
@@ -20,19 +21,20 @@ export const checkDirectlyScheduledOpponent = (
     currentTeamKeys.some((team) => teams.includes(team))
   );
 
-  if (ourAllianceEntry) {
-    const opponentData = nextMatchAlliances.find(
-      (alli) => alli.alliance === ourAllianceEntry.opponent
-    );
-    if (opponentData) {
-      return {
-        opponentAlliance: opponentData.alliance,
-        opponentTeams: opponentData.teams,
-        ourAlliance: ourAllianceEntry.alliance,
-      };
-    }
+  if (!ourAllianceEntry) {
+    return null;
   }
-  return null;
+  const opponentData = nextMatchAlliances.find(
+    (alli) => alli.alliance === ourAllianceEntry.opponent
+  );
+  if (!opponentData) {
+    return null;
+  }
+  return {
+    opponentAlliance: opponentData.alliance,
+    opponentTeams: opponentData.teams,
+    ourAlliance: ourAllianceEntry.alliance,
+  };
 };
 
 export const predictNextOpponentFromPotential = (
