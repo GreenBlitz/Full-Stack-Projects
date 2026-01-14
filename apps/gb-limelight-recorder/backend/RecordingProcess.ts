@@ -4,7 +4,7 @@ import { spawn } from "child_process";
 import { timeStamp } from "console";
 import ffmpegPath from "ffmpeg-static";
 
-class RecordingProcess {
+export class RecordingProcess {
   public ffmpegProcess: ChildProcess | null = null;
   public cameraUrl: string;
   public outputFile: string;
@@ -20,10 +20,8 @@ class RecordingProcess {
       + ".mp4";
 
     this.cameraUrl =
-      cameraUrl === "left" ? "http://limelight-left.local:5800"
-    : cameraUrl === "object" ? "http://limelight-object.local:5800"
-    : cameraUrl === "right" ? "http://limelight.local:5800"
-    : cameraUrl;
+      cameraUrl === "right" ? "http://limelight.local:5800"
+      : `http://limelight-${cameraUrl}.local:5800`;
   }
 
   
@@ -65,5 +63,3 @@ class RecordingProcess {
     return "Recording stopped"
   }
 }
-
-export { RecordingProcess };

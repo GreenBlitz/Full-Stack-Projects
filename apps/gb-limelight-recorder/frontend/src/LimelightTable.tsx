@@ -8,22 +8,25 @@ interface LimelightTableProps {
   cameras: boolean[];
 }
 
+type cameraObj = {
+  name: string
+  status: boolean
+  camURL: string
+}
+
 declare module "react" {
   interface InputHTMLAttributes<T> extends HTMLAttributes<T> {
     webkitdirectory?: boolean;
   }
 }
 
-const leftCamIndex = 0;
-const rightCamIndex = 1;
-
 async function doThingy(
   robotOnline: boolean,
-  cameraStatus: boolean,
+  cameras: cameraObj[],
   index: number
 ) {
-  const camera = index === leftCamIndex ? "left" : index === rightCamIndex ? "object" : "right";
-  if (robotOnline && cameraStatus) {
+  const camera = cameras[index];
+  if (robotOnline && camera.status) {
     await fetch(`http://localhost:5000/record/start/${camera}`, {
       method: "POST",
     });
@@ -32,44 +35,58 @@ async function doThingy(
       method: "POST",
     });
   }
+  camera.status = !camera.status;
 }
 
 const LimelightTable: React.FC<LimelightTableProps> = ({ robotOnline }) => {
-  const cameraStatuses = [false, false, false];
+  const leftCamObj: cameraObj = {
+    name: "left",
+    status: false,
+    camURL: "http://limelight-left.local:5800/",
+  };
+  const objectCamObj: cameraObj = {
+    name: "object",
+    status: false,
+    camURL: "http://limelight-object.local:5800/",
+  };
+  const rightCamObj: cameraObj = {
+    name: "right",
+    status: false,
+    camURL: "http://limelight.local:5800/",
+  };
+  const cameras = [leftCamObj, objectCamObj, rightCamObj];
   const [fileLocation, setFileLocation] = useState("");
   const locationPickerRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    cameraStatuses.forEach((cameraStatus, index) => {
-      doThingy(robotOnline, cameraStatus, index).catch(() => {
+    cameras.forEach((camera, index) => {
+      doThingy(robotOnline, cameras, index).catch(() => {
         console.error("Couldnt do the thingy");
       });
     });
   }, [robotOnline]);
 
+  // For the substring in cameras.map to capitalize first letter
+  const zero = 0;
+  const one = 1;
+  
   return (
     <>
       <table border={1}>
         <tr>
-          <th>Left</th>
-          <th>Object</th>
-          <th>Right</th>
+          {cameras.map((camera, index) => (
+            <td key={index}>{camera.name.substring(zero, one).toUpperCase()}</td>
+          ))}
         </tr>
         <tr>
-          <td>limelight-left.local:5800</td>
-          <td>limelight-object.local:5800</td>
-          <td>limelight.local:5800</td>
+          {cameras.map((camera, index) => (
+            <td key={index}>{camera.camURL}</td>
+          ))}
         </tr>
         <tr>
-          <td>
-            <img src="http://limelight-left.local:5800/" />
-          </td>
-          <td>
-            <img src="http://limelight-object.local:5800/" />
-          </td>
-          <td>
-            <img src="http://limelight.local:5800/" />
-          </td>
+          {cameras.map((camera) => (
+            <img key={camera.name} src={camera.camURL} />
+          ))}
         </tr>
         <tr>
           <td colSpan={3}>
@@ -79,7 +96,7 @@ const LimelightTable: React.FC<LimelightTableProps> = ({ robotOnline }) => {
               disabled={robotOnline}
               onClick={() => {
                 const files = locationPickerRef.current?.files;
-                const file = files?.[leftCamIndex];
+                const file = files?.[zero];
                 setFileLocation(file?.name ?? "");
               }}
             >Save Location</button>

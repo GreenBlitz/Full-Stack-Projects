@@ -8,21 +8,34 @@ import path from "path";
 import { pingCameras } from "./PingRobot.js";
 import { useEffect } from "react";
 
-
 const app = express();
 const port = 5000;
 app.use(cors());
 
-const ffmpegProcessLeft: RecordingProcess | null = null;
-const ffmpegProcessObject: RecordingProcess | null = null;
-const ffmpegProcessRight: RecordingProcess | null = null;
-const ffmpegProcesses = [
-  ffmpegProcessLeft as RecordingProcess | null, 
-  ffmpegProcessObject as RecordingProcess | null, 
-  ffmpegProcessRight as RecordingProcess | null,
-];
-const cameraNames = ["left", "object", "right"];
+type cameraObj = {
+  name: string
+  camURL: string
+  ffmpegProcess: RecordingProcess | null
+};
+
 const usbRoot = "E:/"; // CHANGE if needed
+
+const leftCamObj: cameraObj = {
+  name: "left",
+  camURL: "http://limelight-left.local:5800",
+  ffmpegProcess: null
+};
+const objectCamObj: cameraObj = {
+  name: "object",
+  camURL: "http://limelight-object.local:5800",
+  ffmpegProcess: null
+};
+const rightCamObj: cameraObj = {
+  name: "right",
+  camURL: "http://limelight.local:5800",
+  ffmpegProcess: null
+};
+const cameras: cameraObj[] = [leftCamObj, objectCamObj, rightCamObj];
 
 function createSessionFolder(): string {
   if (!fs.existsSync(usbRoot)) {
@@ -36,7 +49,6 @@ function createSessionFolder(): string {
   return sessionDir;
 }
 
-
 // --- HELLO ---
 app.get("/", (req, res) => {
   console.log("GET / route hit");
@@ -48,28 +60,37 @@ app.listen(port, () => {
   console.log(`Server listening on http://localhost:${port}`);
 });
 
+// for general use and stuff
+const zero = 0;
+const one = 1;
+const two = 2;
+const three = 3;
+
 function startRecording() {
-  if (ffmpegProcessLeft || ffmpegProcessObject || ffmpegProcessRight) {
+  if (cameras[zero].ffmpegProcess 
+    || cameras[one].ffmpegProcess 
+    || cameras[two].ffmpegProcess
+  ) {
     return;
   }
 
   const sessionDir = createSessionFolder();
 
-  for (let i = 0; i < ffmpegProcesses.length; i++) {
-    ffmpegProcesses[i] = new RecordingProcess(
-      cameraNames[i],
-      path.join(sessionDir, `${cameraNames[i]}.mp4`)
+  for (let i = 0; i < three; i++) {
+    cameras[i].ffmpegProcess = new RecordingProcess(
+      cameras[i].name,
+      path.join(sessionDir, `${cameras[i].name}.mp4`)
     );
-    ffmpegProcesses[i]?.startRecording();
+    cameras[i].ffmpegProcess?.startRecording();
   }
 }
 
 function stopRecording() {
-  for (let i = 0; i < ffmpegProcesses.length; i++) {
-    if (ffmpegProcesses[i]) {
-      ffmpegProcesses[i]?.stopRecording();
-      ffmpegProcesses[i] = null;
-      console.log(`Stopped recording: ${cameraNames[i]}`);
+  for (let i = 0; i < three; i++) {
+    if (cameras[i].ffmpegProcess) {
+      cameras[i].ffmpegProcess?.stopRecording();
+      cameras[i].ffmpegProcess = null;
+      console.log(`Stopped recording: ${cameras[i].name}`);
     }
   }
 }
