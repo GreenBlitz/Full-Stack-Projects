@@ -1,3 +1,2 @@
 // בס"ד
-export const urlRankings = (eventKey: string) =>
-  `/events/${eventKey}/rankings`;
+export const urlRankings = (eventKey: string) => `/events/${eventKey}/rankings`;

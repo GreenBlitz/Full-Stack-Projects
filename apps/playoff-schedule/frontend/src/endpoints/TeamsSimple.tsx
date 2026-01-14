@@ -2,7 +2,7 @@
 import * as t from "io-ts";
 import { stringOrNull } from "../utils/TypeUtils";
 
-export const simpleTeamsInEvent = t.type({//did
+export const simpleTeamsInEvent = t.type({
   city: stringOrNull,
   country: stringOrNull,
   key: t.string,
@@ -13,5 +13,5 @@ export const simpleTeamsInEvent = t.type({//did
 });
 export type TeamsInEventType = typeof simpleTeamsInEvent._A;
 
-export const urlTeamsInEvent = (eventKey: string) =>
+export const urlTeamsInEvent = (eventKey: string):string =>
   `/events/${eventKey}/teams`;

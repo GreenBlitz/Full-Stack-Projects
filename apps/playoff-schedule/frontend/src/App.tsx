@@ -12,7 +12,6 @@ import { FinalResults } from "./components/FinalResults";
 import { MatchCard } from "./components/MatchCard";
 import { EmptyState } from "./components/EmptyState";
 import { noGap } from "./config/frcConfig";
-
 const App: React.FC = () => {
   const [activeEventKey, setActiveEventKey] = useLocalStorage<string>(
     "dashboard_active_event",
@@ -24,6 +23,7 @@ const App: React.FC = () => {
     teams,
     allMatches,
     alliances,
+
     teamRank,
     searchStatus,
     performSearch,

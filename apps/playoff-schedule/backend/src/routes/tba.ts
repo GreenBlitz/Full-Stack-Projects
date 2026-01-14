@@ -5,10 +5,11 @@ import { fetchTba } from "../utils/tbaClient";
 
 export const tbaRouter = Router();
 
-const createTbaHandler = (name: string, suffix?: string) =>
+const createTbaHandler =
+  (name: string, suffix?: string) =>
   async (req: Request, res: Response): Promise<void> => {
     try {
-      const path = `/event/${req.params.eventKey}/${name}${suffix ? `/${suffix}` : ''}`;
+      const path = `/event/${req.params.eventKey}/${name}${suffix}`;
       const data = await fetchTba(path);
       res.status(StatusCodes.OK).json(data);
     } catch (error) {
@@ -19,22 +20,13 @@ const createTbaHandler = (name: string, suffix?: string) =>
     }
   };
 
-tbaRouter.get(
-  "/events/:eventKey/teams",
-  createTbaHandler("teams", "simple")
-);
+tbaRouter.get("/events/:eventKey/teams", createTbaHandler("teams", "/simple"));
 
 tbaRouter.get(
   "/events/:eventKey/matches",
-  createTbaHandler("matches", "simple")
+  createTbaHandler("matches", "/simple")
 );
 
-tbaRouter.get(
-  "/events/:eventKey/rankings",
-  createTbaHandler("rankings")
-);
+tbaRouter.get("/events/:eventKey/rankings", createTbaHandler("rankings"));
 
-tbaRouter.get(
-  "/events/:eventKey/alliances",
-  createTbaHandler("alliances")
-);
+tbaRouter.get("/events/:eventKey/alliances", createTbaHandler("alliances"));

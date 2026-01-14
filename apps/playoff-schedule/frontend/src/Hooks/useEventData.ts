@@ -72,20 +72,19 @@ export const useEventData = (
         const [teamsData, matchesData, rankingsData, alliancesData] =
           await fetchEventData(eventKey);
 
-        if (Array.isArray(teamsData) && Array.isArray(matchesData)) {
-          setTeams(teamsData);
-          matchesData.sort(sortMatches);
-          setAllMatches(matchesData);
-          setAlliances(Array.isArray(alliancesData) ? alliancesData : []);
-          setTeamRank(
-            rankingsData.rankings.find((r) => r.team_key === targetTeamKey) ??
-              null
-          );
-          setSearchStatus("success");
-        } else {
-          setSearchStatus("error");
-        }
-      } catch {
+          if (!Array.isArray(teamsData) || !Array.isArray(matchesData)) {
+            setSearchStatus("error");
+            return;
+      }
+     setTeams(teamsData);
+       matchesData.sort(sortMatches);
+       setAllMatches(matchesData);
+       setAlliances(Array.isArray(alliancesData) ? alliancesData : []);
+       setTeamRank(
+         rankingsData.rankings.find((r) => r.team_key === targetTeamKey) ??
+           null
+       );
+       setSearchStatus("success"); } catch {
         setSearchStatus("error");
       }
     },
@@ -119,7 +118,7 @@ export const useEventData = (
       void fetchFromProxy<RankingsResponse>(rankingsUrl)
         .then((data) => {
           const myRank =
-            data.rankings.find((r) => r.team_key === targetTeamKey) ?? null;
+            data.rankings.find((ranking) => ranking.team_key === targetTeamKey) ?? null;
           setTeamRank(myRank);
         })
         .catch(console.error);

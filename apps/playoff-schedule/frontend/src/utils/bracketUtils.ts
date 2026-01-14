@@ -1,6 +1,5 @@
 // בס"ד
 import type { MatchesSimpleType } from "../endpoints/MatchSimple";
-import type { NextMatches } from "./bracketTypes";
 import { bracketStructure } from "./bracketConstants";
 import {
   getBracketMatchNumber,
@@ -13,8 +12,92 @@ import {
 } from "./bracketOpponentDetection";
 import { finalsBracketNumber } from "./bracketConstants";
 
-export type { PotentialMatch, NextMatches } from "./bracketTypes";
+import type { PotentialMatch, NextMatches } from "./bracketTypes";
+export type { PotentialMatch, NextMatches };
 export { getBracketMatchNumber } from "./bracketMatchFinder";
+
+interface NextMatchScenarioOptions {
+  target: number | "finals" | "eliminated";
+  currentMatch: MatchesSimpleType;
+  isRedAlliance: boolean;
+  bracketNumber: number;
+  allMatches: MatchesSimpleType[];
+}
+
+const getNextMatchScenario = ({
+  target,
+  currentMatch,
+  isRedAlliance,
+  bracketNumber,
+  allMatches,
+}: NextMatchScenarioOptions): PotentialMatch | null => {
+  if (target === "eliminated") {
+    return {
+      matchLabel: "Eliminated from Tournament",
+      isPlaceholder: false,
+    };
+  }
+
+  if (target === "finals") {
+    const finalsMatch = findFinalsMatch(allMatches);
+    if (finalsMatch) {
+      const opponentInfo = getOpponentInfo({
+        currentMatch,
+        nextMatch: finalsMatch,
+        isRedAlliance,
+        currentBracketNumber: bracketNumber,
+        nextBracketNumber: finalsBracketNumber,
+        allMatches,
+      });
+      const opponentLabel = opponentInfo
+        ? formatOpponentLabel(opponentInfo.opponentTeams)
+        : "TBD";
+      return {
+        matchLabel: `Finals vs ( ${opponentLabel})`,
+        matchKey: finalsMatch.key,
+        match: finalsMatch,
+        isPlaceholder: false,
+        opponentAllianceColor: opponentInfo?.opponentAlliance,
+        opponentTeams: opponentInfo?.opponentTeams,
+        ourAlliance: opponentInfo?.ourAlliance ?? null,
+      };
+    } else {
+      return {
+        matchLabel: "Finals",
+        isPlaceholder: true,
+      };
+    }
+  }
+
+  const nextMatch = findMatchByBracketNumber(target, allMatches);
+  if (nextMatch) {
+    const opponentInfo = getOpponentInfo({
+      currentMatch,
+      nextMatch,
+      isRedAlliance,
+      currentBracketNumber: bracketNumber,
+      nextBracketNumber: target,
+      allMatches,
+    });
+    const opponentLabel = opponentInfo
+      ? formatOpponentLabel(opponentInfo.opponentTeams)
+      : "TBD";
+    return {
+      matchLabel: `Match ${target} vs ( ${opponentLabel})`,
+      matchKey: nextMatch.key,
+      match: nextMatch,
+      isPlaceholder: false,
+      opponentAllianceColor: opponentInfo?.opponentAlliance,
+      opponentTeams: opponentInfo?.opponentTeams,
+      ourAlliance: opponentInfo?.ourAlliance ?? null,
+    };
+  } else {
+    return {
+      matchLabel: `Match ${target}`,
+      isPlaceholder: true,
+    };
+  }
+};
 
 export function getPotentialNextMatches(
   currentMatch: MatchesSimpleType,
@@ -41,111 +124,24 @@ export function getPotentialNextMatches(
 
   const bracketMapping = bracketStructure[bracketNumber];
 
-  if (bracketMapping.ifWin === "finals") {
-    const finalsMatch = findFinalsMatch(allMatches);
-    if (finalsMatch) {
-      const opponentInfo = getOpponentInfo({
-        currentMatch,
-        nextMatch: finalsMatch,
-        isRedAlliance,
-        currentBracketNumber: bracketNumber,
-        nextBracketNumber: finalsBracketNumber,
-        allMatches,
-      });
-      const opponentLabel = opponentInfo
-        ? formatOpponentLabel(opponentInfo.opponentTeams)
-        : "TBD";
-      result.ifWin = {
-        matchLabel: `Finals vs ( ${opponentLabel})`,
-        matchKey: finalsMatch.key,
-        match: finalsMatch,
-        isPlaceholder: false,
-        opponentAllianceColor: opponentInfo?.opponentAlliance,
-        opponentTeams: opponentInfo?.opponentTeams,
-        ourAlliance: opponentInfo?.ourAlliance ?? null,
-      };
-    } else {
-      result.ifWin = {
-        matchLabel: "Finals",
-        isPlaceholder: true,
-      };
-    }
-  } else if (bracketMapping.ifWin === "eliminated") {
-    result.ifWin = {
-      matchLabel: "Eliminated from Tournament",
-      isPlaceholder: false,
-    };
-  } else {
-    const nextMatch = findMatchByBracketNumber(
-      bracketMapping.ifWin,
-      allMatches
-    );
-    if (nextMatch) {
-      const opponentInfo = getOpponentInfo({
-        currentMatch,
-        nextMatch,
-        isRedAlliance,
-        currentBracketNumber: bracketNumber,
-        nextBracketNumber: bracketMapping.ifWin,
-        allMatches,
-      });
-      const opponentLabel = opponentInfo
-        ? formatOpponentLabel(opponentInfo.opponentTeams)
-        : "TBD";
-      result.ifWin = {
-        matchLabel: `Match ${bracketMapping.ifWin} vs ( ${opponentLabel})`,
-        matchKey: nextMatch.key,
-        match: nextMatch,
-        isPlaceholder: false,
-        opponentAllianceColor: opponentInfo?.opponentAlliance,
-        opponentTeams: opponentInfo?.opponentTeams,
-        ourAlliance: opponentInfo?.ourAlliance ?? null,
-      };
-    } else {
-      result.ifWin = {
-        matchLabel: `Match ${bracketMapping.ifWin}`,
-        isPlaceholder: true,
-      };
-    }
+  if (bracketMapping.ifWin) {
+    result.ifWin = getNextMatchScenario({
+      target: bracketMapping.ifWin,
+      currentMatch,
+      isRedAlliance,
+      bracketNumber,
+      allMatches,
+    });
   }
 
-  if (bracketMapping.ifLoss === "eliminated") {
-    result.ifLoss = {
-      matchLabel: "Eliminated from Tournament",
-      isPlaceholder: false,
-    };
-  } else {
-    const nextMatch = findMatchByBracketNumber(
-      bracketMapping.ifLoss,
-      allMatches
-    );
-    if (nextMatch) {
-      const opponentInfo = getOpponentInfo({
-        currentMatch,
-        nextMatch,
-        isRedAlliance,
-        currentBracketNumber: bracketNumber,
-        nextBracketNumber: bracketMapping.ifLoss,
-        allMatches,
-      });
-      const opponentLabel = opponentInfo
-        ? formatOpponentLabel(opponentInfo.opponentTeams)
-        : "TBD";
-      result.ifLoss = {
-        matchLabel: `Match ${bracketMapping.ifLoss} vs ( ${opponentLabel})`,
-        matchKey: nextMatch.key,
-        match: nextMatch,
-        isPlaceholder: false,
-        opponentAllianceColor: opponentInfo?.opponentAlliance,
-        opponentTeams: opponentInfo?.opponentTeams,
-        ourAlliance: opponentInfo?.ourAlliance ?? null,
-      };
-    } else {
-      result.ifLoss = {
-        matchLabel: `Match ${bracketMapping.ifLoss}`,
-        isPlaceholder: true,
-      };
-    }
+  if (bracketMapping.ifLoss) {
+    result.ifLoss = getNextMatchScenario({
+      target: bracketMapping.ifLoss,
+      currentMatch,
+      isRedAlliance,
+      bracketNumber,
+      allMatches,
+    });
   }
 
   return result;

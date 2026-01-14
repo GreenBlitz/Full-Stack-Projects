@@ -16,7 +16,10 @@ export const bracketStructure: Record<number, BracketMapping> = {
   12: { ifWin: 13, ifLoss: "eliminated" },
   13: { ifWin: "finals", ifLoss: "eliminated" },
 };
+
+export const potentialOpponentsFirst = 1;
 export const opponentTeamsLength = 0;
+export const alliancesLength = 0;
 export const firstMatchIndex = 0;
 export const nextMatchIndex = 1;
 export const minBracketMatch = 1;
@@ -25,6 +28,7 @@ export const firstMatchNumber = 1;
 export const emptyArrayLength = 0;
 export const finalsBracketNumber = 0;
 export const firstArrayIndex = 0;
+export const twoPotentialOpponents = 2; 
 
 export const match1 = 1;
 export const match2 = 2;
@@ -43,3 +47,4 @@ export const match13 = 13;
 export const matchNumberRegex = /Match (\d+)/;
 export const allianceNumberRegex = /Alliance (\d+)/i;
 export const parseIntRadix = 10;
+export const nextMatchLimit = 2;

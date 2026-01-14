@@ -1,42 +1,48 @@
 // בס"ד
 import type { PotentialMatch } from "./bracketTypes";
 import type { AllianceSimpleType } from "../endpoints/AlliancesSimple";
-import { allianceNumberRegex, parseIntRadix } from "./bracketConstants";
+import { alliancesLength, allianceNumberRegex, parseIntRadix, opponentTeamsLength } from "./bracketConstants";
 
-export const getOpponentAllianceNumber = (
+const allianceNumberMatchIndex = 1;
+
+export function getOpponentAllianceNumber(
   match: PotentialMatch,
   alliances: AllianceSimpleType[]
-): number | null => {
+): number | null {
   if (!match.match || !match.opponentAllianceColor || !match.opponentTeams) {
     return null;
   }
 
-  if (alliances.length === 0) {
+  if (alliances.length === alliancesLength) {
     return null;
   }
 
   const opponentTeamKeys = match.opponentTeams;
-  if (opponentTeamKeys.length === 0) {
+  if (opponentTeamKeys.length === opponentTeamsLength) {
     return null;
   }
 
-  for (const alliance of alliances) {
+  const opponentAlliance = alliances.find((alliance) => {
     const allAllianceTeams = [
       ...alliance.picks,
       ...(alliance.backup?.in ? [alliance.backup.in] : []),
     ];
 
-    const hasOpponentTeam = opponentTeamKeys.some((teamKey) =>
+    return opponentTeamKeys.some((teamKey) =>
       allAllianceTeams.includes(teamKey)
     );
+  });
 
-    if (hasOpponentTeam) {
-      const allianceNumberMatch = alliance.name.match(allianceNumberRegex);
-      if (allianceNumberMatch) {
-        return parseInt(allianceNumberMatch[1], parseIntRadix);
-      }
+  if (opponentAlliance) {
+    const allianceNumberMatch =
+      opponentAlliance.name.match(allianceNumberRegex);
+    if (allianceNumberMatch) {
+      return parseInt(
+        allianceNumberMatch[allianceNumberMatchIndex],
+        parseIntRadix
+      );
     }
   }
 
   return null;
-};
+}

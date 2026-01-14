@@ -22,6 +22,4 @@ export const matchSimple = t.type({
 
 export type MatchesSimpleType = typeof matchSimple._A;
 
-export const urlMatches = (eventKey: string) =>
-  `/events/${eventKey}/matches`;
-
+export const urlMatches = (eventKey: string) => `/events/${eventKey}/matches`;
