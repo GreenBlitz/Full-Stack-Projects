@@ -50,7 +50,14 @@ export const getOpponentInfo = (
   );
 };
 
-export function formatOpponentLabel(opponentTeams: string[]): string {
+export function formatOpponentLabel(
+  opponentTeams: string[],
+  info?: OpponentInfo
+): string {
+  if (info?.feedingMatchNumber && info.sourceType) {
+    const typeLabel = info.sourceType === "winner" ? "Winner" : "Loser";
+    return `${typeLabel} of Match ${info.feedingMatchNumber}`;
+  }
   if (opponentTeams.length === emptyArrayLength) {
     return "TBD";
   }

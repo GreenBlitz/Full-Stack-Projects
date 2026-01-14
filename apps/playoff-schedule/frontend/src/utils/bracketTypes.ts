@@ -36,4 +36,6 @@ export interface OpponentInfo {
   opponentAlliance: AllianceColor;
   opponentTeams: string[];
   ourAlliance: AllianceColorOptional;
+  feedingMatchNumber?: number;
+  sourceType?: "winner" | "loser";
 }

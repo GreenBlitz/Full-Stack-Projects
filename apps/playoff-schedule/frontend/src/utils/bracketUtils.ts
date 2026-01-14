@@ -39,32 +39,32 @@ const getNextMatchScenario = ({
   }
 
   if (target === "finals") {
+    const finalsMatch = findFinalsMatch(allMatches);
+    if (finalsMatch) {
+      const opponentInfo = getOpponentInfo({
+        currentMatch,
+        nextMatch: finalsMatch,
+        isRedAlliance,
+        currentBracketNumber: bracketNumber,
+        nextBracketNumber: finalsBracketNumber,
+        allMatches,
+      });
+      const opponentLabel = opponentInfo
+        ? formatOpponentLabel(opponentInfo.opponentTeams, opponentInfo)
+        : "TBD";
+      return {
+        matchLabel: `Finals vs ( ${opponentLabel})`,
+        matchKey: finalsMatch.key,
+        match: finalsMatch,
+        isPlaceholder: false,
+        opponentAllianceColor: opponentInfo?.opponentAlliance,
+        opponentTeams: opponentInfo?.opponentTeams,
+        ourAlliance: opponentInfo?.ourAlliance ?? null,
+      };
+    }
     return {
       matchLabel: "Finals",
       isPlaceholder: true,
-    };
-  }
-  const finalsMatch = findFinalsMatch(allMatches);
-  if (finalsMatch) {
-    const opponentInfo = getOpponentInfo({
-      currentMatch,
-      nextMatch: finalsMatch,
-      isRedAlliance,
-      currentBracketNumber: bracketNumber,
-      nextBracketNumber: finalsBracketNumber,
-      allMatches,
-    });
-    const opponentLabel = opponentInfo
-      ? formatOpponentLabel(opponentInfo.opponentTeams)
-      : "TBD";
-    return {
-      matchLabel: `Finals vs ( ${opponentLabel})`,
-      matchKey: finalsMatch.key,
-      match: finalsMatch,
-      isPlaceholder: false,
-      opponentAllianceColor: opponentInfo?.opponentAlliance,
-      opponentTeams: opponentInfo?.opponentTeams,
-      ourAlliance: opponentInfo?.ourAlliance ?? null,
     };
   }
 
@@ -84,7 +84,7 @@ const getNextMatchScenario = ({
     allMatches,
   });
   const opponentLabel = opponentInfo
-    ? formatOpponentLabel(opponentInfo.opponentTeams)
+    ? formatOpponentLabel(opponentInfo.opponentTeams, opponentInfo)
     : "TBD";
   return {
     matchLabel: `Match ${target} vs ( ${opponentLabel})`,
