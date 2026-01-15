@@ -1,10 +1,10 @@
 // בס"ד
 import type { Request } from "express";
-import { chain, chainW, type Either, map, mapLeft } from "fp-ts/lib/Either";
+import { chain, type Either, map, mapLeft } from "fp-ts/lib/Either";
 import { StatusCodes } from "http-status-codes";
 import { failure } from "io-ts/lib/PathReporter";
-import type { Props, TypeC } from "io-ts";
-import { flow, pipe } from "fp-ts/lib/function";
+import type { ArrayType, Props, TypeC } from "io-ts";
+import { pipe } from "fp-ts/lib/function";
 
 export interface EndpointError {
   status: number;
@@ -12,7 +12,7 @@ export interface EndpointError {
 }
 
 export const createBodyVerificationPipe =
-  <E extends EndpointError, U extends Props>(typeToCheck: TypeC<U>) =>
+  <E extends EndpointError, U extends Props>(typeToCheck: TypeC<U> | ArrayType<TypeC<U>>) =>
   (req: Either<E, Request>) =>
     pipe(
       req,
@@ -26,6 +26,6 @@ export const createBodyVerificationPipe =
           }))
         )
       )
-    );
+    ) satisfies Either<EndpointError, unknown>;
 export const isOK = (status: StatusCodes): boolean =>
   status >= StatusCodes.OK && status < StatusCodes.MULTIPLE_CHOICES;
