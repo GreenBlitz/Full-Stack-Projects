@@ -3,7 +3,6 @@ import * as t from "io-ts";
 import { stringOrNull } from "../utils/TypeUtils";
 
 export const simpleEventsInYear = t.type({
-  //did
   city: stringOrNull,
   country: stringOrNull,
   district: t.unknown /*null*/,

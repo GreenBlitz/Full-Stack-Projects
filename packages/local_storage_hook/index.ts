@@ -29,4 +29,4 @@ const useLocalStorage = <T,>(
   return [storedValue, setValue];
 };
 
-export default useLocalStorage;
+export {useLocalStorage};

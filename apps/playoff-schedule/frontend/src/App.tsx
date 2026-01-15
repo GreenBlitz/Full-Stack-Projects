@@ -1,7 +1,7 @@
 // בס"ד
 import type React from "react";
 import { useState, useMemo } from "react";
-import useLocalStorage from "./Hooks/LocalStorageHook";
+import { useLocalStorage} from "@repo/local_storage_hook";
 import { useEventData } from "./Hooks/useEventData";
 import { useMatchProcessing } from "./Hooks/useMatchProcessing";
 import { Header } from "./components/Header";
@@ -39,17 +39,17 @@ const App: React.FC = () => {
   } = useMatchProcessing(allMatches);
 
   const teamNameMap = useMemo(() => {
-    const record: Record<string, string> = {};
-    teams.forEach((team) => {
-      record[team.key] = team.nickname;
-    });
-    return record;
+    return teams.reduce<Record<string, string>>((acc, team) => {
+        acc[team.key] = team.nickname;
+        return acc;
+      }, {}
+    );
   }, [teams]);
 
   const handleSearchSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     const formattedKey = inputEventKey.trim().toLowerCase();
-    void performSearch(formattedKey);
+    performSearch(formattedKey);
   };
 
   return (

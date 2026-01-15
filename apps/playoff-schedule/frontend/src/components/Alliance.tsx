@@ -1,11 +1,12 @@
 // בס"ד
 import type React from "react";
 import { targetTeamKey, sliceStart } from "../config/frcConfig";
+import type { AllianceColorOptional } from "../utils/bracketTypes";
 
 interface AllianceProps {
   teamKeys: string[];
   teamNameMap: Record<string, string>;
-  allianceColor: "red" | "blue";
+  allianceColor: AllianceColorOptional;
   isTargetTeamInAlliance: boolean;
 }
 
@@ -30,7 +31,7 @@ export const Alliance: React.FC<AllianceProps> = ({
     },
   };
 
-  const colors = colorClasses[allianceColor];
+  const colors = colorClasses[allianceColor ?? "red"];
 
   return (
     <div

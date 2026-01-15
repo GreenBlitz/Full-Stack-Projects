@@ -37,6 +37,7 @@
   ],
   "dependencies": {
     "@tailwindcss/vite": "^4.1.17",
+    "@tanstack/react-query": "^5.90.17",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "dotenv-cli": "^11.0.0",

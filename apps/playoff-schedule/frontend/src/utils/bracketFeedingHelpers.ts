@@ -103,18 +103,6 @@ export const getFeedingBracketOpponent = (
   }
   if (possibleOpponents.length > firstMatchNumber) {
     const allTeams = possibleOpponents.flatMap((p) => p.teams);
-    // If we have mixed sources or multiple sources, we might not want to show specific "Winner of X".
-    // But usually in double elim it's one path or another.
-    // Ideally we pick the first one's info if consistent?
-    // For now, let's just stick to the basic return if multiple.
-    // Or if they come from the FIRST one which is usually the valid path?
-    // Let's grab the info from the first one as a best guess for the label if needed,
-    // or just return plain if it's too complex.
-    // However, the issue described is about "If Win" and "If Loss" being the same.
-    // Usually that's when we have 1 possible opponent set from a feeding match.
-    // If we have > 1, it might be a weird edge case.
-
-    // Let's try to pass the first one's info if available.
     const firstOpponent = possibleOpponents[firstArrayIndex];
 
     return {

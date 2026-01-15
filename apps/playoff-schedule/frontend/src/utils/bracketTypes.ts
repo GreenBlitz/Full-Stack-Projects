@@ -1,7 +1,6 @@
 // בס"ד
 import type { MatchesSimpleType } from "../endpoints/MatchSimple";
 
-export type AllianceColor = "red" | "blue";
 export type AllianceColorOptional = "red" | "blue" | null;
 export interface PotentialMatch {
   matchLabel: string;
@@ -33,7 +32,7 @@ export interface OpponentInfoOptions {
 }
 
 export interface OpponentInfo {
-  opponentAlliance: AllianceColor;
+  opponentAlliance: AllianceColorOptional;
   opponentTeams: string[];
   ourAlliance: AllianceColorOptional;
   feedingMatchNumber?: number;

@@ -16,52 +16,41 @@ import {
   match12,
   match13,
 } from "./bracketConstants";
+import type { AllianceColorOptional } from "./bracketTypes";
+
+const feedingMatchesConfig: Record<
+  number,
+  {
+    winFrom?: number[];
+    lossFrom?: number[];
+  }
+> = {
+  [match7]: { winFrom: [match1, match2] },
+  [match8]: { winFrom: [match3, match4] },
+  [match5]: { lossFrom: [match1, match2] },
+  [match6]: { lossFrom: [match3, match4] },
+  [match9]: { winFrom: [match6], lossFrom: [match7] },
+  [match10]: { winFrom: [match5], lossFrom: [match8] },
+  [match11]: { winFrom: [match7, match8] },
+  [match12]: { winFrom: [match9, match10] },
+  [match13]: { winFrom: [match12], lossFrom: [match11] },
+};
 
 export function getFeedingMatches(targetMatchNumber: number): {
   winFrom?: number[];
   lossFrom?: number[];
 } {
-  if (targetMatchNumber === match7) {
-    return { winFrom: [match1, match2] };
-  }
-  if (targetMatchNumber === match8) {
-    return { winFrom: [match3, match4] };
-  }
-  if (targetMatchNumber === match5) {
-    return { lossFrom: [match1, match2] };
-  }
-  if (targetMatchNumber === match6) {
-    return { lossFrom: [match3, match4] };
-  }
-  if (targetMatchNumber === match9) {
-    return { winFrom: [match6], lossFrom: [match7] };
-  }
-  if (targetMatchNumber === match10) {
-    return { winFrom: [match5], lossFrom: [match8] };
-  }
-  if (targetMatchNumber === match11) {
-    return { winFrom: [match7, match8] };
-  }
-  if (targetMatchNumber === match12) {
-    return { winFrom: [match9, match10] };
-  }
-  if (targetMatchNumber === match13) {
-    return { winFrom: [match12], lossFrom: [match11] };
-  }
-  return {};
+  return feedingMatchesConfig[targetMatchNumber] ?? {};
 }
 
 export function getTeamsFromFeedingMatch(
   feedingMatchNumber: number,
   allMatches: MatchesSimpleType[],
   isWin: boolean
-): { teams: string[]; alliance: "red" | "blue" | null } {
+): { teams: string[]; alliance: AllianceColorOptional } {
   const feedingMatch = findMatchByBracketNumber(feedingMatchNumber, allMatches);
-  if (!feedingMatch) {
-    return { teams: [], alliance: null };
-  }
 
-  if (!feedingMatch.winning_alliance) {
+  if (!feedingMatch?.winning_alliance) {
     return { teams: [], alliance: null };
   }
 
