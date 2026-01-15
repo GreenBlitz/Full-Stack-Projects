@@ -1,6 +1,5 @@
 // בס"ד
 import * as t from "io-ts";
-import type { AtMost } from "./Utils";
 
 export const matchesProps = t.type({
   event: t.string,
@@ -8,37 +7,49 @@ export const matchesProps = t.type({
 
 export type TBAMatchesProps = t.TypeOf<typeof matchesProps>;
 
-type MaxTeamsInAlliance = 3;
-type TeamKeys = AtMost<string, MaxTeamsInAlliance>;
+// 1. Define the TBAAlliance codec
+export const tbaAlliance = t.type({
+  score: t.number,
+  team_keys: t.array(t.string),
+  surrogate_team_keys: t.array(t.string),
+  dq_team_keys: t.array(t.string),
+});
 
-export interface TBAAlliance {
-  score: number;
-  team_keys: TeamKeys;
-  surrogate_team_keys: TeamKeys;
-  dq_team_keys: TeamKeys;
-}
-
-export interface TBAMatch<AllianceBreakdown, MiscBreakdown = {}> {
-  key: "string";
-  comp_level: "qm";
-  set_number: number;
-  match_number: number;
-  alliances: {
-    red: TBAAlliance;
-    blue: TBAAlliance;
-  };
-  winning_alliance: "red" | "blue" | ""; // "" is a tie
-  event_key: string;
-  time: number;
-  actual_time: number;
-  predicted_time: number;
-  post_result_time: number;
-  score_breakdown: {
-    red: AllianceBreakdown;
-    blue: AllianceBreakdown;
-  } & MiscBreakdown;
-  videos: {
-    type: string;
-    key: string;
-  }[];
-}
+// 2. Define the generic TBAMatch codec constructor
+export const tbaMatch = <A extends t.Mixed, M extends t.Mixed>(
+  allianceBreakdown: A,
+  miscBreakdown: M
+) =>
+  t.type({
+    key: t.string,
+    comp_level: t.string,
+    set_number: t.number,
+    match_number: t.number,
+    alliances: t.type({
+      red: tbaAlliance,
+      blue: tbaAlliance,
+    }),
+    winning_alliance: t.union([
+      t.literal("red"),
+      t.literal("blue"),
+      t.literal(""),// "" is a tie
+    ]),
+    event_key: t.string,
+    time: t.number,
+    actual_time: t.number,
+    predicted_time: t.number,
+    post_result_time: t.number,
+    score_breakdown: t.intersection([
+      t.type({
+        red: allianceBreakdown,
+        blue: allianceBreakdown,
+      }),
+      miscBreakdown,
+    ]),
+    videos: t.array(
+      t.type({
+        type: t.string,
+        key: t.string,
+      })
+    ),
+  });

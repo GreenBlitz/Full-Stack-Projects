@@ -1,20 +1,31 @@
 // בס"ד
-import type { RequestHandler } from "express";
-import { isLeft } from "fp-ts/lib/Either";
+import type { Request } from "express";
+import { chain, chainW, type Either, map, mapLeft } from "fp-ts/lib/Either";
 import { StatusCodes } from "http-status-codes";
-import { PathReporter } from "io-ts/lib/PathReporter";
+import { failure } from "io-ts/lib/PathReporter";
 import type { Props, TypeC } from "io-ts";
+import { flow, pipe } from "fp-ts/lib/function";
 
-export const verifyBody =
-  <U extends Props>(typeToCheck: TypeC<U>): RequestHandler =>
-  (req, res, next): void => {
-    const result = typeToCheck.decode(req.body);
+export interface EndpointError {
+  status: number;
+  reason: string;
+}
 
-    if (isLeft(result)) {
-      res
-        .status(StatusCodes.NOT_ACCEPTABLE)
-        .json({ errors: PathReporter.report(result) });
-    } else {
-      next();
-    }
-  };
+export const createBodyVerificationPipe =
+  <E extends EndpointError, U extends Props>(typeToCheck: TypeC<U>) =>
+  (req: Either<E, Request>) =>
+    pipe(
+      req,
+      map((request) => request.body),
+      chain((body) =>
+        pipe(
+          typeToCheck.decode(body),
+          mapLeft((error) => ({
+            status: StatusCodes.BAD_REQUEST,
+            reason: `Recieved incorrect body parameters. error: ${failure(error).join("\n")}`,
+          }))
+        )
+      )
+    );
+export const isOK = (status: StatusCodes): boolean =>
+  status >= StatusCodes.OK && status < StatusCodes.MULTIPLE_CHOICES;

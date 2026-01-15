@@ -1,57 +1,73 @@
 // בס"ד
+import * as t from "io-ts";
 
-type YesNo = "Yes" | "No";
+const yesNo = t.keyof({
+  Yes: null,
+  No: null,
+});
 
-type Climb = "Park" | "DeepCage" | "ShallowCage" | "None";
+const climb = t.keyof({
+  Park: null,
+  DeepCage: null,
+  ShallowCage: null,
+  None: null,
+});
 
-interface ReefRow {
-  nodeA: boolean;
-  nodeB: boolean;
-  nodeC: boolean;
-  nodeD: boolean;
-  nodeE: boolean;
-}
-interface Reef {
-  botRow: ReefRow;
-  midRow: ReefRow;
-  tba_botRowCount: number;
-  tba_midRowCount: number;
-  tba_topRowCount: number;
-  topRow: ReefRow;
-  trough: number;
-}
-export interface ScoreBreakdown2025 {
-  adjustPoints: number;
-  algaePoints: number;
-  autoBonusAchieved: boolean;
-  autoCoralCount: number;
-  autoCoralPoints: number;
-  autoLineRobot1: YesNo;
-  autoLineRobot2: YesNo;
-  autoLineRobot3: YesNo;
-  autoMobilityPoints: number;
-  autoPoints: number;
-  autoReef: Reef;
-  bargeBonusAchieved: boolean;
-  coopertitionCriteriaMet: boolean;
-  coralBonusAchieved: boolean;
-  endGameBargePoints: number;
-  endGameRobot1: Climb;
-  endGameRobot2: Climb;
-  endGameRobot3: Climb;
-  foulCount: number;
-  foulPoints: number;
-  g206Penalty: boolean;
-  g410Penalty: boolean;
-  g418Penalty: boolean;
-  g428Penalty: boolean;
-  netAlgaeCount: number;
-  rp: number;
-  techFoulCount: number;
-  teleopCoralCount: number;
-  teleopCoralPoints: number;
-  teleopPoints: number;
-  teleopReef: Reef;
-  totalPoints: number;
-  wallAlgaeCount: number;
-}
+// --- ReefRow Codec ---
+const reefRow = t.type({
+  nodeA: t.boolean,
+  nodeB: t.boolean,
+  nodeC: t.boolean,
+  nodeD: t.boolean,
+  nodeE: t.boolean,
+});
+
+// --- Reef Codec ---
+const reef = t.type({
+  botRow: reefRow,
+  midRow: reefRow,
+  tba_botRowCount: t.number,
+  tba_midRowCount: t.number,
+  tba_topRowCount: t.number,
+  topRow: reefRow,
+  trough: t.number,
+});
+
+// --- ScoreBreakdown2025 Codec ---
+export const scoreBreakdown2025 = t.type({
+  adjustPoints: t.number,
+  algaePoints: t.number,
+  autoBonusAchieved: t.boolean,
+  autoCoralCount: t.number,
+  autoCoralPoints: t.number,
+  autoLineRobot1: yesNo,
+  autoLineRobot2: yesNo,
+  autoLineRobot3: yesNo,
+  autoMobilityPoints: t.number,
+  autoPoints: t.number,
+  autoReef: reef,
+  bargeBonusAchieved: t.boolean,
+  coopertitionCriteriaMet: t.boolean,
+  coralBonusAchieved: t.boolean,
+  endGameBargePoints: t.number,
+  endGameRobot1: climb,
+  endGameRobot2: climb,
+  endGameRobot3: climb,
+  foulCount: t.number,
+  foulPoints: t.number,
+  g206Penalty: t.boolean,
+  g410Penalty: t.boolean,
+  g418Penalty: t.boolean,
+  g428Penalty: t.boolean,
+  netAlgaeCount: t.number,
+  rp: t.number,
+  techFoulCount: t.number,
+  teleopCoralCount: t.number,
+  teleopCoralPoints: t.number,
+  teleopPoints: t.number,
+  teleopReef: reef,
+  totalPoints: t.number,
+  wallAlgaeCount: t.number,
+});
+
+export type ScoreBreakdown2025 = t.TypeOf<typeof scoreBreakdown2025>;
