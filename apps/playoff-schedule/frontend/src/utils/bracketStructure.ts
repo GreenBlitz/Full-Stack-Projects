@@ -1,21 +1,7 @@
 // בס"ד
 import type { MatchesSimpleType } from "../endpoints/MatchSimple";
 import { findMatchByBracketNumber } from "./bracketMatchFinder";
-import {
-  match1,
-  match2,
-  match3,
-  match4,
-  match5,
-  match6,
-  match7,
-  match8,
-  match9,
-  match10,
-  match11,
-  match12,
-  match13,
-} from "./bracketConstants";
+import { matchNumbers } from "./bracketConstants";
 import type { AllianceColorOptional } from "./bracketTypes";
 
 const feedingMatchesConfig: Record<
@@ -25,15 +11,36 @@ const feedingMatchesConfig: Record<
     lossFrom?: number[];
   }
 > = {
-  [match7]: { winFrom: [match1, match2] },
-  [match8]: { winFrom: [match3, match4] },
-  [match5]: { lossFrom: [match1, match2] },
-  [match6]: { lossFrom: [match3, match4] },
-  [match9]: { winFrom: [match6], lossFrom: [match7] },
-  [match10]: { winFrom: [match5], lossFrom: [match8] },
-  [match11]: { winFrom: [match7, match8] },
-  [match12]: { winFrom: [match9, match10] },
-  [match13]: { winFrom: [match12], lossFrom: [match11] },
+  [matchNumbers.match7]: {
+    winFrom: [matchNumbers.match1, matchNumbers.match2],
+  },
+  [matchNumbers.match8]: {
+    winFrom: [matchNumbers.match3, matchNumbers.match4],
+  },
+  [matchNumbers.match5]: {
+    lossFrom: [matchNumbers.match1, matchNumbers.match2],
+  },
+  [matchNumbers.match6]: {
+    lossFrom: [matchNumbers.match3, matchNumbers.match4],
+  },
+  [matchNumbers.match9]: {
+    winFrom: [matchNumbers.match6],
+    lossFrom: [matchNumbers.match7],
+  },
+  [matchNumbers.match10]: {
+    winFrom: [matchNumbers.match5],
+    lossFrom: [matchNumbers.match8],
+  },
+  [matchNumbers.match11]: {
+    winFrom: [matchNumbers.match7, matchNumbers.match8],
+  },
+  [matchNumbers.match12]: {
+    winFrom: [matchNumbers.match9, matchNumbers.match10],
+  },
+  [matchNumbers.match13]: {
+    winFrom: [matchNumbers.match12],
+    lossFrom: [matchNumbers.match11],
+  },
 };
 
 export function getFeedingMatches(targetMatchNumber: number): {
@@ -43,11 +50,11 @@ export function getFeedingMatches(targetMatchNumber: number): {
   return feedingMatchesConfig[targetMatchNumber] ?? {};
 }
 
-export function getTeamsFromFeedingMatch(
+export const getTeamsFromFeedingMatch = (
   feedingMatchNumber: number,
   allMatches: MatchesSimpleType[],
   isWin: boolean
-): { teams: string[]; alliance: AllianceColorOptional } {
+): { teams: string[]; alliance: AllianceColorOptional } => {
   const feedingMatch = findMatchByBracketNumber(feedingMatchNumber, allMatches);
 
   if (!feedingMatch?.winning_alliance) {
@@ -72,4 +79,4 @@ export function getTeamsFromFeedingMatch(
         : feedingMatch.alliances.blue.team_keys,
     alliance,
   };
-}
+};

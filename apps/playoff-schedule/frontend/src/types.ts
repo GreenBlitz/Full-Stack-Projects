@@ -35,10 +35,15 @@ export interface TeamsInEventType {
   country: string;
 }
 
+interface Record {
+  wins: number;
+  losses: number;
+  ties: number;
+}
 export interface RankItem {
   rank: number;
   team_key: string;
-  record: { wins: number; losses: number; ties: number };
+  record: Record;
 }
 
 export interface RankingsResponse {

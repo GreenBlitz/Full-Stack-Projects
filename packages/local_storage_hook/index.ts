@@ -1,7 +1,7 @@
 // בס"ד
 import { useState } from "react";
 
-const useLocalStorage = <T,>(
+const useLocalStorage = <T>(
   key: string,
   initialValue: T
 ): [T, (val: T | ((val: T) => T)) => void] => {
@@ -29,4 +29,4 @@ const useLocalStorage = <T,>(
   return [storedValue, setValue];
 };
 
-export {useLocalStorage};
+export { useLocalStorage };

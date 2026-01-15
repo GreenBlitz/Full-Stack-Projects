@@ -1,6 +1,9 @@
 // בס"ד
 import type React from "react";
-import type { AllianceColorOptional, PotentialMatch } from "../utils/bracketTypes";
+import type {
+  AllianceColorOptional,
+  PotentialMatch,
+} from "../utils/bracketTypes";
 import type { AllianceSimpleType } from "../endpoints/AlliancesSimple";
 import { MatchInfo } from "./MatchInfo";
 
@@ -18,10 +21,15 @@ interface ScenarioCardProps {
   alliances: AllianceSimpleType[];
 }
 
-const getAllianceColorClass = (alliance: AllianceColorOptional) => {
-  if (alliance === "red") return "text-red-700 dark:text-red-400";
-  if (alliance === "blue") return "text-blue-700 dark:text-blue-400";
-  return "text-gray-500 dark:text-gray-400";
+const getAllianceColorClass = (alliance: AllianceColorOptional): string => {
+  if (!alliance) {
+    return "text-gray-500 dark:text-gray-400";
+  }
+
+  return {
+    red: "text-red-700 dark:text-red-400",
+    blue: "text-blue-700 dark:text-blue-400",
+  }[alliance];
 };
 
 const getAllianceLabel = (alliance: AllianceColorOptional) => {

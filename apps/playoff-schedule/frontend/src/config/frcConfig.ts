@@ -18,20 +18,16 @@ export const dayInSeconds = 86400;
 export const sortABeforeB = -1;
 export const sortBBeforeA = 1;
 
-export const weightQm = 1;
-export const weightEf = 2;
-export const weightQf = 3;
-export const weightSf = 4;
-export const weightF = 5;
-export const weightDefault = 99;
-export const defaultLevelWeight = 1;
-export const levelWeights = {
-  1: weightQm,
-  2: weightEf,
-  3: weightQf,
-  4: weightSf,
-  5: weightF,
+export const COMP_LEVEL_WEIGHTS: Record<string, number> = {
+  qm: 1,
+  ef: 2,
+  qf: 3,
+  sf: 4,
+  f: 5,
+  default: 99,
 };
+
+export const DEFAULT_LEVEL_WEIGHT = 1;
 export const targetTeamKey = `frc${targetTeamNumber}`;
 export const backendBaseUrl = `http://localhost:${backendPort}/api/v1/tba`;
 export const notFoundIndex = -1;

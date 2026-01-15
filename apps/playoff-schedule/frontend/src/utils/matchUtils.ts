@@ -5,29 +5,14 @@ import {
   matchTimeMissing,
   sortABeforeB,
   sortBBeforeA,
-  weightQm,
-  weightEf,
-  weightQf,
-  weightSf,
-  weightF,
-  weightDefault,
+  COMP_LEVEL_WEIGHTS,
 } from "../config/frcConfig";
 
 export const getMatchTime = (match: MatchesSimpleType): number =>
   match.predicted_time ?? match.time ?? matchTimeDefault;
 
 const getLevelWeight = (level: string): number =>
-  level === "qm"
-    ? weightQm
-    : level === "ef"
-      ? weightEf
-      : level === "qf"
-        ? weightQf
-        : level === "sf"
-          ? weightSf
-          : level === "f"
-            ? weightF
-            : weightDefault;
+  COMP_LEVEL_WEIGHTS[level] ?? COMP_LEVEL_WEIGHTS.default;
 
 export const sortMatches = (
   a: MatchesSimpleType,

@@ -30,19 +30,21 @@ export const finalsBracketNumber = 0;
 export const firstArrayIndex = 0;
 export const twoPotentialOpponents = 2;
 
-export const match1 = 1;
-export const match2 = 2;
-export const match3 = 3;
-export const match4 = 4;
-export const match5 = 5;
-export const match6 = 6;
-export const match7 = 7;
-export const match8 = 8;
-export const match9 = 9;
-export const match10 = 10;
-export const match11 = 11;
-export const match12 = 12;
-export const match13 = 13;
+export const matchNumbers = {
+  match1: 1,
+  match2: 2,
+  match3: 3,
+  match4: 4,
+  match5: 5,
+  match6: 6,
+  match7: 7,
+  match8: 8,
+  match9: 9,
+  match10: 10,
+  match11: 11,
+  match12: 12,
+  match13: 13,
+};
 
 export const matchNumberRegex = /Match (\d+)/;
 export const allianceNumberRegex = /Alliance (\d+)/i;

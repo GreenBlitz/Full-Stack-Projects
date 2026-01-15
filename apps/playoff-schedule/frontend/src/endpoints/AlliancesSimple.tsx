@@ -16,5 +16,5 @@ export const allianceSimple = t.type({
 
 export type AllianceSimpleType = typeof allianceSimple._A;
 
-export const urlAlliances = (eventKey: string) =>
+export const urlAlliances = (eventKey: string): string =>
   `/events/${eventKey}/alliances`;

@@ -33,12 +33,12 @@ export const MatchCard: React.FC<MatchCardProps> = ({
   const effectiveTime = match.predicted_time ?? match.time ?? undefined;
   const predictedDate = formatMatchTime(effectiveTime, timeMultiplier);
 
-  const matchIndex = futureMatches.findIndex((m) => m.key === match.key);
+  const matchIndex = futureMatches.findIndex((match2) => match2.key === match.key);
   const matchesAway = matchIndex > notFoundIndex ? matchIndex : noGap;
 
   const isRedAlliance = match.alliances.red.team_keys.includes(targetTeamKey);
-
-  const isPlayoffMatch = match.comp_level === "sf" || match.comp_level === "f";
+  const compLevel = match.comp_level;
+  const isPlayoffMatch = compLevel === "sf" || compLevel === "f";
   const nextMatches = isPlayoffMatch
     ? getPotentialNextMatches(match, isRedAlliance, allMatches)
     : { ifWin: null, ifLoss: null };

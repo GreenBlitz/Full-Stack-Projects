@@ -1,22 +1,23 @@
 // בס"ד
 import type { MatchesSimpleType } from "../endpoints/MatchSimple";
 
+const MATCH_DISPLAY_FORMATS: Record<
+  string,
+  ((match: MatchesSimpleType) => string) | undefined
+> = {
+  QM: (match) => `Quals ${match.match_number}`,
+  QF: (match) =>
+    `Quarterfinal ${match.set_number}, Match ${match.match_number}`,
+  SF: (match) => `Semifinal ${match.set_number}, Match ${match.match_number}`,
+  F: (match) => `Finals Match ${match.match_number}`,
+  EF: (match) => `First Round ${match.set_number}, Match ${match.match_number}`,
+};
+
 export const getMatchDisplayName = (match: MatchesSimpleType): string => {
   const level = match.comp_level.toUpperCase();
-  switch (level) {
-    case "QM":
-      return `Quals ${match.match_number}`;
-    case "QF":
-      return `Quarterfinal ${match.set_number}, Match ${match.match_number}`;
-    case "SF":
-      return `Semifinal ${match.set_number}, Match ${match.match_number}`;
-    case "F":
-      return `Finals Match ${match.match_number}`;
-    case "EF":
-      return `First Round ${match.set_number}, Match ${match.match_number}`;
-    default:
-      return `${level} ${match.match_number}`;
-  }
+  const formatFn = MATCH_DISPLAY_FORMATS[level];
+
+  return formatFn ? formatFn(match) : `${level} ${match.match_number}`;
 };
 
 export const formatMatchTime = (

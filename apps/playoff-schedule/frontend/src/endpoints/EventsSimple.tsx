@@ -17,10 +17,4 @@ export const simpleEventsInYear = t.type({
 });
 export type EventsInYearType = typeof simpleEventsInYear._A;
 
-/**
- *
- * @param year in urlEventsInYear switch to curr year: now.getFullYear()
- * @returns
- */
-export const urlEventsInYear = (year: number /*or curr time*/) =>
-  `https://www.thebluealliance.com/api/v3/events/${year}/simple`;
+

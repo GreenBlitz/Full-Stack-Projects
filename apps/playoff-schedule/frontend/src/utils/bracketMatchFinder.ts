@@ -62,8 +62,9 @@ export function findFinalsMatch(
   allMatches: MatchesSimpleType[]
 ): MatchesSimpleType | null {
   const playoffMatches = allMatches.filter(
-    (m) =>
-      m.comp_level !== "qm" && m.comp_level !== "ef" && m.comp_level !== "qf"
+    (match) =>
+      
+      match.comp_level !== "qm" && match.comp_level !== "ef" && match.comp_level !== "qf"
   );
   const fMatches = playoffMatches
     .filter((m) => m.comp_level === "f")

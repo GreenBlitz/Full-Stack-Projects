@@ -28,7 +28,7 @@ export const Header: React.FC<HeaderProps> = ({
             onChange={(event) => {
               onInputChange(event.target.value);
             }}
-            className="search-input flex-1 rounded-md border-2 border-slate-400 dark:border-slate-500 bg-slate-600 dark:bg-slate-700 p-3 text-base text-white outline-none transition-colors placeholder:text-slate-300 dark:placeholder:text-slate-400 focus:border-blue-400 dark:focus:border-blue-500"
+            className="flex-1 rounded-md border-2 border-slate-400 dark:border-slate-500 bg-slate-600 dark:bg-slate-700 p-3 text-base text-white outline-none transition-colors placeholder:text-slate-300 dark:placeholder:text-slate-400 focus:border-blue-400 dark:focus:border-blue-500"
           />
           <button
             type="submit"

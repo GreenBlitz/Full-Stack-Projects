@@ -50,10 +50,10 @@ export const getOpponentInfo = (
   );
 };
 
-export function formatOpponentLabel(
+export const formatOpponentLabel = (
   opponentTeams: string[],
   info?: OpponentInfo
-): string {
+): string => {
   if (info?.feedingMatchNumber && info.sourceType) {
     const typeLabel = info.sourceType === "winner" ? "Winner" : "Loser";
     return `${typeLabel} of Match ${info.feedingMatchNumber}`;
@@ -62,4 +62,4 @@ export function formatOpponentLabel(
     return "TBD";
   }
   return opponentTeams.map((key) => key.replace("frc", "")).join(", ");
-}
+};
