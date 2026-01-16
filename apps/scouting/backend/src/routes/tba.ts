@@ -41,7 +41,6 @@ const fetchTba = <U>(
             ...config,
           })
           .then((response) => response.data as unknown),
-
       (error) => ({
         status: StatusCodes.INTERNAL_SERVER_ERROR,
         reason: `Error Fetching From TBA: error ${error}`,
