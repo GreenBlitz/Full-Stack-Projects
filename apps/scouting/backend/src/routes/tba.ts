@@ -20,7 +20,7 @@ import {
 } from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function";
 import * as t from "io-ts";
-import type { MixedType } from "@repo/type_verification";
+import type { Type } from "io-ts";
 
 export const tbaRouter = Router();
 
@@ -29,7 +29,7 @@ const TBA_URL = "https://www.thebluealliance.com/api/v3";
 
 const fetchTba = <U>(
   route: string,
-  typeToCheck: MixedType<U>,
+  typeToCheck:Type<U,unknown>,
   config?: AxiosRequestConfig
 ) =>
   pipe(

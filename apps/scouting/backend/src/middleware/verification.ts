@@ -4,7 +4,7 @@ import { chain, type Either, map, mapLeft } from "fp-ts/lib/Either";
 import { StatusCodes } from "http-status-codes";
 import { failure } from "io-ts/lib/PathReporter";
 import { pipe } from "fp-ts/lib/function";
-import type { MixedType } from "@repo/type_verification";
+import type { Type } from "io-ts";
 
 export interface EndpointError {
   status: number;
@@ -12,7 +12,7 @@ export interface EndpointError {
 }
 
 export const createBodyVerificationPipe =
-  <E extends EndpointError, U>(typeToCheck: MixedType<U>) =>
+  <E extends EndpointError, U>(typeToCheck: Type<U,unknown>) =>
   (req: Either<E, Request>): Either<EndpointError, U> =>
     pipe(
       req,
