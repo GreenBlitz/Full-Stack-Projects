@@ -25,6 +25,7 @@ import type { MixedType } from "@repo/type_verification";
 export const tbaRouter = Router();
 
 const TBA_KEY = process.env.TBA_API_KEY ?? "yourtbakey";
+const TBA_URL = "https://www.thebluealliance.com/api/v3";
 
 const fetchTba = <U>(
   route: string,
@@ -35,7 +36,7 @@ const fetchTba = <U>(
     tryCatch(
       () =>
         axios
-          .get(`https://www.thebluealliance.com/api/v3${route}`, {
+          .get(TBA_URL + route, {
             headers: { "X-TBA-Auth-Key": TBA_KEY },
             ...config,
           })
