@@ -1,5 +1,5 @@
 // בס"ד
-import type { FC, ChangeEvent } from "react";
+import type { FC } from "react";
 import { useLocalStorage } from "@repo/local_storage_hook";
 import ToggleSetting from "../components/ToggleSetting";
 
