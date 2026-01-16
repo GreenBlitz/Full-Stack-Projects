@@ -14,33 +14,18 @@ const defaultSettings: SettingsKeyType = {
 };
 
 const SettingsPage: FC = () => {
-  const [issettingsKey, setSettingsKey] =
-    useLocalStorage<SettingsKeyType | null>("settings", defaultSettings);
+  const [issettingsKey, setSettingsKey] = useLocalStorage<SettingsKeyType>(
+    "settings",
+    defaultSettings
+  );
 
   const updateSetting = (key: keyof SettingsKeyType, value: boolean) => {
     setSettingsKey((prev) => {
-      if (!prev) {
-        return {
-          matchStarter: false,
-          moveAutomaticallyToNextShift: true,
-          [key]: value,
-        };
-      }
       return {
         ...prev,
         [key]: value,
       };
     });
-  };
-
-  const handleMatchStarterChange = (event: ChangeEvent<HTMLInputElement>) => {
-    updateSetting("matchStarter", event.target.checked);
-  };
-
-  const handleMoveAutomaticallyChange = (
-    event: ChangeEvent<HTMLInputElement>
-  ) => {
-    updateSetting("moveAutomaticallyToNextShift", event.target.checked);
   };
 
   return (
@@ -54,16 +39,23 @@ const SettingsPage: FC = () => {
               id="matchStarter"
               title="Match Starter"
               description="Enable manual start of matches"
-              checked={issettingsKey?.matchStarter ?? false}
-              onChange={handleMatchStarterChange}
+              checked={issettingsKey.matchStarter}
+              onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                updateSetting("matchStarter", event.target.checked);
+              }}
             />
 
             <ToggleSetting
               id="moveAutomatically"
               title="Move Automatically to Next Shift"
               description="Auto advance to next shift"
-              checked={issettingsKey?.moveAutomaticallyToNextShift ?? false}
-              onChange={handleMoveAutomaticallyChange}
+              checked={issettingsKey.moveAutomaticallyToNextShift}
+              onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                updateSetting(
+                  "moveAutomaticallyToNextShift",
+                  event.target.checked
+                );
+              }}
             />
           </div>
         </div>
