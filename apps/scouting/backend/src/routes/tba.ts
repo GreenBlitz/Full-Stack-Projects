@@ -55,8 +55,8 @@ const fetchTba = <U>(
       )
     )
   ) satisfies TaskEither<EndpointError, unknown>;
-tbaRouter.post("/matches", (req, res) =>
-  pipe(
+tbaRouter.post("/matches", async (req, res) => {
+  await pipe(
     right(req),
     createBodyVerificationPipe(matchesProps),
     fromEither,
@@ -64,12 +64,8 @@ tbaRouter.post("/matches", (req, res) =>
       fetchTba(`/event/${body.event}/matches`, t.array(scoreBreakdown2025))
     ),
     fold(
-      (error) => async () => {
-        res.status(error.status).send(error.reason);
-      },
-      (matches) => async () => {
-        res.status(StatusCodes.OK).json({ matches });
-      }
+      (error) => async () => res.status(error.status).send(error.reason),
+      (matches) => async () => res.status(StatusCodes.OK).json({ matches })
     )
-  )
-);
+  )();
+});

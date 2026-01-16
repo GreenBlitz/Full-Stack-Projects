@@ -16,6 +16,7 @@ export const createBodyVerificationPipe =
   (req: Either<E, Request>) =>
     pipe(
       req,
+
       map((request) => request.body),
       chain((body) =>
         pipe(
@@ -25,7 +26,7 @@ export const createBodyVerificationPipe =
             reason: `Recieved incorrect body parameters. error: ${failure(error).join("\n")}`,
           }))
         )
-      )
+      ),
     ) satisfies Either<EndpointError, unknown>;
 export const isOK = (status: StatusCodes): boolean =>
   status >= StatusCodes.OK && status < StatusCodes.MULTIPLE_CHOICES;
