@@ -22,7 +22,7 @@
     "esbuild": "^0.27.0",
     "nodemon": "^3.1.11",
     "prettier": "^3.6.2",
-    "turbo": "^2.6.1",
+    "turbo": "^2.7.4",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.47.0"
   },
