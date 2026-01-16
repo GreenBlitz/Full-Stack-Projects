@@ -6,5 +6,7 @@
   "exports": {
     ".": "./index.ts"
   },
-  "dependencies": {}
+  "peerDependencies": {
+    "react": "^19.1.1"
+  }
 }
