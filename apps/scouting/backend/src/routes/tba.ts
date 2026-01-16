@@ -14,7 +14,6 @@ import {
   chain,
   fold,
   fromEither,
-  map,
   mapLeft,
   type TaskEither,
   tryCatch,
