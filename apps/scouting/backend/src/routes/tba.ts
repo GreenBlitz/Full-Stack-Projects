@@ -3,25 +3,24 @@ import axios, { type AxiosRequestConfig } from "axios";
 import { Router } from "express";
 import {
   createBodyVerificationPipe,
-  createTypeCheckingFlow,
+  createTypeCheckingEndpointFlow,
   type EndpointError,
 } from "../middleware/verification";
 import { matchesProps, tbaMatch } from "@repo/scouting_types";
 import { right } from "fp-ts/lib/Either";
 import { StatusCodes } from "http-status-codes";
-import { failure } from "io-ts/lib/PathReporter";
 import { scoreBreakdown2025 } from "@repo/scouting_types";
 import {
   flatMap,
   fold,
   fromEither,
-  mapLeft,
   type TaskEither,
   tryCatch,
 } from "fp-ts/lib/TaskEither";
-import { flow, pipe } from "fp-ts/lib/function";
+import { pipe } from "fp-ts/lib/function";
 import * as t from "io-ts";
 import type { Type } from "io-ts";
+import { map } from "fp-ts/lib/Task";
 
 export const tbaRouter = Router();
 
@@ -47,14 +46,11 @@ const fetchTba = <U>(
         reason: `Error Fetching From TBA: error ${error}`,
       })
     ),
-    flatMap(
-      flow(
-        createTypeCheckingFlow(typeToCheck, (errors) => ({
-          status: StatusCodes.INTERNAL_SERVER_ERROR,
-          reason: `Recieved incorrect response from the TBA. error: ${errors}`,
-        })),
-        fromEither
-      )
+    map(
+      createTypeCheckingEndpointFlow(typeToCheck, (errors) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `Recieved incorrect response from the TBA. error: ${errors}`,
+      }))
     )
   ) satisfies TaskEither<EndpointError, U>;
 tbaRouter.post("/matches", async (req, res) => {
