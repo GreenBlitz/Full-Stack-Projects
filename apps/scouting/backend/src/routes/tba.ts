@@ -51,10 +51,6 @@ const fetchTba = <U>(
       pipe(
         typeToCheck.decode(body),
         fromEither,
-        mapLeft((error) => {
-          console.log((body as any )[0]);
-          return error;
-        }),
         mapLeft((error) => ({
           status: StatusCodes.INTERNAL_SERVER_ERROR,
           reason: `Recieved incorrect response from the TBA. error: ${failure(error).join("\n")}`,
