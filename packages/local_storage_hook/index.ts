@@ -15,7 +15,7 @@ const useLocalStorage = <T>(
     return parsedItem;
   });
 
-  const setValue = (value: T | ((val: T) => T)) => {
+  const setValue = (value: T | ((prevState: T) => T)) => {
     const valueToStore = value instanceof Function ? value(storedValue) : value;
     setStoredValue(valueToStore);
     if (typeof window !== "undefined") {
