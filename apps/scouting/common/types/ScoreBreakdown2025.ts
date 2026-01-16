@@ -70,6 +70,4 @@ export const scoreBreakdown2025 = t.type({
   wallAlgaeCount: t.number,
 });
 
-const x = t.array(scoreBreakdown2025)
-
 export type ScoreBreakdown2025 = t.TypeOf<typeof scoreBreakdown2025>;
