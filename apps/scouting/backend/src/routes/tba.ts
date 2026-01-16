@@ -14,6 +14,7 @@ import {
   chain,
   fold,
   fromEither,
+  map,
   mapLeft,
   type TaskEither,
   tryCatch,
@@ -34,10 +35,12 @@ const fetchTba = <U>(
   pipe(
     tryCatch(
       () =>
-        axios.get(`https://www.thebluealliance.com/api/v3${route}`, {
-          headers: { "X-TBA-Auth-Key": TBA_KEY },
-          ...config,
-        }),
+        axios
+          .get(`https://www.thebluealliance.com/api/v3${route}`, {
+            headers: { "X-TBA-Auth-Key": TBA_KEY },
+            ...config,
+          })
+          .then((response) => response.data),
 
       (error) => ({
         status: StatusCodes.INTERNAL_SERVER_ERROR,
