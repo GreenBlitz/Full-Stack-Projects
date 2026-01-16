@@ -32,7 +32,7 @@ export const tbaMatch = <A extends t.Mixed, M extends t.Mixed>(
     winning_alliance: t.union([
       t.literal("red"),
       t.literal("blue"),
-      t.literal(""),// "" is a tie
+      t.literal(""), // "" is a tie
     ]),
     event_key: t.string,
     time: t.number,

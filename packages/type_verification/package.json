@@ -1,0 +1,19 @@
+{
+  "name": "@repo/type_verification",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./index.ts"
+  },
+  "dependencies": {},
+  "peerDependencies": {
+    "io-ts": "^2.2.0",
+    "fp-ts": "^2.16.0"
+  },
+  "devDependencies": {
+    "io-ts": "^2.2.0",
+    "fp-ts": "^2.16.0",
+    "typescript": "latest"
+  }
+}

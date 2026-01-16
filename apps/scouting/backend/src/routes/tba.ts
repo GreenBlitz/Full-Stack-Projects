@@ -5,23 +5,22 @@ import {
   createBodyVerificationPipe,
   type EndpointError,
 } from "../middleware/verification";
-import { matchesProps } from "../../../common/types/TBAMatch";
+import { matchesProps } from "@repo/scouting_types";
 import { right } from "fp-ts/lib/Either";
 import { StatusCodes } from "http-status-codes";
 import { failure } from "io-ts/lib/PathReporter";
-import { scoreBreakdown2025 } from "../../../common/types/ScoreBreakdown2025";
+import { scoreBreakdown2025 } from "@repo/scouting_types";
 import {
   chain,
   fold,
   fromEither,
-  map,
   mapLeft,
   type TaskEither,
   tryCatch,
 } from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function";
 import * as t from "io-ts";
-import type { MixedType } from "../../../common/types/IO-TSUtils";
+import type { MixedType } from "@repo/type_verification";
 
 export const tbaRouter = Router();
 
