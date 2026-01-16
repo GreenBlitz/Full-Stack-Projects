@@ -39,7 +39,7 @@ const fetchTba = <U>(
             headers: { "X-TBA-Auth-Key": TBA_KEY },
             ...config,
           })
-          .then((response) => response.data),
+          .then((response) => response.data as unknown),
 
       (error) => ({
         status: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -66,8 +66,14 @@ tbaRouter.post("/matches", async (req, res) => {
       fetchTba(`/event/${body.event}/matches`, t.array(scoreBreakdown2025))
     ),
     fold(
-      (error) => async () => res.status(error.status).send(error.reason),
-      (matches) => async () => res.status(StatusCodes.OK).json({ matches })
+      (error) => () =>
+        new Promise((resolve) => {
+          resolve(res.status(error.status).send(error.reason));
+        }),
+      (matches) => () =>
+        new Promise((resolve) => {
+          resolve(res.status(StatusCodes.OK).json({ matches }));
+        })
     )
   )();
 });

@@ -17,7 +17,7 @@ export const createBodyVerificationPipe =
     pipe(
       req,
 
-      map((request) => request.body),
+      map((request) => request.body as unknown),
       chain((body) =>
         pipe(
           typeToCheck.decode(body),
