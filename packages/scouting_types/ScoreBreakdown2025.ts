@@ -7,7 +7,7 @@ const yesNo = t.keyof({
 });
 
 const climb = t.keyof({
-  Park: null,
+  Parked: null,
   DeepCage: null,
   ShallowCage: null,
   None: null,

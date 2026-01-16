@@ -5,7 +5,7 @@ import {
   createBodyVerificationPipe,
   type EndpointError,
 } from "../middleware/verification";
-import { matchesProps } from "@repo/scouting_types";
+import { matchesProps, tbaMatch } from "@repo/scouting_types";
 import { right } from "fp-ts/lib/Either";
 import { StatusCodes } from "http-status-codes";
 import { failure } from "io-ts/lib/PathReporter";
@@ -14,6 +14,7 @@ import {
   chain,
   fold,
   fromEither,
+  map,
   mapLeft,
   type TaskEither,
   tryCatch,
@@ -50,6 +51,10 @@ const fetchTba = <U>(
       pipe(
         typeToCheck.decode(body),
         fromEither,
+        mapLeft((error) => {
+          console.log((body as any )[0]);
+          return error;
+        }),
         mapLeft((error) => ({
           status: StatusCodes.INTERNAL_SERVER_ERROR,
           reason: `Recieved incorrect response from the TBA. error: ${failure(error).join("\n")}`,
@@ -63,7 +68,10 @@ tbaRouter.post("/matches", async (req, res) => {
     createBodyVerificationPipe(matchesProps),
     fromEither,
     chain((body) =>
-      fetchTba(`/event/${body.event}/matches`, t.array(scoreBreakdown2025))
+      fetchTba(
+        `/event/${body.event}/matches`,
+        t.array(tbaMatch(scoreBreakdown2025, t.type({})))
+      )
     ),
     fold(
       (error) => () =>

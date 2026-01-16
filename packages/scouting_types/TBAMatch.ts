@@ -36,7 +36,7 @@ export const tbaMatch = <A extends t.Mixed, M extends t.Mixed>(
     ]),
     event_key: t.string,
     time: t.number,
-    actual_time: t.number,
+    actual_time: t.union([t.number,t.null]),
     predicted_time: t.number,
     post_result_time: t.number,
     score_breakdown: t.intersection([
