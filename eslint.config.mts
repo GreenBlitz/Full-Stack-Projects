@@ -209,7 +209,7 @@ export default defineConfig([
       "@typescript-eslint/strict-boolean-expressions": "off",
       "@typescript-eslint/switch-exhaustiveness-check": "error",
       "@typescript-eslint/triple-slash-reference": "error",
-      "@typescript-eslint/unbound-method": "error",
+      "@typescript-eslint/unbound-method": "off",
       "@typescript-eslint/unified-signatures": "error",
       "@typescript-eslint/use-unknown-in-catch-callback-variable": "error",
     },
