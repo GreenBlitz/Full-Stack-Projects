@@ -13,7 +13,7 @@ export interface EndpointError {
 
 export const createBodyVerificationPipe =
   <E extends EndpointError, U>(typeToCheck: MixedType<U>) =>
-  (req: Either<E, Request>) =>
+  (req: Either<E, Request>): Either<EndpointError, U> =>
     pipe(
       req,
 
@@ -27,4 +27,4 @@ export const createBodyVerificationPipe =
           }))
         )
       )
-    ) satisfies Either<EndpointError, unknown>;
+    );

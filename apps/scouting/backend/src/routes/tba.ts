@@ -56,7 +56,7 @@ const fetchTba = <U>(
         }))
       )
     )
-  ) satisfies TaskEither<EndpointError, unknown>;
+  ) satisfies TaskEither<EndpointError, U>;
 tbaRouter.post("/matches", async (req, res) => {
   await pipe(
     right(req),
