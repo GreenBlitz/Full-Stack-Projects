@@ -28,5 +28,3 @@ export const createBodyVerificationPipe =
         )
       )
     ) satisfies Either<EndpointError, unknown>;
-export const isOK = (status: StatusCodes): boolean =>
-  status >= StatusCodes.OK && status < StatusCodes.MULTIPLE_CHOICES;
