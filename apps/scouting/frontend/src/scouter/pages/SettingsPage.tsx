@@ -20,12 +20,10 @@ const SettingsPage: FC = () => {
   );
 
   const updateSetting = (key: keyof SettingsKeyType, value: boolean) => {
-    setSettingsKey((prev) => {
-      return {
-        ...prev,
-        [key]: value,
-      };
-    });
+    setSettingsKey((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
   };
 
   return (
@@ -40,7 +38,7 @@ const SettingsPage: FC = () => {
               title="Match Starter"
               description="Enable manual start of matches"
               checked={issettingsKey.matchStarter}
-              onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              onChange={(event) => {
                 updateSetting("matchStarter", event.target.checked);
               }}
             />
@@ -50,7 +48,7 @@ const SettingsPage: FC = () => {
               title="Move Automatically to Next Shift"
               description="Auto advance to next shift"
               checked={issettingsKey.moveAutomaticallyToNextShift}
-              onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              onChange={(event) => {
                 updateSetting(
                   "moveAutomaticallyToNextShift",
                   event.target.checked

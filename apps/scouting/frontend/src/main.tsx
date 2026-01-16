@@ -7,7 +7,7 @@ import SettingsPage from "./scouter/pages/SettingsPage";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <SettingsPage />
+    <App />
   </StrictMode>
 );
 

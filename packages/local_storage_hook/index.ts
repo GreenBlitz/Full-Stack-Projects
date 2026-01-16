@@ -15,30 +15,6 @@ const useLocalStorage = <T>(
     return parsedItem;
   });
 
-  //   useEffect(() => {
-  //     try {
-  //       if (typeof window === "undefined") {
-  //         return;
-  //       }
-  //       const item = window.localStorage.getItem(key);
-  //       if (item === null) {
-  //         const defaultValue = initialValueRef.current;
-  //         setStoredValue(defaultValue);
-  //         window.localStorage.setItem(key, JSON.stringify(defaultValue));
-  //       } else {
-  //         const parsed = JSON.parse(item) as T;
-  //         setStoredValue(parsed);
-  //       }
-  //     } catch (error) {
-  //       console.error(error);
-  //       const defaultValue = initialValueRef.current;
-  //       setStoredValue(defaultValue);
-  //       if (typeof window !== "undefined") {
-  //         window.localStorage.setItem(key, JSON.stringify(defaultValue));
-  //       }
-  //     }
-  //   }, [key]);
-
   const setValue = (value: T | ((val: T) => T)) => {
     const valueToStore = value instanceof Function ? value(storedValue) : value;
     setStoredValue(valueToStore);
