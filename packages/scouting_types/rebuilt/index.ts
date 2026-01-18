@@ -1,3 +1,3 @@
 // בס"ד
-export * from "./Event";
+export * from "./ScoutingForm";
 export * from "./ShootEvent";
