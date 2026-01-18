@@ -1,3 +1,3 @@
 // בס"ד
-export * from "./TBAMatch";
-export * from "./ScoreBreakdown2025";
+export * from "./tba/TBAMatch";
+export * from "./tba/ScoreBreakdown2025";
