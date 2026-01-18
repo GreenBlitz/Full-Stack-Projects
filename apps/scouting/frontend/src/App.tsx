@@ -1,5 +1,6 @@
 // בס"ד
 import { useState, type FC } from "react";
+import { ClimbButton } from "./components/ClimbButton";
 
 const counterStartingValue = 0;
 const countIncrement = 1;
@@ -10,6 +11,7 @@ const App: FC = () => {
   return (
     <div className="mx-auto">
       <h1>GreenBlitz Full-Stack Project:</h1>
+      <ClimbButton />
       <div className="card">
         <button
           onClick={() => {
@@ -18,7 +20,7 @@ const App: FC = () => {
                 ? prevCount >= maxCountingValue
                   ? "MI BOMBO"
                   : prevCount + countIncrement
-                : prevCount + "!"
+                : prevCount + "!",
             );
           }}
         >
