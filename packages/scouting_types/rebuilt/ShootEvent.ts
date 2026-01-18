@@ -6,5 +6,5 @@ const point = t.type({ x: t.number, y: t.number });
 
 export const shootEventCodec = t.type({
   interval: intervalCodec,
-  start: point,
+  startPosition: point,
 });
