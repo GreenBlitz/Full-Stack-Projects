@@ -1,4 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react';
+import "./Stopwatch.css";
 
 function Stopwatch(){
 
@@ -21,12 +22,13 @@ function Stopwatch(){
     }, [isRunning]);
 
     function start(){
-        setIsRunning(true);
-        startTimeRef.current = Date.now() - elapsedTime;
-    }
-
-    function stop(){
-        setIsRunning(false);
+        if(!isRunning){
+            setIsRunning(true);
+            startTimeRef.current = Date.now() - elapsedTime;
+        }
+        else{
+            setIsRunning(false);
+        }
     }
 
     function reset(){
@@ -54,7 +56,6 @@ function Stopwatch(){
             <div className="display">{formatTime()}</div>
             <div className="controls">
                 <button onClick={start} className="start-button">Start</button>
-                <button onClick={stop} className="stop-button">Stop</button>
                 <button onClick={reset} className="reset-button">Reset</button>
             </div>
         </div>
