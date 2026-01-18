@@ -7,6 +7,9 @@ const useLocalStorage = <T>(
 ): [T, (val: T | ((val: T) => T)) => void] => {
   const [storedValue, setStoredValue] = useState<T>(() => {
     if (typeof window === "undefined") {
+      console.warn(
+        "useLocalStorage called during SSR, falling back to initialValue"
+      );
       return initialValue;
     }
     const item = window.localStorage.getItem(key);
