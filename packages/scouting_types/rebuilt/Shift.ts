@@ -32,3 +32,5 @@ export const climbCodec = t.type({
   }),
 });
 
+export type Climb = t.TypeOf<typeof climbCodec>
+export type ClimbLevel = Climb["level"];

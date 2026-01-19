@@ -2,8 +2,12 @@
 import type React from "react";
 import { useState } from "react";
 import * as Slider from "@radix-ui/react-slider";
-import type {ScoutingForm} from "@repo/scouting_types"
+import type { ScoutingForm } from "@repo/scouting_types";
+import type {ClimbLevel} from "@repo/scouting_types"
 //turbo run dev --filter=scouting-frontend --filter=scouting-backend
+
+export const numValueToClimbLevel: Record<number, 
+
 export const ClimbButton: React.FC = () => {
   const [climbSide, setClimbSide] = useState();
   const [climbLevel, setClimbLevel] = useState();
