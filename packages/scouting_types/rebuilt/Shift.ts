@@ -7,8 +7,18 @@ export const shiftCodec = t.type({
   shootEvents: t.array(shootEventCodec),
 });
 
+export const levelTimeCodec = t.union(
+  [intervalCodec, t.null]
+)
+
+export const climbTimeCodec = t.type({
+  L1: levelTimeCodec,
+  L2: levelTimeCodec,
+  L3: levelTimeCodec,
+})
+
 export const climbCodec = t.type({
-  interval: intervalCodec,
+  climbTime: climbTimeCodec,
   climbSide: t.keyof({
     middle: null,
     side: null,
