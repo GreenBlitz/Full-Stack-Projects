@@ -3,6 +3,11 @@ import React, { useState, useEffect, useRef } from "react";
 function Stopwatch() {
   const [isRunning, setIsRunning] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [relativeElapsedTime, setRelativeElapsedTime] = useState(0);
+  const [cycleStartTime, setCycleStartTime] = useState<number[]>([]);
+  const [cycleEndTime, setCycleEndTime] = useState<number[]>([])
+
+  
 
   const intervalIdRef = useRef<number | null>(null);
   const startTimeRef = useRef(0);
@@ -11,6 +16,9 @@ function Stopwatch() {
     if (isRunning) {
       intervalIdRef.current = window.setInterval(() => {
         setElapsedTime(Date.now() - startTimeRef.current);
+        setRelativeElapsedTime(Date.now() - startTimeRef.current)
+        console.log(cycleStartTime)
+        console.log(cycleEndTime)
       }, 10);
     }
 
@@ -26,11 +34,14 @@ function Stopwatch() {
     if (!isRunning) {
       startTimeRef.current = Date.now() - elapsedTime;
       setIsRunning(true);
+      setCycleStartTime((prev)=>[...prev,relativeElapsedTime])
     }
   }
 
   function stop() {
     setIsRunning(false);
+    reset()
+    setCycleEndTime((prev)=>[...prev,relativeElapsedTime])
   }
 
   function reset() {
