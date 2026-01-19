@@ -1,24 +1,26 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 function Stopwatch() {
   const [isRunning, setIsRunning] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
-  const [relativeElapsedTime, setRelativeElapsedTime] = useState(0);
-  const [cycleStartTime, setCycleStartTime] = useState<number[]>([]);
-  const [cycleEndTime, setCycleEndTime] = useState<number[]>([])
 
-  
+  const [cycleStartTimes, setCycleStartTimes] = useState<number[]>([]);
+  const [cycleEndTimes, setCycleEndTimes] = useState<number[]>([]);
 
   const intervalIdRef = useRef<number | null>(null);
   const startTimeRef = useRef(0);
+  const originRef = useRef<number | null>(null);
+
+  const nowRelative = () => {
+    if (originRef.current === null)
+       originRef.current = Date.now(); ``
+    return Date.now() - originRef.current;
+  };
 
   useEffect(() => {
     if (isRunning) {
       intervalIdRef.current = window.setInterval(() => {
         setElapsedTime(Date.now() - startTimeRef.current);
-        setRelativeElapsedTime(Date.now() - startTimeRef.current)
-        console.log(cycleStartTime)
-        console.log(cycleEndTime)
       }, 10);
     }
 
@@ -31,17 +33,22 @@ function Stopwatch() {
   }, [isRunning]);
 
   function start() {
-    if (!isRunning) {
+    if (!isRunning){  
+      const rel = nowRelative();
+      setCycleStartTimes((prev) => [...prev, rel]);
+
       startTimeRef.current = Date.now() - elapsedTime;
       setIsRunning(true);
-      setCycleStartTime((prev)=>[...prev,relativeElapsedTime])
     }
   }
 
   function stop() {
+    if (!isRunning) return;
+
+    const rel = nowRelative();
+    setCycleEndTimes((prev) => [...prev, rel]);
+
     setIsRunning(false);
-    reset()
-    setCycleEndTime((prev)=>[...prev,relativeElapsedTime])
   }
 
   function reset() {
@@ -53,27 +60,24 @@ function Stopwatch() {
     const minutes = String(Math.floor((elapsedTime / (1000 * 60)) % 60)).padStart(2, "0");
     const seconds = String(Math.floor((elapsedTime / 1000) % 60)).padStart(2, "0");
     const milliseconds = String(Math.floor((elapsedTime % 1000) / 10)).padStart(2, "0");
-
     return `${minutes}:${seconds}:${milliseconds}`;
   }
 
+  useEffect(() => {
+    console.log("start rel times:", cycleStartTimes);
+  }, [cycleStartTimes]);
+
+  useEffect(() => {
+    console.log("end rel times:", cycleEndTimes);
+  }, [cycleEndTimes]);
+
   return (
     <div className="flex flex-col items-center gap-6 p-6">
-      {/* Timer display */}
       <div
         className={`
-          select-none
-          cursor-pointer
-          rounded-2xl
-          px-10 py-6
-          text-4xl font-mono font-semibold
-          shadow-lg
-          transition-all duration-150
-          ${
-            isRunning
-              ? "bg-emerald-500 text-white scale-95"
-              : "bg-slate-800 text-emerald-400 hover:bg-slate-700"
-          }
+          select-none cursor-pointer rounded-2xl px-10 py-6
+          text-4xl font-mono font-semibold shadow-lg transition-all duration-150
+          ${isRunning ? "bg-emerald-500 text-white scale-95" : "bg-slate-800 text-emerald-400 hover:bg-slate-700"}
         `}
         onMouseDown={start}
         onMouseUp={stop}
@@ -84,24 +88,16 @@ function Stopwatch() {
         {formatTime()}
       </div>
 
-      {/* Reset button */}
       <button
         onClick={reset}
         className="
-            rounded-lg
-            px-4 py-1.5
-            text-sm font-medium
-            text-slate-600
-            border border-slate-300
-            hover:bg-slate-100
-            hover:text-slate-800
-            active:scale-95
-            transition
-            "
-            >
-            Reset
-        </button>
-
+          rounded-lg px-4 py-1.5 text-sm font-medium text-slate-600
+          border border-slate-300 hover:bg-slate-100 hover:text-slate-800
+          active:scale-95 transition
+        "
+      >
+        Reset
+      </button>
     </div>
   );
 }
