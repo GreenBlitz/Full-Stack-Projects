@@ -1,5 +1,4 @@
 import React, {useState, useEffect, useRef} from 'react';
-import "./Stopwatch.css";
 
 function Stopwatch(){
 
@@ -38,17 +37,12 @@ function Stopwatch(){
 
     function formatTime(){
 
-        let hours = Math.floor(elapsedTime / (1000 * 60 * 60));
-        let minutes = Math.floor(elapsedTime / (1000 * 60) % 60);
-        let seconds = Math.floor(elapsedTime / (1000) % 60);
-        let milliseconds = Math.floor((elapsedTime % 1000) / 10);
+        const hours: string = String(Math.floor(elapsedTime / (1000 * 60 * 60))).padStart(2, "0");
+        const minutes: string = String(Math.floor(elapsedTime / (1000 * 60) % 60)).padStart(2, "0");
+        const seconds: string = String(Math.floor(elapsedTime / (1000) % 60)).padStart(2, "0");
+        const milliseconds: string = String(Math.floor((elapsedTime % 1000) / 10)).padStart(2, "0");
 
-        const hours1: string = String(hours).padStart(2, "0");
-        const minutes1: string = String(minutes).padStart(2, "0");
-        const seconds1: string = String(seconds).padStart(2, "0");
-        const milliseconds1: string = String(milliseconds).padStart(2, "0");
-
-        return `${minutes1}:${seconds1}:${milliseconds1}`;
+        return `${minutes}:${seconds}:${milliseconds}`;
     }
 
     return(
