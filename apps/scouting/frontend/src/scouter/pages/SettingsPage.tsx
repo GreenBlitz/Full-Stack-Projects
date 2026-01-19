@@ -10,17 +10,17 @@ interface SettingsKeyType {
 
 const defaultSettings: SettingsKeyType = {
   matchStarter: false,
-  moveAutomaticallyToNextShift: true,
+  moveAutomaticallyToNextShift: false,
 };
 
 const SettingsPage: FC = () => {
-  const [issettingsKey, setSettingsKey] = useLocalStorage<SettingsKeyType>(
+  const [isSettingsKey, setSettingsKey] = useLocalStorage<SettingsKeyType>(
     "settings",
     defaultSettings
   );
 
   const updateSetting = (key: keyof SettingsKeyType, value: boolean) => {
-    setSettingsKey((prev) => ({
+    setSettingsKey((prev: any) => ({
       ...prev,
       [key]: value,
     }));
@@ -37,7 +37,7 @@ const SettingsPage: FC = () => {
               id="matchStarter"
               title="Match Starter"
               description="Enable manual start of matches"
-              checked={issettingsKey.matchStarter}
+              checked={isSettingsKey.matchStarter}
               onChange={(event) => {
                 updateSetting("matchStarter", event.target.checked);
               }}
@@ -47,7 +47,7 @@ const SettingsPage: FC = () => {
               id="moveAutomatically"
               title="Move Automatically to Next Shift"
               description="Auto advance to next shift"
-              checked={issettingsKey.moveAutomaticallyToNextShift}
+              checked={isSettingsKey.moveAutomaticallyToNextShift}
               onChange={(event) => {
                 updateSetting(
                   "moveAutomaticallyToNextShift",
