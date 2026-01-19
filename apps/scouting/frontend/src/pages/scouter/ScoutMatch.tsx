@@ -12,7 +12,7 @@ import { defaultScoutForm, type ScoutingForm } from "@repo/scouting_types";
 
 interface Tab {
   name: string;
-  Component: FC<{ setForm: SetStateAction<Dispatch<ScoutingForm>> }>;
+  Component: FC<{ setForm: Dispatch<SetStateAction<ScoutingForm>> }>;
 }
 const TABS: Tab[] = [
   {
@@ -54,18 +54,24 @@ const TABS: Tab[] = [
   },
 ];
 
-const STARTING_TAB_INDEX = 0;
-const MOVEMENT_AMOUNT = 1;
+interface SideBarProps {
+  setActiveTab: Dispatch<SetStateAction<number>>;
+  activeTabIndex: number;
+}
+
 const ONE_ARRAY_ELEMENT = 1;
+const MOVEMENT_AMOUNT = 1;
+const STARTING_TAB_INDEX = 0;
 
-const createNewScoutingForm = () => structuredClone(defaultScoutForm);
-
-export const ScoutMatch = () => {
-  const [scoutingForm, setScoutingForm] = useState(createNewScoutingForm());
-  const [activeTabIndex, setActiveTab] = useState(STARTING_TAB_INDEX);
-
+const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
   const activeTabRef = useRef<HTMLButtonElement | null>(null);
 
+  const goToPrev = () => {
+    setActiveTab((prev) => prev - MOVEMENT_AMOUNT);
+  };
+  const goToNext = () => {
+    setActiveTab((prev) => prev + MOVEMENT_AMOUNT);
+  };
   // Auto-scroll logic - center the active tab
   useEffect(() => {
     if (activeTabRef.current) {
@@ -76,39 +82,6 @@ export const ScoutMatch = () => {
     }
   }, [activeTabIndex]);
 
-  const CurrentTab = useMemo(
-    () => TABS[activeTabIndex].Component,
-    [activeTabIndex],
-  );
-
-  const goToPrev = () => {
-    setActiveTab((prev) => prev - MOVEMENT_AMOUNT);
-  };
-  const goToNext = () => {
-    setActiveTab((prev) => prev + MOVEMENT_AMOUNT);
-  };
-
-  return (
-    <div className="max-h-screen bg-black p-4 md:p-6 flex items-center justify-center">
-      <div className="flex flex-row max-w-5xl w-full mx-auto bg-gradient-to-br from-black via-gray-900 to-black border-2 border-green-500 rounded-2xl shadow-[0_0_30px_rgba(34,197,94,0.3)] gap-6 overflow-hidden h-[90vh] relative">
-        {/* Sidebar/Navbar Navigation */}
-
-        {/* Main Content Area */}
-        <div className="flex-1 flex flex-col overflow-hidden p-4 relative z-10">
-          <div className="flex-1 text-green-100 overflow-y-auto pr-2 bg-black/40 rounded-xl p-6 border border-green-500/20 shadow-inner animate-in fade-in slide-in-from-right-4 duration-300">
-            <CurrentTab setForm={setScoutingForm} />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-interface SideBarProps {
-
-}
-
-const SideBar: FC<SideBarProps> = () => {
   return (
     <div
       className="relative
@@ -168,6 +141,34 @@ const SideBar: FC<SideBarProps> = () => {
       >
         Next <br />⬇
       </button>
+    </div>
+  );
+};
+
+const createNewScoutingForm = () => structuredClone(defaultScoutForm);
+
+export const ScoutMatch = () => {
+  const [scoutingForm, setScoutingForm] = useState(createNewScoutingForm());
+  const [activeTabIndex, setActiveTab] = useState(STARTING_TAB_INDEX);
+
+  const CurrentTab = useMemo(
+    () => TABS[activeTabIndex].Component,
+    [activeTabIndex],
+  );
+
+  return (
+    <div className="max-h-screen bg-black p-4 md:p-6 flex items-center justify-center">
+      <div className="flex flex-row max-w-5xl w-full mx-auto bg-gradient-to-br from-black via-gray-900 to-black border-2 border-green-500 rounded-2xl shadow-[0_0_30px_rgba(34,197,94,0.3)] gap-6 overflow-hidden h-[90vh] relative">
+        {/* Sidebar/Navbar Navigation */}
+        <SideBar setActiveTab={setActiveTab} activeTabIndex={activeTabIndex} />
+
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col overflow-hidden p-4 relative z-10">
+          <div className="flex-1 text-green-100 overflow-y-auto pr-2 bg-black/40 rounded-xl p-6 border border-green-500/20 shadow-inner animate-in fade-in slide-in-from-right-4 duration-300">
+            <CurrentTab setForm={setScoutingForm} />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
