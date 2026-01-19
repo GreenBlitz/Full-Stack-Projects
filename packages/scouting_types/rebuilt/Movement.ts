@@ -6,3 +6,8 @@ export const movementCodec = t.type({
   bumpPass: t.boolean,
   bumpStuck: t.boolean,
 });
+export const defaultMovement: t.TypeOf<typeof movementCodec> = {
+  trenchPass: false,
+  bumpPass: false,
+  bumpStuck: false,
+};
