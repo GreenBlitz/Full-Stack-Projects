@@ -48,6 +48,8 @@ function Stopwatch(){
     return(
         <div className="stopwatch">
             <div className="display" onClick={start}>{formatTime()}</div>
+            <div className="display" onClick={reset}>Reset</div>
+
         </div>
     );
 }
