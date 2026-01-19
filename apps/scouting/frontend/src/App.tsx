@@ -1,6 +1,5 @@
 // בס"ד
 import { useState, type FC } from "react";
-import { ClimbLevelSlider } from "./components/ClimbLevelSlider";
 import { Climb } from "./components/Climb";
 
 const counterStartingValue = 0;
