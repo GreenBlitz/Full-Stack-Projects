@@ -94,7 +94,7 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
       <button
         onClick={goToPrev}
         disabled={activeTabIndex === STARTING_TAB_INDEX}
-        className="px-6 py-2.5 h- text-sm font-bold text-black bg-gradient-to-r from-green-400 to-green-500 rounded-xl hover:from-green-500 hover:to-green-600 disabled:opacity-20 disabled:cursor-not-allowed transition-all duration-300 shadow-[0_0_15px_rgba(34,197,94,0.4)] hover:shadow-[0_0_25px_rgba(34,197,94,0.6)] disabled:shadow-none border border-green-600"
+        className="px-6 py-2.5 h- text-sm font-bold text-black bg-linear-to-r from-green-400 to-green-500 rounded-xl hover:from-green-500 hover:to-green-600 disabled:opacity-20 disabled:cursor-not-allowed transition-all duration-300 shadow-[0_0_15px_rgba(34,197,94,0.4)] hover:shadow-[0_0_25px_rgba(34,197,94,0.6)] disabled:shadow-none border border-green-600"
       >
         ⬆<br /> Prev
       </button>
@@ -117,14 +117,14 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
                 shrink-0 flex w-full py-3 text-sm font-bold rounded-xl transition-all duration-300 text-left relative overflow-hidden group
                 ${
                   activeTabIndex === index
-                    ? "bg-gradient-to-r from-emerald-500 to-emerald-600 text-black shadow-[0_0_20px_rgba(34,197,94,0.6)]"
+                    ? "bg-linear-to-r from-emerald-500 to-emerald-600 text-black shadow-[0_0_20px_rgba(34,197,94,0.6)]"
                     : "text-emerald-400 hover:bg-green-950 hover:text-emerald-300 border border-emerald-500/20 hover:border-emerald-500/50 hover:shadow-[0_0_10px_rgba(34,197,94,0.3)]"
                 }
               `}
           >
             {/* Animated background for inactive tabs on hover */}
             {activeTabIndex !== index && (
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-green-500/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+              <div className="absolute inset-0 bg-linear-to-r from-transparent via-green-500/10 to-transparent translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
             )}
 
             <span className="relative z-10 mr-3 opacity-70 font-mono">
@@ -137,7 +137,7 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
       <button
         onClick={goToNext}
         disabled={activeTabIndex === TABS.length - ONE_ARRAY_ELEMENT}
-        className="px-8 py-2.5 h-16 text-sm font-bold text-black bg-gradient-to-r from-green-500 to-green-600 rounded-xl hover:from-green-600 hover:to-green-700 shadow-[0_0_15px_rgba(34,197,94,0.4)] hover:shadow-[0_0_25px_rgba(34,197,94,0.6)] disabled:opacity-20 disabled:cursor-not-allowed disabled:shadow-none transition-all duration-300 border border-green-700"
+        className="px-8 py-2.5 h-16 text-sm font-bold text-black bg-linear-to-r from-green-500 to-green-600 rounded-xl hover:from-green-600 hover:to-green-700 shadow-[0_0_15px_rgba(34,197,94,0.4)] hover:shadow-[0_0_25px_rgba(34,197,94,0.6)] disabled:opacity-20 disabled:cursor-not-allowed disabled:shadow-none transition-all duration-300 border border-green-700"
       >
         Next <br />⬇
       </button>
@@ -147,7 +147,7 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
 
 const createNewScoutingForm = () => structuredClone(defaultScoutForm);
 
-export const ScoutMatch = () => {
+export const ScoutMatch: FC = () => {
   const [scoutingForm, setScoutingForm] = useState(createNewScoutingForm());
   const [activeTabIndex, setActiveTab] = useState(STARTING_TAB_INDEX);
 
@@ -158,7 +158,7 @@ export const ScoutMatch = () => {
 
   return (
     <div className="max-h-screen bg-black p-4 md:p-6 flex items-center justify-center">
-      <div className="flex flex-row max-w-5xl w-full mx-auto bg-gradient-to-br from-black via-gray-900 to-black border-2 border-green-500 rounded-2xl shadow-[0_0_30px_rgba(34,197,94,0.3)] gap-6 overflow-hidden h-[90vh] relative">
+      <div className="flex flex-row max-w-5xl w-full mx-auto bg-linear-to-br from-black via-gray-900 to-black border-2 border-green-500 rounded-2xl shadow-[0_0_30px_rgba(34,197,94,0.3)] gap-6 overflow-hidden h-[90vh] relative">
         {/* Sidebar/Navbar Navigation */}
         <SideBar setActiveTab={setActiveTab} activeTabIndex={activeTabIndex} />
 
