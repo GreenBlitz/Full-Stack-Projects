@@ -13,7 +13,8 @@
     {
       "label": "dev",
       "type": "shell",
-      "command": "./node_modules/.bin/dotenv -e .dev.env -e .public.env -e .secret.env -- 'turbo run dev --filter=${input:project}-frontend --filter=${input:project}-backend'"
+      "command": "./node_modules/.bin/dotenv -e .dev.env -e .public.env -e .secret.env -- 'turbo run dev --filter=${input:project}-frontend --filter=${input:project}-backend'",
+      "problemMatcher": []
     },
     {
       "label": "serve",
@@ -44,7 +45,7 @@
       "type": "pickString",
       "options": ["template", "test", "scouting"]
     },
-    
+
     {
       "id": "workspace",
       "description": "Workspaces within projects",
