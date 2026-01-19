@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 
+const 
+
 function Stopwatch() {
   const [isRunning, setIsRunning] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
@@ -11,9 +13,9 @@ function Stopwatch() {
   const startTimeRef = useRef(0);
   const originRef = useRef<number | null>(null);
 
-  const nowRelative = () => {
+  const getCurrentRelativeTime = () => {
     if (originRef.current === null)
-       originRef.current = Date.now(); ``
+       originRef.current = Date.now();
     return Date.now() - originRef.current;
   };
 
@@ -33,20 +35,20 @@ function Stopwatch() {
   }, [isRunning]);
 
   function start() {
-    if (!isRunning){  
-      const rel = nowRelative();
+    if (isRunning) {return}
+      const rel = getCurrentRelativeTime();
       setCycleStartTimes((prev) => [...prev, rel]);
 
       startTimeRef.current = Date.now() - elapsedTime;
       setIsRunning(true);
-    }
+    
   }
 
   function stop() {
     if (!isRunning) return;
 
-    const rel = nowRelative();
-    setCycleEndTimes((prev) => [...prev, rel]);
+    const relativeTime = getCurrentRelativeTime();
+    setCycleEndTimes((prev) => [...prev, relativeTime]);
 
     setIsRunning(false);
   }
