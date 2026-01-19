@@ -1,6 +1,7 @@
 // בס"ד
 import { useState, type FC } from "react";
 import { ClimbLevelSlider } from "./components/ClimbLevelSlider";
+import { Climb } from "./components/Climb";
 
 const counterStartingValue = 0;
 const countIncrement = 1;
@@ -11,7 +12,7 @@ const App: FC = () => {
   return (
     <div className="mx-auto">
       <h1>GreenBlitz Full-Stack Project:</h1>
-      <ClimbLevelSlider />
+      <Climb />
       <div className="card">
         <button
           onClick={() => {
