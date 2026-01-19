@@ -3,6 +3,15 @@ import { Router } from "express";
 import { StatusCodes } from "http-status-codes";
 import { promises as fs } from "fs";
 import { join } from "path";
+import { tbaRouter } from "./tba";
+import { gameRouter } from "./game-router";
+import { tryCatch, type TaskEither } from "fp-ts/lib/TaskEither";
+import { flatMap } from "fp-ts/lib/TaskEither";
+import { pipe } from "fp-ts/lib/function";
+import { map } from "fp-ts/lib/Task";
+import type { EndpointError } from "../middleware/verification";
+import { createTypeCheckingEndpointFlow } from "../middleware/verification";
+import * as t from "io-ts";
 
 export const apiRouter = Router();
 
@@ -10,73 +19,75 @@ const DATA_DIR = join(process.cwd(), "data");
 const GAMES_FILE = join(DATA_DIR, "games.json");
 const JSON_INDENTATION = 2;
 
-const ensureDataDir = async () => {
-  try {
-    await fs.mkdir(DATA_DIR, { recursive: true });
-  } catch (error) {
-    console.error("Error creating data directory:", error);
-  }
-};
+export const gameDataCodec = t.type({
+  qual: t.string,
+  startTime: t.string,
+});
 
-const readGames = async (): Promise<{ qual: string; startTime: string }[]> => {
-  try {
-    const data = await fs.readFile(GAMES_FILE, "utf-8");
-    return JSON.parse(data);
-  } catch (error) {
-    console.error("Error reading games file:", error);
-    return [];
-  }
-};
+export const gamesArrayCodec = t.array(gameDataCodec);
 
+export type GameData = t.TypeOf<typeof gameDataCodec>;
 
-const writeGames = async (games: { qual: string; startTime: string }[]) => {
-  await ensureDataDir();
-  await fs.writeFile(GAMES_FILE, JSON.stringify(games, null, JSON_INDENTATION), "utf-8");
-};
+const ensureDataDir = (): TaskEither<EndpointError, void> =>
+  tryCatch(
+    () => fs.mkdir(DATA_DIR, { recursive: true }).then(() => undefined),
+    (error) => ({
+      status: StatusCodes.INTERNAL_SERVER_ERROR,
+      reason: `Error creating data directory: ${error}`,
+    })
+  );
 
+export const readGames = (): TaskEither<EndpointError, GameData[]> =>
+  pipe(
+    tryCatch(
+      async () => {
+        try {
+          const data = await fs.readFile(GAMES_FILE, "utf-8");
+          const parsed = JSON.parse(data) as unknown;
+          return parsed;
+        } catch (error) {
+          const err = error as { code?: string };
+          if (err.code === "ENOENT") {
+            return [] as unknown;
+          }
+          throw error;
+        }
+      },
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `Error reading games file: ${error}`,
+      })
+    ),
+    map(
+      createTypeCheckingEndpointFlow(gamesArrayCodec, (errors) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `Invalid games data format. error: ${errors}`,
+      }))
+    )
+  );
+
+export const writeGames = (games: GameData[]): TaskEither<EndpointError, void> =>
+  pipe(
+    ensureDataDir(),
+    flatMap(() =>
+      tryCatch(
+        () =>
+          fs.writeFile(
+            GAMES_FILE,
+            JSON.stringify(games, null, JSON_INDENTATION),
+            "utf-8"
+          ),
+        (error) => ({
+          status: StatusCodes.INTERNAL_SERVER_ERROR,
+          reason: `Error writing games file: ${error}`,
+        })
+      )
+    )
+  );
+
+apiRouter.use("/tba", tbaRouter);
+apiRouter.use("/game", gameRouter);
 apiRouter.get("/health", (req, res) => {
   res.status(StatusCodes.OK).send({ message: "Healthy!" });
 });
 
-apiRouter.post("/game/start", async (req, res) => {
-  const { qual } = req.body;
-
-  if (!qual) {
-    res.status(StatusCodes.BAD_REQUEST).send({
-      error: "Missing required fields: qual required",
-    });
-    return;
-  }
-
-  if (isNaN(Number(qual)) || qual.trim() === "") {
-    res.status(StatusCodes.BAD_REQUEST).send({
-      error: "Qual must be a valid number",
-    });
-    return;
-  }
-
-  const startTime = new Date().toISOString();
-  const gameData = {
-    qual: qual.trim(),
-    startTime,
-  };
-
-  try {
-    const games = await readGames();
-    
-    games.push(gameData);
-    
-    await writeGames(games);
-
-    res.status(StatusCodes.OK).send({
-      message: "Game started successfully",
-      qual: gameData.qual,
-      startTime: gameData.startTime,
-    });
-  } catch (error) {
-    console.error("Error saving game data:", error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
-      error: "Failed to save game data",
-    });
-  }
-});

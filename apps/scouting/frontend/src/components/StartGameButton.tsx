@@ -7,27 +7,26 @@ interface StartGameButtonProps {
 
 const StartGameButton: FC<StartGameButtonProps> = ({ qual }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
-
-  const backendUrl = import.meta.env.VITE_BACKEND_URL ?? "http://localhost:4590";
+  const [message, setMessage] = useState<string>("");
 
   const handleStartGame = async () => {
     if (!qual.trim()) {
-      setMessage("אנא הכנס מספר קוואל לפני התחלת המשחק");
+      setMessage("Please enter a qual number before starting the game");
       return;
     }
 
     setIsLoading(true);
-    setMessage(null);
+    setMessage("");
 
     try {
-      const response = await fetch(`${backendUrl}/api/v1/game/start`, {
+      const response = await fetch(`/api/v1/game/start`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           qual: qual.trim(),
+          startTime: new Date().toISOString(),
         }),
       });
 
@@ -35,16 +34,12 @@ const StartGameButton: FC<StartGameButtonProps> = ({ qual }) => {
         const errorData = await response.json();
         throw new Error(errorData.error ?? "Failed to start game");
       }
-
-      const data = await response.json();
-      const currentTime = new Date(data.startTime).toLocaleString("he-IL");
-      setMessage(`משחק התחיל בהצלחה! Qual: ${qual.trim()}, זמן: ${currentTime}`);
-      console.log("Game started:", data);
+      setMessage("Game started successfully");
     } catch (error) {
       setMessage(
         error instanceof Error
-          ? `שגיאה: ${error.message}`
-          : "שגיאה בהתחלת המשחק"
+          ? `Error: ${error.message}`
+          : "Error starting game"
       );
       console.error("Error starting game:", error);
     } finally {
@@ -65,10 +60,10 @@ const StartGameButton: FC<StartGameButtonProps> = ({ qual }) => {
             : "bg-blue-500 hover:bg-blue-600 active:bg-blue-700"
         } text-white`}
       >
-        {isLoading ? "מתחיל משחק..." : "התחל משחק"}
+        {isLoading ? "Starting game..." : "Start game"}
       </button>
       {message && (
-        <p className={`text-sm ${message.includes("שגיאה") ? "text-red-500" : "text-green-500"}`}>
+        <p className={`text-sm ${message.includes("Error") ? "text-red-500" : "text-green-500"}`}>
           {message}
         </p>
       )}
