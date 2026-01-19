@@ -1,7 +1,14 @@
 // בס"ד
-import { useMemo, type FC, useEffect, useRef } from "react";
+import {
+  useMemo,
+  type FC,
+  useEffect,
+  useRef,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import { useLocalStorage } from "usehooks-ts";
-import type { ScoutingForm } from "@repo/scouting_types";
+import { defaultScoutForm, type ScoutingForm } from "@repo/scouting_types";
 
 const TABS: Tab[] = [
   {
@@ -29,14 +36,20 @@ const TABS: Tab[] = [
 
 interface Tab {
   name: string;
-  Component: FC<{ form: ScoutingForm }>;
+  Component: FC<{ setForm: SetStateAction<Dispatch<ScoutingForm>> }>;
 }
 
 const STARTING_TAB_INDEX = 0;
 const MOVEMENT_AMOUNT = 1;
 const ONE_ARRAY_ELEMENT = 1;
 
+const createNewScoutingForm = () => structuredClone(defaultScoutForm);
+
 export const ScoutMatch: FC = () => {
+  const [scoutingForm, setScoutingForm] = useLocalStorage<ScoutingForm>(
+    "scouting_form",
+    createNewScoutingForm(),
+  );
   const [activeTabIndex, setActiveTab] = useLocalStorage<number>(
     "current_tab_index",
     STARTING_TAB_INDEX,
@@ -87,7 +100,7 @@ export const ScoutMatch: FC = () => {
 
       {/* Dynamic Component Rendering */}
       <div className="min-h-[300px] text-white animate-in fade-in slide-in-from-bottom-2 duration-300">
-        <currentTab.Component form={} />
+        <currentTab.Component setForm={setScoutingForm} />
       </div>
 
       {/* Footer Navigation */}
