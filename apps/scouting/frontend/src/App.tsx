@@ -17,5 +17,4 @@ const App: FC = () => {
     </div>
   );
 };
-
 export default App;
