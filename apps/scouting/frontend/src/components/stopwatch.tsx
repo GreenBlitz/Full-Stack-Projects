@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
-function Stopwatch() {
+const Stopwatch: React.FC = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
 
