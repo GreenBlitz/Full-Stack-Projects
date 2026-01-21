@@ -58,12 +58,18 @@ const Stopwatch: React.FC = () => {
     setCycleTimes((prev) => [...prev, cycleStopwatchCounter]);
 
     setIsRunning(false);
+    reset()
   }
 
   function reset() {
     setElapsedTime(0);
     setIsRunning(false);
   }
+
+  useEffect(()=>{
+    console.log(cycleTimes)
+  }, [cycleTimes
+  ])
 
   function formatTime() {
     const minutes = String(calculateMinutes()).padStart(2, "0");
