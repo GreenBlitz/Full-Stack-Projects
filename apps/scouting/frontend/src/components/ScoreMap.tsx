@@ -6,6 +6,7 @@ import {
   type SetStateAction,
   useState,
   type TouchEvent,
+  type Touch,
 } from "react";
 import type { Point } from "@repo/scouting_types";
 
@@ -22,6 +23,22 @@ const dotDiameter = dotRadius * radiusToDiameterRatio;
 
 const firstTouchIndex = 0;
 
+const getRobotPosition = (touch: Touch, bound: DOMRect) => {
+  const x = touch.clientX - bound.left;
+  const y = touch.clientY - bound.top;
+
+  const boundedX = Math.min(
+    bound.right - dotRadius - bound.left,
+    Math.max(x, dotRadius),
+  );
+
+  const boundedY = Math.min(
+    bound.bottom - dotRadius - bound.top,
+    Math.max(y, dotRadius),
+  );
+  return { x: boundedX, y: boundedY };
+};
+
 export const ScoreMap: FC<ScoreMapProps> = ({
   currentPoint,
   setPosition,
@@ -37,16 +54,7 @@ export const ScoreMap: FC<ScoreMapProps> = ({
 
     const touch = e.touches[firstTouchIndex];
 
-    const x = touch.clientX - rect.left;
-    const y = touch.clientY - rect.top;
-
-    if (rect.right - dotRadius < touch.clientX || x < dotRadius) {
-      return;
-    }
-    if (rect.bottom - dotRadius < touch.clientY || y < dotRadius) {
-      return;
-    }
-    setPosition({ x, y });
+    setPosition(getRobotPosition(touch, rect));
   };
 
   return (
@@ -62,7 +70,7 @@ export const ScoreMap: FC<ScoreMapProps> = ({
       }}
     >
       <img
-        src={`/game-map-${mapZone}.png`}
+        src={`/${mapZone}-field-4418.png`}
         className="max-h-screen block select-none"
         alt="Game Map"
         draggable={false}
