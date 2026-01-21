@@ -46,13 +46,13 @@ export const ScoreMap: FC<ScoreMapProps> = ({
   mapZone,
 }) => {
   const [isHolding, setHolding] = useState(false);
-  const handleMapClick = (e: TouchEvent<HTMLDivElement>) => {
+  const handleMapClick = (event: TouchEvent<HTMLDivElement>) => {
     if (!isHolding) {
       return;
     }
-    const rect = e.currentTarget.getBoundingClientRect();
+    const rect = event.currentTarget.getBoundingClientRect();
 
-    const touch = e.touches[firstTouchIndex];
+    const touch = event.touches[firstTouchIndex];
 
     setPosition(getRobotPosition(touch, rect));
   };
