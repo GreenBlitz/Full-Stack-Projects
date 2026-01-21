@@ -8,6 +8,8 @@ import type {
 } from "../../../../../packages/scouting_types/rebuilt/Shift";
 import { ClimbSideButton } from "./ClimbSideButton";
 
+//turbo run dev --filter=scouting-frontend --filter=scouting-backend
+
 export const Climb: React.FC = () => {
   const [climbLevel, setClimbLevel] = useState<ClimbLevel>("none");
   const [climbSide, setClimbSide] = useState<ClimbSide>("none");

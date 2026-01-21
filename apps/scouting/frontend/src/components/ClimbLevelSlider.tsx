@@ -1,7 +1,10 @@
 //בס"ד
 import type React from "react";
 import * as Slider from "@radix-ui/react-slider";
-import type { ClimbLevel } from "../../../../../packages/scouting_types/rebuilt/Shift";
+import type {
+  ClimbLevel,
+  Climb,
+} from "../../../../../packages/scouting_types/rebuilt/Shift";
 import { useRef, useState } from "react";
 
 interface ClimbLevelSliderProps {
@@ -20,8 +23,10 @@ interface TimeEntries {
   startLevel: number;
   EndLevel: number;
   duration: string;
-  timestamp: string;
+  timestamp: Date;
 }
+
+type ClimbTime = Climb["climbTime"];
 
 export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
   onClimbLevelChange,
@@ -31,6 +36,11 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
   const SECOND_IN_MILI_SECONDS = 1000;
   const DIGITS_AFTER_DOT = 3;
   const [timeHistory, setTimeHistory] = useState<TimeEntries[]>([]);
+  const [climbTimes, setClimbTimes] = useState<ClimbTime>({
+    L1: null,
+    L2: null,
+    L3: null,
+  });
 
   const startTimeRef = useRef<number | null>(null);
   const lastLevelRef = useRef<number>(FIRST_INDEX);
@@ -41,30 +51,48 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
     const now = Date.now();
 
     if (nextLevel !== prevLevel) {
-      // 1. If this is the first move, start the overall timer
       if (startTimeRef.current !== null) {
-        const duration = (now - startTimeRef.current) / SECOND_IN_MILI_SECONDS; // in seconds
+        const duration = (now - startTimeRef.current) / SECOND_IN_MILI_SECONDS;
 
-        // 2. Save the data for the level we just LEFT
         const entry: TimeEntries = {
           startLevel: prevLevel,
           EndLevel: nextLevel,
           duration: duration.toFixed(DIGITS_AFTER_DOT),
-          timestamp: new Date().toLocaleTimeString(),
+          timestamp: new Date(),
         };
 
         setTimeHistory((prev) => [...prev, entry]);
+
+        setClimbTimes((prev) => ({
+          ...prev,
+          [`L${entry.EndLevel}`]: {
+            start:
+              entry.timestamp.getTime() -
+              parseFloat(entry.duration) * SECOND_IN_MILI_SECONDS,
+            end: entry.timestamp.getTime(),
+          },
+        }));
       }
 
-      // 3. Reset the timer for the NEW level
       startTimeRef.current = now;
       lastLevelRef.current = nextLevel;
       onClimbLevelChange(numValueToClimbLevel[newVal[FIRST_INDEX]]);
     }
   };
 
+  const handleStartClimb = () => {
+    startTimeRef.current = Date.now();
+  };
+  const formatTime = (ms: number | undefined) => {
+  if (!ms) return "--:--:--";
+  return new Date(ms).toLocaleTimeString();
+};
+
   return (
     <form>
+      <button type="button" onClick={handleStartClimb}>
+        start climb
+      </button>
       <Slider.Root
         className="relative flex flex-col items-center select-none touch-none w-5 h-[200px]" // Swapped width and height
         orientation="vertical"
@@ -83,19 +111,27 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
         />
       </Slider.Root>
       <h5 className="mt-4 text-[10px] text-gray-500">
-        Logs:{timeHistory.length}
+        Helper Logs:{timeHistory.length}
         {timeHistory.map((c) => {
           return (
-            "start level:" +
+            "start level: " +
             c.startLevel +
-            " end level:" +
+            " end level: " +
             c.EndLevel +
-            " duration:" +
+            " duration: " +
             c.duration +
-            "\n"
+            " time stamp: " +
+            c.timestamp.toLocaleTimeString()
           );
         })}
       </h5>
+      <div className="mt-4 p-4 bg-gray-100 rounded text-xs font-mono">
+  <h4 className="font-bold mb-2">Climb Logs:</h4>
+  
+  <p>L1: {formatTime(climbTimes.L1?.start)} → {formatTime(climbTimes.L1?.end)}</p>
+  <p>L2: {formatTime(climbTimes.L2?.start)} → {formatTime(climbTimes.L2?.end)}</p>
+  <p>L3: {formatTime(climbTimes.L3?.start)} → {formatTime(climbTimes.L3?.end)}</p>
+</div>
     </form>
   );
 };
