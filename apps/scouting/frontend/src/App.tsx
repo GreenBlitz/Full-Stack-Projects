@@ -7,8 +7,13 @@ const App: FC = () => {
   const [point, setPoint] = useState<Point>();
 
   return (
-    <div className="m-22 justify-items-center">
-      <ScoreMap setPosition={setPoint} currentPoint={point} mapZone="red" />
+    <div className="justify-items-center">
+      <ScoreMap
+        setPosition={setPoint}
+        currentPoint={point}
+        mapZone="red"
+        alliance="red"
+      />
     </div>
   );
 };
