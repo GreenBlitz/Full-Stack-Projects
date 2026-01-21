@@ -1,8 +1,20 @@
 // בס"ד
-import type { FC } from "react";
-import SettingsPage from "./scouter/pages/SettingsPage";
+import { useState, type FC } from "react";
+import type { Point } from "@repo/scouting_types";
+import { ScoreMap } from "./scouter/components/ScoreMap";
 
 const App: FC = () => {
-  return <SettingsPage />;
+  const [point, setPoint] = useState<Point>();
+
+  return (
+    <div className="justify-items-center">
+      <ScoreMap
+        setPosition={setPoint}
+        currentPoint={point}
+        mapZone="red"
+        alliance="red"
+      />
+    </div>
+  );
 };
 export default App;
