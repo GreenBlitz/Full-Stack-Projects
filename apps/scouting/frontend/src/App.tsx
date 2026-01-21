@@ -1,7 +1,7 @@
 // בס"ד
 import { useState, type FC } from "react";
 import type { Point } from "@repo/scouting_types";
-import { ScoreMap } from "./components/ScoreMap";
+import { ScoreMap } from "./scouter/components/ScoreMap";
 
 const App: FC = () => {
   const [point, setPoint] = useState<Point>();
