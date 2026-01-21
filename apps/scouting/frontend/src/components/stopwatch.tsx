@@ -57,19 +57,23 @@ function Stopwatch() {
   }
 
   function formatTime() {
-    const minutes = String(Math.floor((elapsedTime / (1000 * 60)) % 60)).padStart(2, "0");
-    const seconds = String(Math.floor((elapsedTime / 1000) % 60)).padStart(2, "0");
-    const milliseconds = String(Math.floor((elapsedTime % 1000) / 10)).padStart(2, "0");
+    const minutes = String(calculateMinutes()).padStart(2, "0");
+    const seconds = String(calculateSeconds()).padStart(2, "0");
+    const milliseconds = String(calculateMilliSeconds()).padStart(2, "0");
     return `${minutes}:${seconds}:${milliseconds}`;
   }
 
-  useEffect(() => {
-    console.log("start rel times:", cycleStartTimes);
-  }, [cycleStartTimes]);
-
-  useEffect(() => {
-    console.log("end rel times:", cycleEndTimes);
-  }, [cycleEndTimes]);
+  function calculateMinutes(){
+    return Math.floor((elapsedTime / (1000 * 60)) % 60)
+  }
+  
+  function calculateSeconds(){
+    return Math.floor((elapsedTime / 1000) % 60)
+  }
+  
+  function calculateMilliSeconds(){
+    return Math.floor((elapsedTime % 1000) / 10)
+  }
 
   return (
     <div className="flex flex-col items-center gap-6 p-6">
