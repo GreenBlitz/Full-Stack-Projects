@@ -21,7 +21,6 @@ import {
 import { pipe } from "fp-ts/lib/function";
 import * as t from "io-ts";
 import type { Type } from "io-ts";
-import { map } from "fp-ts/lib/Task";
 
 export const tbaRouter = Router();
 
@@ -47,19 +46,22 @@ const fetchTba = <U>(
         reason: `Error Fetching From TBA: error ${error}`,
       })
     ),
-    map(
-      createTypeCheckingEndpointFlow(typeToCheck, (errors) => ({
-        status: StatusCodes.INTERNAL_SERVER_ERROR,
-        reason: `Received incorrect response from the TBA. error: ${errors}`,
-      }))
+    flatMap((data) =>
+      fromEither(
+        createTypeCheckingEndpointFlow(typeToCheck, (errors) => ({
+          status: StatusCodes.INTERNAL_SERVER_ERROR,
+          reason: `Received incorrect response from the TBA. error: ${errors}`,
+        }))(right(data))
+      )
     )
   ) satisfies TaskEither<EndpointError, U>;
+
 tbaRouter.post("/matches", async (req, res) => {
-  return pipe(
+  await pipe(
     right(req),
     createBodyVerificationPipe(matchesProps),
     fromEither,
-    flatMap((body) => fetchTba(
+    flatMap((body: t.TypeOf<typeof matchesProps>) => fetchTba(
       `/event/${body.event}/matches`,
       t.array(tbaMatch(scoreBreakdown2025, t.type({})))
     )

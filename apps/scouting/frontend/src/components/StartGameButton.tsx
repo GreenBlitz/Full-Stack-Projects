@@ -2,16 +2,29 @@
 import { useState, type FC } from "react";
 
 interface StartGameButtonProps {
-  qual: string;
+  matchNumber: number;
+  matchType: "qualification" | "playoff" | "practice";
 }
 
-const StartGameButton: FC<StartGameButtonProps> = ({ qual }) => {
+const MIN_MATCH_NUMBER = 1;
+
+interface ErrorResponse {
+  error?: string;
+}
+
+const EMPTY_OBJECT_KEY_COUNT = 0;
+
+const isErrorResponse = (data: unknown): data is ErrorResponse => {
+  return typeof data === "object" && data !== null && ("error" in data || Object.keys(data).length === EMPTY_OBJECT_KEY_COUNT);
+};
+
+const StartGameButton: FC<StartGameButtonProps> = ({ matchNumber, matchType }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string>("");
 
   const handleStartGame = async () => {
-    if (!qual.trim()) {
-      setMessage("Please enter a qual number before starting the game");
+    if (!matchNumber || matchNumber < MIN_MATCH_NUMBER) {
+      setMessage("Please enter a valid match number before starting the game");
       return;
     }
 
@@ -25,13 +38,15 @@ const StartGameButton: FC<StartGameButtonProps> = ({ qual }) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          qual: qual.trim(),
+          matchNumber,
+          matchType,
           startTime: new Date().toISOString(),
         }),
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const data: unknown = await response.json();
+        const errorData = isErrorResponse(data) ? data : { error: undefined };
         throw new Error(errorData.error ?? "Failed to start game");
       }
       setMessage("Game started successfully");
@@ -47,7 +62,7 @@ const StartGameButton: FC<StartGameButtonProps> = ({ qual }) => {
     }
   };
 
-  const isDisabled = isLoading || !qual.trim();
+  const isDisabled = isLoading || !matchNumber || matchNumber < MIN_MATCH_NUMBER;
 
   return (
     <div className="flex flex-col items-center gap-2">
