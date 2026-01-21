@@ -34,8 +34,8 @@ function Stopwatch() {
 
   function start() {
     if (isRunning) {return}
-      const rel = getCurrentRelativeTime();
-      setCycleStartTimes((prev) => [...prev, rel]);
+      const relativeTime = getCurrentRelativeTime();
+      setCycleStartTimes((prev) => [...prev, relativeTime]);
 
       startTimeRef.current = Date.now() - elapsedTime;
       setIsRunning(true);
