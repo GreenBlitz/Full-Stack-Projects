@@ -1,7 +1,8 @@
 // בס"ד
 
 import type { FC } from "react";
+import { QRCodeSVG } from "qrcode.react";
 
-const ScoutedMatches: FC = () => {
-  return <></>;
+export const ScoutedMatches: FC = () => {
+  return <QRCodeSVG value="Gurt: Yo" size={256} />;
 };

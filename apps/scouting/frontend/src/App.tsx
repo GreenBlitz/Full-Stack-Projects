@@ -1,8 +1,8 @@
 // בס"ד
 import type { FC } from "react";
-import SettingsPage from "./scouter/pages/SettingsPage";
+import { ScoutedMatches } from "./scouter/pages/ScoutedMatches";
 
 const App: FC = () => {
-  return <SettingsPage />;
+  return <ScoutedMatches />;
 };
 export default App;
