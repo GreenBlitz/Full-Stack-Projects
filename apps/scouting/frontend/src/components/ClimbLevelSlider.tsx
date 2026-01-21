@@ -5,7 +5,7 @@ import type {
   ClimbLevel,
   Climb,
 } from "../../../../../packages/scouting_types/rebuilt/Shift";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface ClimbLevelSliderProps {
   onClimbLevelChange: (climbLevel: ClimbLevel) => void;
@@ -19,11 +19,11 @@ export const numValueToClimbLevel: Record<number, ClimbLevel> = {
   3: "L3",
 };
 
-interface TimeEntries {
+interface LevelTimeEntrie {
   startLevel: number;
-  EndLevel: number;
-  duration: string;
-  timestamp: Date;
+  endLevel: number;
+  startTime: number;
+  endTime: number;
 }
 
 type ClimbTime = Climb["climbTime"];
@@ -35,7 +35,7 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
   const FIRST_INDEX = 0;
   const SECOND_IN_MILI_SECONDS = 1000;
   const DIGITS_AFTER_DOT = 3;
-  const [timeHistory, setTimeHistory] = useState<TimeEntries[]>([]);
+  const [timeHistory, setTimeHistory] = useState<LevelTimeEntrie[]>([]);
   const [climbTimes, setClimbTimes] = useState<ClimbTime>({
     L1: null,
     L2: null,
@@ -45,6 +45,10 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
   const startTimeRef = useRef<number | null>(null);
   const lastLevelRef = useRef<number>(FIRST_INDEX);
 
+  useEffect(() => {
+    startTimeRef.current = Date.now();
+  }, []);
+
   const handleValueChange = (newVal: number[]) => {
     const [nextLevel] = newVal;
     const prevLevel = lastLevelRef.current;
@@ -52,24 +56,20 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
 
     if (nextLevel !== prevLevel) {
       if (startTimeRef.current !== null) {
-        const duration = (now - startTimeRef.current) / SECOND_IN_MILI_SECONDS;
-
-        const entry: TimeEntries = {
+        const entry: LevelTimeEntrie = {
           startLevel: prevLevel,
-          EndLevel: nextLevel,
-          duration: duration.toFixed(DIGITS_AFTER_DOT),
-          timestamp: new Date(),
+          endLevel: nextLevel,
+          startTime: startTimeRef.current,
+          endTime: Date.now(),
         };
 
         setTimeHistory((prev) => [...prev, entry]);
 
         setClimbTimes((prev) => ({
           ...prev,
-          [`L${entry.EndLevel}`]: {
-            start:
-              entry.timestamp.getTime() -
-              parseFloat(entry.duration) * SECOND_IN_MILI_SECONDS,
-            end: entry.timestamp.getTime(),
+          [`L${entry.endLevel}`]: {
+            start: entry.startTime,
+            end: entry.endTime,
           },
         }));
       }
@@ -83,10 +83,9 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
   const handleStartClimb = () => {
     startTimeRef.current = Date.now();
   };
-  const formatTime = (ms: number | undefined) => {
-  if (!ms) return "--:--:--";
-  return new Date(ms).toLocaleTimeString();
-};
+
+  const getTime = (ms: number | undefined) =>
+    ms ? new Date(ms).toLocaleTimeString() : "N/A";
 
   return (
     <form>
@@ -117,21 +116,27 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
             "start level: " +
             c.startLevel +
             " end level: " +
-            c.EndLevel +
-            " duration: " +
-            c.duration +
-            " time stamp: " +
-            c.timestamp.toLocaleTimeString()
+            c.endLevel +
+            " start time : " +
+            c.startTime +
+            " end time: " +
+            c.endTime
           );
         })}
       </h5>
       <div className="mt-4 p-4 bg-gray-100 rounded text-xs font-mono">
-  <h4 className="font-bold mb-2">Climb Logs:</h4>
-  
-  <p>L1: {formatTime(climbTimes.L1?.start)} → {formatTime(climbTimes.L1?.end)}</p>
-  <p>L2: {formatTime(climbTimes.L2?.start)} → {formatTime(climbTimes.L2?.end)}</p>
-  <p>L3: {formatTime(climbTimes.L3?.start)} → {formatTime(climbTimes.L3?.end)}</p>
-</div>
+        <h4 className="font-bold mb-2">Climb Logs:</h4>
+
+        <p>
+          L1: {getTime(climbTimes.L1?.start)} → {getTime(climbTimes.L1?.end)}
+        </p>
+        <p>
+          L2: {getTime(climbTimes.L2?.start)} → {getTime(climbTimes.L2?.end)}
+        </p>
+        <p>
+          L3: {getTime(climbTimes.L3?.start)} → {getTime(climbTimes.L3?.end)}
+        </p>
+      </div>
     </form>
   );
 };
