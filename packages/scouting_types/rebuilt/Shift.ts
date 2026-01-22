@@ -1,11 +1,14 @@
 // בס"ד
 import * as t from "io-ts";
 import { shootEventCodec } from "./ShootEvent";
-import { intervalCodec } from "./Interval";
+import { intervalCodec, maxInterval } from "./Interval";
 
 export const shiftCodec = t.type({
   shootEvents: t.array(shootEventCodec),
 });
+export const defaultShift: t.TypeOf<typeof shiftCodec> = {
+  shootEvents: [],
+};
 
 export const climbCodec = t.type({
   interval: intervalCodec,
@@ -21,3 +24,9 @@ export const climbCodec = t.type({
     L3: null,
   }),
 });
+
+export const defaultClimb: t.TypeOf<typeof climbCodec> = {
+  interval: maxInterval,
+  climbSide: "middle",
+  level: "none",
+};
