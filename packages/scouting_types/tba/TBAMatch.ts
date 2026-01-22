@@ -15,10 +15,12 @@ export const tbaAlliance = t.type({
   dq_team_keys: t.array(t.string),
 });
 
+const optionalNumber = t.union([t.number, t.null]);
+
 // 2. Define the generic TBAMatch codec constructor
 export const tbaMatch = <A extends t.Mixed, M extends t.Mixed>(
   allianceBreakdown: A,
-  miscBreakdown: M
+  miscBreakdown: M,
 ) =>
   t.type({
     key: t.string,
@@ -35,10 +37,10 @@ export const tbaMatch = <A extends t.Mixed, M extends t.Mixed>(
       t.literal(""), // "" is a tie
     ]),
     event_key: t.string,
-    time: t.number,
-    actual_time: t.union([t.number,t.null]),
-    predicted_time: t.number,
-    post_result_time: t.number,
+    time: optionalNumber,
+    actual_time: optionalNumber,
+    predicted_time: optionalNumber,
+    post_result_time: optionalNumber,
     score_breakdown: t.intersection([
       t.type({
         red: allianceBreakdown,
@@ -50,6 +52,6 @@ export const tbaMatch = <A extends t.Mixed, M extends t.Mixed>(
       t.type({
         type: t.string,
         key: t.string,
-      })
+      }),
     ),
   });
