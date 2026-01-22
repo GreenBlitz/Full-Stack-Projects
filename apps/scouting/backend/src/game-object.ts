@@ -6,10 +6,10 @@ export interface GameObject<T extends AllPossibleGameEvents> {
   gameEvents: GameEventsCounter<T>;
 }
 
-export function addGameEvent<T extends AllPossibleGameEvents>(
+export const addGameEvent = <T extends AllPossibleGameEvents>(
   gameObject: GameObject<T>,
   event: T,
-): void {
+): void => {
   gameObject.gameEvents[event]++;
 }
 
