@@ -4,6 +4,7 @@ import { useState, type FC } from "react";
 import type { TabProps } from "../ScoutMatch";
 import { ScoreMap } from "../../components/ScoreMap";
 import type { Point } from "@repo/scouting_types";
+import Stopwatch from "../../../components/stopwatch";
 
 type Alliance = "red" | "blue";
 
@@ -26,7 +27,7 @@ export const ShiftTab: FC<ShiftTabProps> = ({
         alliance={alliance}
         mapZone={mapZone}
       />
-      
+      <Stopwatch />
     </div>
   );
 };
