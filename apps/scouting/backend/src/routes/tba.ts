@@ -1,5 +1,6 @@
 // בס"ד
-import axios, { type AxiosRequestConfig } from "axios";
+import type { AxiosRequestConfig } from "axios";
+import axios from "axios";
 import { Router } from "express";
 import {
   createBodyVerificationPipe,
@@ -16,14 +17,14 @@ import { StatusCodes } from "http-status-codes";
 import {
   flatMap,
   fold,
-  fromEither,
   type TaskEither,
+  fromEither,
   tryCatch,
 } from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function";
+import { map } from "fp-ts/lib/Task";
 import * as t from "io-ts";
 import type { Type } from "io-ts";
-import { map } from "fp-ts/lib/Task";
 
 export const tbaRouter = Router();
 
@@ -53,9 +54,10 @@ const fetchTba = <U>(
       createTypeCheckingEndpointFlow(typeToCheck, (errors) => ({
         status: StatusCodes.INTERNAL_SERVER_ERROR,
         reason: `Recieved incorrect response from the TBA. error: ${errors}`,
-      })),
-    ),
+      }))
+    )
   ) satisfies TaskEither<EndpointError, U>;
+
 tbaRouter.post("/matches", async (req, res) => {
   await pipe(
     right(req),
