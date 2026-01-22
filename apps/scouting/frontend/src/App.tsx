@@ -1,36 +1,20 @@
 // בס"ד
 import { useState, type FC } from "react";
-import Stopwatch from "./components/Stopwatch";
+import type { Point } from "@repo/scouting_types";
+import { ScoreMap } from "./scouter/components/ScoreMap";
 
-const counterStartingValue = 0;
-const countIncrement = 1;
-const maxCountingValue = 5;
 const App: FC = () => {
-  const [count, setCount] = useState<string | number>(counterStartingValue);
+  const [point, setPoint] = useState<Point>();
 
   return (
-    <div className="mx-auto">
-      <h1>GreenBlitz Full-Stack Project:</h1>
-      <div className="card">
-        <button
-          onClick={() => {
-            setCount((prevCount) =>
-              typeof prevCount === "number"
-                ? prevCount >= maxCountingValue
-                  ? "MI BOMBO"
-                  : prevCount + countIncrement
-                : prevCount + "!",
-            );
-          }}
-        >
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
+    <div className="justify-items-center">
+      <ScoreMap
+        setPosition={setPoint}
+        currentPoint={point}
+        mapZone="red"
+        alliance="red"
+      />
     </div>
   );
 };
-
 export default App;

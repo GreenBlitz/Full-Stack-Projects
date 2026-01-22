@@ -1,0 +1,12 @@
+{
+  "name": "@repo/local_storage_hook",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./index.ts"
+  },
+  "peerDependencies": {
+    "react": "^19.1.1"
+  }
+}
