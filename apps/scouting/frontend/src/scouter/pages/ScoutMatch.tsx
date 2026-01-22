@@ -83,7 +83,7 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
   }, [activeTabIndex]);
 
   return (
-    <div className="relative flex flex-col pr-1 p-4 max-w-[150px] max-h-screen">
+    <div className="relative flex flex-col pr-1 p-4 max-w-37.5 max-h-screen">
       <button
         onClick={goToPrev}
         disabled={activeTabIndex === STARTING_TAB_INDEX}
