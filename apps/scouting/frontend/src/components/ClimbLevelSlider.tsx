@@ -4,8 +4,11 @@ import * as Slider from "@radix-ui/react-slider";
 import type {
   ClimbLevel,
   Climb,
+  ActiveClimbLevel,
+  SingleLevelTime,
 } from "../../../../../packages/scouting_types/rebuilt/Shift";
 import { useEffect, useRef, useState } from "react";
+import type { KeyofType } from "io-ts";
 
 interface ClimbLevelSliderProps {
   onClimbLevelChange: (climbLevel: ClimbLevel) => void;
@@ -19,12 +22,8 @@ export const numValueToClimbLevel: Record<number, ClimbLevel> = {
   3: "L3",
 };
 
-interface LevelTimeEntrie {
-  startLevel: number;
-  endLevel: number;
-  startTime: number;
-  endTime: number;
-}
+type PossibleLevel = 0 | 1 | 2 | 3;
+type PossibleActiveLevel = 1 | 2 | 3;
 
 type ClimbTime = Climb["climbTime"];
 
@@ -35,7 +34,7 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
   const FIRST_INDEX = 0;
   const SECOND_IN_MILI_SECONDS = 1000;
   const DIGITS_AFTER_DOT = 3;
-  const [timeHistory, setTimeHistory] = useState<LevelTimeEntrie[]>([]);
+  const INVALID_CLIMB_LEVEL = 0;
   const [climbTimes, setClimbTimes] = useState<ClimbTime>({
     L1: null,
     L2: null,
@@ -43,43 +42,49 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
   });
 
   const startTimeRef = useRef<number | null>(null);
-  const lastLevelRef = useRef<number>(FIRST_INDEX);
+  const lastLevelRef = useRef<PossibleLevel>(FIRST_INDEX);
 
   useEffect(() => {
     startTimeRef.current = Date.now();
   }, []);
 
-  const handleValueChange = (newVal: number[]) => {
-    const [nextLevel] = newVal;
-    const prevLevel = lastLevelRef.current;
+  const handleValueChange = (newVal: PossibleLevel[]) => {
+    const [nextLevelNum] = newVal;
+    const prevLevelNum = lastLevelRef.current;
     const now = Date.now();
 
-    if (nextLevel !== prevLevel) {
-      if (startTimeRef.current !== null) {
-        const entry: LevelTimeEntrie = {
-          startLevel: prevLevel,
-          endLevel: nextLevel,
-          startTime: startTimeRef.current,
-          endTime: Date.now(),
-        };
-
-        setTimeHistory((prev) => [...prev, entry]);
+    if (nextLevelNum !== prevLevelNum && startTimeRef.current !== null) {
+      if (nextLevelNum > prevLevelNum && nextLevelNum !== INVALID_CLIMB_LEVEL) {
+        const newEntryLevel: ActiveClimbLevel = `L${nextLevelNum}`;
 
         setClimbTimes((prev) => ({
           ...prev,
-          [`L${entry.endLevel}`]: {
-            start: entry.startTime,
-            end: entry.endTime,
+          [newEntryLevel]: {
+            start: startTimeRef.current,
+            end: now,
           },
         }));
-      }
+      } else if (nextLevelNum < prevLevelNum) {
+        if (nextLevelNum !== INVALID_CLIMB_LEVEL) {
+          const enteringLevel: ActiveClimbLevel = `L${nextLevelNum}`;
 
+          setClimbTimes((prev) => ({
+            ...prev,
+            [enteringLevel]: prev[enteringLevel]
+              ? { ...prev[enteringLevel], end: now }
+              : { start: startTimeRef.current, end: now },
+          }));
+        }
+        if (prevLevelNum !== INVALID_CLIMB_LEVEL) {
+          const leavingLevel: ActiveClimbLevel = `L${prevLevelNum}`;
+          setClimbTimes((prev) => ({ ...prev, [leavingLevel]: null }));
+        }
+      }
       startTimeRef.current = now;
-      lastLevelRef.current = nextLevel;
+      lastLevelRef.current = nextLevelNum;
       onClimbLevelChange(numValueToClimbLevel[newVal[FIRST_INDEX]]);
     }
   };
-
   const handleStartClimb = () => {
     startTimeRef.current = Date.now();
   };
@@ -109,21 +114,7 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
           aria-label="Climb Level"
         />
       </Slider.Root>
-      <h5 className="mt-4 text-[10px] text-gray-500">
-        Helper Logs:{timeHistory.length}
-        {timeHistory.map((c) => {
-          return (
-            "start level: " +
-            c.startLevel +
-            " end level: " +
-            c.endLevel +
-            " start time : " +
-            c.startTime +
-            " end time: " +
-            c.endTime
-          );
-        })}
-      </h5>
+
       <div className="mt-4 p-4 bg-gray-100 rounded text-xs font-mono">
         <h4 className="font-bold mb-2">Climb Logs:</h4>
 
