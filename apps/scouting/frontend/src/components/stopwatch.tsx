@@ -1,5 +1,6 @@
 // בס"ד
-import React, { useEffect, useRef, useState } from "react";
+import type React from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface CycleStopwatchCounter {
   startCycleTime: number;
@@ -10,6 +11,7 @@ const MILLLISECONDS_IN_A_SECOND = 1000;
 const SECOND_IN_A_MINUTE = 60;
 const INITIAL_TIME_MILLISECONDS = 0;
 const CYCLE_TIME_MILLISECONDS = 10;
+const DECIMAL_PLACES = 2
 
 const Stopwatch: React.FC = () => {
   const [isRunning, setIsRunning] = useState(false);
@@ -54,7 +56,7 @@ const Stopwatch: React.FC = () => {
 
   useEffect(() => {
     if (!isRunning) {
-      return;
+      return undefined;
     }
     const intervalId = window.setInterval(() => {
       setElapsedTime(Date.now() - startTimeRef.current);
@@ -96,9 +98,9 @@ const Stopwatch: React.FC = () => {
   }, [cycleTimesInMilliseconds]);
 
   function formatTime() {
-    const minutes = String(calculateMinutes()).padStart(2, "0");
-    const seconds = String(calculateSeconds()).padStart(2, "0");
-    const milliseconds = String(calculateMilliSeconds()).padStart(2, "0");
+    const minutes = String(calculateMinutes()).padStart(DECIMAL_PLACES, "0");
+    const seconds = String(calculateSeconds()).padStart(DECIMAL_PLACES, "0");
+    const milliseconds = String(calculateMilliSeconds()).padStart(DECIMAL_PLACES, "0");
     return `${minutes}:${seconds}:${milliseconds}`;
   }
 
