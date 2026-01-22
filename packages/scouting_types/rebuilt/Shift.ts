@@ -21,4 +21,3 @@ export const climbCodec = t.type({
     L3: null,
   }),
 });
-

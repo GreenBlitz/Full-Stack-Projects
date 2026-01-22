@@ -8,7 +8,6 @@ const matchType = t.keyof({
   playoff: null,
 });
 
-
 export const scoutingFormCodec = t.type({
   scouterName: t.string,
   matchNumber: t.number,
