@@ -7,6 +7,5 @@ import Stopwatch from "./components/Stopwatch";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <Stopwatch></Stopwatch>
   </StrictMode>,
 );
