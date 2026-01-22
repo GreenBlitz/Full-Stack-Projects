@@ -7,10 +7,13 @@ import {
   createTypeCheckingEndpointFlow,
   type EndpointError,
 } from "../middleware/verification";
-import { matchesProps, tbaMatch } from "@repo/scouting_types";
+import {
+  matchesProps,
+  scoreBreakdown2026,
+  tbaMatch,
+} from "@repo/scouting_types";
 import { right } from "fp-ts/lib/Either";
 import { StatusCodes } from "http-status-codes";
-import { scoreBreakdown2025 } from "@repo/scouting_types";
 import {
   flatMap,
   fold,
@@ -31,7 +34,7 @@ const TBA_URL = "https://www.thebluealliance.com/api/v3";
 const fetchTba = <U>(
   route: string,
   typeToCheck: Type<U, unknown>,
-  config?: AxiosRequestConfig
+  config?: AxiosRequestConfig,
 ) =>
   pipe(
     tryCatch(
@@ -45,12 +48,12 @@ const fetchTba = <U>(
       (error) => ({
         status: StatusCodes.INTERNAL_SERVER_ERROR,
         reason: `Error Fetching From TBA: error ${error}`,
-      })
+      }),
     ),
     map(
       createTypeCheckingEndpointFlow(typeToCheck, (errors) => ({
         status: StatusCodes.INTERNAL_SERVER_ERROR,
-        reason: `Received incorrect response from the TBA. error: ${errors}`,
+        reason: `Recieved incorrect response from the TBA. error: ${errors}`,
       }))
     )
   ) satisfies TaskEither<EndpointError, U>;
@@ -60,18 +63,21 @@ tbaRouter.post("/matches", async (req, res) => {
     right(req),
     createBodyVerificationPipe(matchesProps),
     fromEither,
-    flatMap((body) => fetchTba(
-      `/event/${body.event}/matches`,
-      t.array(tbaMatch(scoreBreakdown2025, t.type({})))
-    )
+    flatMap((body) =>
+      fetchTba(
+        `/event/${body.event}/matches`,
+        t.array(tbaMatch(scoreBreakdown2026, t.type({}))),
+      ),
     ),
     fold(
-      (error) => () => new Promise((resolve) => {
-        resolve(res.status(error.status).send(error.reason));
-      }),
-      (matches) => () => new Promise((resolve) => {
-        resolve(res.status(StatusCodes.OK).json({ matches }));
-      })
-    )
+      (error) => () =>
+        new Promise((resolve) => {
+          resolve(res.status(error.status).send(error.reason));
+        }),
+      (matches) => () =>
+        new Promise((resolve) => {
+          resolve(res.status(StatusCodes.OK).json({ matches }));
+        }),
+    ),
   )();
 });
