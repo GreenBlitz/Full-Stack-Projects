@@ -3,12 +3,12 @@ import { useState } from "react";
 
 const useLocalStorage = <T>(
   key: string,
-  initialValue: T
+  initialValue: T,
 ): [T, (val: T | ((val: T) => T)) => void] => {
   const [storedValue, setStoredValue] = useState<T>(() => {
     if (typeof window === "undefined") {
       console.warn(
-        "useLocalStorage called during SSR, falling back to initialValue"
+        "useLocalStorage called during SSR, falling back to initialValue",
       );
       return initialValue;
     }

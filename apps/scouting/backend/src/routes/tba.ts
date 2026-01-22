@@ -30,7 +30,7 @@ const TBA_URL = "https://www.thebluealliance.com/api/v3";
 const fetchTba = <U>(
   route: string,
   typeToCheck: Type<U, unknown>,
-  config?: AxiosRequestConfig
+  config?: AxiosRequestConfig,
 ) =>
   pipe(
     tryCatch(
@@ -44,14 +44,14 @@ const fetchTba = <U>(
       (error) => ({
         status: StatusCodes.INTERNAL_SERVER_ERROR,
         reason: `Error Fetching From TBA: error ${error}`,
-      })
+      }),
     ),
     map(
       createTypeCheckingEndpointFlow(typeToCheck, (errors) => ({
         status: StatusCodes.INTERNAL_SERVER_ERROR,
         reason: `Recieved incorrect response from the TBA. error: ${errors}`,
-      }))
-    )
+      })),
+    ),
   ) satisfies TaskEither<EndpointError, U>;
 tbaRouter.post("/matches", async (req, res) => {
   await pipe(
@@ -61,8 +61,8 @@ tbaRouter.post("/matches", async (req, res) => {
     flatMap((body) =>
       fetchTba(
         `/event/${body.event}/matches`,
-        t.array(tbaMatch(scoreBreakdown2025, t.type({})))
-      )
+        t.array(tbaMatch(scoreBreakdown2025, t.type({}))),
+      ),
     ),
     fold(
       (error) => () =>
@@ -72,7 +72,7 @@ tbaRouter.post("/matches", async (req, res) => {
       (matches) => () =>
         new Promise((resolve) => {
           resolve(res.status(StatusCodes.OK).json({ matches }));
-        })
-    )
+        }),
+    ),
   )();
 });

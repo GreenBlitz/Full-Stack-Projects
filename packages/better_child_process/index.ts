@@ -12,5 +12,5 @@ export const asyncSpawnWrapper = async (spawned: ChildProcess): Promise<void> =>
       })
       .on("error", (err) => {
         reject(err);
-      })
+      }),
   );

@@ -26,7 +26,7 @@ const buildDev = async () =>
       spawn(
         "nodemon",
         [bundlePath, "--watch", bundlePath, "--ext", "js", "--exec", "node"],
-        { stdio: "inherit", shell: true }
+        { stdio: "inherit", shell: true },
       );
     });
 

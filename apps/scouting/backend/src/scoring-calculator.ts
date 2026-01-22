@@ -9,15 +9,15 @@ export interface ScoringCalculator<T extends AllPossibleGameEvents> {
 
 export function addScoring<T extends AllPossibleGameEvents>(
   scoringCalculator: ScoringCalculator<T>,
-  gameObjectWithPoints: GameObjectWithPoints<T>
+  gameObjectWithPoints: GameObjectWithPoints<T>,
 ): void {
   const tempGameObjectScoringData: GameObjectScoringData<T> = {
     gameObject: gameObjectWithPoints.gameObject,
     pointsScoredWithGameObject: gameObjectWithPoints.calculatePoints(
-      gameObjectWithPoints.gameObject
+      gameObjectWithPoints.gameObject,
     ),
     rpScoredWithGameObject: gameObjectWithPoints.calculateRP(
-      gameObjectWithPoints.gameObject
+      gameObjectWithPoints.gameObject,
     ),
   };
   scoringCalculator.gameObjectsScoringData.push(tempGameObjectScoringData);
