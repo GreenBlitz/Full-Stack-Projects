@@ -1,3 +1,4 @@
+// בס"ד
 import React, { useEffect, useRef, useState } from "react";
 
 interface CycleStopwatchCounter {
@@ -7,19 +8,47 @@ interface CycleStopwatchCounter {
 
 const MILLLISECONDS_IN_A_SECOND = 1000;
 const SECOND_IN_A_MINUTE = 60;
+const INITIAL_TIME_MILLISECONDS = 0;
+const CYCLE_TIME_MILLISECONDS = 10;
 
 const Stopwatch: React.FC = () => {
   const [isRunning, setIsRunning] = useState(false);
-  const [elapsedTime, setElapsedTime] = useState(0);
-  const [cycleTimesInMilliseconds, setCycleTimesInMilliseconds] = useState<CycleStopwatchCounter[]>([]);
+  const [elapsedTime, setElapsedTime] = useState(INITIAL_TIME_MILLISECONDS);
+  const [cycleTimesInMilliseconds, setCycleTimesInMilliseconds] = useState<
+    CycleStopwatchCounter[]
+  >([]);
 
-  const startTimeRef = useRef(0);
+  const startTimeRef = useRef(INITIAL_TIME_MILLISECONDS);
   const originRef = useRef<number | null>(null);
 
-  const startCurrentCycleTime = useRef<number>(0);
+  const startCurrentCycleTime = useRef<number>(INITIAL_TIME_MILLISECONDS);
+
+  function reset() {
+    setElapsedTime(INITIAL_TIME_MILLISECONDS);
+    setIsRunning(false);
+  }
+
+  function calculateMinutes() {
+    return Math.floor(
+      (elapsedTime / (MILLLISECONDS_IN_A_SECOND * SECOND_IN_A_MINUTE)) %
+        SECOND_IN_A_MINUTE,
+    );
+  }
+
+  function calculateSeconds() {
+    return Math.floor(
+      (elapsedTime / MILLLISECONDS_IN_A_SECOND) % SECOND_IN_A_MINUTE,
+    );
+  }
+
+  function calculateMilliSeconds() {
+    return Math.floor(
+      (elapsedTime % MILLLISECONDS_IN_A_SECOND) / SECOND_IN_A_MINUTE,
+    );
+  }
 
   const getCurrentRelativeTime = () => {
-    if (originRef.current === null) originRef.current = Date.now();
+    originRef.current ??= Date.now();
     return Date.now() - originRef.current;
   };
 
@@ -29,7 +58,7 @@ const Stopwatch: React.FC = () => {
     }
     const intervalId = window.setInterval(() => {
       setElapsedTime(Date.now() - startTimeRef.current);
-    }, 10);
+    }, CYCLE_TIME_MILLISECONDS);
 
     return () => {
       clearInterval(intervalId);
@@ -62,11 +91,6 @@ const Stopwatch: React.FC = () => {
     reset();
   }
 
-  function reset() {
-    setElapsedTime(0);
-    setIsRunning(false);
-  }
-
   useEffect(() => {
     console.log(cycleTimesInMilliseconds);
   }, [cycleTimesInMilliseconds]);
@@ -76,25 +100,6 @@ const Stopwatch: React.FC = () => {
     const seconds = String(calculateSeconds()).padStart(2, "0");
     const milliseconds = String(calculateMilliSeconds()).padStart(2, "0");
     return `${minutes}:${seconds}:${milliseconds}`;
-  }
-
-  function calculateMinutes() {
-    return Math.floor(
-      (elapsedTime / (MILLLISECONDS_IN_A_SECOND * SECOND_IN_A_MINUTE)) %
-        SECOND_IN_A_MINUTE,
-    );
-  }
-
-  function calculateSeconds() {
-    return Math.floor(
-      (elapsedTime / MILLLISECONDS_IN_A_SECOND) % SECOND_IN_A_MINUTE,
-    );
-  }
-
-  function calculateMilliSeconds() {
-    return Math.floor(
-      (elapsedTime % MILLLISECONDS_IN_A_SECOND) / SECOND_IN_A_MINUTE,
-    );
   }
 
   return (
