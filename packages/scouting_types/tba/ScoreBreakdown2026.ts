@@ -8,9 +8,9 @@ const climbCodec = t.keyof({
   Level3: null,
 });
 
-const scoreSegment = (key: string) => ({
-  [`${key}Count`]: t.number,
-  [`${key}Points`]: t.number,
+const scoreSegment = (segmentKey: string) => ({
+  [`${segmentKey}Count`]: t.number,
+  [`${segmentKey}Points`]: t.number,
 });
 
 const hubScoreCodec = t.type({
