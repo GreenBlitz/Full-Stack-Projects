@@ -1,12 +1,19 @@
 // בס"ד
 import { useState, type FC } from "react";
 import type { Point } from "@repo/scouting_types";
-import Stopwatch from "./components/stopwatch";
+import { ScoreMap } from "./scouter/components/ScoreMap";
 
 const App: FC = () => {
+  const [point, setPoint] = useState<Point>();
+
   return (
     <div className="justify-items-center">
-      <Stopwatch />
+      <ScoreMap
+        setPosition={setPoint}
+        currentPoint={point}
+        mapZone="red"
+        alliance="red"
+      />
     </div>
   );
 };
