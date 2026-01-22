@@ -5,14 +5,14 @@ import type {
   ClimbLevel,
   Climb,
   ActiveClimbLevel,
-  SingleLevelTime,
 } from "../../../../../packages/scouting_types/rebuilt/Shift";
 import { useEffect, useRef, useState } from "react";
-import type { KeyofType } from "io-ts";
 
 interface ClimbLevelSliderProps {
   onClimbLevelChange: (climbLevel: ClimbLevel) => void;
+  setClimbTimes: React.Dispatch<React.SetStateAction<ClimbTime>>;
   climbLevel: ClimbLevel;
+  climbTimes: ClimbTime;
 }
 
 export const numValueToClimbLevel: Record<number, ClimbLevel> = {
@@ -23,23 +23,15 @@ export const numValueToClimbLevel: Record<number, ClimbLevel> = {
 };
 
 type PossibleLevel = 0 | 1 | 2 | 3;
-type PossibleActiveLevel = 1 | 2 | 3;
 
 type ClimbTime = Climb["climbTime"];
 
 export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
   onClimbLevelChange,
-  climbLevel,
+  setClimbTimes,
 }) => {
   const FIRST_INDEX = 0;
-  const SECOND_IN_MILI_SECONDS = 1000;
-  const DIGITS_AFTER_DOT = 3;
   const INVALID_CLIMB_LEVEL = 0;
-  const [climbTimes, setClimbTimes] = useState<ClimbTime>({
-    L1: null,
-    L2: null,
-    L3: null,
-  });
 
   const startTimeRef = useRef<number | null>(null);
   const lastLevelRef = useRef<PossibleLevel>(FIRST_INDEX);
@@ -89,16 +81,15 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
     startTimeRef.current = Date.now();
   };
 
-  const getTime = (ms: number | undefined) =>
-    ms ? new Date(ms).toLocaleTimeString() : "N/A";
-
   return (
+    //to do - make it so the user does not have to manually press a button for the timer to start
+    //to do - make it prettier
     <form>
       <button type="button" onClick={handleStartClimb}>
         start climb
       </button>
       <Slider.Root
-        className="relative flex flex-col items-center select-none touch-none w-5 h-[200px]" // Swapped width and height
+        className="relative flex flex-col items-center select-none touch-none w-5 h-[200px]"
         orientation="vertical"
         defaultValue={[FIRST_INDEX]}
         max={3}
