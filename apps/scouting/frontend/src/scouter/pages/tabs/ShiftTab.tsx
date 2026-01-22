@@ -19,13 +19,14 @@ export const ShiftTab: FC<ShiftTabProps> = ({
   const [mapPosition, setMapPosition] = useState<Point>();
   const [mapZone, setMapZone] = useState<Alliance>(alliance);
   return (
-    <>
+    <div className="flex flex-row h-full w-full">
       <ScoreMap
         setPosition={setMapPosition}
         currentPoint={mapPosition}
         alliance={alliance}
         mapZone={mapZone}
       />
-    </>
+      
+    </div>
   );
 };

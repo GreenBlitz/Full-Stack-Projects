@@ -58,7 +58,7 @@ export const ScoreMap: FC<ScoreMapProps> = ({
   };
 
   return (
-    <div draggable={false} className="h-full relative mx-auto touch-none">
+    <div draggable={false} className="h-full relative touch-none">
       <img
         src={`/${mapZone}-field-4418.png`}
         onTouchMove={handleMapClick}
