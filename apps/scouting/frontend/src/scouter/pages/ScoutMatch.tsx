@@ -89,12 +89,13 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
           pr-1
           p-4
           max-w-[150px]
-          my-auto"
+          max-h-screen
+          "
     >
       <button
         onClick={goToPrev}
         disabled={activeTabIndex === STARTING_TAB_INDEX}
-        className="px-6 py-2.5 h- text-sm font-bold text-black bg-linear-to-r from-green-400 to-green-500 rounded-xl hover:from-green-500 hover:to-green-600 disabled:opacity-20 disabled:cursor-not-allowed transition-all duration-300 shadow-[0_0_15px_rgba(34,197,94,0.4)] hover:shadow-[0_0_25px_rgba(34,197,94,0.6)] disabled:shadow-none border border-green-600"
+        className="scouter-navigation-button"
       >
         ⬆<br /> Prev
       </button>
@@ -102,7 +103,6 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
         className="
           gap-2 
           overflow-y-auto 
-            max-h-[132px]
           scrollbar-thin scrollbar-thumb-green-500/50 scrollbar-track-green-900/20
           "
       >
@@ -137,7 +137,7 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
       <button
         onClick={goToNext}
         disabled={activeTabIndex === TABS.length - ONE_ARRAY_ELEMENT}
-        className="px-8 py-2.5 h-16 text-sm font-bold text-black bg-linear-to-r from-green-500 to-green-600 rounded-xl hover:from-green-600 hover:to-green-700 shadow-[0_0_15px_rgba(34,197,94,0.4)] hover:shadow-[0_0_25px_rgba(34,197,94,0.6)] disabled:opacity-20 disabled:cursor-not-allowed disabled:shadow-none transition-all duration-300 border border-green-700"
+        className="scouter-navigation-button"
       >
         Next <br />⬇
       </button>
@@ -157,7 +157,12 @@ export const ScoutMatch: FC = () => {
   );
 
   return (
-    <div className="max-h-screen bg-black p-4 md:p-6 flex items-center justify-center">
+    <div
+      className="max-h-screen bg-black p-4 md:p-6 flex items-center justify-center
+      portrait:fixed portrait:top-0 portrait:left-full
+      portrait:w-[100vh] portrait:h-[100vw]
+      portrait:rotate-90 portrait:origin-top-left"
+    >
       <div className="flex flex-row max-w-5xl w-full mx-auto bg-linear-to-br from-black via-gray-900 to-black border-2 border-green-500 rounded-2xl shadow-[0_0_30px_rgba(34,197,94,0.3)] overflow-hidden h-[90vh] relative">
         {/* Sidebar/Navbar Navigation */}
         <SideBar setActiveTab={setActiveTab} activeTabIndex={activeTabIndex} />
