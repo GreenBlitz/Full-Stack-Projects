@@ -6,10 +6,13 @@ import {
   createTypeCheckingEndpointFlow,
   type EndpointError,
 } from "../middleware/verification";
-import { matchesProps, tbaMatch } from "@repo/scouting_types";
+import {
+  matchesProps,
+  scoreBreakdown2026,
+  tbaMatch,
+} from "@repo/scouting_types";
 import { right } from "fp-ts/lib/Either";
 import { StatusCodes } from "http-status-codes";
-import { scoreBreakdown2025 } from "@repo/scouting_types";
 import {
   flatMap,
   fold,
@@ -61,7 +64,7 @@ tbaRouter.post("/matches", async (req, res) => {
     flatMap((body) =>
       fetchTba(
         `/event/${body.event}/matches`,
-        t.array(tbaMatch(scoreBreakdown2025, t.type({}))),
+        t.array(tbaMatch(scoreBreakdown2026, t.type({}))),
       ),
     ),
     fold(
