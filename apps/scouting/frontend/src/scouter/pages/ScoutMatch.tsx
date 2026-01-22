@@ -9,10 +9,16 @@ import {
   useState,
 } from "react";
 import { defaultScoutForm, type ScoutingForm } from "@repo/scouting_types";
+import { ShiftTab } from "./tabs/ShiftTab";
+
+export interface TabProps {
+  setForm: Dispatch<SetStateAction<ScoutingForm>>;
+  alliance: "red" | "blue";
+}
 
 interface Tab {
   name: string;
-  Component: FC<{ setForm: Dispatch<SetStateAction<ScoutingForm>> }>;
+  Component: FC<TabProps>;
 }
 const TABS: Tab[] = [
   {
@@ -25,24 +31,20 @@ const TABS: Tab[] = [
     Component: () => <div className="p-4">Transition Content</div>,
   },
   {
-    name: "Tele",
-    Component: () => <div className="p-4">Teleop Content</div>,
-  },
-  {
     name: "Shift1",
-    Component: () => <div className="p-4">Shift1 Content</div>,
+    Component: (props) => <ShiftTab tabIndex={0} {...props} />,
   },
   {
     name: "Shift2",
-    Component: () => <div className="p-4">Shift2 Content</div>,
+    Component: (props) => <ShiftTab tabIndex={1} {...props} />,
   },
   {
     name: "Shift3",
-    Component: () => <div className="p-4">Shift3 Content</div>,
+    Component: (props) => <ShiftTab tabIndex={2} {...props} />,
   },
   {
     name: "Shift4",
-    Component: () => <div className="p-4">Shift4 Content</div>,
+    Component: (props) => <ShiftTab tabIndex={3} {...props} />,
   },
   {
     name: "Endgame",
@@ -149,16 +151,20 @@ export const ScoutMatch: FC = () => {
       className="max-h-screen bg-black p-4 md:p-6 flex items-center justify-center
       force-landscape"
     >
-      <div className="flex flex-row max-w-5xl w-full mx-auto bg-linear-to-br
+      <div
+        className="flex flex-row max-w-5xl w-full mx-auto bg-linear-to-br
        from-black via-gray-900 to-black border-2 border-green-500 
-       rounded-2xl shadow-[0_0_30px_rgba(34,197,94,0.3)] overflow-hidden h-[90vh] relative">
+       rounded-2xl shadow-[0_0_30px_rgba(34,197,94,0.3)] overflow-hidden h-[90vh] relative"
+      >
         <SideBar setActiveTab={setActiveTab} activeTabIndex={activeTabIndex} />
 
         <div className="flex-1 flex flex-col overflow-hidden p-2 relative z-10">
-          <div className="flex-1 text-green-100 overflow-y-auto pr-2
+          <div
+            className="flex-1 text-green-100 overflow-y-auto pr-2
            bg-black/40 rounded-xl p-6 border border-green-500/20 shadow-inner
-            animate-in fade-in slide-in-from-right-4 duration-300">
-            <CurrentTab setForm={setScoutingForm} />
+            animate-in fade-in slide-in-from-right-4 duration-300"
+          >
+            <CurrentTab setForm={setScoutingForm} alliance="red" />
           </div>
         </div>
       </div>
