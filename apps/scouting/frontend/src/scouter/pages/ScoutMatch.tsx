@@ -163,7 +163,7 @@ export const ScoutMatch: FC = () => {
         <SideBar setActiveTab={setActiveTab} activeTabIndex={activeTabIndex} />
 
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col overflow-hidden p-4 relative z-10">
+        <div className="flex-1 flex flex-col overflow-hidden p-2 relative z-10">
           <div className="flex-1 text-green-100 overflow-y-auto pr-2 bg-black/40 rounded-xl p-6 border border-green-500/20 shadow-inner animate-in fade-in slide-in-from-right-4 duration-300">
             <CurrentTab setForm={setScoutingForm} />
           </div>
