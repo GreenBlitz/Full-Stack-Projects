@@ -11,7 +11,7 @@ const SECOND_IN_A_MINUTE = 60;
 const Stopwatch: React.FC = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
-  const [cycleTimes, setCycleTimes] = useState<CycleStopwatchCounter[]>([]);
+  const [cycleTimesInMilliseconds, setCycleTimesInMilliseconds] = useState<CycleStopwatchCounter[]>([]);
 
   const startTimeRef = useRef(0);
   const originRef = useRef<number | null>(null);
@@ -56,7 +56,7 @@ const Stopwatch: React.FC = () => {
       startCycleTime: startCurrentCycleTime.current,
       endCycleTimer: getCurrentRelativeTime(),
     };
-    setCycleTimes((prev) => [...prev, cycleStopwatchCounter]);
+    setCycleTimesInMilliseconds((prev) => [...prev, cycleStopwatchCounter]);
 
     setIsRunning(false);
     reset();
@@ -68,8 +68,8 @@ const Stopwatch: React.FC = () => {
   }
 
   useEffect(() => {
-    console.log(cycleTimes);
-  }, [cycleTimes]);
+    console.log(cycleTimesInMilliseconds);
+  }, [cycleTimesInMilliseconds]);
 
   function formatTime() {
     const minutes = String(calculateMinutes()).padStart(2, "0");
