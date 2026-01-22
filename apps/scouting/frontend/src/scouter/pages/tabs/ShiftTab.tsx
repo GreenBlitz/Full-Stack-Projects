@@ -3,7 +3,7 @@
 import { useState, type FC } from "react";
 import type { TabProps } from "../ScoutMatch";
 import { ScoreMap } from "../../components/ScoreMap";
-import type { Point, ScoutingForm, ShootEvent } from "@repo/scouting_types";
+import type { Point } from "@repo/scouting_types";
 import Stopwatch from "../../../components/stopwatch";
 
 type Alliance = "red" | "blue";
@@ -29,10 +29,11 @@ export const ShiftTab: FC<ShiftTabProps> = ({
         mapZone={mapZone}
       />
       <Stopwatch
-        setCycleTimesInSeconds={() => {
-          console.log("not implemented");
+        setCycleTimesInSeconds={(handler) => {
+          console.log("");
         }}
         originTime={0}
+        disabled={mapPosition === undefined}
       />
     </div>
   );

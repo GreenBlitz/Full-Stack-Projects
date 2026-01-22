@@ -1,11 +1,6 @@
 // בס"ד
 import type React from "react";
-import {
-  useEffect,
-  useRef,
-  useState,
-  type Dispatch,
-} from "react";
+import { useEffect, useRef, useState, type Dispatch } from "react";
 import type { Interval } from "@repo/scouting_types";
 
 const MILLLISECONDS_IN_A_SECOND = 1000;
@@ -18,11 +13,13 @@ const DECIMAL_PLACES_MILLISECONDS = 3;
 interface StopwatchProps {
   setCycleTimesInSeconds: Dispatch<(prev: Interval[]) => Interval[]>;
   originTime: number;
+  disabled: boolean;
 }
 
 const Stopwatch: React.FC<StopwatchProps> = ({
   setCycleTimesInSeconds,
   originTime,
+  disabled,
 }) => {
   const [isRunning, setIsRunning] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(INITIAL_TIME_MILLISECONDS);
@@ -64,7 +61,7 @@ const Stopwatch: React.FC<StopwatchProps> = ({
   }, [isRunning]);
 
   function start() {
-    if (isRunning) {
+    if (isRunning || disabled) {
       return;
     }
     const relativeTime = getCurrentRelativeTime();
@@ -104,7 +101,7 @@ const Stopwatch: React.FC<StopwatchProps> = ({
         className={`
           select-none cursor-pointer rounded-2xl px-4 py-2
           text-2xl font-mono font-semibold shadow-lg transition-all duration-150
-          ${isRunning ? "bg-emerald-500 text-white scale-95" : "bg-slate-800 text-emerald-400 hover:bg-slate-700"}
+          ${disabled ? "bg-slate-800 text-slate-900" : isRunning ? "bg-emerald-500 text-white scale-95" : "bg-slate-800 text-emerald-400 hover:bg-slate-700"}
         `}
         onMouseDown={start}
         onMouseUp={stop}
