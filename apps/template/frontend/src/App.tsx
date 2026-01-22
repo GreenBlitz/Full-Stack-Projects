@@ -19,7 +19,7 @@ const App: FC = () => {
                 ? prevCount >= maxCountingValue
                   ? importantMessage
                   : prevCount + countIncrement
-                : prevCount + "!"
+                : prevCount + "!",
             );
           }}
         >

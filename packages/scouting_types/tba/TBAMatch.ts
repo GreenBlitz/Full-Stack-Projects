@@ -7,7 +7,6 @@ export const matchesProps = t.type({
 
 export type TBAMatchesProps = t.TypeOf<typeof matchesProps>;
 
-// 1. Define the TBAAlliance codec
 export const tbaAlliance = t.type({
   score: t.number,
   team_keys: t.array(t.string),
@@ -15,10 +14,11 @@ export const tbaAlliance = t.type({
   dq_team_keys: t.array(t.string),
 });
 
-// 2. Define the generic TBAMatch codec constructor
+const optionalNumber = t.union([t.number, t.null]);
+
 export const tbaMatch = <A extends t.Mixed, M extends t.Mixed>(
   allianceBreakdown: A,
-  miscBreakdown: M
+  miscBreakdown: M,
 ) =>
   t.type({
     key: t.string,
@@ -29,16 +29,12 @@ export const tbaMatch = <A extends t.Mixed, M extends t.Mixed>(
       red: tbaAlliance,
       blue: tbaAlliance,
     }),
-    winning_alliance: t.union([
-      t.literal("red"),
-      t.literal("blue"),
-      t.literal(""), // "" is a tie
-    ]),
+    winning_alliance: t.keyof({ red: null, blue: null, "": null }),
     event_key: t.string,
-    time: t.number,
-    actual_time: t.union([t.number,t.null]),
-    predicted_time: t.number,
-    post_result_time: t.number,
+    time: optionalNumber,
+    actual_time: optionalNumber,
+    predicted_time: optionalNumber,
+    post_result_time: optionalNumber,
     score_breakdown: t.intersection([
       t.type({
         red: allianceBreakdown,
@@ -50,6 +46,6 @@ export const tbaMatch = <A extends t.Mixed, M extends t.Mixed>(
       t.type({
         type: t.string,
         key: t.string,
-      })
+      }),
     ),
   });

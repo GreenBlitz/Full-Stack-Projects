@@ -1,8 +1,6 @@
 // בס"ד
 import type { GameObject } from "./game-object";
-import type {
-  CoralEvent,
-} from "./game-events";
+import type { CoralEvent } from "./game-events";
 
 const L1_SCORING = 2;
 const L2_SCORING = 3;
