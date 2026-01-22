@@ -9,3 +9,5 @@ export const shootEventCodec = t.type({
   interval: intervalCodec,
   startPosition: point,
 });
+
+export type ShootEvent = t.TypeOf<typeof shootEventCodec>;

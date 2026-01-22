@@ -2,3 +2,4 @@
 export * from "./GameData";
 export * from "./ScoutingForm";
 export * from "./ShootEvent";
+export * from "./Interval";

@@ -3,7 +3,7 @@
 import { useState, type FC } from "react";
 import type { TabProps } from "../ScoutMatch";
 import { ScoreMap } from "../../components/ScoreMap";
-import type { Point } from "@repo/scouting_types";
+import type { Point, ScoutingForm, ShootEvent } from "@repo/scouting_types";
 import Stopwatch from "../../../components/stopwatch";
 
 type Alliance = "red" | "blue";
@@ -19,6 +19,7 @@ export const ShiftTab: FC<ShiftTabProps> = ({
 }) => {
   const [mapPosition, setMapPosition] = useState<Point>();
   const [mapZone, setMapZone] = useState<Alliance>(alliance);
+
   return (
     <div className="flex flex-row h-full w-full">
       <ScoreMap
@@ -27,7 +28,12 @@ export const ShiftTab: FC<ShiftTabProps> = ({
         alliance={alliance}
         mapZone={mapZone}
       />
-      <Stopwatch />
+      <Stopwatch
+        setCycleTimesInSeconds={() => {
+          console.log("not implemented");
+        }}
+        originTime={0}
+      />
     </div>
   );
 };

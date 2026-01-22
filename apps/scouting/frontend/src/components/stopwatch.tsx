@@ -1,11 +1,12 @@
 // בס"ד
 import type React from "react";
-import { useEffect, useRef, useState } from "react";
-
-interface CycleStopwatchCounter {
-  startCycleTime: number;
-  endCycleTimer: number;
-}
+import {
+  useEffect,
+  useRef,
+  useState,
+  type Dispatch,
+} from "react";
+import type { Interval } from "@repo/scouting_types";
 
 const MILLLISECONDS_IN_A_SECOND = 1000;
 const SECOND_IN_A_MINUTE = 60;
@@ -14,15 +15,19 @@ const CYCLE_TIME_MILLISECONDS = 10;
 const DECIMAL_PLACES = 2;
 const DECIMAL_PLACES_MILLISECONDS = 3;
 
-const Stopwatch: React.FC = () => {
+interface StopwatchProps {
+  setCycleTimesInSeconds: Dispatch<(prev: Interval[]) => Interval[]>;
+  originTime: number;
+}
+
+const Stopwatch: React.FC<StopwatchProps> = ({
+  setCycleTimesInSeconds,
+  originTime,
+}) => {
   const [isRunning, setIsRunning] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(INITIAL_TIME_MILLISECONDS);
-  const [cycleTimesInMilliseconds, setCycleTimesInMilliseconds] = useState<
-    CycleStopwatchCounter[]
-  >([]);
 
   const startTimeRef = useRef(INITIAL_TIME_MILLISECONDS);
-  const originRef = useRef<number | null>(null);
 
   const startCurrentCycleTime = useRef<number>(INITIAL_TIME_MILLISECONDS);
 
@@ -42,8 +47,7 @@ const Stopwatch: React.FC = () => {
   }
 
   const getCurrentRelativeTime = () => {
-    originRef.current ??= Date.now();
-    return Date.now() - originRef.current;
+    return Date.now() - originTime;
   };
 
   useEffect(() => {
@@ -75,19 +79,15 @@ const Stopwatch: React.FC = () => {
       return;
     }
 
-    const cycleStopwatchCounter: CycleStopwatchCounter = {
-      startCycleTime: startCurrentCycleTime.current,
-      endCycleTimer: getCurrentRelativeTime(),
+    const cycleStopwatchCounter: Interval = {
+      start: startCurrentCycleTime.current * MILLLISECONDS_IN_A_SECOND,
+      end: getCurrentRelativeTime() * MILLLISECONDS_IN_A_SECOND,
     };
-    setCycleTimesInMilliseconds((prev) => [...prev, cycleStopwatchCounter]);
+    setCycleTimesInSeconds((prev) => [...prev, cycleStopwatchCounter]);
 
     setIsRunning(false);
     reset();
   }
-
-  useEffect(() => {
-    console.log(cycleTimesInMilliseconds);
-  }, [cycleTimesInMilliseconds]);
 
   function formatTime() {
     const seconds = String(calculateSeconds()).padStart(DECIMAL_PLACES, "0");
