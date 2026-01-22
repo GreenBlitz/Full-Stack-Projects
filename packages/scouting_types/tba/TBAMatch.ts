@@ -7,7 +7,6 @@ export const matchesProps = t.type({
 
 export type TBAMatchesProps = t.TypeOf<typeof matchesProps>;
 
-// 1. Define the TBAAlliance codec
 export const tbaAlliance = t.type({
   score: t.number,
   team_keys: t.array(t.string),
@@ -17,7 +16,6 @@ export const tbaAlliance = t.type({
 
 const optionalNumber = t.union([t.number, t.null]);
 
-// 2. Define the generic TBAMatch codec constructor
 export const tbaMatch = <A extends t.Mixed, M extends t.Mixed>(
   allianceBreakdown: A,
   miscBreakdown: M,
