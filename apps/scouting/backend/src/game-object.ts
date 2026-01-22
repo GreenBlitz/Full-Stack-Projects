@@ -11,7 +11,7 @@ export const addGameEvent = <T extends AllPossibleGameEvents>(
   event: T,
 ): void => {
   gameObject.gameEvents[event]++;
-}
+};
 
 export interface GameObjectWithPoints<T extends AllPossibleGameEvents> {
   gameObject: GameObject<T>;

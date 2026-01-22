@@ -10,7 +10,7 @@ export interface ScoringCalculator<T extends AllPossibleGameEvents> {
 export const addScoring = <T extends AllPossibleGameEvents>(
   scoringCalculator: ScoringCalculator<T>,
   gameObjectWithPoints: GameObjectWithPoints<T>,
-): void =>{
+): void => {
   const tempGameObjectScoringData: GameObjectScoringData<T> = {
     gameObject: gameObjectWithPoints.gameObject,
     pointsScoredWithGameObject: gameObjectWithPoints.calculatePoints(
@@ -21,4 +21,4 @@ export const addScoring = <T extends AllPossibleGameEvents>(
     ),
   };
   scoringCalculator.gameObjectsScoringData.push(tempGameObjectScoringData);
-}
+};
