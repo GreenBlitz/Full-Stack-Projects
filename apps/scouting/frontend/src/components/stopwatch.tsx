@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 
-interface CycleStopwatchCounter{
-  startCycleTime: number
-  endCycleTimer: number
+interface CycleStopwatchCounter {
+  startCycleTime: number;
+  endCycleTimer: number;
 }
 
 const Stopwatch: React.FC = () => {
@@ -10,42 +10,38 @@ const Stopwatch: React.FC = () => {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [cycleTimes, setCycleTimes] = useState<CycleStopwatchCounter[]>([]);
 
-
-  const intervalIdRef = useRef<number | null>(null);
   const startTimeRef = useRef(0);
   const originRef = useRef<number | null>(null);
 
-  const startCurrentCycleTime = useRef<number>(0)
+  const startCurrentCycleTime = useRef<number>(0);
 
   const getCurrentRelativeTime = () => {
-    if (originRef.current === null)
-       originRef.current = Date.now();
+    if (originRef.current === null) originRef.current = Date.now();
     return Date.now() - originRef.current;
   };
 
   useEffect(() => {
-    if (isRunning) {
-      intervalIdRef.current = window.setInterval(() => {
-        setElapsedTime(Date.now() - startTimeRef.current);
-      }, 10);
+    if (!isRunning) {
+      return;
     }
+    const intervalId = window.setInterval(() => {
+      setElapsedTime(Date.now() - startTimeRef.current);
+    }, 10);
 
     return () => {
-      if (intervalIdRef.current !== null) {
-        clearInterval(intervalIdRef.current);
-        intervalIdRef.current = null;
-      }
+      clearInterval(intervalId);
     };
   }, [isRunning]);
 
   function start() {
-    if (isRunning) {return}
-      const relativeTime = getCurrentRelativeTime();
-      startCurrentCycleTime.current = relativeTime
+    if (isRunning) {
+      return;
+    }
+    const relativeTime = getCurrentRelativeTime();
+    startCurrentCycleTime.current = relativeTime;
 
-      startTimeRef.current = Date.now() - elapsedTime;
-      setIsRunning(true);
-    
+    startTimeRef.current = Date.now() - elapsedTime;
+    setIsRunning(true);
   }
 
   function stop() {
@@ -53,12 +49,12 @@ const Stopwatch: React.FC = () => {
 
     const cycleStopwatchCounter: CycleStopwatchCounter = {
       startCycleTime: startCurrentCycleTime.current,
-      endCycleTimer: getCurrentRelativeTime()
-    }
+      endCycleTimer: getCurrentRelativeTime(),
+    };
     setCycleTimes((prev) => [...prev, cycleStopwatchCounter]);
 
     setIsRunning(false);
-    reset()
+    reset();
   }
 
   function reset() {
@@ -66,10 +62,9 @@ const Stopwatch: React.FC = () => {
     setIsRunning(false);
   }
 
-  useEffect(()=>{
-    console.log(cycleTimes)
-  }, [cycleTimes
-  ])
+  useEffect(() => {
+    console.log(cycleTimes);
+  }, [cycleTimes]);
 
   function formatTime() {
     const minutes = String(calculateMinutes()).padStart(2, "0");
@@ -78,16 +73,16 @@ const Stopwatch: React.FC = () => {
     return `${minutes}:${seconds}:${milliseconds}`;
   }
 
-  function calculateMinutes(){
-    return Math.floor((elapsedTime / (1000 * 60)) % 60)
+  function calculateMinutes() {
+    return Math.floor((elapsedTime / (1000 * 60)) % 60);
   }
-  
-  function calculateSeconds(){
-    return Math.floor((elapsedTime / 1000) % 60)
+
+  function calculateSeconds() {
+    return Math.floor((elapsedTime / 1000) % 60);
   }
-  
-  function calculateMilliSeconds(){
-    return Math.floor((elapsedTime % 1000) / 10)
+
+  function calculateMilliSeconds() {
+    return Math.floor((elapsedTime % 1000) / 10);
   }
 
   return (
@@ -119,6 +114,6 @@ const Stopwatch: React.FC = () => {
       </button>
     </div>
   );
-}
+};
 
 export default Stopwatch;
