@@ -72,7 +72,7 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
   const goToNext = () => {
     setActiveTab((prev) => prev + MOVEMENT_AMOUNT);
   };
-  // Auto-scroll logic - center the active tab
+
   useEffect(() => {
     if (activeTabRef.current) {
       activeTabRef.current.scrollIntoView({
@@ -83,15 +83,7 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
   }, [activeTabIndex]);
 
   return (
-    <div
-      className="relative
-          flex flex-col 
-          pr-1
-          p-4
-          max-w-[150px]
-          max-h-screen
-          "
-    >
+    <div className="relative flex flex-col pr-1 p-4 max-w-[150px] max-h-screen">
       <button
         onClick={goToPrev}
         disabled={activeTabIndex === STARTING_TAB_INDEX}
@@ -114,19 +106,15 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
               setActiveTab(index);
             }}
             className={`
-                shrink-0 flex w-full py-3 text-sm font-bold rounded-xl transition-all duration-300 text-left relative overflow-hidden group
+                shrink-0 flex w-full py-3 text-sm font-bold rounded-xl 
+                transition-all duration-300 text-left relative overflow-hidden group
                 ${
                   activeTabIndex === index
-                    ? "bg-linear-to-r from-emerald-500 to-emerald-600 text-black shadow-[0_0_20px_rgba(34,197,94,0.6)]"
-                    : "text-emerald-400 hover:bg-green-950 hover:text-emerald-300 border border-emerald-500/20 hover:border-emerald-500/50 hover:shadow-[0_0_10px_rgba(34,197,94,0.3)]"
+                    ? "highlighted-tab"
+                    : "unhighlighted-tab"
                 }
               `}
           >
-            {/* Animated background for inactive tabs on hover */}
-            {activeTabIndex !== index && (
-              <div className="absolute inset-0 bg-linear-to-r from-transparent via-green-500/10 to-transparent translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-            )}
-
             <span className="relative z-10 mr-3 opacity-70 font-mono">
               {String(index + ONE_ARRAY_ELEMENT)}
             </span>
@@ -159,17 +147,17 @@ export const ScoutMatch: FC = () => {
   return (
     <div
       className="max-h-screen bg-black p-4 md:p-6 flex items-center justify-center
-      portrait:fixed portrait:top-0 portrait:left-full
-      portrait:w-[100vh] portrait:h-[100vw]
-      portrait:rotate-90 portrait:origin-top-left"
+      force-landscape"
     >
-      <div className="flex flex-row max-w-5xl w-full mx-auto bg-linear-to-br from-black via-gray-900 to-black border-2 border-green-500 rounded-2xl shadow-[0_0_30px_rgba(34,197,94,0.3)] overflow-hidden h-[90vh] relative">
-        {/* Sidebar/Navbar Navigation */}
+      <div className="flex flex-row max-w-5xl w-full mx-auto bg-linear-to-br
+       from-black via-gray-900 to-black border-2 border-green-500 
+       rounded-2xl shadow-[0_0_30px_rgba(34,197,94,0.3)] overflow-hidden h-[90vh] relative">
         <SideBar setActiveTab={setActiveTab} activeTabIndex={activeTabIndex} />
 
-        {/* Main Content Area */}
         <div className="flex-1 flex flex-col overflow-hidden p-2 relative z-10">
-          <div className="flex-1 text-green-100 overflow-y-auto pr-2 bg-black/40 rounded-xl p-6 border border-green-500/20 shadow-inner animate-in fade-in slide-in-from-right-4 duration-300">
+          <div className="flex-1 text-green-100 overflow-y-auto pr-2
+           bg-black/40 rounded-xl p-6 border border-green-500/20 shadow-inner
+            animate-in fade-in slide-in-from-right-4 duration-300">
             <CurrentTab setForm={setScoutingForm} />
           </div>
         </div>
