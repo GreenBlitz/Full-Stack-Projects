@@ -31,11 +31,7 @@ export const tbaMatch = <A extends t.Mixed, M extends t.Mixed>(
       red: tbaAlliance,
       blue: tbaAlliance,
     }),
-    winning_alliance: t.union([
-      t.literal("red"),
-      t.literal("blue"),
-      t.literal(""), // "" is a tie
-    ]),
+    winning_alliance: t.keyof({ red: null, blue: null, "": null }),
     event_key: t.string,
     time: optionalNumber,
     actual_time: optionalNumber,
