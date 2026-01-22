@@ -114,20 +114,6 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
           aria-label="Climb Level"
         />
       </Slider.Root>
-
-      <div className="mt-4 p-4 bg-gray-100 rounded text-xs font-mono">
-        <h4 className="font-bold mb-2">Climb Logs:</h4>
-
-        <p>
-          L1: {getTime(climbTimes.L1?.start)} → {getTime(climbTimes.L1?.end)}
-        </p>
-        <p>
-          L2: {getTime(climbTimes.L2?.start)} → {getTime(climbTimes.L2?.end)}
-        </p>
-        <p>
-          L3: {getTime(climbTimes.L3?.start)} → {getTime(climbTimes.L3?.end)}
-        </p>
-      </div>
     </form>
   );
 };
