@@ -5,6 +5,9 @@ interface CycleStopwatchCounter {
   endCycleTimer: number;
 }
 
+const MILLLISECONDS_IN_A_SECOND = 1000;
+const SECOND_IN_A_MINUTE = 60;
+
 const Stopwatch: React.FC = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
@@ -45,7 +48,9 @@ const Stopwatch: React.FC = () => {
   }
 
   function stop() {
-    if (!isRunning) return;
+    if (!isRunning) {
+      return;
+    }
 
     const cycleStopwatchCounter: CycleStopwatchCounter = {
       startCycleTime: startCurrentCycleTime.current,
@@ -74,15 +79,22 @@ const Stopwatch: React.FC = () => {
   }
 
   function calculateMinutes() {
-    return Math.floor((elapsedTime / (1000 * 60)) % 60);
+    return Math.floor(
+      (elapsedTime / (MILLLISECONDS_IN_A_SECOND * SECOND_IN_A_MINUTE)) %
+        SECOND_IN_A_MINUTE,
+    );
   }
 
   function calculateSeconds() {
-    return Math.floor((elapsedTime / 1000) % 60);
+    return Math.floor(
+      (elapsedTime / MILLLISECONDS_IN_A_SECOND) % SECOND_IN_A_MINUTE,
+    );
   }
 
   function calculateMilliSeconds() {
-    return Math.floor((elapsedTime % 1000) / 10);
+    return Math.floor(
+      (elapsedTime % MILLLISECONDS_IN_A_SECOND) / SECOND_IN_A_MINUTE,
+    );
   }
 
   return (
