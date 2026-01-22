@@ -8,16 +8,6 @@ interface StartGameButtonProps {
 
 const MIN_MATCH_NUMBER = 1;
 
-interface ErrorResponse {
-  error?: string;
-}
-
-const EMPTY_OBJECT_KEY_COUNT = 0;
-
-const isErrorResponse = (data: unknown): data is ErrorResponse => {
-  return typeof data === "object" && data !== null && ("error" in data || Object.keys(data).length === EMPTY_OBJECT_KEY_COUNT);
-};
-
 const StartGameButton: FC<StartGameButtonProps> = ({ matchNumber, matchType }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string>("");
@@ -45,18 +35,14 @@ const StartGameButton: FC<StartGameButtonProps> = ({ matchNumber, matchType }) =
       });
 
       if (!response.ok) {
-        const data: unknown = await response.json();
-        const errorData = isErrorResponse(data) ? data : { error: undefined };
-        throw new Error(errorData.error ?? "Failed to start game");
+        const errorData: unknown = await response.json().catch(() => ({}));
+        console.error("Error starting game:", errorData);
+        throw new Error("Failed to start game");
       }
       setMessage("Game started successfully");
     } catch (error) {
-      setMessage(
-        error instanceof Error
-          ? `Error: ${error.message}`
-          : "Error starting game"
-      );
       console.error("Error starting game:", error);
+      setMessage("Error starting game");
     } finally {
       setIsLoading(false);
     }

@@ -19,6 +19,7 @@ import {
   tryCatch,
 } from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function";
+import { map } from "fp-ts/lib/Task";
 import * as t from "io-ts";
 import type { Type } from "io-ts";
 
@@ -46,13 +47,11 @@ const fetchTba = <U>(
         reason: `Error Fetching From TBA: error ${error}`,
       })
     ),
-    flatMap((data) =>
-      fromEither(
-        createTypeCheckingEndpointFlow(typeToCheck, (errors) => ({
-          status: StatusCodes.INTERNAL_SERVER_ERROR,
-          reason: `Received incorrect response from the TBA. error: ${errors}`,
-        }))(right(data))
-      )
+    map(
+      createTypeCheckingEndpointFlow(typeToCheck, (errors) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `Received incorrect response from the TBA. error: ${errors}`,
+      }))
     )
   ) satisfies TaskEither<EndpointError, U>;
 
@@ -61,7 +60,7 @@ tbaRouter.post("/matches", async (req, res) => {
     right(req),
     createBodyVerificationPipe(matchesProps),
     fromEither,
-    flatMap((body: t.TypeOf<typeof matchesProps>) => fetchTba(
+    flatMap((body) => fetchTba(
       `/event/${body.event}/matches`,
       t.array(tbaMatch(scoreBreakdown2025, t.type({})))
     )
