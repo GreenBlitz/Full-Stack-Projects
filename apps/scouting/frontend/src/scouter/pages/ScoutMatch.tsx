@@ -86,10 +86,10 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
     <div
       className="relative
           flex flex-col 
-          pr-4
+          pr-1
           p-4
           max-w-[150px]
-          bg-black/40 my-auto"
+          my-auto"
     >
       <button
         onClick={goToPrev}
@@ -158,7 +158,7 @@ export const ScoutMatch: FC = () => {
 
   return (
     <div className="max-h-screen bg-black p-4 md:p-6 flex items-center justify-center">
-      <div className="flex flex-row max-w-5xl w-full mx-auto bg-linear-to-br from-black via-gray-900 to-black border-2 border-green-500 rounded-2xl shadow-[0_0_30px_rgba(34,197,94,0.3)] gap-6 overflow-hidden h-[90vh] relative">
+      <div className="flex flex-row max-w-5xl w-full mx-auto bg-linear-to-br from-black via-gray-900 to-black border-2 border-green-500 rounded-2xl shadow-[0_0_30px_rgba(34,197,94,0.3)] overflow-hidden h-[90vh] relative">
         {/* Sidebar/Navbar Navigation */}
         <SideBar setActiveTab={setActiveTab} activeTabIndex={activeTabIndex} />
 
