@@ -13,7 +13,7 @@ export interface EndpointError {
 
 export const createTypeCheckingEndpointFlow = <E extends EndpointError, U>(
   typeToCheck: Type<U, unknown>,
-  onFail: (error: string) => E,
+  onFail: (error: string) => E
 ) =>
   flatMap(
     flow(
@@ -30,6 +30,6 @@ export const createBodyVerificationPipe =
       map((request) => request.body as unknown),
       createTypeCheckingEndpointFlow(typeToCheck, (errors) => ({
         status: StatusCodes.BAD_REQUEST,
-        reason: `Recieved incorrect body parameters. error: ${errors}`,
+        reason: `Received incorrect body parameters. error: ${errors}`,
       })),
     );
