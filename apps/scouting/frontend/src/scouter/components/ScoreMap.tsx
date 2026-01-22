@@ -58,20 +58,17 @@ export const ScoreMap: FC<ScoreMapProps> = ({
   };
 
   return (
-    <div
-      draggable={false}
-      className="max-h-screen relative mx-auto touch-none"
-      onTouchMove={handleMapClick}
-      onTouchStart={() => {
-        setHolding(true);
-      }}
-      onTouchEnd={() => {
-        setHolding(false);
-      }}
-    >
+    <div draggable={false} className="h-full relative mx-auto touch-none">
       <img
         src={`/${mapZone}-field-4418.png`}
-        className="max-h-screen block select-none"
+        onTouchMove={handleMapClick}
+        onTouchStart={() => {
+          setHolding(true);
+        }}
+        onTouchEnd={() => {
+          setHolding(false);
+        }}
+        className="h-full block select-none"
         alt="Game Map"
         draggable={false}
       />
