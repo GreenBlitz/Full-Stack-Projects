@@ -7,6 +7,7 @@ import {
   useState,
   type TouchEvent,
   type Touch,
+  useEffect,
 } from "react";
 import type { Point } from "@repo/scouting_types";
 import { pipe } from "fp-ts/lib/function";
