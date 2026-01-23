@@ -13,7 +13,6 @@ const climb = t.keyof({
   None: null,
 });
 
-// --- ReefRow Codec ---
 const reefRow = t.type({
   nodeA: t.boolean,
   nodeB: t.boolean,
@@ -22,7 +21,6 @@ const reefRow = t.type({
   nodeE: t.boolean,
 });
 
-// --- Reef Codec ---
 const reef = t.type({
   botRow: reefRow,
   midRow: reefRow,
@@ -33,7 +31,6 @@ const reef = t.type({
   trough: t.number,
 });
 
-// --- ScoreBreakdown2025 Codec ---
 export const scoreBreakdown2025 = t.type({
   adjustPoints: t.number,
   algaePoints: t.number,
