@@ -31,15 +31,10 @@ export const climbCodec = t.type({
   }),
 });
 
-export const activeClimbLevelCodec = t.keyof({
-  L1: null,
-  L2: null,
-  L3: null,
-});
-
+type ActiveClimbLevel = "L1" | "L2" | "L3";
 type Interval = t.TypeOf<typeof intervalCodec>;
 
-export type SingleLevelTime = Partial<Record<"L1" | "L2" | "L3", Interval>>;
+export type SingleLevelTime = Partial<Record<ActiveClimbLevel, Interval>>;
 
 export type Climb = t.TypeOf<typeof climbCodec>;
 export type ClimbSide = Climb["climbSide"];
