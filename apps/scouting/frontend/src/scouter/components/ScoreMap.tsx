@@ -23,16 +23,15 @@ interface ScoreMapProps {
 const ALLIANCE_ZONE_WIDTH_PIXELS = 395;
 const TWO_THIRDS_WIDTH_PIXELS = 1010;
 const HEIGHT_PIXELS = 652;
-const alliancizePosition = (
-  alliance: Alliance,
-  position: Point,
-  bounds: Point,
-): Point => {
+const alliancizePosition = (alliance: Alliance, position: Point): Point => {
   if (alliance === "red") {
     return position;
   }
 
-  return { x: bounds.x - position.x, y: bounds.y - position.y };
+  return {
+    x: TWO_THIRDS_WIDTH_PIXELS - position.x,
+    y: HEIGHT_PIXELS - position.y,
+  };
 };
 
 const otherZone = (point: Point) => {
@@ -94,12 +93,8 @@ export const ScoreMap: FC<ScoreMapProps> = ({
     setPosition(
       pipe(
         dotPoint,
-        (point) =>
-          alliancizePosition(alliance, point, {
-            x: rect.width,
-            y: rect.height,
-          }),
         (point) => normalizePosition(point, { x: rect.width, y: rect.height }),
+        (point) => alliancizePosition(alliance, point),
         (point) => (alliance === mapZone ? point : otherZone(point)),
         (point) => ({ x: Math.round(point.x), y: Math.round(point.y) }),
       ),
