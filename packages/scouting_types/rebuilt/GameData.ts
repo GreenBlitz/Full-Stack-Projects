@@ -1,7 +1,7 @@
 // בס"ד
 import * as t from "io-ts";
 
-const matchType = t.keyof({
+const matchTypeCodec = t.keyof({
   practice: null,
   qualification: null,
   playoff: null,
@@ -9,7 +9,7 @@ const matchType = t.keyof({
 
 export const gameDataCodec = t.type({
   matchNumber: t.number,
-  matchType,
+  matchType: matchTypeCodec,
   startTime: t.string,
 });
 
