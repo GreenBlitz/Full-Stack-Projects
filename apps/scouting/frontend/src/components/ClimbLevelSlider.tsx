@@ -11,8 +11,8 @@ import { useEffect, useRef, useState } from "react";
 interface ClimbLevelSliderProps {
   onClimbLevelChange: (climbLevel: ClimbLevel) => void;
   setClimbTimes: React.Dispatch<React.SetStateAction<ClimbTime>>;
-  climbLevel: ClimbLevel;
   climbTimes: ClimbTime;
+  climbLevel: ClimbLevel;
 }
 
 export const numValueToClimbLevel: Record<number, ClimbLevel> = {
@@ -29,6 +29,7 @@ type ClimbTime = Climb["climbTime"];
 export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
   onClimbLevelChange,
   setClimbTimes,
+  climbTimes,
 }) => {
   const FIRST_INDEX = 0;
   const INVALID_CLIMB_LEVEL = 0;
@@ -84,6 +85,9 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
     setIsDisabled(false);
   };
 
+  const getTime = (ms: number | undefined) =>
+    ms ? new Date(ms).toLocaleTimeString() : "N/A";
+
   return (
     <form className="flex flex-col items-center gap-6 p-4">
       <button
@@ -137,6 +141,18 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
             aria-label="Climb Level"
           />
         </Slider.Root>
+      </div>
+      <div className="mt-4 p-4 bg-gray-100 rounded text-xs font-mono">
+        <h4 className="font-bold mb-2">Climb Logs:</h4>
+        <p>
+          L1: {getTime(climbTimes.L1?.start)} → {getTime(climbTimes.L1?.end)}
+        </p>
+        <p>
+          L2: {getTime(climbTimes.L2?.start)} → {getTime(climbTimes.L2?.end)}
+        </p>
+        <p>
+          L3: {getTime(climbTimes.L3?.start)} → {getTime(climbTimes.L3?.end)}
+        </p>
       </div>
     </form>
   );
