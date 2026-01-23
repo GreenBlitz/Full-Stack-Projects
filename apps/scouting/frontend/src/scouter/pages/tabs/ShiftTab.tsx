@@ -27,20 +27,30 @@ export const ShiftTab: FC<ShiftTabProps> = ({
         alliance={alliance}
         mapZone={mapZone}
       />
-      <Stopwatch
-        addCycleTimeSeconds={(cycle) => {
-          setForm((prevForm) => {
-            const prevEvents = prevForm.tele.shifts[tabIndex].shootEvents;
-            prevEvents.push({
-              interval: cycle,
-              startPosition: mapPosition ?? { x: 0, y: 0 },
+      <div className="flex flex-col items-center">
+        <Stopwatch
+          addCycleTimeSeconds={(cycle) => {
+            setForm((prevForm) => {
+              const prevEvents = prevForm.tele.shifts[tabIndex].shootEvents;
+              prevEvents.push({
+                interval: cycle,
+                startPosition: mapPosition ?? { x: 0, y: 0 },
+              });
+              return prevForm;
             });
-            return prevForm;
-          });
-        }}
-        originTime={originTime}
-        disabled={mapPosition === undefined}
-      />
+          }}
+          originTime={originTime}
+          disabled={mapPosition === undefined}
+        />
+        <button
+          className={`bg-${mapZone}-500 h-10 text-xs`}
+          onClick={() => {
+            setMapZone((prev) => (prev === "red" ? "blue" : "red"));
+          }}
+        >
+          Side
+        </button>
+      </div>
     </div>
   );
 };

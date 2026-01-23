@@ -100,8 +100,8 @@ const Stopwatch: React.FC<StopwatchProps> = ({
     <div className="flex flex-col items-center gap-6 p-6">
       <div
         className={`
-          select-none cursor-pointer rounded-2xl px-4 py-2
-          text-2xl font-mono font-semibold shadow-lg transition-all duration-150
+          select-none cursor-pointer rounded-2xl px-4 py-3
+          text-3xl font-mono font-semibold shadow-lg transition-all duration-150
           ${disabled ? "bg-slate-800 text-slate-900" : isRunning ? "bg-emerald-500 text-white scale-95" : "bg-slate-800 text-emerald-400 hover:bg-slate-700"}
         `}
         onMouseDown={start}
