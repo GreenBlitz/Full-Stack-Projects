@@ -9,11 +9,10 @@ import type {
 } from "../../../../../packages/scouting_types/rebuilt/Shift";
 import { ClimbSideButton } from "./ClimbSideButton";
 
-//turbo run dev --filter=scouting-frontend --filter=scouting-backend
 
 export const Climb: React.FC = () => {
   const [climbLevel, setClimbLevel] = useState<ClimbLevel>("none");
-  const [climbSide, setClimbSide] = useState<ClimbSide>("none");
+  const [climbSide, setClimbSide] = useState<ClimbSide[]>(["none"]);
   const [climbTimes, setClimbTimes] = useState<ClimbTime>({
     L1: null,
     L2: null,
@@ -21,7 +20,6 @@ export const Climb: React.FC = () => {
   });
 
   return (
-    // to do - have pretty logs for the user
     <>
       <ClimbLevelSlider
         onClimbLevelChange={setClimbLevel}

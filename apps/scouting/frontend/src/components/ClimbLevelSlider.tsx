@@ -36,6 +36,8 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
   const startTimeRef = useRef<number | null>(null);
   const lastLevelRef = useRef<PossibleLevel>(FIRST_INDEX);
 
+  const [isDisabled, setIsDisabled] = useState<boolean>(true);
+
   useEffect(() => {
     startTimeRef.current = Date.now();
   }, []);
@@ -79,32 +81,63 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
   };
   const handleStartClimb = () => {
     startTimeRef.current = Date.now();
+    setIsDisabled(false);
   };
 
   return (
-    //to do - make it so the user does not have to manually press a button for the timer to start
-    //to do - make it prettier
-    <form>
-      <button type="button" onClick={handleStartClimb}>
-        start climb
-      </button>
-      <Slider.Root
-        className="relative flex flex-col items-center select-none touch-none w-5 h-[200px]"
-        orientation="vertical"
-        defaultValue={[FIRST_INDEX]}
-        max={3}
-        step={1}
-        onValueChange={handleValueChange}
+    <form className="flex flex-col items-center gap-6 p-4">
+      <button
+        type="button"
+        onClick={handleStartClimb}
+        disabled={!isDisabled}
+        className={`px-6 py-2 rounded-full font-bold transition-all ${
+          isDisabled
+            ? "bg-blue-600 text-black shadow-lg hover:bg-blue-700 active:scale-95"
+            : "bg-gray-300 text-gray-500 cursor-not-allowed opacity-50"
+        }`}
       >
-        <Slider.Track className="bg-gray-200 relative grow w-1 rounded-full">
-          <Slider.Range className="absolute w-full rounded-full bg-gray-400" />
-        </Slider.Track>
+        {isDisabled ? "🚀 Start Climb" : "Recording..."}
+      </button>
 
-        <Slider.Thumb
-          className="block w-5 h-5 bg-green-600 rounded-full shadow-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-400"
-          aria-label="Climb Level"
-        />
-      </Slider.Root>
+      <div className="relative flex flex-col items-center">
+        <div className="absolute -left-8 h-full flex flex-col justify-between py-1 text-[10px] font-bold text-gray-400 uppercase pointer-events-none">
+          <span>L3</span>
+          <span>L2</span>
+          <span>L1</span>
+          <span>—</span>
+        </div>
+
+        <Slider.Root
+          className={`relative flex flex-col items-center select-none touch-none w-5 h-[200px] transition-opacity duration-300 ${
+            isDisabled
+              ? "opacity-30 cursor-not-allowed"
+              : "opacity-100 cursor-pointer"
+          }`}
+          orientation="vertical"
+          defaultValue={[FIRST_INDEX]}
+          max={3}
+          step={1}
+          onValueChange={handleValueChange}
+          disabled={isDisabled}
+        >
+          <Slider.Track className="bg-gray-200 relative grow w-2 rounded-full border border-gray-300">
+            <Slider.Range
+              className={`absolute w-full rounded-full transition-colors ${
+                isDisabled ? "bg-gray-400" : "bg-green-400"
+              }`}
+            />
+          </Slider.Track>
+
+          <Slider.Thumb
+            className={`block w-6 h-6 rounded-full shadow-xl transition-all outline-none ${
+              isDisabled
+                ? "bg-gray-400 border-2 border-gray-300"
+                : "bg-green-600 border-2 border-white hover:scale-110 active:scale-95 ring-2 ring-green-300"
+            }`}
+            aria-label="Climb Level"
+          />
+        </Slider.Root>
+      </div>
     </form>
   );
 };
