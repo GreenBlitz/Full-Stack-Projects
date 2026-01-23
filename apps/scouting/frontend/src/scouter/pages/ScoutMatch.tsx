@@ -10,10 +10,12 @@ import {
 } from "react";
 import { defaultScoutForm, type ScoutingForm } from "@repo/scouting_types";
 import { ShiftTab } from "./tabs/ShiftTab";
+import { useLocalStorage } from "@repo/local_storage_hook";
 
 export interface TabProps {
   setForm: Dispatch<SetStateAction<ScoutingForm>>;
   alliance: "red" | "blue";
+  originTime: number;
 }
 
 interface Tab {
@@ -135,11 +137,18 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
   );
 };
 
-const createNewScoutingForm = () => structuredClone(defaultScoutForm);
+const createNewScoutingForm = (): ScoutingForm =>
+  JSON.parse(JSON.stringify(defaultScoutForm));
 
 export const ScoutMatch: FC = () => {
-  const [scoutingForm, setScoutingForm] = useState(createNewScoutingForm());
+  const [scoutingForm, setScoutingForm] = useLocalStorage(
+    "form",
+    createNewScoutingForm(),
+  );
   const [activeTabIndex, setActiveTab] = useState(STARTING_TAB_INDEX);
+
+  const originTime = useMemo(() => Date.now(), []);
+  console.log(originTime);
 
   const CurrentTab = useMemo(
     () => TABS[activeTabIndex].Component,
@@ -164,7 +173,11 @@ export const ScoutMatch: FC = () => {
            bg-black/40 rounded-xl p-6 border border-green-500/20 shadow-inner
             animate-in fade-in slide-in-from-right-4 duration-300"
           >
-            <CurrentTab setForm={setScoutingForm} alliance="red" />
+            <CurrentTab
+              setForm={setScoutingForm}
+              alliance="red"
+              originTime={originTime}
+            />
           </div>
         </div>
       </div>

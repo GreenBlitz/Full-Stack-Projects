@@ -16,6 +16,7 @@ export const ShiftTab: FC<ShiftTabProps> = ({
   setForm,
   tabIndex,
   alliance,
+  originTime,
 }) => {
   const [mapPosition, setMapPosition] = useState<Point>();
   const [mapZone, setMapZone] = useState<Alliance>(alliance);
@@ -29,10 +30,17 @@ export const ShiftTab: FC<ShiftTabProps> = ({
         mapZone={mapZone}
       />
       <Stopwatch
-        setCycleTimesInSeconds={(handler) => {
-          console.log("");
+        addCycleTimeSeconds={(cycle) => {
+          setForm((prevForm) => {
+            const prevEvents = prevForm.tele.shifts[tabIndex].shootEvents;
+            prevEvents.push({
+              interval: cycle,
+              startPosition: mapPosition ?? { x: 0, y: 0 },
+            });
+            return prevForm;
+          });
         }}
-        originTime={0}
+        originTime={originTime}
         disabled={mapPosition === undefined}
       />
     </div>

@@ -11,13 +11,13 @@ const DECIMAL_PLACES = 2;
 const DECIMAL_PLACES_MILLISECONDS = 3;
 
 interface StopwatchProps {
-  setCycleTimesInSeconds: Dispatch<(prev: Interval[]) => Interval[]>;
+  addCycleTimeSeconds: Dispatch<Interval>;
   originTime: number;
   disabled: boolean;
 }
 
 const Stopwatch: React.FC<StopwatchProps> = ({
-  setCycleTimesInSeconds,
+  addCycleTimeSeconds,
   originTime,
   disabled,
 }) => {
@@ -77,10 +77,11 @@ const Stopwatch: React.FC<StopwatchProps> = ({
     }
 
     const cycleStopwatchCounter: Interval = {
-      start: startCurrentCycleTime.current * MILLLISECONDS_IN_A_SECOND,
-      end: getCurrentRelativeTime() * MILLLISECONDS_IN_A_SECOND,
+      start: startCurrentCycleTime.current,
+      end: getCurrentRelativeTime(),
     };
-    setCycleTimesInSeconds((prev) => [...prev, cycleStopwatchCounter]);
+
+    addCycleTimeSeconds(cycleStopwatchCounter);
 
     setIsRunning(false);
     reset();
