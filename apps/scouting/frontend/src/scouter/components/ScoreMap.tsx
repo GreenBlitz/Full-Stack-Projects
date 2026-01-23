@@ -9,13 +9,43 @@ import {
   type Touch,
 } from "react";
 import type { Point } from "@repo/scouting_types";
+import { pipe } from "fp-ts/lib/function";
+
+type Alliance = "red" | "blue";
 
 interface ScoreMapProps {
   currentPoint?: Point;
   setPosition: Dispatch<SetStateAction<Point | undefined>>;
-  alliance: "red" | "blue";
-  mapZone: "red" | "blue";
+  alliance: Alliance;
+  mapZone: Alliance;
 }
+
+const ALLIANCE_ZONE_WIDTH_PIXELS = 395;
+const TWO_THIRDS_WIDTH_PIXELS = 1010;
+const HEIGHT_PIXELS = 652;
+const alliancizePosition = (
+  alliance: Alliance,
+  position: Point,
+  bounds: Point,
+): Point => {
+  if (alliance === "red") {
+    return position;
+  }
+
+  return { x: bounds.x - position.x, y: bounds.y - position.y };
+};
+
+const otherZone = (point: Point) => {
+  return {
+    ...point,
+    x: point.x + ALLIANCE_ZONE_WIDTH_PIXELS,
+  };
+};
+
+const normalizePosition = (point: Point, bounds: Point) => ({
+  x: (point.x * TWO_THIRDS_WIDTH_PIXELS) / bounds.x,
+  y: (point.y * HEIGHT_PIXELS) / bounds.y,
+});
 
 const dotRadius = 10;
 const radiusToDiameterRatio = 2;
@@ -36,7 +66,8 @@ const getRobotPosition = (touch: Touch, bound: DOMRect) => {
     bound.bottom - dotRadius - bound.top,
     Math.max(y, dotRadius),
   );
-  return { x: Math.round(boundedX), y: Math.round(boundedY) };
+
+  return { x: boundedX, y: boundedY };
 };
 
 export const ScoreMap: FC<ScoreMapProps> = ({
@@ -46,15 +77,33 @@ export const ScoreMap: FC<ScoreMapProps> = ({
   mapZone,
 }) => {
   const [isHolding, setHolding] = useState(false);
+
+  const [mapPoint, setMapPoint] = useState(currentPoint);
+
   const handleMapClick = (event: TouchEvent<HTMLDivElement>) => {
     if (!isHolding) {
       return;
     }
     const rect = event.currentTarget.getBoundingClientRect();
-
     const touch = event.touches[firstTouchIndex];
 
-    setPosition(getRobotPosition(touch, rect));
+    const dotPoint = getRobotPosition(touch, rect);
+
+    setMapPoint(dotPoint);
+
+    setPosition(
+      pipe(
+        dotPoint,
+        (point) =>
+          alliancizePosition(alliance, point, {
+            x: rect.width,
+            y: rect.height,
+          }),
+        (point) => normalizePosition(point, { x: rect.width, y: rect.height }),
+        (point) => (alliance === mapZone ? point : otherZone(point)),
+        (point) => ({ x: Math.round(point.x), y: Math.round(point.y) }),
+      ),
+    );
   };
 
   return (
@@ -73,12 +122,12 @@ export const ScoreMap: FC<ScoreMapProps> = ({
         draggable={false}
       />
 
-      {currentPoint && (
+      {mapPoint && (
         <div
           className={`absolute border-2 border-black shadow-[0_0_10px_#ccff00] -translate-x-1/2 -translate-y-1/2 pointer-events-none`}
           style={{
-            left: currentPoint.x,
-            top: currentPoint.y,
+            left: mapPoint.x,
+            top: mapPoint.y,
             width: dotDiameter,
             height: dotDiameter,
             backgroundColor: alliance === "blue" ? "darkcyan" : "crimson",

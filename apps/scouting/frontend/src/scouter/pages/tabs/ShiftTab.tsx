@@ -6,8 +6,6 @@ import { ScoreMap } from "../../components/ScoreMap";
 import type { Point } from "@repo/scouting_types";
 import Stopwatch from "../../../components/stopwatch";
 
-type Alliance = "red" | "blue";
-
 interface ShiftTabProps extends TabProps {
   tabIndex: number;
 }
@@ -19,7 +17,7 @@ export const ShiftTab: FC<ShiftTabProps> = ({
   originTime,
 }) => {
   const [mapPosition, setMapPosition] = useState<Point>();
-  const [mapZone, setMapZone] = useState<Alliance>(alliance);
+  const [mapZone, setMapZone] = useState<"red" | "blue">(alliance);
 
   return (
     <div className="flex flex-row h-full w-full">

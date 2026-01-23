@@ -175,7 +175,7 @@ export const ScoutMatch: FC = () => {
           >
             <CurrentTab
               setForm={setScoutingForm}
-              alliance="red"
+              alliance="blue"
               originTime={originTime}
             />
           </div>
