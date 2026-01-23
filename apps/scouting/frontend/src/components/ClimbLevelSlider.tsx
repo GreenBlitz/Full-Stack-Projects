@@ -9,7 +9,6 @@ interface ClimbLevelSliderProps {
   setClimbTimes: React.Dispatch<React.SetStateAction<ClimbTime>>;
   originTime: number;
   climbTimes: ClimbTime;
-  climbLevel: ClimbLevel;
 }
 
 export const numValueToClimbLevel: Record<number, ClimbLevel> = {

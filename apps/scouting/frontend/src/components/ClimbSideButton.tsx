@@ -15,7 +15,6 @@ export const ClimbSideButton: React.FC<ClimbSideButtonProps> = ({
     (side) => side !== "none",
   );
 
-
   const handleToggle = (side: ClimbSide) => {
     setClimbSide((prev) =>
       prev.includes(side)
@@ -30,26 +29,23 @@ export const ClimbSideButton: React.FC<ClimbSideButtonProps> = ({
         Side
       </span>
       <div className="flex flex-col flex-1 p-1 bg-slate-100 rounded-2xl border border-slate-200 shadow-inner gap-1">
-        {climbSideValuesNoNone.map((side) => {
-          const isActive = climbSide.includes(side);
-          return (
-            <button
-              key={side}
-              type="button"
-              onClick={() => {
-                handleToggle(side);
-              }}
-              className={`flex-1 w-26 px-2 py-1 text-[10px] font-black rounded-xl transition-all uppercase leading-none
-                ${
-                  isActive
-                    ? "bg-white text-green-600 shadow-sm border border-green-100 scale-[1.02]"
-                    : "text-slate-400 hover:text-slate-600 opacity-60"
-                }`}
-            >
-              {side}
-            </button>
-          );
-        })}
+        {climbSideValuesNoNone.map((side) => (
+          <button
+            key={side}
+            type="button"
+            onClick={() => {
+              handleToggle(side);
+            }}
+            className={`flex-1 w-26 px-2 py-1 text-[10px] font-black rounded-xl transition-all uppercase leading-none
+              ${
+                climbSide.includes(side)
+                  ? "bg-white text-green-600 shadow-sm border border-green-100 scale-[1.02]"
+                  : "text-slate-400 hover:text-slate-600 opacity-60"
+              }`}
+          >
+            {side}
+          </button>
+        ))}
       </div>
     </div>
   );

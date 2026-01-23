@@ -14,8 +14,6 @@ export const Climb: React.FC = () => {
     L3: null,
   });
 
- 
-
   return (
     <div className="flex flex-col items-center p-6 bg-white rounded-3xl shadow-sm border border-gray-100">
       <div className="flex flex-row items-end gap-8 bg-white p-4">
@@ -24,12 +22,10 @@ export const Climb: React.FC = () => {
         <ClimbLevelSlider
           onClimbLevelChange={setClimbLevel}
           setClimbTimes={setClimbTimes}
-          climbLevel={climbLevel}
           climbTimes={climbTimes}
           originTime={0}
         />
       </div>
-      
     </div>
   );
 };
