@@ -47,9 +47,7 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
     const leavingLevelNum = lastLevelRef.current;
     const now = Date.now() - originTime;
 
-    if (
-      !(enteringLevelNum !== leavingLevelNum && startTimeRef.current !== null)
-    ) {
+    if (enteringLevelNum === leavingLevelNum && startTimeRef.current === null) {
       return;
     }
 
@@ -69,17 +67,18 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
       startTimeRef.current = now;
     }
 
-    if (enteringLevelNum < leavingLevelNum) {
-      if (leavingLevelNum !== NO_CLIMB_LEVEL) {
-        const leavingLevel: ActiveClimbLevel = `L${leavingLevelNum}`;
-        setClimbTimes((prev) => ({ ...prev, [leavingLevel]: null }));
+    if (
+      enteringLevelNum < leavingLevelNum &&
+      leavingLevelNum !== NO_CLIMB_LEVEL
+    ) {
+      const leavingLevel: ActiveClimbLevel = `L${leavingLevelNum}`;
+      setClimbTimes((prev) => ({ ...prev, [leavingLevel]: null }));
 
-        startTimeRef.current =
-          enteringLevelNum !== NO_CLIMB_LEVEL
-            ? (climbTimes[`L${enteringLevelNum}`]?.end ??
-              absoluteStartTimeRef.current)
-            : absoluteStartTimeRef.current;
-      }
+      startTimeRef.current =
+        enteringLevelNum !== NO_CLIMB_LEVEL
+          ? (climbTimes[`L${enteringLevelNum}`]?.end ??
+            absoluteStartTimeRef.current)
+          : absoluteStartTimeRef.current;
     }
 
     lastLevelRef.current = enteringLevelNum;
