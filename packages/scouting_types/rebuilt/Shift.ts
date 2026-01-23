@@ -30,7 +30,7 @@ export const climbCodec = t.type({
     support: null,
   }),
   level: t.keyof({
-    none: null,
+    L0: null,
     L1: null,
     L2: null,
     L3: null,

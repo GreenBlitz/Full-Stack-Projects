@@ -12,14 +12,14 @@ interface ClimbLevelSliderProps {
 }
 
 export const numValueToClimbLevel: Record<number, ClimbLevel> = {
-  0: "none",
+  0: "L0",
   1: "L1",
   2: "L2",
   3: "L3",
 };
 
 type PossibleLevelNum = 0 | 1 | 2 | 3;
-type PossibleClimbLevel = 0 | "L1" | "L2" | "L3";
+type PossibleClimbLevel = "L0" | "L1" | "L2" | "L3";
 
 type ClimbTime = Climb["climbTime"];
 
@@ -47,14 +47,11 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
     const leavingLevelNum = lastLevelRef.current;
     const now = Date.now() - originTime;
 
+    const enteringLevel: PossibleClimbLevel = `L${enteringLevelNum}`;
+
     if (enteringLevelNum === leavingLevelNum && startTimeRef.current === null) {
       return;
     }
-
-    const enteringLevel: PossibleClimbLevel =
-      enteringLevelNum !== NO_CLIMB_LEVEL
-        ? `L${enteringLevelNum}`
-        : NO_CLIMB_LEVEL;
 
     if (enteringLevelNum > leavingLevelNum) {
       setClimbTimes((prev) => ({
@@ -78,15 +75,15 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
         enteringLevelNum !== NO_CLIMB_LEVEL
           ? (climbTimes[`L${enteringLevelNum}`]?.end ??
             absoluteStartTimeRef.current)
-          : absoluteStartTimeRef.current;
+          : absoluteStartTimeRef.current; 
     }
 
     lastLevelRef.current = enteringLevelNum;
     onClimbLevelChange(numValueToClimbLevel[newVal[NO_CLIMB_INDEX]]);
   };
   const handleStartClimb = () => {
-    startTimeRef.current = Date.now() - originTime;
-    absoluteStartTimeRef.current = Date.now() - originTime;
+    absoluteStartTimeRef.current = startTimeRef.current =
+      Date.now() - originTime;
 
     setIsDisabled(false);
   };
