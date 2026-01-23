@@ -1,16 +1,13 @@
 //בס"ד
 import type React from "react";
 import * as Slider from "@radix-ui/react-slider";
-import type {
-  ClimbLevel,
-  Climb,
-  ActiveClimbLevel,
-} from "../../../../../packages/scouting_types/rebuilt/Shift";
+import type { ClimbLevel, Climb, ActiveClimbLevel } from "@repo/scouting_types";
 import { useEffect, useRef, useState } from "react";
 
 interface ClimbLevelSliderProps {
   onClimbLevelChange: (climbLevel: ClimbLevel) => void;
   setClimbTimes: React.Dispatch<React.SetStateAction<ClimbTime>>;
+  originTime: number;
   climbTimes: ClimbTime;
   climbLevel: ClimbLevel;
 }
@@ -22,71 +19,79 @@ export const numValueToClimbLevel: Record<number, ClimbLevel> = {
   3: "L3",
 };
 
-type PossibleLevel = 0 | 1 | 2 | 3;
+type PossibleLevelNum = 0 | 1 | 2 | 3;
+type PossibleClimbLevel = 0 | "L1" | "L2" | "L3";
 
 type ClimbTime = Climb["climbTime"];
 
 export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
   onClimbLevelChange,
   setClimbTimes,
+  originTime,
   climbTimes,
 }) => {
-  const FIRST_INDEX = 0;
-  const INVALID_CLIMB_LEVEL = 0;
+  const NO_CLIMB_INDEX = 0;
+  const NO_CLIMB_LEVEL = 0;
 
   const startTimeRef = useRef<number | null>(null);
-  const lastLevelRef = useRef<PossibleLevel>(FIRST_INDEX);
+  const lastLevelRef = useRef<PossibleLevelNum>(NO_CLIMB_INDEX);
+  const absoluteStartTimeRef = useRef<number | null>(null);
 
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
 
   useEffect(() => {
-    startTimeRef.current = Date.now();
+    startTimeRef.current = Date.now() - originTime;
   }, []);
 
-  const handleValueChange = (newVal: PossibleLevel[]) => {
-    const [nextLevelNum] = newVal;
-    const prevLevelNum = lastLevelRef.current;
-    const now = Date.now();
+  const handleValueChange = (newVal: PossibleLevelNum[]) => {
+    const [enteringLevelNum] = newVal;
+    const leavingLevelNum = lastLevelRef.current;
+    const now = Date.now() - originTime;
 
-    if (nextLevelNum !== prevLevelNum && startTimeRef.current !== null) {
-      if (nextLevelNum > prevLevelNum && nextLevelNum !== INVALID_CLIMB_LEVEL) {
-        const newEntryLevel: ActiveClimbLevel = `L${nextLevelNum}`;
-
-        setClimbTimes((prev) => ({
-          ...prev,
-          [newEntryLevel]: {
-            start: startTimeRef.current,
-            end: now,
-          },
-        }));
-      } else if (nextLevelNum < prevLevelNum) {
-        if (nextLevelNum !== INVALID_CLIMB_LEVEL) {
-          const enteringLevel: ActiveClimbLevel = `L${nextLevelNum}`;
-
-          setClimbTimes((prev) => ({
-            ...prev,
-            [enteringLevel]: prev[enteringLevel]
-              ? { ...prev[enteringLevel], end: now }
-              : { start: startTimeRef.current, end: now },
-          }));
-        }
-        if (prevLevelNum !== INVALID_CLIMB_LEVEL) {
-          const leavingLevel: ActiveClimbLevel = `L${prevLevelNum}`;
-          setClimbTimes((prev) => ({ ...prev, [leavingLevel]: null }));
-        }
-      }
-      startTimeRef.current = now;
-      lastLevelRef.current = nextLevelNum;
-      onClimbLevelChange(numValueToClimbLevel[newVal[FIRST_INDEX]]);
+    if (
+      !(enteringLevelNum !== leavingLevelNum && startTimeRef.current !== null)
+    ) {
+      return;
     }
+
+    const enteringLevel: PossibleClimbLevel =
+      enteringLevelNum !== NO_CLIMB_LEVEL
+        ? `L${enteringLevelNum}`
+        : NO_CLIMB_LEVEL;
+
+    if (enteringLevelNum > leavingLevelNum) {
+      setClimbTimes((prev) => ({
+        ...prev,
+        [enteringLevel]: {
+          start: startTimeRef.current,
+          end: now,
+        },
+      }));
+      startTimeRef.current = now;
+    }
+
+    if (enteringLevelNum < leavingLevelNum) {
+      if (leavingLevelNum !== NO_CLIMB_LEVEL) {
+        const leavingLevel: ActiveClimbLevel = `L${leavingLevelNum}`;
+        setClimbTimes((prev) => ({ ...prev, [leavingLevel]: null }));
+
+        startTimeRef.current =
+          enteringLevelNum !== NO_CLIMB_LEVEL
+            ? (climbTimes[`L${enteringLevelNum}`]?.end ??
+              absoluteStartTimeRef.current)
+            : absoluteStartTimeRef.current;
+      }
+    }
+
+    lastLevelRef.current = enteringLevelNum;
+    onClimbLevelChange(numValueToClimbLevel[newVal[NO_CLIMB_INDEX]]);
   };
   const handleStartClimb = () => {
-    startTimeRef.current = Date.now();
+    startTimeRef.current = Date.now() - originTime;
+    absoluteStartTimeRef.current = Date.now() - originTime;
+
     setIsDisabled(false);
   };
-
-  const getTime = (ms: number | undefined) =>
-    ms ? new Date(ms).toLocaleTimeString() : "N/A";
 
   return (
     <form className="flex flex-col items-center gap-6 p-4">
@@ -100,7 +105,7 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
             : "bg-gray-300 text-gray-500 cursor-not-allowed opacity-50"
         }`}
       >
-        {isDisabled ? "🚀 Start Climb" : "Recording..."}
+        {isDisabled ? "Start Climb" : "Climbing..."}
       </button>
 
       <div className="relative flex flex-col items-center">
@@ -118,7 +123,7 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
               : "opacity-100 cursor-pointer"
           }`}
           orientation="vertical"
-          defaultValue={[FIRST_INDEX]}
+          defaultValue={[NO_CLIMB_INDEX]}
           max={3}
           step={1}
           onValueChange={handleValueChange}
@@ -141,18 +146,6 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
             aria-label="Climb Level"
           />
         </Slider.Root>
-      </div>
-      <div className="mt-4 p-4 bg-gray-100 rounded text-xs font-mono">
-        <h4 className="font-bold mb-2">Climb Logs:</h4>
-        <p>
-          L1: {getTime(climbTimes.L1?.start)} → {getTime(climbTimes.L1?.end)}
-        </p>
-        <p>
-          L2: {getTime(climbTimes.L2?.start)} → {getTime(climbTimes.L2?.end)}
-        </p>
-        <p>
-          L3: {getTime(climbTimes.L3?.start)} → {getTime(climbTimes.L3?.end)}
-        </p>
       </div>
     </form>
   );

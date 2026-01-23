@@ -1,9 +1,6 @@
 // בס"ד
 import type React from "react";
-import {
-  climbSideValues,
-  type ClimbSide,
-} from "../../../../../packages/scouting_types/rebuilt/Shift";
+import { climbSideValues, type ClimbSide } from "@repo/scouting_types";
 
 interface ClimbSideButtonProps {
   climbSide: ClimbSide[];
@@ -18,8 +15,6 @@ export const ClimbSideButton: React.FC<ClimbSideButtonProps> = ({
     (side) => side !== "none",
   );
 
-  const FIRST_STRING_INDEX = 0;
-  const SECOND_STRING_INDEX = 1;
 
   const handleToggle = (side: ClimbSide) => {
     setClimbSide((prev) =>
@@ -30,15 +25,13 @@ export const ClimbSideButton: React.FC<ClimbSideButtonProps> = ({
   };
 
   return (
-    <div className="flex flex-col items-center gap-2 mt-6">
-      <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-        Climb Sides
+    <div className="flex flex-col h-[200px] gap-2">
+      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">
+        Side
       </span>
-
-      <div className="inline-flex p-1 bg-gray-100 rounded-xl border border-gray-200 shadow-inner gap-1">
+      <div className="flex flex-col flex-1 p-1 bg-slate-100 rounded-2xl border border-slate-200 shadow-inner gap-1">
         {climbSideValuesNoNone.map((side) => {
           const isActive = climbSide.includes(side);
-
           return (
             <button
               key={side}
@@ -46,17 +39,14 @@ export const ClimbSideButton: React.FC<ClimbSideButtonProps> = ({
               onClick={() => {
                 handleToggle(side);
               }}
-              className={`
-                px-6 py-2 text-sm font-bold rounded-lg transition-all duration-200
+              className={`flex-1 w-26 px-2 py-1 text-[10px] font-black rounded-xl transition-all uppercase leading-none
                 ${
                   isActive
-                    ? "bg-white text-green-500 shadow-md transform scale-105 border border-green-100"
-                    : "text-gray-400 hover:text-gray-600 hover:bg-gray-50 border border-transparent"
-                }
-              `}
+                    ? "bg-white text-green-600 shadow-sm border border-green-100 scale-[1.02]"
+                    : "text-slate-400 hover:text-slate-600 opacity-60"
+                }`}
             >
-              {side.charAt(FIRST_STRING_INDEX).toUpperCase() +
-                side.slice(SECOND_STRING_INDEX)}
+              {side}
             </button>
           );
         })}
