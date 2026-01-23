@@ -1,7 +1,7 @@
 //בס"ד
 import type React from "react";
 import * as Slider from "@radix-ui/react-slider";
-import type { ClimbLevel, Climb, ActiveClimbLevel } from "@repo/scouting_types";
+import type { ClimbLevel, Climb } from "@repo/scouting_types";
 import { useEffect, useRef, useState } from "react";
 
 interface ClimbLevelSliderProps {
@@ -19,7 +19,6 @@ export const numValueToClimbLevel: Record<number, ClimbLevel> = {
 };
 
 type PossibleLevelNum = 0 | 1 | 2 | 3;
-type PossibleClimbLevel = "L0" | "L1" | "L2" | "L3";
 
 type ClimbTime = Climb["climbTime"];
 
@@ -47,7 +46,7 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
     const leavingLevelNum = lastLevelRef.current;
     const now = Date.now() - originTime;
 
-    const enteringLevel: PossibleClimbLevel = `L${enteringLevelNum}`;
+    const enteringLevel: ClimbLevel = `L${enteringLevelNum}`;
 
     if (enteringLevelNum === leavingLevelNum && startTimeRef.current === null) {
       return;
@@ -68,14 +67,14 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
       enteringLevelNum < leavingLevelNum &&
       leavingLevelNum !== NO_CLIMB_LEVEL
     ) {
-      const leavingLevel: ActiveClimbLevel = `L${leavingLevelNum}`;
+      const leavingLevel: ClimbLevel = `L${leavingLevelNum}`;
       setClimbTimes((prev) => ({ ...prev, [leavingLevel]: null }));
 
       startTimeRef.current =
         enteringLevelNum !== NO_CLIMB_LEVEL
           ? (climbTimes[`L${enteringLevelNum}`]?.end ??
             absoluteStartTimeRef.current)
-          : absoluteStartTimeRef.current; 
+          : absoluteStartTimeRef.current;
     }
 
     lastLevelRef.current = enteringLevelNum;
