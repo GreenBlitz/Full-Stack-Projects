@@ -36,7 +36,7 @@ const getRobotPosition = (touch: Touch, bound: DOMRect) => {
     bound.bottom - dotRadius - bound.top,
     Math.max(y, dotRadius),
   );
-  return { x: boundedX, y: boundedY };
+  return { x: Math.round(boundedX), y: Math.round(boundedY) };
 };
 
 export const ScoreMap: FC<ScoreMapProps> = ({
