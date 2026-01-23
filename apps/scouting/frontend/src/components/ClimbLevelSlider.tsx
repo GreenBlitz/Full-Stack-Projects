@@ -30,6 +30,8 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
 }) => {
   const NO_CLIMB_INDEX = 0;
   const NO_CLIMB_LEVEL = 0;
+  const NUMBER_OF_CLIMB_LEVELS = 3;
+  const CLIMB_LEVEL_STEP = 1;
 
   const startTimeRef = useRef<number | null>(null);
   const lastLevelRef = useRef<PossibleLevelNum>(NO_CLIMB_INDEX);
@@ -118,8 +120,8 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
           }`}
           orientation="vertical"
           defaultValue={[NO_CLIMB_INDEX]}
-          max={3}
-          step={1}
+          max={NUMBER_OF_CLIMB_LEVELS}
+          step={CLIMB_LEVEL_STEP}
           onValueChange={handleValueChange}
           disabled={isDisabled}
         >
