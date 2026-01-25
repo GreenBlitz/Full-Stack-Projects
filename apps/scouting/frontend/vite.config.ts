@@ -31,18 +31,18 @@ export default defineConfig({
         enabled: true,
       },
       manifest: {
-        name: "GreenBlitz 4590",
-        short_name: "GreenBlitz",
+        name: "GBScout 2026",
+        short_name: "GBScout",
         description: "Scouting application for match tracking",
         start_url: "/",
         display: "standalone",
         background_color: "#ffffff",
         theme_color: "#ffffff",
         icons: [
-          { src: "/pwa-192.png", sizes: "192x192", type: "image/png" },
-          { src: "/pwa-512.png", sizes: "512x512", type: "image/png" },
+          { src: "/icon-192.png", sizes: "192x192", type: "image/png" },
+          { src: "/icon-512.png", sizes: "512x512", type: "image/png" },
           { 
-            src: "/pwa-512.png", 
+            src: "/icon-512.png", 
             sizes: "512x512", 
             type: "image/png",
             purpose: "any maskable"

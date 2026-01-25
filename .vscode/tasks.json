@@ -24,10 +24,7 @@
     {
       "label": "deploy",
       "type": "shell",
-      "dependsOn": [
-        "build",
-        "serve"
-      ],
+      "dependsOn": ["build", "serve"],
       "dependsOrder": "sequence"
     },
     {
@@ -48,7 +45,7 @@
       "type": "pickString",
       "options": ["template", "test", "scouting"]
     },
-    
+
     {
       "id": "workspace",
       "description": "Workspaces within projects",
