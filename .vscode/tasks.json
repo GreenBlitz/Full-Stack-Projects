@@ -48,7 +48,7 @@
       "type": "pickString",
       "options": ["template", "test", "scouting"]
     },
-    
+
     {
       "id": "workspace",
       "description": "Workspaces within projects",

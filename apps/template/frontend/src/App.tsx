@@ -1,14 +1,21 @@
-// בס"ד
-import { useState, type FC } from "react";
+import React, { FC } from "react";
 
-const counterStartingValue = 0;
-const countIncrement = 1;
-const maxCountingValue = 5;
-const importantMessage = "MI BOMBO";
-const App: FC = () => {
-  const [count, setCount] = useState<string | number>(counterStartingValue);
+const inputStyle = {
+  padding: "8px",
+  backgroundColor: "black",
+  color: "lime",
+  border: "1px solid lime",
+  borderRadius: "6px",
+};
 
+const Buttons: FC = () => {
   return (
+<<<<<<< HEAD
+    <div style={{ display: "flex", flexDirection: "column", gap: "12px", width: "200px" }}>
+      <input type="text" placeholder="Name Field" style={inputStyle} />
+      <input type="text" placeholder="Match Number Field" style={inputStyle} />
+      <input type="text" placeholder="Team Field" style={inputStyle} />
+=======
     <div className="mx-auto">
       <h1>GreenBlitz Full-Stack Project:</h1>
       <div className="card">
@@ -29,8 +36,13 @@ const App: FC = () => {
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>
       </div>
+>>>>>>> origin/master
     </div>
   );
+};
+
+const App: FC = () => {
+  return <Buttons />;
 };
 
 export default App;
