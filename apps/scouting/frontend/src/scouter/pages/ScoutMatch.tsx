@@ -8,7 +8,11 @@ import {
   type SetStateAction,
   useState,
 } from "react";
-import { defaultScoutForm, type Alliance, type ScoutingForm } from "@repo/scouting_types";
+import {
+  defaultScoutForm,
+  type Alliance,
+  type ScoutingForm,
+} from "@repo/scouting_types";
 import { ShiftTab } from "./tabs/ShiftTab";
 import { useLocalStorage } from "@repo/local_storage_hook";
 
@@ -168,7 +172,7 @@ export const ScoutMatch: FC = () => {
     >
       <div
         className="flex flex-row max-w-5xl w-full mx-auto bg-linear-to-br
-       from-black via-gray-900 to-black border-2 border-green-500 
+       from-black via-gray-900 to-black border-2 border-green-500
        rounded-2xl shadow-[0_0_30px_rgba(34,197,94,0.3)] overflow-hidden h-[90vh] relative"
       >
         <SideBar setActiveTab={setActiveTab} activeTabIndex={activeTabIndex} />

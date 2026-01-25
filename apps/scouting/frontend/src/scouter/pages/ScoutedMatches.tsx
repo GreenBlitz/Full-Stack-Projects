@@ -2,7 +2,20 @@
 
 import type { FC } from "react";
 import { QRCodeSVG } from "qrcode.react";
+import { useLocalStorage } from "@repo/local_storage_hook";
+import type { ScoutingForm } from "@repo/scouting_types";
 
 export const ScoutedMatches: FC = () => {
-  return <QRCodeSVG value="Gurt: Yo" size={256} />;
+  const [scoutedMatches, setScoutedMatches] = useLocalStorage<ScoutingForm[]>(
+    "scouted_forms",
+    [],
+  );
+
+  return (
+    <div>
+      {scoutedMatches.map((match, index) => (
+        <QRCodeSVG key={index} value={""} />
+      ))}
+    </div>
+  );
 };
