@@ -8,14 +8,41 @@ import {
   type TouchEvent,
   type Touch,
 } from "react";
-import type { Point } from "@repo/scouting_types";
+import type { Alliance, Point } from "@repo/scouting_types";
+import { pipe } from "fp-ts/lib/function";
 
 interface ScoreMapProps {
   currentPoint?: Point;
   setPosition: Dispatch<SetStateAction<Point | undefined>>;
-  alliance: "red" | "blue";
-  mapZone: "red" | "blue";
+  alliance: Alliance;
+  mapZone: Alliance;
 }
+
+const ALLIANCE_ZONE_WIDTH_PIXELS = 395;
+const TWO_THIRDS_WIDTH_PIXELS = 1010;
+const HEIGHT_PIXELS = 652;
+const alliancizePosition = (alliance: Alliance, position: Point): Point => {
+  if (alliance === "red") {
+    return position;
+  }
+
+  return {
+    x: TWO_THIRDS_WIDTH_PIXELS - position.x,
+    y: HEIGHT_PIXELS - position.y,
+  };
+};
+
+const switchZone = (point: Point) => {
+  return {
+    ...point,
+    x: point.x + ALLIANCE_ZONE_WIDTH_PIXELS,
+  };
+};
+
+const normalizePosition = (point: Point, bounds: Point) => ({
+  x: (point.x * TWO_THIRDS_WIDTH_PIXELS) / bounds.x,
+  y: (point.y * HEIGHT_PIXELS) / bounds.y,
+});
 
 const dotRadius = 10;
 const radiusToDiameterRatio = 2;
@@ -36,6 +63,7 @@ const getRobotPosition = (touch: Touch, bound: DOMRect) => {
     bound.bottom - dotRadius - bound.top,
     Math.max(y, dotRadius),
   );
+
   return { x: boundedX, y: boundedY };
 };
 
@@ -46,42 +74,52 @@ export const ScoreMap: FC<ScoreMapProps> = ({
   mapZone,
 }) => {
   const [isHolding, setHolding] = useState(false);
+
+  const [mapPoint, setMapPoint] = useState(currentPoint);
+
   const handleMapClick = (event: TouchEvent<HTMLDivElement>) => {
     if (!isHolding) {
       return;
     }
     const rect = event.currentTarget.getBoundingClientRect();
+    const touch = event.targetTouches[firstTouchIndex];
 
-    const touch = event.touches[firstTouchIndex];
+    const dotPoint = getRobotPosition(touch, rect);
 
-    setPosition(getRobotPosition(touch, rect));
+    setMapPoint(dotPoint);
+
+    pipe(
+      dotPoint,
+      (point) => normalizePosition(point, { x: rect.width, y: rect.height }),
+      (point) => alliancizePosition(alliance, point),
+      (point) => (alliance === mapZone ? point : switchZone(point)),
+      (point) => ({ x: Math.round(point.x), y: Math.round(point.y) }),
+      setPosition,
+    );
   };
 
   return (
-    <div
-      draggable={false}
-      className="max-h-screen relative mx-auto touch-none"
-      onTouchMove={handleMapClick}
-      onTouchStart={() => {
-        setHolding(true);
-      }}
-      onTouchEnd={() => {
-        setHolding(false);
-      }}
-    >
+    <div draggable={false} className="h-full relative touch-none">
       <img
         src={`/${mapZone}-field-4418.png`}
-        className="max-h-screen block select-none"
+        onTouchMove={handleMapClick}
+        onTouchStart={() => {
+          setHolding(true);
+        }}
+        onTouchEnd={() => {
+          setHolding(false);
+        }}
+        className="h-full block select-none"
         alt="Game Map"
         draggable={false}
       />
 
-      {currentPoint && (
+      {mapPoint && (
         <div
           className={`absolute border-2 border-black shadow-[0_0_10px_#ccff00] -translate-x-1/2 -translate-y-1/2 pointer-events-none`}
           style={{
-            left: currentPoint.x,
-            top: currentPoint.y,
+            left: mapPoint.x,
+            top: mapPoint.y,
             width: dotDiameter,
             height: dotDiameter,
             backgroundColor: alliance === "blue" ? "darkcyan" : "crimson",

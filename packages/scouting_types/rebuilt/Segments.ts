@@ -1,6 +1,6 @@
 // בס"ד
 import * as t from "io-ts";
-import { defaultMovement, movementCodec } from "./Movement";
+import { defaultMovement, movementCodec, teleMovementCodec } from "./Movement";
 import {
   climbCodec,
   defaultClimb,
@@ -46,7 +46,7 @@ export const teleCodec = t.type({
   transitionShift: shiftCodec,
   shifts: t.tuple([shiftCodec, shiftCodec, shiftCodec, shiftCodec]),
   endgameShift: shiftCodec,
-  movement: movementCodec,
+  movement: teleMovementCodec,
   climb: climbCodec,
 });
 
