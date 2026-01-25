@@ -82,7 +82,7 @@ export const ScoreMap: FC<ScoreMapProps> = ({
       return;
     }
     const rect = event.currentTarget.getBoundingClientRect();
-    const touch = event.touches[firstTouchIndex];
+    const touch = event.targetTouches[firstTouchIndex];
 
     const dotPoint = getRobotPosition(touch, rect);
 
