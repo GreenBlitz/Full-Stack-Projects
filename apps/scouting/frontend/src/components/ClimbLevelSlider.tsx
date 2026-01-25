@@ -2,14 +2,18 @@
 import type React from "react";
 import * as Slider from "@radix-ui/react-slider";
 import type { ClimbLevel, Climb, AutoClimbTime } from "@repo/scouting_types";
-import { useEffect, useRef, useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 
 interface ClimbLevelSliderProps {
   isAuto: boolean;
   onClimbLevelChange: (climbLevel: ClimbLevel) => void;
-  setClimbTimes: React.Dispatch<
-    React.SetStateAction<ClimbTime | AutoClimbTime>
-  >;
+  setClimbTimes: Dispatch<SetStateAction<ClimbTime | AutoClimbTime>>;
   originTime: number;
   climbTimes: ClimbTime | AutoClimbTime;
 }

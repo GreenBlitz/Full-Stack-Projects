@@ -4,6 +4,6 @@ import { ScoutMatch } from "./scouter/pages/ScoutMatch";
 import { Climb } from "./components/Climb";
 
 const App: FC = () => {
-  return <Climb isAuto={true} />;
+  return <ScoutMatch />;
 };
 export default App;

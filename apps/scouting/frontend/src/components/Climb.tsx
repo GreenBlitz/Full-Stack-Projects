@@ -14,6 +14,8 @@ interface ClimbProps {
   isAuto: boolean;
 }
 
+const START_MATCH_TIME = 0;
+
 export const Climb: React.FC<ClimbProps> = ({ isAuto }) => {
   const [climbLevel, setClimbLevel] = useState<ClimbLevel>("L0");
   const [climbSide, setClimbSide] = useState<ClimbSide[]>(["none"]);
@@ -39,7 +41,7 @@ export const Climb: React.FC<ClimbProps> = ({ isAuto }) => {
           onClimbLevelChange={setClimbLevel}
           setClimbTimes={setClimbTimes}
           climbTimes={climbTimes}
-          originTime={0}
+          originTime={START_MATCH_TIME}
         />
       </div>
     </div>
