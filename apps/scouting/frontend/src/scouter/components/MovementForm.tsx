@@ -16,9 +16,9 @@ export const MovementForm: FC<MovementFormProps> = ({
 }) => {
   return (
     <div className="flex flex-col items-center">
-      <div className="bg-yellow-500" />
+      <div className="bg-rose-500" />
       <button
-        className={`bg-${currentMovement.bumpStuck ? "yellow-500" : "slate-800"} m-1 w-32 h-16 px-2`}
+        className={`bg-${currentMovement.bumpStuck ? "rose-500" : "slate-800"} m-1 w-32 h-16 px-2`}
         onClick={() => {
           setMovement({
             ...currentMovement,
