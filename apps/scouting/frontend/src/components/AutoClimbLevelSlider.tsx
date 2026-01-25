@@ -1,28 +1,20 @@
 //בס"ד
 import type React from "react";
 import * as Slider from "@radix-ui/react-slider";
-import type { ClimbLevel, Climb } from "@repo/scouting_types";
+import type { ClimbLevel, Climb, AutoClimbTime } from "@repo/scouting_types";
 import { useEffect, useRef, useState } from "react";
+import { numValueToClimbLevel } from "./ClimbLevelSlider";
 
-interface ClimbLevelSliderProps {
+interface AutoClimbLevelSliderProps {
   onClimbLevelChange: (climbLevel: ClimbLevel) => void;
-  setClimbTimes: React.Dispatch<React.SetStateAction<ClimbTime>>;
+  setClimbTimes: React.Dispatch<React.SetStateAction<AutoClimbTime>>;
   originTime: number;
-  climbTimes: ClimbTime;
+  climbTimes: AutoClimbTime;
 }
 
-export const numValueToClimbLevel: Record<number, ClimbLevel> = {
-  0: "L0",
-  1: "L1",
-  2: "L2",
-  3: "L3",
-};
+type AutoPossibleLevelNum = 0 | 1;
 
- type PossibleLevelNum = 0 | 1 | 2 | 3;
-
-type ClimbTime = Climb["climbTime"];
-
-export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
+export const AutoClimbLevelSlider: React.FC<AutoClimbLevelSliderProps> = ({
   onClimbLevelChange,
   setClimbTimes,
   originTime,
@@ -30,11 +22,11 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
 }) => {
   const NO_CLIMB_INDEX = 0;
   const NO_CLIMB_LEVEL = 0;
-  const NUMBER_OF_CLIMB_LEVELS = 3;
+  const NUMBER_OF_CLIMB_LEVELS = 1;
   const CLIMB_LEVEL_STEP = 1;
 
   const startTimeRef = useRef<number | null>(null);
-  const lastLevelRef = useRef<PossibleLevelNum>(NO_CLIMB_INDEX);
+  const lastLevelRef = useRef<AutoPossibleLevelNum>(NO_CLIMB_INDEX);
   const absoluteStartTimeRef = useRef<number | null>(null);
 
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
@@ -43,7 +35,7 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
     startTimeRef.current = Date.now() - originTime;
   }, []);
 
-  const handleValueChange = (newVal: PossibleLevelNum[]) => {
+  const handleValueChange = (newVal: AutoPossibleLevelNum[]) => {
     const [enteringLevelNum] = newVal;
     const leavingLevelNum = lastLevelRef.current;
     const now = Date.now() - originTime;
@@ -106,8 +98,6 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
 
       <div className="relative flex flex-col items-center">
         <div className="absolute -left-8 h-full flex flex-col justify-between py-1 text-[10px] font-bold text-gray-400 uppercase pointer-events-none">
-          <span>L3</span>
-          <span>L2</span>
           <span>L1</span>
           <span>—</span>
         </div>
