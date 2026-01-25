@@ -3,7 +3,6 @@ import * as t from "io-ts";
 import { defaultMovement, movementCodec } from "./Movement";
 import {
   climbCodec,
-  climbTimeCodec,
   defaultClimb,
   defaultShift,
   levelTimeCodec,
@@ -19,13 +18,8 @@ export const autoClimbTimeCodec = t.type({
 });
 
 export const autoClimbCodec = t.type({
+  climbSide: climbCodec.props.climbSide,
   climbTime: autoClimbTimeCodec,
-  climbSide: t.keyof({
-    none: null,
-    middle: null,
-    side: null,
-    support: null,
-  }),
   level: t.keyof({
     L0: null,
     L1: null,
