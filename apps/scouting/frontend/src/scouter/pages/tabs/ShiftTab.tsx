@@ -5,6 +5,7 @@ import type { TabProps } from "../ScoutMatch";
 import { ScoreMap } from "../../components/ScoreMap";
 import type { Point } from "@repo/scouting_types";
 import Stopwatch from "../../../components/stopwatch";
+import { MovementForm } from "../../components/MovementForm";
 
 interface ShiftTabProps extends TabProps {
   tabIndex: number;
@@ -15,6 +16,7 @@ export const ShiftTab: FC<ShiftTabProps> = ({
   tabIndex,
   alliance,
   originTime,
+  currentForm,
 }) => {
   const [mapPosition, setMapPosition] = useState<Point>();
   const [mapZone, setMapZone] = useState<"red" | "blue">(alliance);
@@ -42,10 +44,19 @@ export const ShiftTab: FC<ShiftTabProps> = ({
           originTime={originTime}
           disabled={mapPosition === undefined}
         />
+        <MovementForm
+          setMovement={(value) => {
+            setForm((prevForm) => ({
+              ...prevForm,
+              tele: { ...prevForm.tele, movement: value },
+            }));
+          }}
+          currentMovement={currentForm.tele.movement}
+        />
         <div className="bg-red-800" />
         <div className="bg-blue-800" />
         <button
-          className={`bg-${mapZone}-800 h-10 text-xs`}
+          className={`bg-${mapZone}-800 h-10 w-16 text-xs px-2 mt-5`}
           onClick={() => {
             setMapZone((prev) => (prev === "red" ? "blue" : "red"));
           }}

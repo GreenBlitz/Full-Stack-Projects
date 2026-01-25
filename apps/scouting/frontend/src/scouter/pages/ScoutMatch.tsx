@@ -14,6 +14,7 @@ import { useLocalStorage } from "@repo/local_storage_hook";
 
 export interface TabProps {
   setForm: Dispatch<SetStateAction<ScoutingForm>>;
+  currentForm: ScoutingForm;
   alliance: "red" | "blue";
   originTime: number;
 }
@@ -112,6 +113,7 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
             className={`
                 shrink-0 flex w-full py-3 text-sm font-bold rounded-xl 
                 transition-all duration-300 text-left relative overflow-hidden group
+                px-2
                 ${
                   activeTabIndex === index
                     ? "highlighted-tab"
@@ -175,8 +177,9 @@ export const ScoutMatch: FC = () => {
           >
             <CurrentTab
               setForm={setScoutingForm}
-              alliance="blue"
+              alliance="red"
               originTime={originTime}
+              currentForm={scoutingForm}
             />
           </div>
         </div>
