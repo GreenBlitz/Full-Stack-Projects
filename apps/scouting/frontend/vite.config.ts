@@ -2,11 +2,15 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
-
-// https://vite.dev/config/
+import { VitePWA } from "vite-plugin-pwa";
+const SECS_PER_MIN = 60;
+const MINS_PER_HOUR = 60;
+const HOURS_PER_DAY = 24;
+const MAX_ENTRIES = 50;
+const PORT = 80;
 export default defineConfig({
   server: {
-    port: 80,
+    port: PORT,
     proxy: {
       "/api/v1": {
         target: "http://localhost:4590",
@@ -21,5 +25,46 @@ export default defineConfig({
       },
     }),
     tailwindcss(),
+    VitePWA({
+      registerType: "autoUpdate",
+      devOptions: {
+        enabled: true,
+      },
+      manifest: {
+        name: "GreenBlitz 4590",
+        short_name: "GreenBlitz",
+        description: "Scouting application for match tracking",
+        start_url: "/",
+        display: "standalone",
+        background_color: "#ffffff",
+        theme_color: "#ffffff",
+        icons: [
+          { src: "/pwa-192.png", sizes: "192x192", type: "image/png" },
+          { src: "/pwa-512.png", sizes: "512x512", type: "image/png" },
+          { 
+            src: "/pwa-512.png", 
+            sizes: "512x512", 
+            type: "image/png",
+            purpose: "any maskable"
+          }
+        ]
+      },
+      workbox: {
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/api\./i,
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "api-cache",
+              expiration: {
+                maxEntries: MAX_ENTRIES,
+                maxAgeSeconds: SECS_PER_MIN * MINS_PER_HOUR * HOURS_PER_DAY 
+              }
+            }
+          }
+        ]
+      }
+    }),
   ],
 });
