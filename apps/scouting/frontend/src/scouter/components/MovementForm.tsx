@@ -16,20 +16,9 @@ export const MovementForm: FC<MovementFormProps> = ({
 }) => {
   return (
     <div className="flex flex-col items-center">
-      <div className="bg-green-500" />
+      <div className="bg-yellow-500" />
       <button
-        className={`bg-${currentMovement.bumpPass ? "green-500" : "slate-800"} m-1 w-32 h-11 px-2`}
-        onClick={() => {
-          setMovement({
-            ...currentMovement,
-            bumpPass: !currentMovement.bumpPass,
-          });
-        }}
-      >
-        Over Bump
-      </button>
-      <button
-        className={`bg-${currentMovement.bumpStuck ? "green-500" : "slate-800"} m-1 w-32 h-11 px-2`}
+        className={`bg-${currentMovement.bumpStuck ? "yellow-500" : "slate-800"} m-1 w-32 h-16 px-2`}
         onClick={() => {
           setMovement({
             ...currentMovement,
@@ -38,17 +27,6 @@ export const MovementForm: FC<MovementFormProps> = ({
         }}
       >
         Stuck Bump
-      </button>
-      <button
-        className={`bg-${currentMovement.trenchPass ? "green-500" : "slate-800"} m-1 w-32 h-11 px-2`}
-        onClick={() => {
-          setMovement({
-            ...currentMovement,
-            trenchPass: !currentMovement.trenchPass,
-          });
-        }}
-      >
-        Over Trench
       </button>
     </div>
   );

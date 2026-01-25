@@ -97,7 +97,7 @@ const Stopwatch: React.FC<StopwatchProps> = ({
   }
 
   return (
-    <div className="flex flex-col items-center pb-3 px-6">
+    <div className="flex flex-col items-center py-6 px-5">
       <div
         className={`
           select-none cursor-pointer rounded-2xl px-4 py-4

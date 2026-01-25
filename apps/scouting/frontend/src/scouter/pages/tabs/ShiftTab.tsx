@@ -56,7 +56,7 @@ export const ShiftTab: FC<ShiftTabProps> = ({
         <div className="bg-red-800" />
         <div className="bg-blue-800" />
         <button
-          className={`bg-${mapZone}-800 h-full w-32 text-xs px-2 mt-3`}
+          className={`bg-${mapZone}-800 h-10 w-32 text-xs px-2 mt-10`}
           onClick={() => {
             setMapZone((prev) => (prev === "red" ? "blue" : "red"));
           }}
