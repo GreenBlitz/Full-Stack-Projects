@@ -1,8 +1,4 @@
-import React, {
-  type FC,
-  type Dispatch,
-  type SetStateAction,
-} from "react";
+import React, { type FC, type Dispatch, type SetStateAction } from "react";
 import { type ScoutingForm } from "@repo/scouting_types";
 
 const inputStyle: React.CSSProperties = {
@@ -24,6 +20,8 @@ const Buttons: FC<{
         flexDirection: "column",
         gap: "12px",
         width: "200px",
+
+        
       }}
     >
       <input
@@ -41,6 +39,8 @@ const Buttons: FC<{
         placeholder="Match Number"
         style={inputStyle}
         value={form.matchNumber}
+        min="0"
+        max="127"
         onChange={(e) => {
           setForm((prev) => ({
             ...prev,
@@ -53,6 +53,8 @@ const Buttons: FC<{
         type="number"
         placeholder="Team Number"
         style={inputStyle}
+        min="0"
+        max="16383"
         value={form.teamNumber}
         onChange={(e) => {
           setForm((prev) => ({
@@ -62,23 +64,28 @@ const Buttons: FC<{
         }}
       />
 
-      <input
-        type="text"
-        placeholder="Match Type Filed"
+      <select
         style={inputStyle}
         value={form.matchType}
-        onChange={(e) => {
+        onChange={(e) =>
           setForm((prev) => ({
             ...prev,
             matchType: e.target.value as
               | "practice"
               | "qualification"
               | "playoff",
-          }));
-        }}
-      />
+          }))
+        }
+      >
+        <option value="practice">Practice</option>
+        <option value="qualification">Qualification</option>
+        <option value="playoff">Playoff</option>
+      </select>
     </div>
+    
   );
 };
+
+
 
 export { Buttons };

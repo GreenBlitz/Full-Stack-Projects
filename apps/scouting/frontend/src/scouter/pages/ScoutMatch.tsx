@@ -11,6 +11,7 @@ import {
 import { defaultScoutForm, type ScoutingForm } from "@repo/scouting_types";
 import { Buttons } from "../../hhh";
 
+
 interface Tab {
   name: string;
   Component: FC<{
@@ -93,7 +94,7 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
         disabled={activeTabIndex === STARTING_TAB_INDEX}
         className="scouter-navigation-button"
       >
-        ⬆<br /> Prev
+      <br /> Prev
       </button>
       <nav
         className="
