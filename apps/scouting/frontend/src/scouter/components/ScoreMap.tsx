@@ -88,14 +88,13 @@ export const ScoreMap: FC<ScoreMapProps> = ({
 
     setMapPoint(dotPoint);
 
-    setPosition(
-      pipe(
-        dotPoint,
-        (point) => normalizePosition(point, { x: rect.width, y: rect.height }),
-        (point) => alliancizePosition(alliance, point),
-        (point) => (alliance === mapZone ? point : switchZone(point)),
-        (point) => ({ x: Math.round(point.x), y: Math.round(point.y) }),
-      ),
+    pipe(
+      dotPoint,
+      (point) => normalizePosition(point, { x: rect.width, y: rect.height }),
+      (point) => alliancizePosition(alliance, point),
+      (point) => (alliance === mapZone ? point : switchZone(point)),
+      (point) => ({ x: Math.round(point.x), y: Math.round(point.y) }),
+      setPosition,
     );
   };
 
