@@ -1,6 +1,5 @@
 import React, {
   type FC,
-  useState,
   type Dispatch,
   type SetStateAction,
 } from "react";
@@ -64,7 +63,7 @@ const Buttons: FC<{
       />
 
       <input
-        type="string"
+        type="text"
         placeholder="Match Type Filed"
         style={inputStyle}
         value={form.matchType}
@@ -82,29 +81,4 @@ const Buttons: FC<{
   );
 };
 
-const App: FC = () => {
-  const [form, setForm] = useState<ScoutingForm>({
-    scouterName: "",
-    matchNumber: 0,
-    teamNumber: 0,
-    matchType: "",
-  });
-
-  return (
-    <div
-      style={{
-        padding: "20px",
-        backgroundColor: "#1a1a1a",
-        minHeight: "100vh",
-      }}
-    >
-      <Buttons form={form} setForm={setForm} />
-    </div>
-  );
-};
-
-export default App;
-
-
-
-
+export { Buttons };
