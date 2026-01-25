@@ -1,10 +1,29 @@
 // בס"ד
 import * as t from "io-ts";
 import { defaultMovement, movementCodec, teleMovementCodec } from "./Movement";
-import { climbCodec, defaultClimb, defaultShift, shiftCodec } from "./Shift";
+import {
+  climbCodec,
+  defaultClimb,
+  defaultShift,
+  levelTimeCodec,
+  shiftCodec,
+} from "./Shift";
 
 const autoTypes = t.keyof({
   trenchFuelMiddle: null,
+});
+
+export const autoClimbTimeCodec = t.type({
+  L1: levelTimeCodec,
+});
+
+export const autoClimbCodec = t.type({
+  climbSide: climbCodec.props.climbSide,
+  climbTime: autoClimbTimeCodec,
+  level: t.keyof({
+    L0: null,
+    L1: null,
+  }),
 });
 
 export const autoCodec = t.intersection([
@@ -33,8 +52,11 @@ export const teleCodec = t.type({
 
 export const defaultTele: t.TypeOf<typeof teleCodec> = {
   transitionShift: defaultShift,
-  shifts: [defaultShift,defaultShift,defaultShift,defaultShift],
+  shifts: [defaultShift, defaultShift, defaultShift, defaultShift],
   endgameShift: defaultShift,
   movement: defaultMovement,
-  climb: defaultClimb
-}
+  climb: defaultClimb,
+};
+
+export type AutoClimb = t.TypeOf<typeof autoClimbCodec>;
+export type AutoClimbTime = t.TypeOf<typeof autoClimbTimeCodec>;
