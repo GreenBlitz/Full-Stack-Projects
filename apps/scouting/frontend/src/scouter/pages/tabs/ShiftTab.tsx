@@ -11,6 +11,8 @@ interface ShiftTabProps extends TabProps {
   tabIndex: number;
 }
 
+const defaultPoint: Point = { x: 0, y: 0 };
+
 export const ShiftTab: FC<ShiftTabProps> = ({
   setForm,
   tabIndex,
@@ -36,7 +38,7 @@ export const ShiftTab: FC<ShiftTabProps> = ({
               const prevEvents = prevForm.tele.shifts[tabIndex].shootEvents;
               prevEvents.push({
                 interval: cycle,
-                startPosition: mapPosition ?? { x: 0, y: 0 },
+                startPosition: mapPosition ?? { ...defaultPoint },
               });
               return prevForm;
             });
