@@ -1,9 +1,9 @@
 // בס"ד
 import type { FC } from "react";
 import { ScoutMatch } from "./scouter/pages/ScoutMatch";
-import { AutoClimb } from "./components/AutoClimb";
+import { Climb } from "./components/Climb";
 
 const App: FC = () => {
-  return <AutoClimb />;
+  return <Climb isAuto={true} />;
 };
 export default App;
