@@ -3,7 +3,7 @@
 import { useState, type FC } from "react";
 import type { TabProps } from "../ScoutMatch";
 import { ScoreMap } from "../../components/ScoreMap";
-import type { Point } from "@repo/scouting_types";
+import type { Alliance, Point } from "@repo/scouting_types";
 import Stopwatch from "../../../components/stopwatch";
 import { MovementForm } from "../../components/MovementForm";
 
@@ -19,7 +19,7 @@ export const ShiftTab: FC<ShiftTabProps> = ({
   currentForm,
 }) => {
   const [mapPosition, setMapPosition] = useState<Point>();
-  const [mapZone, setMapZone] = useState<"red" | "blue">(alliance);
+  const [mapZone, setMapZone] = useState<Alliance>(alliance);
 
   return (
     <div className="flex flex-row h-full w-full">

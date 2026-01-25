@@ -7,12 +7,9 @@ import {
   useState,
   type TouchEvent,
   type Touch,
-  useEffect,
 } from "react";
-import type { Point } from "@repo/scouting_types";
+import type { Alliance, Point } from "@repo/scouting_types";
 import { pipe } from "fp-ts/lib/function";
-
-type Alliance = "red" | "blue";
 
 interface ScoreMapProps {
   currentPoint?: Point;
@@ -35,7 +32,7 @@ const alliancizePosition = (alliance: Alliance, position: Point): Point => {
   };
 };
 
-const otherZone = (point: Point) => {
+const switchZone = (point: Point) => {
   return {
     ...point,
     x: point.x + ALLIANCE_ZONE_WIDTH_PIXELS,
@@ -96,7 +93,7 @@ export const ScoreMap: FC<ScoreMapProps> = ({
         dotPoint,
         (point) => normalizePosition(point, { x: rect.width, y: rect.height }),
         (point) => alliancizePosition(alliance, point),
-        (point) => (alliance === mapZone ? point : otherZone(point)),
+        (point) => (alliance === mapZone ? point : switchZone(point)),
         (point) => ({ x: Math.round(point.x), y: Math.round(point.y) }),
       ),
     );

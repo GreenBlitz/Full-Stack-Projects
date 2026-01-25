@@ -8,14 +8,14 @@ import {
   type SetStateAction,
   useState,
 } from "react";
-import { defaultScoutForm, type ScoutingForm } from "@repo/scouting_types";
+import { defaultScoutForm, type Alliance, type ScoutingForm } from "@repo/scouting_types";
 import { ShiftTab } from "./tabs/ShiftTab";
 import { useLocalStorage } from "@repo/local_storage_hook";
 
 export interface TabProps {
   setForm: Dispatch<SetStateAction<ScoutingForm>>;
   currentForm: ScoutingForm;
-  alliance: "red" | "blue";
+  alliance: Alliance;
   originTime: number;
 }
 
@@ -150,7 +150,6 @@ export const ScoutMatch: FC = () => {
   const [activeTabIndex, setActiveTab] = useState(STARTING_TAB_INDEX);
 
   const originTime = useMemo(() => Date.now(), []);
-  console.log(originTime);
 
   const CurrentTab = useMemo(
     () => TABS[activeTabIndex].Component,
