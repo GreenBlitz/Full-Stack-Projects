@@ -8,11 +8,20 @@ import {
   type SetStateAction,
   useState,
 } from "react";
-import { defaultScoutForm, type ScoutingForm } from "@repo/scouting_types";
+import { defaultScoutForm, type Alliance, type ScoutingForm } from "@repo/scouting_types";
+import { ShiftTab } from "./tabs/ShiftTab";
+import { useLocalStorage } from "@repo/local_storage_hook";
+
+export interface TabProps {
+  setForm: Dispatch<SetStateAction<ScoutingForm>>;
+  currentForm: ScoutingForm;
+  alliance: Alliance;
+  originTime: number;
+}
 
 interface Tab {
   name: string;
-  Component: FC<{ setForm: Dispatch<SetStateAction<ScoutingForm>> }>;
+  Component: FC<TabProps>;
 }
 const TABS: Tab[] = [
   {
@@ -25,24 +34,20 @@ const TABS: Tab[] = [
     Component: () => <div className="p-4">Transition Content</div>,
   },
   {
-    name: "Tele",
-    Component: () => <div className="p-4">Teleop Content</div>,
-  },
-  {
     name: "Shift1",
-    Component: () => <div className="p-4">Shift1 Content</div>,
+    Component: (props) => <ShiftTab tabIndex={0} {...props} />,
   },
   {
     name: "Shift2",
-    Component: () => <div className="p-4">Shift2 Content</div>,
+    Component: (props) => <ShiftTab tabIndex={1} {...props} />,
   },
   {
     name: "Shift3",
-    Component: () => <div className="p-4">Shift3 Content</div>,
+    Component: (props) => <ShiftTab tabIndex={2} {...props} />,
   },
   {
     name: "Shift4",
-    Component: () => <div className="p-4">Shift4 Content</div>,
+    Component: (props) => <ShiftTab tabIndex={3} {...props} />,
   },
   {
     name: "Endgame",
@@ -113,6 +118,7 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
             className={`
                 shrink-0 flex w-full py-3 font-bold rounded-xl
                 transition-all duration-300 text-left relative overflow-hidden group
+                px-2
                 ${
                   activeTabIndex === index
                     ? "highlighted-tab"
@@ -138,11 +144,17 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
   );
 };
 
-const createNewScoutingForm = () => structuredClone(defaultScoutForm);
+const createNewScoutingForm = (): ScoutingForm =>
+  JSON.parse(JSON.stringify(defaultScoutForm));
 
 export const ScoutMatch: FC = () => {
-  const [scoutingForm, setScoutingForm] = useState(createNewScoutingForm());
+  const [scoutingForm, setScoutingForm] = useLocalStorage(
+    "form",
+    createNewScoutingForm(),
+  );
   const [activeTabIndex, setActiveTab] = useState(STARTING_TAB_INDEX);
+
+  const originTime = useMemo(() => Date.now(), []);
 
   const CurrentTab = useMemo(
     () => TABS[activeTabIndex].Component,
@@ -167,7 +179,12 @@ export const ScoutMatch: FC = () => {
            bg-black/40 rounded-xl p-6 border border-green-500/20 shadow-inner
             animate-in fade-in slide-in-from-right-4 duration-300"
           >
-            <CurrentTab setForm={setScoutingForm} />
+            <CurrentTab
+              setForm={setScoutingForm}
+              alliance="red"
+              originTime={originTime}
+              currentForm={scoutingForm}
+            />
           </div>
         </div>
       </div>
