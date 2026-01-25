@@ -1,7 +1,8 @@
-import Buttons from "./hhh";
+// בס"ד
+import type { FC } from "react";
+import { ScoutMatch } from "./scouter/pages/ScoutMatch";
 
-function App() {
-  return <Buttons />;
-}
-
+const App: FC = () => {
+  return <ScoutMatch />;
+};
 export default App;
