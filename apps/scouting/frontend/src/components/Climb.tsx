@@ -13,7 +13,7 @@ export const Climb: React.FC = () => {
     L2: null,
     L3: null,
   });
-
+console.log(climbLevel);//remove this its for build
 
 
   return (

@@ -138,7 +138,7 @@ const createNewScoutingForm = () => structuredClone(defaultScoutForm);
 export const ScoutMatch: FC = () => {
   const [scoutingForm, setScoutingForm] = useState(createNewScoutingForm());
   const [activeTabIndex, setActiveTab] = useState(STARTING_TAB_INDEX);
-
+console.log(scoutingForm);//remove this its for build
   const CurrentTab = useMemo(
     () => TABS[activeTabIndex].Component,
     [activeTabIndex],
