@@ -16,7 +16,7 @@ const defaultSettings: SettingsKeyType = {
 const SettingsPage: FC = () => {
   const [isSettingsKey, setSettingsKey] = useLocalStorage<SettingsKeyType>(
     "settings",
-    defaultSettings
+    defaultSettings,
   );
 
   const updateSetting = (key: keyof SettingsKeyType, value: boolean) => {
@@ -51,7 +51,7 @@ const SettingsPage: FC = () => {
               onChange={(event) => {
                 updateSetting(
                   "moveAutomaticallyToNextShift",
-                  event.target.checked
+                  event.target.checked,
                 );
               }}
             />

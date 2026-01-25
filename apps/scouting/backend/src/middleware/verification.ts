@@ -18,8 +18,8 @@ export const createTypeCheckingEndpointFlow = <E extends EndpointError, U>(
   flatMap(
     flow(
       typeToCheck.decode,
-      mapLeft((errors) => onFail(failure(errors).join("\n")))
-    )
+      mapLeft((errors) => onFail(failure(errors).join("\n"))),
+    ),
   );
 
 export const createBodyVerificationPipe =
@@ -30,6 +30,6 @@ export const createBodyVerificationPipe =
       map((request) => request.body as unknown),
       createTypeCheckingEndpointFlow(typeToCheck, (errors) => ({
         status: StatusCodes.BAD_REQUEST,
-        reason: `Recieved incorrect body parameters. error: ${errors}`,
-      }))
+        reason: `Received incorrect body parameters. error: ${errors}`,
+      })),
     );
