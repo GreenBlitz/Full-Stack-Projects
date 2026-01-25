@@ -30,7 +30,7 @@ const generate = () => {
       Promise.all([
         changePackageName("frontend", projectName),
         changePackageName("backend", projectName),
-      ])
+      ]),
     )
     .catch((error: unknown) => {
       console.error(error);
