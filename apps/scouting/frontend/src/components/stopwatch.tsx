@@ -28,20 +28,20 @@ const Stopwatch: React.FC<StopwatchProps> = ({
 
   const startCurrentCycleTime = useRef<number>(INITIAL_TIME_MILLISECONDS);
 
-  function reset() {
+  const reset = () => {
     setElapsedTime(INITIAL_TIME_MILLISECONDS);
     setIsRunning(false);
-  }
+  };
 
-  function calculateSeconds() {
+  const calculateSeconds = () => {
     return Math.floor(
       (elapsedTime / MILLLISECONDS_IN_A_SECOND) % SECOND_IN_A_MINUTE,
     );
-  }
+  };
 
-  function calculateMilliSeconds() {
+  const calculateMilliSeconds = () => {
     return Math.floor(elapsedTime % MILLLISECONDS_IN_A_SECOND);
-  }
+  };
 
   const getCurrentRelativeTime = () => {
     return Date.now() - originTime;
@@ -60,7 +60,7 @@ const Stopwatch: React.FC<StopwatchProps> = ({
     };
   }, [isRunning]);
 
-  function start() {
+  const start = () => {
     if (isRunning || disabled) {
       return;
     }
@@ -69,9 +69,9 @@ const Stopwatch: React.FC<StopwatchProps> = ({
 
     startTimeRef.current = Date.now() - elapsedTime;
     setIsRunning(true);
-  }
+  };
 
-  function stop() {
+  const stop = () => {
     if (!isRunning) {
       return;
     }
@@ -85,16 +85,16 @@ const Stopwatch: React.FC<StopwatchProps> = ({
 
     setIsRunning(false);
     reset();
-  }
+  };
 
-  function formatTime() {
+  const formatTime = () => {
     const seconds = String(calculateSeconds()).padStart(DECIMAL_PLACES, "0");
     const milliseconds = String(calculateMilliSeconds()).padStart(
       DECIMAL_PLACES_MILLISECONDS,
       "0",
     );
     return `${seconds}:${milliseconds}`;
-  }
+  };
 
   return (
     <div className="flex flex-col items-center py-6 px-5">
