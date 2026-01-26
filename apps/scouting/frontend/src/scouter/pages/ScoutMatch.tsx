@@ -15,6 +15,7 @@ import {
 } from "@repo/scouting_types";
 import { ShiftTab } from "./tabs/ShiftTab";
 import { useLocalStorage } from "@repo/local_storage_hook";
+import { IoMdCloseCircle } from "react-icons/io";
 
 export interface TabProps {
   setForm: Dispatch<SetStateAction<ScoutingForm>>;
@@ -93,8 +94,9 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
 
   return (
     <div className="relative flex flex-col pr-1 p-4 max-w-37.5 max-h-screen">
-      <div className="flex flex-row">
-        <button className="w-12 text-sm [writing-mode:vertical-rl] [text-orientation:upright]"></button>
+      <div className="w-full">
+        <button className="my-auto w-full bg-[#e83e2e] h-8" >Back</button>
+
         <button
           onClick={goToPrev}
           disabled={activeTabIndex === STARTING_TAB_INDEX}

@@ -51,6 +51,7 @@
     "is-odd": "^3.0.1",
     "qrcode.react": "^4.2.0",
     "react-icons": "^5.5.0",
+    "react-router-dom": "^7.13.0",
     "tailwindcss": "^4.1.17",
     "tsx": "^4.21.0",
     "usehooks-ts": "^3.1.1"
