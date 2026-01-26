@@ -47,8 +47,9 @@
     "express": "^5.1.0",
     "fp-ts": "^2.16.11",
     "http-status-codes": "^2.3.0",
-    "is-odd": "^3.0.1",
     "io-ts": "^2.2.22",
+    "is-odd": "^3.0.1",
+    "mongodb": "^7.0.0",
     "tailwindcss": "^4.1.17",
     "tsx": "^4.21.0",
     "usehooks-ts": "^3.1.1"
