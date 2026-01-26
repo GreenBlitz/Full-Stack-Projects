@@ -7,7 +7,7 @@ import { createNewScoutingForm } from "../ScoutMatch";
 
 export const PostMatchTab: FC<TabProps> = ({ setForm, currentForm }) => {
   const [scoutingForms, setScoutingForms] = useLocalStorage<ScoutingForm[]>(
-    "forms",
+    "scouting_forms",
     [],
   );
 
