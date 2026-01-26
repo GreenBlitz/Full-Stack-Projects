@@ -13,43 +13,72 @@ import type { Interval } from "./Interval";
 import type { Point, ShootEvent } from "./ShootEvent";
 import type { defaultAuto, defaultTele } from "./Segments";
 import type { Climb } from "./Shift";
+import type { Serde } from "@repo/serde/types";
 
 const MATCH_NUMBER_BIT_COUNT = 7;
 const TEAM_NUMBER_BIT_COUNT = 14;
 
 const TIME_MILLISECONDS_BIT_COUNT = 18;
 
-const intervalSerde = createRecordSerde<Interval>({
-  start: serdeUnsignedInt(TIME_MILLISECONDS_BIT_COUNT),
-  end: serdeUnsignedInt(TIME_MILLISECONDS_BIT_COUNT),
-});
+const serdeInterval = () =>
+  createRecordSerde<Interval>({
+    start: serdeUnsignedInt(TIME_MILLISECONDS_BIT_COUNT),
+    end: serdeUnsignedInt(TIME_MILLISECONDS_BIT_COUNT),
+  });
 
 const COORDINATE_BIT_COUNT = 11;
-const pointSerde = createRecordSerde<Point>({
-  x: serdeUnsignedInt(COORDINATE_BIT_COUNT),
-  y: serdeUnsignedInt(COORDINATE_BIT_COUNT),
-});
+const serdePoint = () =>
+  createRecordSerde<Point>({
+    x: serdeUnsignedInt(COORDINATE_BIT_COUNT),
+    y: serdeUnsignedInt(COORDINATE_BIT_COUNT),
+  });
 
-const shootEventsSerde = serdeArray(
-  createRecordSerde<ShootEvent>({
-    interval: intervalSerde,
-    startPosition: pointSerde,
-  }),
-);
+const serdeShootEvents = () =>
+  serdeArray(
+    createRecordSerde<ShootEvent>({
+      interval: serdeInterval(),
+      startPosition: serdePoint(),
+    }),
+  );
 
-const shiftSerde = createRecordSerde({
-  shootEvents: shootEventsSerde,
-});
+const serdeShift = () =>
+  createRecordSerde({
+    shootEvents: serdeShootEvents(),
+  });
 
-const climbSerde = createRecordSerde<Climb>({
-  climbTime: createRecordSerde({
-    L1: serdeOptionalNull(intervalSerde),
-    L2: serdeOptionalNull(intervalSerde),
-    L3: serdeOptionalNull(intervalSerde),
-  }),
-  climbSide: serdeEnumedString(["none", "middle", "side", "support"]),
-  level: serdeEnumedString(["L0", "L1", "L2", "L3"]),
-});
+const serdeClimb = () =>
+  createRecordSerde<Climb>({
+    climbTime: createRecordSerde({
+      L1: serdeOptionalNull(serdeInterval()),
+      L2: serdeOptionalNull(serdeInterval()),
+      L3: serdeOptionalNull(serdeInterval()),
+    }),
+    climbSide: serdeEnumedString(["none", "middle", "side", "support"]),
+    level: serdeEnumedString(["L0", "L1", "L2", "L3"]),
+  });
+
+const serdeTele = () =>
+  createRecordSerde<typeof defaultTele>({
+    transitionShift: serdeShift(),
+    shifts: serdeArray(serdeShift()) as any, //will fix later
+    endgameShift: serdeShift(),
+    movement: createRecordSerde({
+      bumpStuck: serdeBool(),
+    }),
+    climb: serdeClimb(),
+  });
+
+export const serdeAuto = () =>
+  createRecordSerde<typeof defaultAuto>({
+    shootEvents: serdeShootEvents(),
+    chosenAuto: serdeEnumedString(["trenchFuelMiddle"]),
+    movement: createRecordSerde({
+      trenchPass: serdeBool(),
+      bumpPass: serdeBool(),
+      bumpStuck: serdeBool(),
+    }),
+    climb: serdeClimb(),
+  });
 
 const serdeFields = {
   scouterName: serdeString(),
@@ -57,25 +86,9 @@ const serdeFields = {
   teamNumber: serdeUnsignedInt(TEAM_NUMBER_BIT_COUNT),
   matchType: serdeEnumedString(["qualification", "playoff", "practice"]),
   comment: serdeString(),
-  auto: createRecordSerde<typeof defaultAuto>({
-    shootEvents: shootEventsSerde,
-    chosenAuto: serdeEnumedString(["trenchFuelMiddle"]),
-    movement: createRecordSerde({
-      trenchPass: serdeBool(),
-      bumpPass: serdeBool(),
-      bumpStuck: serdeBool(),
-    }),
-    climb: climbSerde,
-  }),
-  tele: createRecordSerde<typeof defaultTele>({
-    transitionShift: shiftSerde,
-    shifts: serdeArray(shiftSerde) as any, //will fix later
-    endgameShift: shiftSerde,
-    movement: createRecordSerde({
-      bumpStuck: serdeBool(),
-    }),
-    climb: climbSerde,
-  }),
+  auto: serdeAuto(),
+  tele: serdeTele(),
 } satisfies Record<keyof ScoutingForm, unknown>;
 
-export const scoutingFormSerde = createRecordSerde(serdeFields);
+export const scoutingFormSerde: Serde<ScoutingForm> =
+  createRecordSerde(serdeFields);

@@ -94,9 +94,7 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
   return (
     <div className="relative flex flex-col pr-1 p-4 max-w-37.5 max-h-screen">
       <div className="flex flex-row">
-        <button className="w-12 text-sm [writing-mode:vertical-rl] [text-orientation:upright]">
-          
-        </button>
+        <button className="w-12 text-sm [writing-mode:vertical-rl] [text-orientation:upright]"></button>
         <button
           onClick={goToPrev}
           disabled={activeTabIndex === STARTING_TAB_INDEX}
