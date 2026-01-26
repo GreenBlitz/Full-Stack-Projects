@@ -1,7 +1,7 @@
 //בס"ד
 import type React from "react";
 import * as Slider from "@radix-ui/react-slider";
-import type { ClimbLevel, Climb } from "@repo/scouting_types";
+import type { ClimbLevel, Climb, AutoClimbTime } from "@repo/scouting_types";
 import {
   useEffect,
   useRef,
@@ -29,7 +29,6 @@ type TeleopPossibleLevelNum = 0 | 1 | 2 | 3;
 type AutoPossibleLevelNum = 0 | 1;
 
 type ClimbTime = Climb["climbTime"];
-type AutoClimbTime = Pick<ClimbTime, "L1">;
 
 export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
   isAuto,
