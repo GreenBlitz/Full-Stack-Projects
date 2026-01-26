@@ -11,21 +11,15 @@ import type {
 } from "@repo/scouting_types";
 import { ClimbSideButton } from "./ClimbSideButton";
 
-interface ClimbProps {
+interface InputClimbProps {
   isAuto: boolean;
-  submitClimbSides: (climbSide: ClimbSide, isAuto: boolean) => void;
-  submitClimbLevelAndTime: (
-    climbLevel: ClimbLevel,
-    climbTimes: ClimbTime | AutoClimbTime,
-    isAuto: boolean,
-  ) => void;
+  updateClimbForm: (updates: Partial<Climb>, isAuto: boolean) => void;
   originTime: number;
 }
 
-export const ClimbInput: React.FC<ClimbProps> = ({
+export const ClimbInput: React.FC<InputClimbProps> = ({
   isAuto,
-  submitClimbSides,
-  submitClimbLevelAndTime,
+  updateClimbForm,
   originTime,
 }) => {
   const [climbLevel, setClimbLevel] = useState<ClimbLevel>("L0");
@@ -47,13 +41,23 @@ export const ClimbInput: React.FC<ClimbProps> = ({
         },
   );
 
+  const handleSideUpdate = (newSides: ClimbSide) => {
+    updateClimbForm({ climbSide: newSides }, isAuto);
+  };
+
+  const handleLevelAndTimeUpdate = (
+  level: ClimbLevel,
+  times: ClimbTime | AutoClimbTime,
+) => {
+  updateClimbForm({ level, climbTime: times }, isAuto);
+};
   return (
     <div className="flex flex-col items-center justify-center w-full h-full">
       <div className="flex flex-row items-start gap-16 bg-slate-900/60 p-12 rounded-[3rem] border border-white/10 shadow-2xl backdrop-blur-xl">
         <ClimbSideButton
           climbSide={climbSide}
           setClimbSide={setClimbSide}
-          submitClimbSides={submitClimbSides}
+          submitClimbSides={handleSideUpdate}
           isAuto={isAuto}
         />
         <ClimbLevelSlider
@@ -62,7 +66,7 @@ export const ClimbInput: React.FC<ClimbProps> = ({
           setClimbTimes={setClimbTimes}
           climbTimes={climbTimes}
           originTime={originTime}
-          submitClimbLevelAndTime={submitClimbLevelAndTime}
+          submitClimbLevelAndTime={handleLevelAndTimeUpdate}
           climbLevel={climbLevel}
         />
       </div>

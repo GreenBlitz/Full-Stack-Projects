@@ -133,19 +133,16 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
   return (
     <>
       <div className="flex flex-col items-center gap-4">
-        {" "}
         <div className="flex flex-row items-stretch gap-3 h-[160px]">
-          {" "}
           <div className="flex flex-col justify-between py-1 text-right min-w-[28px] font-black text-slate-100 text-[10px] uppercase pointer-events-none">
-            {!isAuto ? (
+            {!isAuto && (
               <>
                 <span>L3</span>
                 <span>L2</span>
-                <span>L1</span>
               </>
-            ) : (
-              <span>L1</span>
             )}
+            <span>L1</span>
+
             <span className="text-md">—</span>
           </div>
           <Slider.Root

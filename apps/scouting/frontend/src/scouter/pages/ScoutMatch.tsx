@@ -71,7 +71,7 @@ const TABS: Tab[] = [
   },
   {
     name: "Climb",
-    Component: (props) => <ClimbTab {...props} />,
+    Component: ClimbTab,
   },
   {
     name: "Post",
