@@ -11,6 +11,7 @@ import {
 import { defaultScoutForm, type Alliance, type ScoutingForm } from "@repo/scouting_types";
 import { ShiftTab } from "./tabs/ShiftTab";
 import { useLocalStorage } from "@repo/local_storage_hook";
+import { AutoTab } from "./tabs/AutoTab";
 
 export interface TabProps {
   setForm: Dispatch<SetStateAction<ScoutingForm>>;
@@ -28,7 +29,7 @@ const TABS: Tab[] = [
     name: "Pre",
     Component: () => <div className="p-4">Pre Match</div>,
   },
-  { name: "Auto", Component: () => <div className="p-4">Auto Content</div> },
+  { name: "Auto", Component: (props) => <AutoTab {...props} /> },
   {
     name: "Trans",
     Component: () => <div className="p-4">Transition Content</div>,
