@@ -1,14 +1,16 @@
 // בס"ד
+import { pipe } from "fp-ts/lib/function";
 import { BitArray, rangeArr } from "../BitArray";
 import type {
   FieldsRecordSerde,
   RecordDeserializer,
   RecordSerializer,
   Serde,
+  Serdify,
 } from "../types";
 
 export const serdeOptionalFieldsRecord = <T>(
-  fieldsSerde: FieldsRecordSerde<T>
+  fieldsSerde: FieldsRecordSerde<T>,
 ): Serde<Record<string, T>> => ({
   serializer(serializedData: BitArray, data: Record<string, T>) {
     const fieldsSerializers = fieldsSerde.serializer;
@@ -32,7 +34,7 @@ export const serdeOptionalFieldsRecord = <T>(
     const fieldsDeserializers = fieldsSerde.deserializer;
 
     function fieldsExistenceBitCount(
-      fields: RecordSerializer<T> | RecordDeserializer<T>
+      fields: RecordSerializer<T> | RecordDeserializer<T>,
     ): number {
       return Object.keys(fields).length;
     }
@@ -40,8 +42,8 @@ export const serdeOptionalFieldsRecord = <T>(
     const data: Record<string, T> = {};
     const fieldsExistence: boolean[] = Array.from(
       rangeArr(fieldsExistenceBitCount(fieldsDeserializers)).map(() =>
-        serializedData.consumeBool()
-      )
+        serializedData.consumeBool(),
+      ),
     );
 
     Object.keys(fieldsDeserializers).forEach((field, index) => {
@@ -57,7 +59,7 @@ export const serdeOptionalFieldsRecord = <T>(
 });
 
 export const serdeRecord = <T>(
-  fieldsSerde: FieldsRecordSerde<T>
+  fieldsSerde: FieldsRecordSerde<T>,
 ): Serde<Record<string, T>> => ({
   serializer(serializedData: BitArray, data: Record<string, T>) {
     const fieldsSerializers = fieldsSerde.serializer;
@@ -77,7 +79,7 @@ export const serdeRecord = <T>(
 });
 
 export const serdeRecordFieldsBuilder = (
-  fieldNamesSerdes: Record<string, Serde<any>>
+  fieldNamesSerdes: Record<string, Serde<any>>,
 ): FieldsRecordSerde<any> => {
   const recordSerde = { serializer: {}, deserializer: {} };
   Object.entries(fieldNamesSerdes).forEach(([fieldName, fieldSerde]) => {
@@ -86,3 +88,6 @@ export const serdeRecordFieldsBuilder = (
   });
   return recordSerde;
 };
+
+export const createRecordSerde = <T extends {}>(record: Serdify<T>) =>
+  pipe(serdeRecordFieldsBuilder(record), serdeRecord) as Serde<T>;

@@ -15,3 +15,6 @@ export interface Serde<T> {
   serializer: Serializer<T>;
   deserializer: Deserializer<T>;
 }
+export type Serdify<T extends {}> = {
+  [K in keyof T]: Serde<T[K]>;
+};
