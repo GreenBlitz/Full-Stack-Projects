@@ -43,11 +43,11 @@ export const ClimbSideButton: React.FC<ClimbSideButtonProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-[200px] gap-2">
-      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">
+    <div className="flex flex-col h-[240px] gap-4">
+      <span className="text-[12px] font-bold text-slate-300 uppercase tracking-[0.2em] text-center opacity-80">
         Side
       </span>
-      <div className="flex flex-col flex-1 p-1 bg-slate-100 rounded-2xl border border-slate-200 shadow-inner gap-1">
+      <div className="flex flex-col flex-1 p-2 bg-black/30 rounded-3xl border border-white/5 shadow-inner gap-2">
         {climbSideKeys.map((side) => (
           <button
             key={side}
@@ -55,11 +55,11 @@ export const ClimbSideButton: React.FC<ClimbSideButtonProps> = ({
             onClick={() => {
               handleToggle(side);
             }}
-            className={`flex-1 w-26 px-2 py-1 text-[10px] font-black rounded-xl transition-all uppercase leading-none
+            className={`flex-1 w-32 px-4 py-2 text-[12px] font-black rounded-2xl transition-all uppercase border-2
               ${
                 climbSide[side]
-                  ? "bg-white text-green-600 shadow-sm border border-green-100 scale-[1.02]"
-                  : "text-slate-400 hover:text-slate-600 opacity-60"
+                  ? "bg-green-400 text-slate-900 border-green-300 shadow-[0_0_20px_rgba(74,222,128,0.5)] scale-[1.05]"
+                  : "text-slate-100 border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20"
               }`}
           >
             {side}

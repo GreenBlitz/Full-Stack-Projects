@@ -22,12 +22,11 @@ interface ClimbProps {
   originTime: number;
 }
 
-
 export const ClimbInput: React.FC<ClimbProps> = ({
   isAuto,
   submitClimbSides,
   submitClimbLevelAndTime,
-  originTime
+  originTime,
 }) => {
   const [climbLevel, setClimbLevel] = useState<ClimbLevel>("L0");
   const [climbSide, setClimbSide] = useState<ClimbSide>({
@@ -49,15 +48,14 @@ export const ClimbInput: React.FC<ClimbProps> = ({
   );
 
   return (
-    <div className="flex flex-col items-center p-6 bg-white rounded-3xl shadow-sm border border-gray-100">
-      <div className="flex flex-row items-end gap-8 bg-white p-4">
+    <div className="flex flex-col items-center justify-center w-full h-full">
+      <div className="flex flex-row items-start gap-16 bg-slate-900/60 p-12 rounded-[3rem] border border-white/10 shadow-2xl backdrop-blur-xl">
         <ClimbSideButton
           climbSide={climbSide}
           setClimbSide={setClimbSide}
           submitClimbSides={submitClimbSides}
           isAuto={isAuto}
         />
-
         <ClimbLevelSlider
           isAuto={isAuto}
           onClimbLevelChange={setClimbLevel}
