@@ -19,7 +19,7 @@ const decoder = new TextDecoder("utf-8");
 export const ScoutedMatches: FC = () => {
   const [scoutedMatches, setScoutedMatches] = useLocalStorage<ScoutingForm[]>(
     "scouted_forms",
-    [defaultScoutForm],
+    [],
   );
   const [selectedMatch, setSelectedMatch] = useState<ScoutingForm>();
 
