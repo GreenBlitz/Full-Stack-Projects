@@ -1,11 +1,13 @@
 // בס"ד
 
 import { Router } from "express";
-import { flow } from "fp-ts/lib/function";
+import { flow, pipe } from "fp-ts/lib/function";
 import { getDb } from "../middleware/db";
 import { fold, map } from "fp-ts/lib/TaskEither";
-import type { ScoutingForm } from "@repo/scouting_types";
+import { scoutingFormCodec, type ScoutingForm } from "@repo/scouting_types";
 import { StatusCodes } from "http-status-codes";
+import { createBodyVerificationPipe } from "../middleware/verification";
+import { left, right } from "fp-ts/lib/Either";
 
 export const formsRouter = Router();
 
@@ -25,4 +27,11 @@ formsRouter.get("/", (req, res) =>
         res.status(StatusCodes.OK).json({ forms: await forms }),
     ),
   )(),
+);
+
+formsRouter.post("/single", (req, res) =>
+  flow(
+    getCollection,
+    
+  ),
 );
