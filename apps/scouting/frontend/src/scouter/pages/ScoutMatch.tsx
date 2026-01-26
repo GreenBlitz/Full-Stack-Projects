@@ -16,6 +16,7 @@ import {
 import { ShiftTab } from "./tabs/ShiftTab";
 import { useLocalStorage } from "@repo/local_storage_hook";
 import { IoMdCloseCircle } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 
 export interface TabProps {
   setForm: Dispatch<SetStateAction<ScoutingForm>>;
@@ -75,6 +76,7 @@ const STARTING_TAB_INDEX = 0;
 
 const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
   const activeTabRef = useRef<HTMLButtonElement | null>(null);
+  const navigate = useNavigate();
 
   const goToPrev = () => {
     setActiveTab((prev) => prev - MOVEMENT_AMOUNT);
@@ -95,7 +97,14 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
   return (
     <div className="relative flex flex-col pr-1 p-4 max-w-37.5 max-h-screen">
       <div className="w-full">
-        <button className="my-auto w-full bg-[#e83e2e] h-8" >Back</button>
+        <button
+          className="my-auto w-full bg-[#e83e2e] h-8"
+          onClick={() => {
+            void navigate("/");
+          }}
+        >
+          Back
+        </button>
 
         <button
           onClick={goToPrev}
