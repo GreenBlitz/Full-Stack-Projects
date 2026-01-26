@@ -1,7 +1,12 @@
 //בס"ד
 import type React from "react";
 import * as Slider from "@radix-ui/react-slider";
-import type { ClimbLevel, Climb, AutoClimbTime } from "@repo/scouting_types";
+import type {
+  ClimbLevel,
+  Climb,
+  AutoClimbTime,
+  ClimbSide,
+} from "@repo/scouting_types";
 import {
   useEffect,
   useRef,
@@ -13,9 +18,15 @@ import {
 interface ClimbLevelSliderProps {
   isAuto: boolean;
   onClimbLevelChange: (climbLevel: ClimbLevel) => void;
+  climbLevel: ClimbLevel;
   setClimbTimes: Dispatch<SetStateAction<ClimbTime | AutoClimbTime>>;
   originTime: number;
   climbTimes: ClimbTime | AutoClimbTime;
+  submitClimbLevelAndTime: (
+    climbLevel: ClimbLevel,
+    climbTimes: ClimbTime | AutoClimbTime,
+    isAuto: boolean,
+  ) => void;
 }
 
 export const numValueToClimbLevel: Record<number, ClimbLevel> = {
@@ -33,9 +44,11 @@ type ClimbTime = Climb["climbTime"];
 export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
   isAuto,
   onClimbLevelChange,
+  climbLevel,
   setClimbTimes,
   originTime,
   climbTimes,
+  submitClimbLevelAndTime,
 }) => {
   const NO_CLIMB_INDEX = 0;
   const NO_CLIMB_LEVEL = 0;
@@ -59,6 +72,10 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
   useEffect(() => {
     startTimeRef.current = Date.now() - originTime;
   }, []);
+
+  useEffect(() => {
+    submitClimbLevelAndTime(climbLevel, climbTimes, isAuto);
+  }, [climbTimes, climbLevel]);
 
   const handleValueChange = (
     newVal: AutoPossibleLevelNum[] | TeleopPossibleLevelNum[],

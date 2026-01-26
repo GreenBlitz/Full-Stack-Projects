@@ -15,6 +15,8 @@ import {
 } from "@repo/scouting_types";
 import { ShiftTab } from "./tabs/ShiftTab";
 import { useLocalStorage } from "@repo/local_storage_hook";
+import { ClimbInput } from "../components/ClimbInput";
+import { ClimbTab } from "./tabs/ClimbTab";
 
 export interface TabProps {
   setForm: Dispatch<SetStateAction<ScoutingForm>>;
@@ -69,7 +71,7 @@ const TABS: Tab[] = [
   },
   {
     name: "Climb",
-    Component: () => <div className="p-4">Endgame Content</div>,
+    Component: (props) => <ClimbTab {...props} />,
   },
   {
     name: "Post",

@@ -20,11 +20,11 @@ export const climbTimeCodec = t.type({
 
 export const climbCodec = t.type({
   climbTime: climbTimeCodec,
-  climbSide: t.keyof({
-    none: null,
-    middle: null,
-    side: null,
-    support: null,
+  climbSide: t.type({
+    none: t.boolean,
+    middle: t.boolean,
+    side: t.boolean,
+    support: t.boolean,
   }),
   level: t.keyof({
     L0: null,
@@ -44,16 +44,17 @@ export type ClimbSide = Climb["climbSide"];
 export type ClimbLevel = Climb["level"];
 export type ClimbTime = Climb["climbTime"];
 
-export const climbSideValues = Object.keys(
-  climbCodec.props.climbSide.keys,
-) as ClimbSide[];
-
 export const defaultClimb: t.TypeOf<typeof climbCodec> = {
   climbTime: {
     L1: maxInterval,
     L2: maxInterval,
     L3: maxInterval,
   },
-  climbSide: "middle",
+  climbSide: {
+    none: true,
+    middle: false,
+    side: false,
+    support: false,
+  },
   level: "L0",
 };

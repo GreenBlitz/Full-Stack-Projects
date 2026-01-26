@@ -1,26 +1,45 @@
 // בס"ד
 import type React from "react";
-import { climbSideValues, type ClimbSide } from "@repo/scouting_types";
+import type { ClimbSide } from "@repo/scouting_types";
+import { useEffect } from "react";
 
 interface ClimbSideButtonProps {
-  climbSide: ClimbSide[];
-  setClimbSide: React.Dispatch<React.SetStateAction<ClimbSide[]>>;
+  climbSide: ClimbSide;
+  setClimbSide: React.Dispatch<React.SetStateAction<ClimbSide>>;
+  submitClimbSides: (climbSides: ClimbSide, isAuto: boolean) => void;
+  isAuto: boolean;
 }
 
 export const ClimbSideButton: React.FC<ClimbSideButtonProps> = ({
   climbSide,
   setClimbSide,
+  submitClimbSides,
+  isAuto,
 }) => {
-  const climbSideValuesNoNone = climbSideValues.filter(
+  const climbSideKeys = (Object.keys(climbSide) as (keyof ClimbSide)[]).filter(
     (side) => side !== "none",
   );
 
-  const handleToggle = (side: ClimbSide) => {
-    setClimbSide((prev) =>
-      prev.includes(side)
-        ? prev.filter((currentSide) => currentSide !== side)
-        : [...prev, side],
-    );
+  useEffect(() => {
+    submitClimbSides(climbSide, isAuto);
+  }, [climbSide]);
+
+  const handleToggle = (side: keyof ClimbSide) => {
+    setClimbSide((prev) => {
+      const nextState = {
+        ...prev,
+        [side]: !prev[side],
+      };
+
+      const isAnySelected = Object.entries(nextState)
+        .filter(([key]) => key !== "none")
+        .some(([key, value]) => value);
+
+      return {
+        ...nextState,
+        none: !isAnySelected,
+      };
+    });
   };
 
   return (
@@ -29,7 +48,7 @@ export const ClimbSideButton: React.FC<ClimbSideButtonProps> = ({
         Side
       </span>
       <div className="flex flex-col flex-1 p-1 bg-slate-100 rounded-2xl border border-slate-200 shadow-inner gap-1">
-        {climbSideValuesNoNone.map((side) => (
+        {climbSideKeys.map((side) => (
           <button
             key={side}
             type="button"
@@ -38,7 +57,7 @@ export const ClimbSideButton: React.FC<ClimbSideButtonProps> = ({
             }}
             className={`flex-1 w-26 px-2 py-1 text-[10px] font-black rounded-xl transition-all uppercase leading-none
               ${
-                climbSide.includes(side)
+                climbSide[side]
                   ? "bg-white text-green-600 shadow-sm border border-green-100 scale-[1.02]"
                   : "text-slate-400 hover:text-slate-600 opacity-60"
               }`}
