@@ -4,7 +4,6 @@ import { useState, type FC } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { useLocalStorage } from "@repo/local_storage_hook";
 import {
-  defaultScoutForm,
   type ScoutingForm,
   scoutingFormSerde,
 } from "@repo/scouting_types";
@@ -74,7 +73,6 @@ export const ScoutedMatches: FC = () => {
         </div>
       ))}
 
-      {/* QR Code Modal */}
       {selectedMatch && (
         <div
           className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-2"
@@ -84,13 +82,13 @@ export const ScoutedMatches: FC = () => {
         >
           <div
             className="bg-zinc-900 border-2 border-emerald-800 rounded-xl p-3 max-w-lg w-full flex flex-row items-center gap-4 shadow-2xl"
-            onClick={(e) => {
-              e.stopPropagation();
+            onClick={(event) => {
+              event.stopPropagation();
             }}
           >
             <div className="p-2 bg-white rounded-lg shrink-0 border border-gray-100">
               <QRCodeSVG
-                size={160} // Reduced size for landscape height
+                size={160}
                 value={decoder.decode(
                   serialize(scoutingFormSerde.serializer, selectedMatch),
                 )}

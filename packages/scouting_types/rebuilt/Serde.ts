@@ -13,7 +13,6 @@ import type { Interval } from "./Interval";
 import type { Point, ShootEvent } from "./ShootEvent";
 import type { defaultAuto, defaultTele } from "./Segments";
 import type { Climb } from "./Shift";
-import type { Serde } from "@repo/serde/types";
 
 const MATCH_NUMBER_BIT_COUNT = 7;
 const TEAM_NUMBER_BIT_COUNT = 14;
