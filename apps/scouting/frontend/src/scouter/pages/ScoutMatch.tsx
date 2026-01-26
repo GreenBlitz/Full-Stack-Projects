@@ -15,9 +15,9 @@ import {
 } from "@repo/scouting_types";
 import { ShiftTab } from "./tabs/ShiftTab";
 import { useLocalStorage } from "@repo/local_storage_hook";
-import { IoMdCloseCircle } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 
+import { PostMatchTab } from "./tabs/PostMatchTab";
 export interface TabProps {
   setForm: Dispatch<SetStateAction<ScoutingForm>>;
   currentForm: ScoutingForm;
@@ -61,7 +61,7 @@ const TABS: Tab[] = [
   },
   {
     name: "Post",
-    Component: () => <div className="p-4">Post Match Content</div>,
+    Component: PostMatchTab,
   },
 ];
 
@@ -157,7 +157,7 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
   );
 };
 
-const createNewScoutingForm = (): ScoutingForm =>
+export const createNewScoutingForm = (): ScoutingForm =>
   JSON.parse(JSON.stringify(defaultScoutForm));
 
 export const ScoutMatch: FC = () => {
