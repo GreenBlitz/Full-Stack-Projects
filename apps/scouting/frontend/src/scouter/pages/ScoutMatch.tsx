@@ -139,10 +139,27 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
   );
 };
 
-export type colorOfScoutingForm = "from-red-950 via-red-900 to-black border-red-500 shadow-[0_0_30px_rgba(239,68,68,0.35)]" |
+export type ColorOfScoutingForm = "from-red-950 via-red-900 to-black border-red-500 shadow-[0_0_30px_rgba(239,68,68,0.35)]" |
 "from-black via-gray-900 to-black border-green-500 shadow-[0_0_30px_rgba(34,197,94,0.3)]"
 
+export type Shift = "Autonomous" | "Transition" | "Shift1" | "Shift2" | "Shift3" | "Shift4" | "Endgame"
+
 const MILLISECONDS_IN_A_SECOND = 1000
+const END_OF_AUTO_TIMESTEMP_IN_SECONDS = 20
+const END_OF_TRANSITION_TIMESTEMP_IN_SECONDS = 30
+const END_OF_FIRST_SHIFT_TIMESTEMP_IN_SECONDS = 55
+const END_OF_SECOND_SHIFT_TIMESTEMP_IN_SECONDS = 80
+const END_OF_THIRD_SHIFT_TIMESTEMP_IN_SECONDS = 105
+const END_OF_FOURTH_SHIFT_TIMESTEMP_IN_SECONDS = 130
+const END_OF_GAME_IN_SECONDS = 160
+
+const END_OF_SHIFT_TIMESTEMPS_SECONDS = [END_OF_AUTO_TIMESTEMP_IN_SECONDS,
+  END_OF_TRANSITION_TIMESTEMP_IN_SECONDS,
+  END_OF_FIRST_SHIFT_TIMESTEMP_IN_SECONDS,
+  END_OF_SECOND_SHIFT_TIMESTEMP_IN_SECONDS,
+  END_OF_THIRD_SHIFT_TIMESTEMP_IN_SECONDS,
+  END_OF_FOURTH_SHIFT_TIMESTEMP_IN_SECONDS,
+  END_OF_GAME_IN_SECONDS].map(timeStemp=>timeStemp*MILLISECONDS_IN_A_SECOND)
 
 export const createNewScoutingForm = (): ScoutingForm =>
   JSON.parse(JSON.stringify(defaultScoutForm));
@@ -161,7 +178,7 @@ console.log(scoutingForm);//remove this its for build
     [activeTabIndex],
   );
 
-  const [scoutingFormColor, setScoutingFormColor] = useState<colorOfScoutingForm>(
+  const [scoutingFormColor, setScoutingFormColor] = useState<ColorOfScoutingForm>(
     "from-black via-gray-900 to-black border-green-500 shadow-[0_0_30px_rgba(34,197,94,0.3)]"
   )
 
@@ -169,9 +186,13 @@ console.log(scoutingForm);//remove this its for build
     return Date.now() - originTime;
   };
 
+  const hasPassedShiftTime = (tabIndex: number, currentShift: Shift )=>{
+    return 0;
+  }
+
   useEffect(() => {
   const id = window.setInterval(() => {
-    if (getCurrentRelativeTime() >= MILLISECONDS_IN_A_SECOND){
+    if (getCurrentRelativeTime() >= MILLISECONDS_IN_A_SECOND && activeTabIndex==STARTING_TAB_INDEX){
       setScoutingFormColor("from-red-950 via-red-900 to-black border-red-500 shadow-[0_0_30px_rgba(239,68,68,0.35)]")
     }
   }, MILLISECONDS_IN_A_SECOND);
