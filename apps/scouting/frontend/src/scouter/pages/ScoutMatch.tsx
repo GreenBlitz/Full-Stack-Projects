@@ -139,6 +139,11 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
   );
 };
 
+export type colorOfScoutingForm = "from-red-950 via-red-900 to-black border-red-500 shadow-[0_0_30px_rgba(239,68,68,0.35)]" |
+"from-black via-gray-900 to-black border-green-500 shadow-[0_0_30px_rgba(34,197,94,0.3)]"
+
+const MILLISECONDS_IN_A_SECOND = 1000
+
 export const createNewScoutingForm = (): ScoutingForm =>
   JSON.parse(JSON.stringify(defaultScoutForm));
 
@@ -156,15 +161,35 @@ console.log(scoutingForm);//remove this its for build
     [activeTabIndex],
   );
 
+  const [scoutingFormColor, setScoutingFormColor] = useState<colorOfScoutingForm>(
+    "from-black via-gray-900 to-black border-green-500 shadow-[0_0_30px_rgba(34,197,94,0.3)]"
+  )
+
+  const getCurrentRelativeTime = () => {
+    return Date.now() - originTime;
+  };
+
+  useEffect(() => {
+  const id = window.setInterval(() => {
+    if (getCurrentRelativeTime() >= MILLISECONDS_IN_A_SECOND){
+      setScoutingFormColor("from-red-950 via-red-900 to-black border-red-500 shadow-[0_0_30px_rgba(239,68,68,0.35)]")
+    }
+  }, MILLISECONDS_IN_A_SECOND);
+
+  return () => window.clearInterval(id);
+}, [originTime]);
+
+
   return (
     <div
-      className="max-h-screen bg-black p-4 md:p-6 flex items-center justify-center
-      force-landscape"
+      className={`flex flex-row max-w-5xl w-full mx-auto bg-linear-to-br
+      ${scoutingFormColor}
+      overflow-hidden h-[90vh] relative`}
     >
       <div
         className="flex flex-row max-w-5xl w-full mx-auto bg-linear-to-br
-       from-black via-gray-900 to-black border-2 border-green-500 
-       rounded-2xl shadow-[0_0_30px_rgba(34,197,94,0.3)] overflow-hidden h-[90vh] relative"
+        ${scoutingFormColor}
+        overflow-hidden h-[90vh] relative"
       >
         <SideBar setActiveTab={setActiveTab} activeTabIndex={activeTabIndex} />
 
