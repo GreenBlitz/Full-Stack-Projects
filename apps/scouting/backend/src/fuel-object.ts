@@ -3,11 +3,9 @@ import type { GameObject } from "./game-object";
 import type {
   Match,
   Point,
-  ScoutingForm,
   ShootEvent,
 } from "@repo/scouting_types";
 
-type ShootObject = GameObject<ShootEvent>;
 type BPS = GameObject<{ shoot: number[]; score: number[] }>;
 
 interface FuelObject {
@@ -17,13 +15,6 @@ interface FuelObject {
   position: Point;
   match: Match;
 }
-
-const ONE_ARRAY_ELEMENT = 1;
-
-export const getClosestNumber = (arr: number[], x: number): number =>
-  arr.reduce((prev, curr) =>
-    Math.abs(curr - x) < Math.abs(prev - x) ? curr : prev,
-  );
 
 const getSectionLength = (sectionShot: number[]) =>
   sectionShot[sectionShot.length - 1] - sectionShot[0];
