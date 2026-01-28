@@ -15,9 +15,9 @@ interface FuelObject {
 const defaultStartingSumValue = 0;
 const calculateSum = <T>(
   arr: T[],
-  fn: (value: T) => number,
+  transformation: (value: T) => number,
   startingSumValue = defaultStartingSumValue,
-) => arr.reduce((sum, value) => sum + fn(value), startingSumValue);
+) => arr.reduce((sum, value) => sum + transformation(value), startingSumValue);
 
 const FIRST_ELEMENT_INDEX = 0;
 const LAST_ELEMENT_BACKWARDS_INDEX = 1;
