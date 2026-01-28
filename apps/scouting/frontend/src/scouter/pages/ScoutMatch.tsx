@@ -143,6 +143,7 @@ export type ColorOfScoutingForm = "from-red-950 via-red-900 to-black border-red-
 "from-black via-gray-900 to-black border-green-500 shadow-[0_0_30px_rgba(34,197,94,0.3)]"
 
 export type Shift = "Autonomous" | "Transition" | "Shift1" | "Shift2" | "Shift3" | "Shift4" | "Endgame"
+export type TabIndex = "First Tab" | "Second Tab" | "Third Tab" | "Fourth Tab"
 
 const MILLISECONDS_IN_A_SECOND = 1000
 const END_OF_AUTO_TIMESTEMP_IN_SECONDS = 20
@@ -186,13 +187,33 @@ console.log(scoutingForm);//remove this its for build
     return Date.now() - originTime;
   };
 
-  const hasPassedShiftTime = (tabIndex: number, currentShift: Shift )=>{
-    return 0;
+  const SHIFT_END_TIMES: Record<Shift, number> = {
+    Shift1: END_OF_FIRST_SHIFT_TIMESTEMP_IN_SECONDS,
+    Shift2: END_OF_SECOND_SHIFT_TIMESTEMP_IN_SECONDS,
+    Shift3: END_OF_THIRD_SHIFT_TIMESTEMP_IN_SECONDS,
+    Shift4: END_OF_FOURTH_SHIFT_TIMESTEMP_IN_SECONDS,
+};
+
+const hasPassedShiftTime = (tabIndex: TabIndex): boolean => {
+  const time = getCurrentRelativeTime();
+
+  const tabEndTimes: Record<TabIndex, number> = {
+    "First Tab": END_OF_AUTO_TIMESTEMP_IN_SECONDS*MILLISECONDS_IN_A_SECOND,
+    "Second Tab": END_OF_TRANSITION_TIMESTEMP_IN_SECONDS*MILLISECONDS_IN_A_SECOND,
+    "Fourth Tab": END_OF_GAME_IN_SECONDS*MILLISECONDS_IN_A_SECOND,
+  };
+
+  if (tabIndex === "Third Tab") {
+    return time >= SHIFT_END_TIMES[currentShift];
   }
+
+  return time >= tabEndTimes[tabIndex]
+};
+
 
   useEffect(() => {
   const id = window.setInterval(() => {
-    if (getCurrentRelativeTime() >= MILLISECONDS_IN_A_SECOND && activeTabIndex==STARTING_TAB_INDEX){
+    if (hasPassedShiftTime(activeTabIndex, )){
       setScoutingFormColor("from-red-950 via-red-900 to-black border-red-500 shadow-[0_0_30px_rgba(239,68,68,0.35)]")
     }
   }, MILLISECONDS_IN_A_SECOND);
