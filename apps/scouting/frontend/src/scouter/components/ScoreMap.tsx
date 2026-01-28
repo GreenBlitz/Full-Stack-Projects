@@ -21,6 +21,7 @@ interface ScoreMapProps {
 const ALLIANCE_ZONE_WIDTH_PIXELS = 395;
 const TWO_THIRDS_WIDTH_PIXELS = 1010;
 const HEIGHT_PIXELS = 652;
+const HALF_HEIGHT =  2;
 const alliancizePosition = (alliance: Alliance, position: Point): Point => {
   if (alliance === "red") {
     return position;
@@ -47,24 +48,49 @@ const normalizePosition = (point: Point, bounds: Point) => ({
 const dotRadius = 10;
 const radiusToDiameterRatio = 2;
 const dotDiameter = dotRadius * radiusToDiameterRatio;
+const mapAspectRatio = TWO_THIRDS_WIDTH_PIXELS / HEIGHT_PIXELS;
 
 const firstTouchIndex = 0;
 
 const getRobotPosition = (touch: Touch, bound: DOMRect) => {
-  const x = touch.clientX - bound.left;
-  const y = touch.clientY - bound.top;
+  const containerRatio = bound.width / bound.height;
+
+  const imageBounds =
+    containerRatio > mapAspectRatio
+      ? {
+          width: bound.height * mapAspectRatio,
+          height: bound.height,
+          offsetX: (bound.width - bound.height * mapAspectRatio) / HALF_HEIGHT,
+          offsetY: 0,
+        }
+      : {
+          width: bound.width,
+          height: bound.width / mapAspectRatio,
+          offsetX: 0,
+          offsetY: (bound.height - bound.width / mapAspectRatio) / HALF_HEIGHT,
+        };
+
+  const x = touch.clientX - bound.left - imageBounds.offsetX;
+  const y = touch.clientY - bound.top - imageBounds.offsetY;
 
   const boundedX = Math.min(
-    bound.right - dotRadius - bound.left,
+    imageBounds.width - dotRadius,
     Math.max(x, dotRadius),
   );
 
   const boundedY = Math.min(
-    bound.bottom - dotRadius - bound.top,
+    imageBounds.height - dotRadius,
     Math.max(y, dotRadius),
   );
 
-  return { x: boundedX, y: boundedY };
+  return {
+    mapPoint: {
+      x: boundedX + imageBounds.offsetX,
+      y: boundedY + imageBounds.offsetY,
+    },
+    normalizedPoint: { x: boundedX, y: boundedY },
+    imageSize: { x: imageBounds.width, y: imageBounds.height },
+  };
 };
 
 export const ScoreMap: FC<ScoreMapProps> = ({
@@ -84,13 +110,16 @@ export const ScoreMap: FC<ScoreMapProps> = ({
     const rect = event.currentTarget.getBoundingClientRect();
     const touch = event.targetTouches[firstTouchIndex];
 
-    const dotPoint = getRobotPosition(touch, rect);
+    const { mapPoint: dotPoint, normalizedPoint, imageSize } = getRobotPosition(
+      touch,
+      rect,
+    );
 
     setMapPoint(dotPoint);
 
     pipe(
-      dotPoint,
-      (point) => normalizePosition(point, { x: rect.width, y: rect.height }),
+      normalizedPoint,
+      (point) => normalizePosition(point, { x: imageSize.x, y: imageSize.y }),
       (point) => alliancizePosition(alliance, point),
       (point) => (alliance === mapZone ? point : switchZone(point)),
       (point) => ({ x: Math.round(point.x), y: Math.round(point.y) }),
@@ -99,7 +128,7 @@ export const ScoreMap: FC<ScoreMapProps> = ({
   };
 
   return (
-    <div draggable={false} className="h-full relative touch-none">
+    <div draggable={false} className="h-full w-full relative touch-none">
       <img
         src={`/${mapZone}-field-4418.png`}
         onTouchMove={handleMapClick}
@@ -109,7 +138,7 @@ export const ScoreMap: FC<ScoreMapProps> = ({
         onTouchEnd={() => {
           setHolding(false);
         }}
-        className="h-full block select-none"
+        className="h-full w-full object-contain block select-none"
         alt="Game Map"
         draggable={false}
       />

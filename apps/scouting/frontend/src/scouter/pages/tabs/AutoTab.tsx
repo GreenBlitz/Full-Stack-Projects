@@ -18,14 +18,16 @@ export const AutoTab: FC<TabProps> = ({
   const [mapZone, setMapZone] = useState<Alliance>(alliance);
 
   return (
-    <div className="flex flex-row h-full w-full">
-      <ScoreMap
-        setPosition={setMapPosition}
-        currentPoint={mapPosition}
-        alliance={alliance}
-        mapZone={mapZone}
-      />
-      <div className="flex flex-col items-center">
+    <div className="flex flex-row h-full w-full gap-3">
+      <div className="flex-1 min-w-0 h-full">
+        <ScoreMap
+          setPosition={setMapPosition}
+          currentPoint={mapPosition}
+          alliance={alliance}
+          mapZone={mapZone}
+        />
+      </div>
+      <div className="flex flex-col items-center gap-0.5 sm:gap-1 shrink-0 w-32 sm:w-36 min-h-0 py-0.5 sm:py-1">
         <Stopwatch
           addCycleTimeSeconds={(cycle) => {
             setForm((prevForm) => {
@@ -39,6 +41,7 @@ export const AutoTab: FC<TabProps> = ({
           }}
           originTime={originTime}
           disabled={mapPosition === undefined}
+          size="compact"
         />
         <MovementForm
           setMovement={(value) => {
@@ -50,10 +53,8 @@ export const AutoTab: FC<TabProps> = ({
           currentMovement={currentForm.auto.movement}
           isAuto={true}
         />
-        <div className="bg-red-800" />
-        <div className="bg-blue-800" />
         <button
-          className={`bg-${mapZone}-800 h-10 w-32 text-xs px-2 mt-10`}
+          className={`bg-${mapZone}-800 h-8 sm:h-10 w-32 text-[10px] sm:text-xs px-2`}
           onClick={() => {
             setMapZone((prev) => (prev === "red" ? "blue" : "red"));
           }}

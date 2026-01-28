@@ -171,8 +171,8 @@ console.log(scoutingForm);//remove this its for build
 
         <div className="flex-1 flex flex-col overflow-hidden p-2 relative z-10">
           <div
-            className="flex-1 text-green-100 overflow-y-auto pr-2
-           bg-black/40 rounded-xl p-6 border border-green-500/20 shadow-inner
+            className="flex-1 min-h-0 text-green-100 overflow-hidden pr-2
+           bg-black/40 rounded-xl p-3 sm:p-4 lg:p-6 border border-green-500/20 shadow-inner
             animate-in fade-in slide-in-from-right-4 duration-300"
           >
             <CurrentTab

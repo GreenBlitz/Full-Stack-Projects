@@ -17,11 +17,11 @@ export const MovementForm: FC<MovementFormProps> = ({
   isAuto = false,
 }) => {
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center gap-1 shrink-0">
       {isAuto && (
         <>
           <button
-            className={`bg-${(currentMovement as ScoutingForm["auto"]["movement"]).trenchPass ? "rose-500" : "slate-800"} m-1 w-32 h-16 px-2`}
+            className={`bg-${(currentMovement as ScoutingForm["auto"]["movement"]).trenchPass ? "rose-500" : "slate-800"} w-32 h-8 sm:h-10 md:h-12 px-2 text-xs shrink-0`}
             onClick={() => {
               setMovement({
                 ...currentMovement,
@@ -32,7 +32,7 @@ export const MovementForm: FC<MovementFormProps> = ({
             Pass Trench
           </button>
           <button
-            className={`bg-${(currentMovement as ScoutingForm["auto"]["movement"]).bumpPass ? "rose-500" : "slate-800"} m-1 w-32 h-16 px-2`}
+            className={`bg-${(currentMovement as ScoutingForm["auto"]["movement"]).bumpPass ? "rose-500" : "slate-800"} w-32 h-8 sm:h-10 md:h-12 px-2 text-xs shrink-0`}
             onClick={() => {
               setMovement({
                 ...currentMovement,
@@ -45,7 +45,7 @@ export const MovementForm: FC<MovementFormProps> = ({
         </>
       )}
       <button
-        className={`bg-${currentMovement.bumpStuck ? "rose-500" : "slate-800"} m-1 w-32 h-16 px-2`}
+        className={`bg-${currentMovement.bumpStuck ? "rose-500" : "slate-800"} w-32 h-8 sm:h-10 md:h-12 px-2 text-xs shrink-0`}
         onClick={() => {
           setMovement({
             ...currentMovement,
