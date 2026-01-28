@@ -5,8 +5,7 @@ import type { Alliance, Point } from "@repo/scouting_types";
 import Stopwatch from "../../../components/stopwatch";
 import { MovementForm } from "../../components/MovementForm";
 import type { TabProps } from "../ScoutMatch";
-
-const defaultPoint: Point = { x: 0, y: 0 };
+import { defaultPoint } from "./ShiftTab";
 
 export const AutoTab: FC<TabProps> = ({
   setForm,

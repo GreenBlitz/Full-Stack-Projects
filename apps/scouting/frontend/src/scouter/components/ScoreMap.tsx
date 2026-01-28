@@ -4,6 +4,7 @@ import {
   type Dispatch,
   type FC,
   type SetStateAction,
+  useRef,
   useState,
   type TouchEvent,
   type Touch,
@@ -21,7 +22,6 @@ interface ScoreMapProps {
 const ALLIANCE_ZONE_WIDTH_PIXELS = 395;
 const TWO_THIRDS_WIDTH_PIXELS = 1010;
 const HEIGHT_PIXELS = 652;
-const HALF_HEIGHT =  2;
 const alliancizePosition = (alliance: Alliance, position: Point): Point => {
   if (alliance === "red") {
     return position;
@@ -48,48 +48,34 @@ const normalizePosition = (point: Point, bounds: Point) => ({
 const dotRadius = 10;
 const radiusToDiameterRatio = 2;
 const dotDiameter = dotRadius * radiusToDiameterRatio;
-const mapAspectRatio = TWO_THIRDS_WIDTH_PIXELS / HEIGHT_PIXELS;
 
 const firstTouchIndex = 0;
 
-const getRobotPosition = (touch: Touch, bound: DOMRect) => {
-  const containerRatio = bound.width / bound.height;
-
-  const imageBounds =
-    containerRatio > mapAspectRatio
-      ? {
-          width: bound.height * mapAspectRatio,
-          height: bound.height,
-          offsetX: (bound.width - bound.height * mapAspectRatio) / HALF_HEIGHT,
-          offsetY: 0,
-        }
-      : {
-          width: bound.width,
-          height: bound.width / mapAspectRatio,
-          offsetX: 0,
-          offsetY: (bound.height - bound.width / mapAspectRatio) / HALF_HEIGHT,
-        };
-
-  const x = touch.clientX - bound.left - imageBounds.offsetX;
-  const y = touch.clientY - bound.top - imageBounds.offsetY;
+const getRobotPosition = (
+  touch: Touch,
+  imageRect: DOMRect,
+  containerRect: DOMRect,
+) => {
+  const x = touch.clientX - imageRect.left;
+  const y = touch.clientY - imageRect.top;
 
   const boundedX = Math.min(
-    imageBounds.width - dotRadius,
+    imageRect.width - dotRadius,
     Math.max(x, dotRadius),
   );
 
   const boundedY = Math.min(
-    imageBounds.height - dotRadius,
+    imageRect.height - dotRadius,
     Math.max(y, dotRadius),
   );
 
   return {
     mapPoint: {
-      x: boundedX + imageBounds.offsetX,
-      y: boundedY + imageBounds.offsetY,
+      x: boundedX + imageRect.left - containerRect.left,
+      y: boundedY + imageRect.top - containerRect.top,
     },
     normalizedPoint: { x: boundedX, y: boundedY },
-    imageSize: { x: imageBounds.width, y: imageBounds.height },
+    imageSize: { x: imageRect.width, y: imageRect.height },
   };
 };
 
@@ -100,19 +86,28 @@ export const ScoreMap: FC<ScoreMapProps> = ({
   mapZone,
 }) => {
   const [isHolding, setHolding] = useState(false);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const imageRef = useRef<HTMLImageElement | null>(null);
 
   const [mapPoint, setMapPoint] = useState(currentPoint);
 
-  const handleMapClick = (event: TouchEvent<HTMLDivElement>) => {
+  const handleMapClick = (event: TouchEvent<HTMLImageElement>) => {
     if (!isHolding) {
       return;
     }
-    const rect = event.currentTarget.getBoundingClientRect();
+    const container = containerRef.current;
+    const image = imageRef.current;
+    if (!container || !image) {
+      return;
+    }
+    const containerRect = container.getBoundingClientRect();
+    const imageRect = image.getBoundingClientRect();
     const touch = event.targetTouches[firstTouchIndex];
 
     const { mapPoint: dotPoint, normalizedPoint, imageSize } = getRobotPosition(
       touch,
-      rect,
+      imageRect,
+      containerRect,
     );
 
     setMapPoint(dotPoint);
@@ -128,8 +123,13 @@ export const ScoreMap: FC<ScoreMapProps> = ({
   };
 
   return (
-    <div draggable={false} className="h-full w-full relative touch-none">
+    <div
+      ref={containerRef}
+      draggable={false}
+      className="h-full w-full relative touch-none flex items-center justify-center"
+    >
       <img
+        ref={imageRef}
         src={`/${mapZone}-field-4418.png`}
         onTouchMove={handleMapClick}
         onTouchStart={() => {
@@ -138,7 +138,7 @@ export const ScoreMap: FC<ScoreMapProps> = ({
         onTouchEnd={() => {
           setHolding(false);
         }}
-        className="h-full w-full object-contain block select-none"
+        className="block max-h-full max-w-full select-none"
         alt="Game Map"
         draggable={false}
       />

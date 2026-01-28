@@ -11,7 +11,7 @@ interface ShiftTabProps extends TabProps {
   tabIndex: number;
 }
 
-const defaultPoint: Point = { x: 0, y: 0 };
+export const defaultPoint: Point = { x: 0, y: 0 };
 
 export const ShiftTab: FC<ShiftTabProps> = ({
   setForm,
