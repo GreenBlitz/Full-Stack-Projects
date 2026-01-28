@@ -1,10 +1,6 @@
 // בס"ד
 import type { GameObject } from "./game-object";
-import type {
-  Match,
-  Point,
-  ShootEvent,
-} from "@repo/scouting_types";
+import type { Match, Point, ShootEvent } from "@repo/scouting_types";
 
 type BPS = GameObject<{ shoot: number[]; score: number[] }>;
 
@@ -16,8 +12,18 @@ interface FuelObject {
   match: Match;
 }
 
+const defaultStartingSumValue = 0;
+const calculateSum = <T>(
+  arr: T[],
+  fn: (value: T) => number,
+  startingSumValue = defaultStartingSumValue,
+) => arr.reduce((sum, value) => sum + fn(value), startingSumValue);
+
+const FIRST_ELEMENT_INDEX = 0;
+const LAST_ELEMENT_BACKWARDS_INDEX = 1;
 const getSectionLength = (sectionShot: number[]) =>
-  sectionShot[sectionShot.length - 1] - sectionShot[0];
+  sectionShot[sectionShot.length - LAST_ELEMENT_BACKWARDS_INDEX] -
+  sectionShot[FIRST_ELEMENT_INDEX];
 
 const calculateBallAmount = (sections: number[][], shotLength: number) => {
   const smallerSections = sections.filter(
@@ -29,26 +35,24 @@ const calculateBallAmount = (sections: number[][], shotLength: number) => {
   );
 
   const lengths =
-    smallerSections.reduce((sum, value) => sum + getSectionLength(value), 0) +
+    calculateSum(smallerSections, getSectionLength) +
     largerSections.length * shotLength;
 
   const balls =
-    smallerSections.reduce((sum, value) => sum + value.length, 0) +
-    largerSections.reduce(
-      (sum, value) => sum + value.filter((time) => time <= shotLength).length,
-      0,
+    calculateSum(smallerSections, (value) => value.length) +
+    calculateSum(
+      largerSections,
+      (value) => value.filter((time) => time <= shotLength).length,
     );
 
-  return (balls * lengths) / sections.length;
+  return (balls * lengths) / (sections.length * sections.length);
 };
 
-const createFuelObject = (
+const calculateFuelByAveraging = (
   shot: ShootEvent,
   match: Match,
-  bpses: BPS[],
+  sections: BPS["gameEvents"],
 ): FuelObject => {
-  const sections = bpses.flatMap((bps) => bps.gameEvents);
-
   const shotLength = shot.interval.end - shot.interval.start;
 
   const scoredAmount = calculateBallAmount(
@@ -68,4 +72,16 @@ const createFuelObject = (
     position: shot.startPosition,
     match,
   };
+};
+
+export const createFuelObject = (
+  shot: ShootEvent,
+  match: Match,
+  bpses: BPS[],
+): FuelObject => {
+  return calculateFuelByAveraging(
+    shot,
+    match,
+    bpses.flatMap((bps) => bps.gameEvents),
+  );
 };
