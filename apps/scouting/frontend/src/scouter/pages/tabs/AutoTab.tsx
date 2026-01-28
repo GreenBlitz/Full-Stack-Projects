@@ -1,21 +1,14 @@
 // בס"ד
-
 import { useState, type FC } from "react";
-import type { TabProps } from "../ScoutMatch";
 import { ScoreMap } from "../../components/ScoreMap";
 import type { Alliance, Point } from "@repo/scouting_types";
 import Stopwatch from "../../../components/stopwatch";
 import { MovementForm } from "../../components/MovementForm";
+import type { TabProps } from "../ScoutMatch";
+import { defaultPoint } from "./ShiftTab";
 
-interface ShiftTabProps extends TabProps {
-  tabIndex: number;
-}
-
-export const defaultPoint: Point = { x: 0, y: 0 };
-
-export const ShiftTab: FC<ShiftTabProps> = ({
+export const AutoTab: FC<TabProps> = ({
   setForm,
-  tabIndex,
   alliance,
   originTime,
   currentForm,
@@ -37,7 +30,7 @@ export const ShiftTab: FC<ShiftTabProps> = ({
         <Stopwatch
           addCycleTimeSeconds={(cycle) => {
             setForm((prevForm) => {
-              const prevEvents = prevForm.tele.shifts[tabIndex].shootEvents;
+              const prevEvents = prevForm.auto.shootEvents;
               prevEvents.push({
                 interval: cycle,
                 startPosition: mapPosition ?? { ...defaultPoint },
@@ -53,10 +46,11 @@ export const ShiftTab: FC<ShiftTabProps> = ({
           setMovement={(value) => {
             setForm((prevForm) => ({
               ...prevForm,
-              tele: { ...prevForm.tele, movement: value },
+              auto: { ...prevForm.auto, movement: { ...prevForm.auto.movement, ...value } },
             }));
           }}
-          currentMovement={currentForm.tele.movement}
+          currentMovement={currentForm.auto.movement}
+          isAuto={true}
         />
         <button
           className={`bg-${mapZone}-800 h-8 sm:h-10 w-32 text-[10px] sm:text-xs px-2`}

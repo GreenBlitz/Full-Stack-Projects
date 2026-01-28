@@ -11,6 +11,7 @@ import {
 import { defaultScoutForm, type Alliance, type ScoutingForm } from "@repo/scouting_types";
 import { ShiftTab } from "./tabs/ShiftTab";
 import { useLocalStorage } from "@repo/local_storage_hook";
+import { AutoTab } from "./tabs/AutoTab";
 import { PostMatchTab } from "./tabs/PostMatchTab";
 export interface TabProps {
   setForm: Dispatch<SetStateAction<ScoutingForm>>;
@@ -28,7 +29,7 @@ const TABS: Tab[] = [
     name: "Pre",
     Component: () => <div className="p-4">Pre Match</div>,
   },
-  { name: "Auto", Component: () => <div className="p-4">Auto Content</div> },
+  { name: "Auto", Component: AutoTab },
   {
     name: "Trans",
     Component: () => <div className="p-4">Transition Content</div>,
@@ -150,7 +151,6 @@ export const ScoutMatch: FC = () => {
   const [activeTabIndex, setActiveTab] = useState(STARTING_TAB_INDEX);
 
   const originTime = useMemo(() => Date.now(), []);
-console.log(scoutingForm);//remove this its for build
   const CurrentTab = useMemo(
     () => TABS[activeTabIndex].Component,
     [activeTabIndex],
@@ -170,8 +170,8 @@ console.log(scoutingForm);//remove this its for build
 
         <div className="flex-1 flex flex-col overflow-hidden p-2 relative z-10">
           <div
-            className="flex-1 text-green-100 overflow-y-auto pr-2
-           bg-black/40 rounded-xl p-6 border border-green-500/20 shadow-inner
+            className="flex-1 min-h-0 text-green-100 overflow-hidden pr-2
+           bg-black/40 rounded-xl p-3 sm:p-4 lg:p-6 border border-green-500/20 shadow-inner
             animate-in fade-in slide-in-from-right-4 duration-300"
           >
             <CurrentTab
