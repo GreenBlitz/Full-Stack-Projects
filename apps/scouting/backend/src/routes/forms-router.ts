@@ -6,10 +6,9 @@ import { getDb } from "../middleware/db";
 import { flatMap, fold, fromEither, map } from "fp-ts/lib/TaskEither";
 import { scoutingFormCodec, type ScoutingForm } from "@repo/scouting_types";
 import { StatusCodes } from "http-status-codes";
-import {
-  createBodyVerificationPipe,
-} from "../middleware/verification";
+import { createBodyVerificationPipe } from "../middleware/verification";
 import { right } from "fp-ts/lib/Either";
+import { castQuery } from "../middleware/query";
 
 export const formsRouter = Router();
 
@@ -21,7 +20,7 @@ const getCollection = flow(
 formsRouter.get("/", async (req, res) => {
   await pipe(
     getCollection(),
-    map((collection) => collection.find(req.query).toArray()),
+    map((collection) => collection.find(castQuery(req.query)).toArray()),
     fold(
       (error) => () =>
         Promise.resolve(res.status(error.status).send(error.reason)),
