@@ -26,13 +26,20 @@ const FIRST_INTERVAL_LIMIT = 0;
 const NO_BALLS_COLLECTED = 0;
 const FIRST_SECTION_AMOUNT = 1;
 const LAST_SECTION_LENGTH = 1;
+
+/**
+ * @param sections consists of sections that contains a list of timestamps in ms
+ * @returns mean ball amount
+ */
 const calculateBallAmount = (
   sections: number[][],
   shotLength: number,
 ): number => {
+  // Base Case
   if (shotLength <= EMPTY_INTERVAL) {
     return NO_BALLS_COLLECTED;
   }
+  // Happens if no section is long enough for the shot length
   if (sections.length === LAST_SECTION_LENGTH) {
     const onlySection = sections[FIRST_INTERVAL_INDEX];
     const ballAmount = calculateSum(onlySection, (value) => value);
@@ -40,6 +47,8 @@ const calculateBallAmount = (
       onlySection[onlySection.length - LAST_ELEMENT_BACKWARDS_INDEX];
     return (ballAmount / sectionDuration) * shotLength;
   }
+
+  // finds the average for the first interval, removes it and then recurses
   const firstInterval = sections[FIRST_INTERVAL_INDEX];
   const firstIntervalDuration =
     firstInterval[firstInterval.length - LAST_ELEMENT_BACKWARDS_INDEX];
@@ -102,6 +111,10 @@ const calculateFuelByAveraging = (
     position: shot.startPosition,
     match,
   };
+};
+
+const calculateFuelByFindingMatch = (shot: ShootEvent, bpses: BPS) => {
+  return;
 };
 
 export const createFuelObject = (
