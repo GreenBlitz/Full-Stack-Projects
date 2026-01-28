@@ -8,7 +8,7 @@ import { scoutingFormCodec, type ScoutingForm } from "@repo/scouting_types";
 import { StatusCodes } from "http-status-codes";
 import { createBodyVerificationPipe } from "../middleware/verification";
 import { right } from "fp-ts/lib/Either";
-import { castQuery } from "../middleware/query";
+import { mongofyQuery } from "../middleware/query";
 
 export const formsRouter = Router();
 
@@ -20,7 +20,7 @@ const getCollection = flow(
 formsRouter.get("/", async (req, res) => {
   await pipe(
     getCollection(),
-    map((collection) => collection.find(castQuery(req.query)).toArray()),
+    map((collection) => collection.find(mongofyQuery(req.query)).toArray()),
     fold(
       (error) => () =>
         Promise.resolve(res.status(error.status).send(error.reason)),

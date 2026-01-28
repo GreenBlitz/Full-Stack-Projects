@@ -1,6 +1,6 @@
 // בס"ד
 
-import { pipe } from "fp-ts/lib/function";
+import { flow, pipe } from "fp-ts/lib/function";
 
 const flattenToDotNotation = (obj: object, prefix = ""): object => {
   return Object.keys(obj).reduce((acc, key) => {
@@ -18,7 +18,7 @@ const flattenToDotNotation = (obj: object, prefix = ""): object => {
   }, {});
 };
 
-export const castQuery = (query: object): object =>
+const castQuery = (query: object): object =>
   pipe(
     query,
     Object.entries,
@@ -36,5 +36,6 @@ export const castQuery = (query: object): object =>
                 : value,
       ]),
     Object.fromEntries,
-    flattenToDotNotation,
   );
+
+export const mongofyQuery = flow(castQuery, flattenToDotNotation);
