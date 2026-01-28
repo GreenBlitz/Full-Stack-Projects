@@ -168,7 +168,7 @@ export const ScoutMatch: FC = () => {
   const [activeTabIndex, setActiveTab] = useState(STARTING_TAB_INDEX);
 
   const originTime = useMemo(() => Date.now(), []);
-
+console.log(scoutingForm);//remove this its for build
   const CurrentTab = useMemo(
     () => TABS[activeTabIndex].Component,
     [activeTabIndex],
