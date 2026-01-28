@@ -3,10 +3,13 @@
 import { Router } from "express";
 import { flow, pipe } from "fp-ts/lib/function";
 import { getDb } from "../middleware/db";
-import { fold, map } from "fp-ts/lib/TaskEither";
+import { flatMap, fold, fromEither, map } from "fp-ts/lib/TaskEither";
 import { scoutingFormCodec, type ScoutingForm } from "@repo/scouting_types";
 import { StatusCodes } from "http-status-codes";
-import { createBodyVerificationPipe } from "../middleware/verification";
+import {
+  createBodyVerificationPipe,
+  createTypeCheckingEndpointFlow,
+} from "../middleware/verification";
 import { left, right } from "fp-ts/lib/Either";
 
 export const formsRouter = Router();
@@ -32,6 +35,20 @@ formsRouter.get("/", (req, res) =>
 formsRouter.post("/single", (req, res) =>
   flow(
     getCollection,
-    
+    flatMap((collection) =>
+      pipe(
+        right(req),
+        createBodyVerificationPipe(scoutingFormCodec),
+        fromEither,
+        map((form) => ({ collection, form })),
+      ),
+    ),
+    map(({ collection, form }) => collection.insertOne(form)),
+    fold(
+      (error) => () =>
+        Promise.resolve(res.status(error.status).send(error.reason)),
+      (result) => async () =>
+        res.status(StatusCodes.OK).json({ result: await result }),
+    ),
   ),
 );
