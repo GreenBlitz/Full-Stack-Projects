@@ -12,7 +12,7 @@ import { defaultScoutForm, type Alliance, type ScoutingForm } from "@repo/scouti
 import { ShiftTab } from "./tabs/ShiftTab";
 import { useLocalStorage } from "@repo/local_storage_hook";
 import { AutoTab } from "./tabs/AutoTab";
-
+import { PostMatchTab } from "./tabs/PostMatchTab";
 export interface TabProps {
   setForm: Dispatch<SetStateAction<ScoutingForm>>;
   currentForm: ScoutingForm;
@@ -56,7 +56,7 @@ const TABS: Tab[] = [
   },
   {
     name: "Post",
-    Component: () => <div className="p-4">Post Match Content</div>,
+    Component: PostMatchTab,
   },
 ];
 
@@ -140,7 +140,7 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
   );
 };
 
-const createNewScoutingForm = (): ScoutingForm =>
+export const createNewScoutingForm = (): ScoutingForm =>
   JSON.parse(JSON.stringify(defaultScoutForm));
 
 export const ScoutMatch: FC = () => {
@@ -151,7 +151,7 @@ export const ScoutMatch: FC = () => {
   const [activeTabIndex, setActiveTab] = useState(STARTING_TAB_INDEX);
 
   const originTime = useMemo(() => Date.now(), []);
-
+console.log(scoutingForm);//remove this its for build
   const CurrentTab = useMemo(
     () => TABS[activeTabIndex].Component,
     [activeTabIndex],
