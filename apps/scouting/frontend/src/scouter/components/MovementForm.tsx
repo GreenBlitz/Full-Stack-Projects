@@ -16,28 +16,27 @@ export const MovementForm: FC<MovementFormProps> = ({
   currentMovement,
   isAuto = false,
 }) => {
-  const currentAutoMovement = currentMovement as ScoutingForm["auto"]["movement"];
   return (
     <div className="flex flex-col items-center gap-1 shrink-0">
-      {isAuto && (
+      {isAuto && "trenchPass" in currentMovement && (
         <>
           <button
-            className={`bg-${(currentAutoMovement).trenchPass ? "rose-500" : "slate-800"} w-32 h-8 sm:h-10 md:h-12 px-2 text-xs shrink-0`}
+            className={`bg-${(currentMovement).trenchPass ? "rose-500" : "slate-800"} w-32 h-8 sm:h-10 md:h-12 px-2 text-xs shrink-0`}
             onClick={() => {
               setMovement({
                 ...currentMovement,
-                trenchPass: !(currentAutoMovement).trenchPass,
+                trenchPass: !(currentMovement).trenchPass,
               });
             }}
           >
             Pass Trench
           </button>
           <button
-            className={`bg-${(currentAutoMovement).bumpPass ? "rose-500" : "slate-800"} w-32 h-8 sm:h-10 md:h-12 px-2 text-xs shrink-0`}
+            className={`bg-${(currentMovement).bumpPass ? "rose-500" : "slate-800"} w-32 h-8 sm:h-10 md:h-12 px-2 text-xs shrink-0`}
             onClick={() => {
               setMovement({
                 ...currentMovement,
-                bumpPass: !(currentAutoMovement).bumpPass,
+                bumpPass: !(currentMovement).bumpPass,
               });
             }}
           >

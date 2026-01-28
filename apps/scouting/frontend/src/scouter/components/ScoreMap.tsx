@@ -71,11 +71,19 @@ const getRobotPosition = (
 
   return {
     mapPoint: {
+      // finds a value for x that is in the bounded y
       x: boundedX + imageRect.left - containerRect.left,
+      // finds a value for x that is in the bounded y
       y: boundedY + imageRect.top - containerRect.top,
     },
-    normalizedPoint: { x: boundedX, y: boundedY },
-    imageSize: { x: imageRect.width, y: imageRect.height },
+    normalizedPoint: {
+       x: boundedX,
+       y: boundedY 
+      },
+    imageSize: { 
+      x: imageRect.width, 
+      y: imageRect.height 
+    },
   };
 };
 
@@ -88,16 +96,14 @@ export const ScoreMap: FC<ScoreMapProps> = ({
   const [isHolding, setHolding] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
-
   const [mapPoint, setMapPoint] = useState(currentPoint);
-
   const handleMapClick = (event: TouchEvent<HTMLImageElement>) => {
     if (!isHolding) {
       return;
     }
     const container = containerRef.current;
     const image = imageRef.current;
-    if (!container || !image) {
+    if (!(container&&image)) {
       return;
     }
     const containerRect = container.getBoundingClientRect();
