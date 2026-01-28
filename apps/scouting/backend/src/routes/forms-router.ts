@@ -8,9 +8,8 @@ import { scoutingFormCodec, type ScoutingForm } from "@repo/scouting_types";
 import { StatusCodes } from "http-status-codes";
 import {
   createBodyVerificationPipe,
-  createTypeCheckingEndpointFlow,
 } from "../middleware/verification";
-import { left, right } from "fp-ts/lib/Either";
+import { right } from "fp-ts/lib/Either";
 
 export const formsRouter = Router();
 
@@ -19,22 +18,22 @@ const getCollection = flow(
   map((db) => db.collection<ScoutingForm>("forms")),
 );
 
-formsRouter.get("/", (req, res) =>
-  flow(
-    getCollection,
-    map((collection) => collection.find().toArray()),
+formsRouter.get("/", async (req, res) => {
+  await pipe(
+    getCollection(),
+    map((collection) => collection.find(req.query).toArray()),
     fold(
       (error) => () =>
         Promise.resolve(res.status(error.status).send(error.reason)),
       (forms) => async () =>
         res.status(StatusCodes.OK).json({ forms: await forms }),
     ),
-  )(),
-);
+  )();
+});
 
-formsRouter.post("/single", (req, res) =>
-  flow(
-    getCollection,
+formsRouter.post("/single", async (req, res) => {
+  await pipe(
+    getCollection(),
     flatMap((collection) =>
       pipe(
         right(req),
@@ -50,5 +49,5 @@ formsRouter.post("/single", (req, res) =>
       (result) => async () =>
         res.status(StatusCodes.OK).json({ result: await result }),
     ),
-  ),
-);
+  )();
+});
