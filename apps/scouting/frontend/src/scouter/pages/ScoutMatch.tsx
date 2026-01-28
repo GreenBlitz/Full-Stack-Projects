@@ -29,7 +29,7 @@ const TABS: Tab[] = [
     name: "Pre",
     Component: () => <div className="p-4">Pre Match</div>,
   },
-  { name: "Auto", Component: (props) => <AutoTab {...props} /> },
+  { name: "Auto", Component: AutoTab },
   {
     name: "Trans",
     Component: () => <div className="p-4">Transition Content</div>,

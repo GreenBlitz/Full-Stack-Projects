@@ -6,11 +6,9 @@ import Stopwatch from "../../../components/stopwatch";
 import { MovementForm } from "../../components/MovementForm";
 import type { TabProps } from "../ScoutMatch";
 
-interface AutoTabProps extends TabProps {}
-
 const defaultPoint: Point = { x: 0, y: 0 };
 
-export const AutoTab: FC<AutoTabProps> = ({
+export const AutoTab: FC<TabProps> = ({
   setForm,
   alliance,
   originTime,
@@ -50,6 +48,7 @@ export const AutoTab: FC<AutoTabProps> = ({
             }));
           }}
           currentMovement={currentForm.auto.movement}
+          isAuto={true}
         />
         <div className="bg-red-800" />
         <div className="bg-blue-800" />
