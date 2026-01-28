@@ -19,7 +19,7 @@ const START_MATCH_TIME = 0;
 export const Climb: React.FC<ClimbProps> = ({ isAuto }) => {
   const [climbLevel, setClimbLevel] = useState<ClimbLevel>("L0");
   const [climbSide, setClimbSide] = useState<ClimbSide[]>(["none"]);
-  const [climbTimes, setClimbTimes] = useState<AutoClimbTime | ClimbTime>(
+  const [climbTimes, setClimbTimes] = useState< ClimbTime | AutoClimbTime>(
     isAuto
       ? {
           L1: null,
