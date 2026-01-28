@@ -19,33 +19,51 @@ const calculateSum = <T>(
   startingSumValue = defaultStartingSumValue,
 ) => arr.reduce((sum, value) => sum + transformation(value), startingSumValue);
 
-const FIRST_ELEMENT_INDEX = 0;
 const LAST_ELEMENT_BACKWARDS_INDEX = 1;
-const getSectionLength = (sectionShot: number[]) =>
-  sectionShot[sectionShot.length - LAST_ELEMENT_BACKWARDS_INDEX] -
-  sectionShot[FIRST_ELEMENT_INDEX];
+const EMPTY_INTERVAL = 0;
+const FIRST_INTERVAL_INDEX = 0;
+const FIRST_INTERVAL_LIMIT = 0;
+const NO_BALLS_COLLECTED = 0;
+const FIRST_SECTION_AMOUNT = 1;
+const LAST_SECTION_LENGTH = 1;
+const calculateBallAmount = (
+  sections: number[][],
+  shotLength: number,
+): number => {
+  if (shotLength <= EMPTY_INTERVAL) {
+    return NO_BALLS_COLLECTED;
+  }
+  if (sections.length === LAST_SECTION_LENGTH) {
+    const onlySection = sections[FIRST_INTERVAL_INDEX];
+    const ballAmount = calculateSum(onlySection, (value) => value);
+    const sectionDuration =
+      onlySection[onlySection.length - LAST_ELEMENT_BACKWARDS_INDEX];
+    return (ballAmount / sectionDuration) * shotLength;
+  }
+  const firstInterval = sections[FIRST_INTERVAL_INDEX];
+  const firstIntervalDuration =
+    firstInterval[firstInterval.length - LAST_ELEMENT_BACKWARDS_INDEX];
 
-const calculateBallAmount = (sections: number[][], shotLength: number) => {
-  const smallerSections = sections.filter(
-    (section) => getSectionLength(section) < shotLength,
+  const adjustedSections = sections.map((section) =>
+    section.map((timing) => timing - firstIntervalDuration),
+  );
+  const firstIntervalSections = adjustedSections.map((section) =>
+    section.filter((timing) => timing <= FIRST_INTERVAL_LIMIT),
   );
 
-  const largerSections = sections.filter(
-    (section) => getSectionLength(section) >= shotLength,
-  );
+  const avgBallsFirstInterval =
+    calculateSum(firstIntervalSections, (section) => section.length) /
+    firstIntervalSections.length;
 
-  const lengths =
-    calculateSum(smallerSections, getSectionLength) +
-    largerSections.length * shotLength;
-
-  const balls =
-    calculateSum(smallerSections, (value) => value.length) +
-    calculateSum(
-      largerSections,
-      (value) => value.filter((time) => time <= shotLength).length,
+  const nonFirstSections = adjustedSections
+    .slice(FIRST_SECTION_AMOUNT)
+    .map((section) =>
+      section.filter((timing) => timing > FIRST_INTERVAL_LIMIT),
     );
-
-  return (balls * lengths) / (sections.length * sections.length);
+  return (
+    avgBallsFirstInterval +
+    calculateBallAmount(nonFirstSections, shotLength - firstIntervalDuration)
+  );
 };
 
 const calculateFuelByAveraging = (
@@ -56,12 +74,24 @@ const calculateFuelByAveraging = (
   const shotLength = shot.interval.end - shot.interval.start;
 
   const scoredAmount = calculateBallAmount(
-    sections.map((section) => section.score),
+    sections
+      .map((section) => section.score)
+      .sort(
+        (a, b) =>
+          a[a.length - LAST_ELEMENT_BACKWARDS_INDEX] -
+          b[b.length - LAST_ELEMENT_BACKWARDS_INDEX],
+      ),
     shotLength,
   );
 
   const shotAmount = calculateBallAmount(
-    sections.map((section) => section.shoot),
+    sections
+      .map((section) => section.score)
+      .sort(
+        (a, b) =>
+          a[a.length - LAST_ELEMENT_BACKWARDS_INDEX] -
+          b[b.length - LAST_ELEMENT_BACKWARDS_INDEX],
+      ),
     shotLength,
   );
 
