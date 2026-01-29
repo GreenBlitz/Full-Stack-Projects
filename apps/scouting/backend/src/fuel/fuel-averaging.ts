@@ -1,11 +1,10 @@
 // בס"ד
 import type { Match, ShootEvent } from "@repo/scouting_types";
 import type { BPS, FuelObject } from "./fuel-object";
+import { calculateSum, firstElement, lastElement } from "@repo/array-functions";
 
-const LAST_ELEMENT_BACKWARDS_INDEX = 1;
-const EMPTY_INTERVAL = 0;
-const FIRST_INTERVAL_INDEX = 0;
-const FIRST_INTERVAL_LIMIT = 0;
+const EMPTY_INTERVAL_DURATION = 0;
+const FIRST_INTERVAL_BOUNDARY = 0;
 const NO_FUEL_COLLECTED = 0;
 const FIRST_SECTION_AMOUNT = 1;
 const LAST_SECTION_LENGTH = 1;
@@ -19,28 +18,28 @@ const calculateBallAmount = (
   shotLength: number,
 ): number => {
   // Base Case 1
-  if (shotLength <= EMPTY_INTERVAL) {
+  if (shotLength <= EMPTY_INTERVAL_DURATION) {
     return NO_FUEL_COLLECTED;
   }
   // Base Case 2: Happens if no section is long enough for the shot length
   if (sections.length === LAST_SECTION_LENGTH) {
-    const onlySection = sections[FIRST_INTERVAL_INDEX];
+    const onlySection = firstElement(sections);
     const ballAmount = calculateSum(onlySection, (value) => value);
-    const sectionDuration =
-      onlySection[onlySection.length - LAST_ELEMENT_BACKWARDS_INDEX];
+    const sectionDuration = lastElement(onlySection);
     return (ballAmount / sectionDuration) * shotLength;
   }
 
   // finds the average for the first interval, removes it and then recurses
-  const firstInterval = sections[FIRST_INTERVAL_INDEX];
-  const firstIntervalDuration =
-    firstInterval[firstInterval.length - LAST_ELEMENT_BACKWARDS_INDEX];
+  const firstInterval = firstElement(sections);
+  const firstIntervalDuration = lastElement(firstInterval);
 
   const adjustedSections = sections.map((section) =>
     section.map((timing) => timing - firstIntervalDuration),
   );
   const firstIntervalSections = adjustedSections.map((section) =>
-    section.filter((timing) => timing <= FIRST_INTERVAL_LIMIT && timing < shotLength),
+    section.filter(
+      (timing) => timing <= FIRST_INTERVAL_BOUNDARY && timing <= shotLength,
+    ),
   );
 
   const avgBallsFirstInterval =
@@ -50,7 +49,7 @@ const calculateBallAmount = (
   const nonFirstSections = adjustedSections
     .slice(FIRST_SECTION_AMOUNT)
     .map((section) =>
-      section.filter((timing) => timing > FIRST_INTERVAL_LIMIT),
+      section.filter((timing) => timing > FIRST_INTERVAL_BOUNDARY),
     );
   return (
     avgBallsFirstInterval +
@@ -59,8 +58,7 @@ const calculateBallAmount = (
 };
 
 const sortSections = (a: number[], b: number[]) =>
-  a[a.length - LAST_ELEMENT_BACKWARDS_INDEX] -
-  b[b.length - LAST_ELEMENT_BACKWARDS_INDEX];
+  lastElement(a) - lastElement(b);
 
 export const calculateFuelByAveraging = (
   shot: ShootEvent,
