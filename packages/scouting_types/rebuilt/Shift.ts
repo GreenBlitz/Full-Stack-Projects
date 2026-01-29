@@ -22,7 +22,6 @@ export const climbTimeCodec = t.type({
 export const climbCodec = t.type({
   climbTime: climbTimeCodec,
   climbSide: t.type({
-    none: t.boolean,
     middle: t.boolean,
     side: t.boolean,
     support: t.boolean,
@@ -52,7 +51,6 @@ export const defaultClimb: t.TypeOf<typeof climbCodec> = {
     L3: maxInterval,
   },
   climbSide: {
-    none: true,
     middle: false,
     side: false,
     support: false,
@@ -65,7 +63,6 @@ export const defaultAutoClimb :  t.TypeOf<typeof autoClimbCodec> = {
     L1: maxInterval,
   },
   climbSide: {
-    none: true,
     middle: false,
     side: false,
     support: false,

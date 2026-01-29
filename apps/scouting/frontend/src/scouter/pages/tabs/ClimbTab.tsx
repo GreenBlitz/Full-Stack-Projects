@@ -7,26 +7,26 @@ import type { ScoutingForm } from "@repo/scouting_types";
 
 interface ClimbTabProps extends TabProps {}
 
+export type EitherClimb = ScoutingForm["auto" | "tele"]["climb"];
+
 export const ClimbTab: FC<ClimbTabProps> = ({
   setForm,
   originTime,
   currentForm,
 }) => {
-  const updateClimbForm = (updates: ScoutingForm["auto" | "tele"]["climb"]) => {
+  const updateClimbForm = (updates: EitherClimb) => {
     const phase = "L2" in updates.climbTime ? "tele" : "auto";
 
-    const newForm = {
-      ...currentForm,
+    setForm((prevForm) => ({
+      ...prevForm,
       [phase]: {
-        ...currentForm[phase],
+        ...prevForm[phase],
         climb: {
-          ...currentForm[phase].climb,
+          ...prevForm[phase].climb,
           ...updates,
         },
       },
-    };
-
-    setForm(newForm);
+    }));
   };
 
   return (

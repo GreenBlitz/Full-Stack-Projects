@@ -1,6 +1,6 @@
 //בס"ד
 import type React from "react";
-import { useState} from "react";
+import { useState } from "react";
 import { ClimbLevelSlider } from "./ClimbLevelSlider";
 import type {
   AutoClimbTime,
@@ -10,10 +10,11 @@ import type {
   ScoutingForm,
 } from "@repo/scouting_types";
 import { ClimbSideButton } from "./ClimbSideButton";
+import type { EitherClimb } from "../pages/tabs/ClimbTab";
 
 interface InputClimbProps {
   isAuto: boolean;
-  updateClimbForm: (updates: ScoutingForm["auto" | "tele"]["climb"]) => void;
+  updateClimbForm: (updates: EitherClimb) => void;
   originTime: number;
   currentForm: ScoutingForm;
 }
@@ -26,7 +27,6 @@ export const ClimbInput: React.FC<InputClimbProps> = ({
 }) => {
   const [climbLevel, setClimbLevel] = useState<ClimbLevel>("L0");
   const [climbSide, setClimbSide] = useState<ClimbSide>({
-    none: true,
     middle: false,
     side: false,
     support: false,

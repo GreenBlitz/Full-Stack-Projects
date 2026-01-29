@@ -16,9 +16,7 @@ export const ClimbSideButton: React.FC<ClimbSideButtonProps> = ({
   submitClimbSides,
   isAuto,
 }) => {
-  const climbSideKeys = (Object.keys(climbSide) as (keyof ClimbSide)[]).filter(
-    (side) => side !== "none",
-  );
+  const climbSideKeys = Object.keys(climbSide) as (keyof ClimbSide)[];
 
   useEffect(() => {
     submitClimbSides(climbSide, isAuto);
@@ -31,13 +29,12 @@ export const ClimbSideButton: React.FC<ClimbSideButtonProps> = ({
         [side]: !prev[side],
       };
 
-      const isAnySelected = Object.entries(nextState)
-        .filter(([key]) => key !== "none")
-        .some(([key, value]) => value);
+      const isAnySelected = Object.entries(nextState).some(
+        ([key, value]) => value,
+      );
 
       return {
         ...nextState,
-        none: !isAnySelected,
       };
     });
   };
