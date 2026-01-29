@@ -10,7 +10,7 @@ const dbName = "scouting";
 
 const client = new MongoClient(url);
 
-let db: Db | undefined; // 😭 has to happen
+let db: Db | undefined = undefined; // 😭 has to happen
 
 export const getDb = (): TaskEither<EndpointError, Db> =>
   db
