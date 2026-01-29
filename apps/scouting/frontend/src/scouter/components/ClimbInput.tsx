@@ -63,8 +63,8 @@ export const ClimbInput: React.FC<InputClimbProps> = ({
 
     const update = {
       ...toUpdate,
-      climbLevel: newLevel,
-      climbTimes: newTimes,
+      level: newLevel,
+      climbTime: newTimes,
     };
 
     updateClimbForm(update);
