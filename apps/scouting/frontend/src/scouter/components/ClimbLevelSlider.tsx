@@ -3,7 +3,7 @@ import type React from "react";
 import * as Slider from "@radix-ui/react-slider";
 import type {
   ClimbLevel,
-  Climb,
+  TeleClimb,
   AutoClimbTime,
 } from "@repo/scouting_types";
 import {
@@ -38,7 +38,7 @@ export const numValueToClimbLevel: Record<number, ClimbLevel> = {
 type TeleopPossibleLevelNum = 0 | 1 | 2 | 3;
 type AutoPossibleLevelNum = 0 | 1;
 
-type ClimbTime = Climb["climbTime"];
+type ClimbTime = TeleClimb["climbTime"];
 
 export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
   isAuto,
@@ -57,7 +57,6 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
   const NUMBER_OF_CLIMB_LEVELS = isAuto
     ? AUTO_NUMBER_OF_CLIMB_LEVELS
     : TELEOP_NUMBER_OF_CLIMB_LEVELS;
-
 
   const startTimeRef = useRef<number | null>(null);
   const lastLevelRef = useRef<TeleopPossibleLevelNum | AutoPossibleLevelNum>(

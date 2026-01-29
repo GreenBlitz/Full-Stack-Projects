@@ -10,11 +10,11 @@ import type {
   ScoutingForm,
 } from "@repo/scouting_types";
 import { ClimbSideButton } from "./ClimbSideButton";
-import type { EitherClimb } from "../pages/tabs/ClimbTab";
+import type { Climb } from "../pages/tabs/ClimbTab";
 
 interface InputClimbProps {
   isAuto: boolean;
-  updateClimbForm: (updates: EitherClimb) => void;
+  updateClimbForm: (updates: Climb) => void;
   originTime: number;
   currentForm: ScoutingForm;
 }

@@ -29,13 +29,7 @@ export const ClimbSideButton: React.FC<ClimbSideButtonProps> = ({
         [side]: !prev[side],
       };
 
-      const isAnySelected = Object.entries(nextState).some(
-        ([key, value]) => value,
-      );
-
-      return {
-        ...nextState,
-      };
+      return nextState;
     });
   };
 

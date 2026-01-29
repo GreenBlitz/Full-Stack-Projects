@@ -5,14 +5,14 @@ import type { TabProps } from "../ScoutMatch";
 import { ClimbInput } from "../../components/ClimbInput";
 import type { ScoutingForm } from "@repo/scouting_types";
 
-export type EitherClimb = ScoutingForm["auto" | "tele"]["climb"];
+export type Climb = ScoutingForm["auto" | "tele"]["climb"];
 
 export const ClimbTab: FC<TabProps> = ({
   setForm,
   originTime,
   currentForm,
 }) => {
-  const updateClimbForm = (updates: EitherClimb) => {
+  const updateClimbForm = (updates: Climb) => {
     const phase = "L2" in updates.climbTime ? "tele" : "auto";
 
     setForm((prevForm) => ({

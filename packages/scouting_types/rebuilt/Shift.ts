@@ -39,10 +39,10 @@ type Interval = t.TypeOf<typeof intervalCodec>;
 
 export type SingleLevelTime = Partial<Record<ActiveClimbLevel, Interval>>;
 
-export type Climb = t.TypeOf<typeof climbCodec>;
-export type ClimbSide = Climb["climbSide"];
-export type ClimbLevel = Climb["level"];
-export type ClimbTime = Climb["climbTime"];
+export type TeleClimb = t.TypeOf<typeof climbCodec>;
+export type ClimbSide = TeleClimb["climbSide"];
+export type ClimbLevel = TeleClimb["level"];
+export type ClimbTime = TeleClimb["climbTime"];
 
 export const defaultClimb: t.TypeOf<typeof climbCodec> = {
   climbTime: {
@@ -58,7 +58,7 @@ export const defaultClimb: t.TypeOf<typeof climbCodec> = {
   level: "L0",
 };
 
-export const defaultAutoClimb :  t.TypeOf<typeof autoClimbCodec> = {
+export const defaultAutoClimb: t.TypeOf<typeof autoClimbCodec> = {
   climbTime: {
     L1: maxInterval,
   },
