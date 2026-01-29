@@ -5,11 +5,9 @@ import type { TabProps } from "../ScoutMatch";
 import { ClimbInput } from "../../components/ClimbInput";
 import type { ScoutingForm } from "@repo/scouting_types";
 
-interface ClimbTabProps extends TabProps {}
-
 export type EitherClimb = ScoutingForm["auto" | "tele"]["climb"];
 
-export const ClimbTab: FC<ClimbTabProps> = ({
+export const ClimbTab: FC<TabProps> = ({
   setForm,
   originTime,
   currentForm,
