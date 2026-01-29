@@ -5,7 +5,6 @@ import type {
   ClimbLevel,
   Climb,
   AutoClimbTime,
-  ClimbSide,
 } from "@repo/scouting_types";
 import {
   useEffect,
@@ -59,7 +58,6 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
     ? AUTO_NUMBER_OF_CLIMB_LEVELS
     : TELEOP_NUMBER_OF_CLIMB_LEVELS;
 
-  const CLIMB_LEVEL_STEP = 1;
 
   const startTimeRef = useRef<number | null>(null);
   const lastLevelRef = useRef<TeleopPossibleLevelNum | AutoPossibleLevelNum>(

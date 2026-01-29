@@ -1,26 +1,28 @@
 //בס"ד
 import type React from "react";
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { useState} from "react";
 import { ClimbLevelSlider } from "./ClimbLevelSlider";
 import type {
-  Climb,
   AutoClimbTime,
   ClimbLevel,
   ClimbSide,
   ClimbTime,
+  ScoutingForm,
 } from "@repo/scouting_types";
 import { ClimbSideButton } from "./ClimbSideButton";
 
 interface InputClimbProps {
   isAuto: boolean;
-  updateClimbForm: (updates: Partial<Climb>, isAuto: boolean) => void;
+  updateClimbForm: (updates: ScoutingForm["auto" | "tele"]["climb"]) => void;
   originTime: number;
+  currentForm: ScoutingForm;
 }
 
 export const ClimbInput: React.FC<InputClimbProps> = ({
   isAuto,
   updateClimbForm,
   originTime,
+  currentForm,
 }) => {
   const [climbLevel, setClimbLevel] = useState<ClimbLevel>("L0");
   const [climbSide, setClimbSide] = useState<ClimbSide>({
@@ -40,17 +42,33 @@ export const ClimbInput: React.FC<InputClimbProps> = ({
           L3: null,
         },
   );
-
   const handleSideUpdate = (newSides: ClimbSide) => {
-    updateClimbForm({ climbSide: newSides }, isAuto);
+    const phase = isAuto ? "auto" : "tele";
+    const toUpdate = currentForm[phase].climb;
+
+    const update = {
+      ...toUpdate,
+      climbSide: newSides,
+    };
+
+    updateClimbForm(update);
   };
 
   const handleLevelAndTimeUpdate = (
-  level: ClimbLevel,
-  times: ClimbTime | AutoClimbTime,
-) => {
-  updateClimbForm({ level, climbTime: times }, isAuto);
-};
+    newLevel: ClimbLevel,
+    newTimes: ClimbTime | AutoClimbTime,
+  ) => {
+    const phase = isAuto ? "auto" : "tele";
+    const toUpdate = currentForm[phase].climb;
+
+    const update = {
+      ...toUpdate,
+      climbLevel: newLevel,
+      climbTimes: newTimes,
+    };
+
+    updateClimbForm(update);
+  };
   return (
     <div className="flex flex-col items-center justify-center w-full h-full">
       <div className="flex flex-row items-start gap-16 bg-slate-900/60 p-12 rounded-[3rem] border border-white/10 shadow-2xl backdrop-blur-xl">

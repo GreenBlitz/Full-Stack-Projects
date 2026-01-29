@@ -2,6 +2,7 @@
 import * as t from "io-ts";
 import { shootEventCodec } from "./ShootEvent";
 import { intervalCodec, maxInterval } from "./Interval";
+import type { autoClimbCodec } from "./Segments";
 
 export const shiftCodec = t.type({
   shootEvents: t.array(shootEventCodec),
@@ -49,6 +50,19 @@ export const defaultClimb: t.TypeOf<typeof climbCodec> = {
     L1: maxInterval,
     L2: maxInterval,
     L3: maxInterval,
+  },
+  climbSide: {
+    none: true,
+    middle: false,
+    side: false,
+    support: false,
+  },
+  level: "L0",
+};
+
+export const defaultAutoClimb :  t.TypeOf<typeof autoClimbCodec> = {
+  climbTime: {
+    L1: maxInterval,
   },
   climbSide: {
     none: true,
