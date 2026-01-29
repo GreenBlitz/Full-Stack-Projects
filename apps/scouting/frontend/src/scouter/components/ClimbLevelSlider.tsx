@@ -71,8 +71,10 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
   }, []);
 
   useEffect(() => {
-    submitClimbLevelAndTime(climbLevel, climbTimes, isAuto);
-  }, [ climbLevel]);
+    if (!isDisabled) {
+      submitClimbLevelAndTime(climbLevel, climbTimes, isAuto);
+    }
+  }, [climbLevel, isDisabled]);
 
   const handleValueChange = (
     newVal: AutoPossibleLevelNum[] | TeleopPossibleLevelNum[],
