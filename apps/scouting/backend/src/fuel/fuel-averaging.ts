@@ -1,18 +1,12 @@
 // בס"ד
 import type { Match, ShootEvent } from "@repo/scouting_types";
 import type { BPS, FuelObject } from "./fuel-object";
-const defaultStartingSumValue = 0;
-const calculateSum = <T>(
-  arr: T[],
-  transformation: (value: T) => number,
-  startingSumValue = defaultStartingSumValue,
-) => arr.reduce((sum, value) => sum + transformation(value), startingSumValue);
 
 const LAST_ELEMENT_BACKWARDS_INDEX = 1;
 const EMPTY_INTERVAL = 0;
 const FIRST_INTERVAL_INDEX = 0;
 const FIRST_INTERVAL_LIMIT = 0;
-const NO_BALLS_COLLECTED = 0;
+const NO_FUEL_COLLECTED = 0;
 const FIRST_SECTION_AMOUNT = 1;
 const LAST_SECTION_LENGTH = 1;
 
@@ -26,7 +20,7 @@ const calculateBallAmount = (
 ): number => {
   // Base Case 1
   if (shotLength <= EMPTY_INTERVAL) {
-    return NO_BALLS_COLLECTED;
+    return NO_FUEL_COLLECTED;
   }
   // Base Case 2: Happens if no section is long enough for the shot length
   if (sections.length === LAST_SECTION_LENGTH) {
