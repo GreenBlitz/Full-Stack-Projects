@@ -24,7 +24,7 @@ const calculateBallAmount = (
   // Base Case 2: Happens if no section is long enough for the shot length
   if (sections.length === LAST_SECTION_LENGTH) {
     const onlySection = firstElement(sections);
-    const ballAmount = calculateSum(onlySection, (value) => value);
+    const ballAmount = onlySection.length;
     const sectionDuration = lastElement(onlySection);
     return (ballAmount / sectionDuration) * shotLength;
   }
@@ -57,7 +57,7 @@ const calculateBallAmount = (
   );
 };
 
-const sortSections = (a: number[], b: number[]) =>
+const compareSections = (a: number[], b: number[]) =>
   lastElement(a) - lastElement(b);
 
 export const calculateFuelByAveraging = (
@@ -68,12 +68,12 @@ export const calculateFuelByAveraging = (
   const shotLength = shot.interval.end - shot.interval.start;
 
   const scoredAmount = calculateBallAmount(
-    sections.map((section) => section.score).sort(sortSections),
+    sections.map((section) => section.score).sort(compareSections),
     shotLength,
   );
 
   const shotAmount = calculateBallAmount(
-    sections.map((section) => section.shoot).sort(sortSections),
+    sections.map((section) => section.shoot).sort(compareSections),
     shotLength,
   );
 
