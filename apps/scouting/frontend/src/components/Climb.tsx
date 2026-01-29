@@ -4,9 +4,9 @@ import { useState } from "react";
 import { ClimbLevelSlider } from "./ClimbLevelSlider";
 import type {
   AutoClimbTime,
-  ClimbLevel,
-  ClimbSide,
-  ClimbTime,
+  TeleClimbLevel,
+  TeleClimbSide,
+  TeleClimbTime,
 } from "@repo/scouting_types";
 import { ClimbSideButton } from "./ClimbSideButton";
 
@@ -17,9 +17,9 @@ interface ClimbProps {
 const START_MATCH_TIME = 0;
 
 export const Climb: React.FC<ClimbProps> = ({ isAuto }) => {
-  const [climbLevel, setClimbLevel] = useState<ClimbLevel>("L0");
-  const [climbSide, setClimbSide] = useState<ClimbSide[]>(["none"]);
-  const [climbTimes, setClimbTimes] = useState< ClimbTime | AutoClimbTime>(
+  const [climbLevel, setClimbLevel] = useState<TeleClimbLevel>("L0");
+  const [climbSide, setClimbSide] = useState<TeleClimbSide[]>(["none"]);
+  const [climbTimes, setClimbTimes] = useState<TeleClimbTime | AutoClimbTime>(
     isAuto
       ? {
           L1: null,

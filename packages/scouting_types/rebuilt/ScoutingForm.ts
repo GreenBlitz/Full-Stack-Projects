@@ -29,3 +29,4 @@ export const defaultScoutForm: ScoutingForm = {
 };
 
 export type ScoutingForm = t.TypeOf<typeof scoutingFormCodec>;
+
