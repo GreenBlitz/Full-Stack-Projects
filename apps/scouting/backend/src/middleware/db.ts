@@ -24,4 +24,8 @@ export const getDb = (): TaskEither<EndpointError, Db> =>
           }),
         ),
         map(() => client.db(dbName)),
+        map((newDb) => {
+          db = newDb;
+          return newDb;
+        }),
       );
