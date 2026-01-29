@@ -15,3 +15,15 @@ export const serdeOptional = <T>(tSerde: Serde<T>): Serde<T | undefined> => ({
       ? tSerde.deserializer(serializedData)
       : undefined,
 });
+
+export const serdeOptionalNull = <T>(tSerde: Serde<T>): Serde<T | null> => {
+  const undefinedSerde = serdeOptional(tSerde);
+
+  return {
+    serializer: (serializedData, value) => {
+      undefinedSerde.serializer(serializedData, value ?? undefined);
+    },
+    deserializer: (serializedData) =>
+      undefinedSerde.deserializer(serializedData) ?? null,
+  };
+};

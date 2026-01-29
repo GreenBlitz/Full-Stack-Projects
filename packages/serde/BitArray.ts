@@ -35,7 +35,7 @@ export class BitArray {
   }
   public insertBitArray(bitArray: BitArray): void {
     this.boolArr = this.boolArr.concat(bitArray.boolArr);
-    this.bitCount += this.bitCount;
+    this.bitCount += bitArray.bitCount;
   }
 
   public consumeBits(bitCount: number): Uint8Array {
