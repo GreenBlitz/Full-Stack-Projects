@@ -3,6 +3,7 @@ import type React from "react";
 import { useState } from "react";
 import { ClimbLevelSlider } from "./ClimbLevelSlider";
 import type {
+  AutoClimb,
   AutoClimbTime,
   ClimbLevel,
   ClimbSide,
@@ -61,11 +62,18 @@ export const ClimbInput: React.FC<InputClimbProps> = ({
     const phase = isAuto ? "auto" : "tele";
     const toUpdate = currentForm[phase].climb;
 
-    const update = {
-      ...toUpdate,
-      level: newLevel,
-      climbTime: newTimes,
-    };
+    const update: Climb =
+      "L2" in newTimes
+        ? {
+            ...toUpdate,
+            level: newLevel,
+            climbTime: newTimes,
+          }
+        : {
+            ...toUpdate,
+            level: newLevel as AutoClimb["level"],
+            climbTime: newTimes,
+          };
 
     updateClimbForm(update);
   };
