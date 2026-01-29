@@ -2,7 +2,7 @@
 import type React from "react";
 import * as Slider from "@radix-ui/react-slider";
 import type {
-  ClimbLevel,
+  TeleClimbLevel,
   TeleClimb,
   AutoClimbTime,
 } from "@repo/scouting_types";
@@ -16,19 +16,19 @@ import {
 
 interface ClimbLevelSliderProps {
   isAuto: boolean;
-  onClimbLevelChange: (climbLevel: ClimbLevel) => void;
-  climbLevel: ClimbLevel;
+  onClimbLevelChange: (climbLevel: TeleClimbLevel) => void;
+  climbLevel: TeleClimbLevel;
   setClimbTimes: Dispatch<SetStateAction<ClimbTime | AutoClimbTime>>;
   originTime: number;
   climbTimes: ClimbTime | AutoClimbTime;
   submitClimbLevelAndTime: (
-    climbLevel: ClimbLevel,
+    climbLevel: TeleClimbLevel,
     climbTimes: ClimbTime | AutoClimbTime,
     isAuto: boolean,
   ) => void;
 }
 
-export const numValueToClimbLevel: Record<number, ClimbLevel> = {
+export const numValueToClimbLevel: Record<number, TeleClimbLevel> = {
   0: "L0",
   1: "L1",
   2: "L2",
@@ -83,7 +83,7 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
     const leavingLevelNum = lastLevelRef.current;
     const now = Date.now() - originTime;
 
-    const enteringLevel: ClimbLevel = `L${enteringLevelNum}`;
+    const enteringLevel: TeleClimbLevel = `L${enteringLevelNum}`;
 
     if (enteringLevelNum === leavingLevelNum && startTimeRef.current === null) {
       return;
@@ -104,7 +104,7 @@ export const ClimbLevelSlider: React.FC<ClimbLevelSliderProps> = ({
       enteringLevelNum < leavingLevelNum &&
       leavingLevelNum !== NO_CLIMB_LEVEL
     ) {
-      const leavingLevel: ClimbLevel = `L${leavingLevelNum}`;
+      const leavingLevel: TeleClimbLevel = `L${leavingLevelNum}`;
       setClimbTimes((prev) => ({ ...prev, [leavingLevel]: null }));
 
       const timesRecord = climbTimes as Record<

@@ -1,12 +1,12 @@
 // בס"ד
 import type React from "react";
-import type { ClimbSide } from "@repo/scouting_types";
+import type { TeleClimbSide } from "@repo/scouting_types";
 import { useEffect } from "react";
 
 interface ClimbSideButtonProps {
-  climbSide: ClimbSide;
-  setClimbSide: React.Dispatch<React.SetStateAction<ClimbSide>>;
-  submitClimbSides: (climbSides: ClimbSide, isAuto: boolean) => void;
+  climbSide: TeleClimbSide;
+  setClimbSide: React.Dispatch<React.SetStateAction<TeleClimbSide>>;
+  submitClimbSides: (climbSides: TeleClimbSide, isAuto: boolean) => void;
   isAuto: boolean;
 }
 
@@ -16,13 +16,13 @@ export const ClimbSideButton: React.FC<ClimbSideButtonProps> = ({
   submitClimbSides,
   isAuto,
 }) => {
-  const climbSideKeys = Object.keys(climbSide) as (keyof ClimbSide)[];
+  const climbSideKeys = Object.keys(climbSide) as (keyof TeleClimbSide)[];
 
   useEffect(() => {
     submitClimbSides(climbSide, isAuto);
   }, [climbSide]);
 
-  const handleToggle = (side: keyof ClimbSide) => {
+  const handleToggle = (side: keyof TeleClimbSide) => {
     setClimbSide((prev) => {
       const nextState = {
         ...prev,

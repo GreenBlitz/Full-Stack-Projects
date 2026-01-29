@@ -43,9 +43,9 @@ export type SingleLevelTime = Partial<Record<ActiveClimbLevel, Interval>>;
 export type Climb = ScoutingForm["auto" | "tele"]["climb"];
 
 export type TeleClimb = t.TypeOf<typeof climbCodec>;
-export type ClimbSide = TeleClimb["climbSide"];
-export type ClimbLevel = TeleClimb["level"];
-export type ClimbTime = TeleClimb["climbTime"];
+export type TeleClimbSide = TeleClimb["climbSide"];
+export type TeleClimbLevel = TeleClimb["level"];
+export type TeleClimbTime = TeleClimb["climbTime"];
 
 export const defaultClimb: t.TypeOf<typeof climbCodec> = {
   climbTime: {

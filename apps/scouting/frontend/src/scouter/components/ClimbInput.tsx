@@ -6,9 +6,9 @@ import type {
   AutoClimb,
   AutoClimbTime,
   Climb,
-  ClimbLevel,
-  ClimbSide,
-  ClimbTime,
+  TeleClimbLevel,
+  TeleClimbSide,
+  TeleClimbTime,
   ScoutingForm,
 } from "@repo/scouting_types";
 import { ClimbSideButton } from "./ClimbSideButton";
@@ -26,13 +26,13 @@ export const ClimbInput: React.FC<InputClimbProps> = ({
   originTime,
   currentForm,
 }) => {
-  const [climbLevel, setClimbLevel] = useState<ClimbLevel>("L0");
-  const [climbSide, setClimbSide] = useState<ClimbSide>({
+  const [climbLevel, setClimbLevel] = useState<TeleClimbLevel>("L0");
+  const [climbSide, setClimbSide] = useState<TeleClimbSide>({
     middle: false,
     side: false,
     support: false,
   });
-  const [climbTimes, setClimbTimes] = useState<AutoClimbTime | ClimbTime>(
+  const [climbTimes, setClimbTimes] = useState<AutoClimbTime | TeleClimbTime>(
     isAuto
       ? {
           L1: null,
@@ -43,7 +43,7 @@ export const ClimbInput: React.FC<InputClimbProps> = ({
           L3: null,
         },
   );
-  const handleSideUpdate = (newSides: ClimbSide) => {
+  const handleSideUpdate = (newSides: TeleClimbSide) => {
     const phase = isAuto ? "auto" : "tele";
     const toUpdate = currentForm[phase].climb;
 
@@ -56,8 +56,8 @@ export const ClimbInput: React.FC<InputClimbProps> = ({
   };
 
   const handleLevelAndTimeUpdate = (
-    newLevel: ClimbLevel,
-    newTimes: ClimbTime | AutoClimbTime,
+    newLevel: TeleClimbLevel,
+    newTimes: TeleClimbTime | AutoClimbTime,
   ) => {
     const phase = isAuto ? "auto" : "tele";
     const toUpdate = currentForm[phase].climb;
