@@ -30,8 +30,8 @@ const calculateBallAmount = (
   }
 
   // finds the average for the first interval, removes it and then recurses
-  const firstInterval = firstElement(sections);
-  const firstIntervalDuration = lastElement(firstInterval);
+  const shortestSection = firstElement(sections);
+  const firstIntervalDuration = lastElement(shortestSection);
 
   const adjustedSections = sections.map((section) =>
     section.map((timing) => timing - firstIntervalDuration),
