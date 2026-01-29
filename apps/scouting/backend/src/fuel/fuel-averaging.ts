@@ -1,17 +1,6 @@
 // בס"ד
-import type { GameObject } from "./game-object";
-import type { Match, Point, ShootEvent } from "@repo/scouting_types";
-
-type BPS = GameObject<{ shoot: number[]; score: number[] }>;
-
-interface FuelObject {
-  scored: number;
-  shot: number;
-  missed: number;
-  position: Point;
-  match: Match;
-}
-
+import type { Match, ShootEvent } from "@repo/scouting_types";
+import type { BPS, FuelObject } from "./fuel-object";
 const defaultStartingSumValue = 0;
 const calculateSum = <T>(
   arr: T[],
@@ -35,11 +24,11 @@ const calculateBallAmount = (
   sections: number[][],
   shotLength: number,
 ): number => {
-  // Base Case
+  // Base Case 1
   if (shotLength <= EMPTY_INTERVAL) {
     return NO_BALLS_COLLECTED;
   }
-  // Happens if no section is long enough for the shot length
+  // Base Case 2: Happens if no section is long enough for the shot length
   if (sections.length === LAST_SECTION_LENGTH) {
     const onlySection = sections[FIRST_INTERVAL_INDEX];
     const ballAmount = calculateSum(onlySection, (value) => value);
@@ -75,7 +64,11 @@ const calculateBallAmount = (
   );
 };
 
-const calculateFuelByAveraging = (
+const sortSections = (a: number[], b: number[]) =>
+  a[a.length - LAST_ELEMENT_BACKWARDS_INDEX] -
+  b[b.length - LAST_ELEMENT_BACKWARDS_INDEX];
+
+export const calculateFuelByAveraging = (
   shot: ShootEvent,
   match: Match,
   sections: BPS["gameEvents"],
@@ -83,24 +76,12 @@ const calculateFuelByAveraging = (
   const shotLength = shot.interval.end - shot.interval.start;
 
   const scoredAmount = calculateBallAmount(
-    sections
-      .map((section) => section.score)
-      .sort(
-        (a, b) =>
-          a[a.length - LAST_ELEMENT_BACKWARDS_INDEX] -
-          b[b.length - LAST_ELEMENT_BACKWARDS_INDEX],
-      ),
+    sections.map((section) => section.score).sort(sortSections),
     shotLength,
   );
 
   const shotAmount = calculateBallAmount(
-    sections
-      .map((section) => section.score)
-      .sort(
-        (a, b) =>
-          a[a.length - LAST_ELEMENT_BACKWARDS_INDEX] -
-          b[b.length - LAST_ELEMENT_BACKWARDS_INDEX],
-      ),
+    sections.map((section) => section.shoot).sort(sortSections),
     shotLength,
   );
 
@@ -111,20 +92,4 @@ const calculateFuelByAveraging = (
     position: shot.startPosition,
     match,
   };
-};
-
-const calculateFuelByFindingMatch = (shot: ShootEvent, bpses: BPS) => {
-  return;
-};
-
-export const createFuelObject = (
-  shot: ShootEvent,
-  match: Match,
-  bpses: BPS[],
-): FuelObject => {
-  return calculateFuelByAveraging(
-    shot,
-    match,
-    bpses.flatMap((bps) => bps.gameEvents),
-  );
 };
