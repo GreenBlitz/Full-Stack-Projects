@@ -5,13 +5,13 @@ import { ClimbLevelSlider } from "./ClimbLevelSlider";
 import type {
   AutoClimb,
   AutoClimbTime,
+  Climb,
   ClimbLevel,
   ClimbSide,
   ClimbTime,
   ScoutingForm,
 } from "@repo/scouting_types";
 import { ClimbSideButton } from "./ClimbSideButton";
-import type { Climb } from "../pages/tabs/ClimbTab";
 
 interface InputClimbProps {
   isAuto: boolean;

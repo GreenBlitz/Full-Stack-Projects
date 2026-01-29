@@ -3,9 +3,8 @@
 import type { FC } from "react";
 import type { TabProps } from "../ScoutMatch";
 import { ClimbInput } from "../../components/ClimbInput";
-import type { ScoutingForm } from "@repo/scouting_types";
+import type { Climb } from "@repo/scouting_types";
 
-export type Climb = ScoutingForm["auto" | "tele"]["climb"];
 
 export const ClimbTab: FC<TabProps> = ({
   setForm,
