@@ -9,7 +9,7 @@ import {
   useState,
 } from "react";
 import { defaultScoutForm, type ScoutingForm } from "@repo/scouting_types";
-import { Buttons } from "../../hhh";
+import { Buttons } from "../../PreMatchTab";
 
 
 interface Tab {
