@@ -89,5 +89,5 @@ export const serdeRecordFieldsBuilder = (
   return recordSerde;
 };
 
-export const createRecordSerde = <T extends {}>(record: Serdify<T>) =>
+export const createRecordSerde = <T extends {}>(record: Serdify<T>): Serde<T> =>
   pipe(serdeRecordFieldsBuilder(record), serdeRecord) as Serde<T>;
