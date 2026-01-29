@@ -18,6 +18,7 @@
     "@types/dotenv": "^6.1.1",
     "@types/express": "^5.0.5",
     "@types/is-odd": "^3.0.4",
+    "@types/mongodb": "^4.0.6",
     "@types/node": "^24.10.1",
     "cross-env": "^10.1.0",
     "esbuild": "^0.27.0",
@@ -28,7 +29,6 @@
     "typescript-eslint": "^8.47.0",
     "vite-plugin-pwa": "^1.2.0"
   },
-
   "engines": {
     "node": ">=18"
   },
