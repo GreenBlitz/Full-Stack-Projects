@@ -46,7 +46,7 @@ const calculateBallAmount = (
     section.map((timing) => timing - firstIntervalDuration),
   );
   const firstIntervalSections = adjustedSections.map((section) =>
-    section.filter((timing) => timing <= FIRST_INTERVAL_LIMIT),
+    section.filter((timing) => timing <= FIRST_INTERVAL_LIMIT && timing < shotLength),
   );
 
   const avgBallsFirstInterval =
