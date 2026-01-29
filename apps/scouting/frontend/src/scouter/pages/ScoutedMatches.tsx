@@ -1,5 +1,4 @@
 // בס"ד
-
 import { useState, type FC } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { useLocalStorage } from "@repo/local_storage_hook";
