@@ -8,10 +8,13 @@ import {
   type SetStateAction,
   useState,
 } from "react";
-import { defaultScoutForm, type Alliance, type ScoutingForm } from "@repo/scouting_types";
+import {
+  defaultScoutForm,
+  type Alliance,
+  type ScoutingForm,
+} from "@repo/scouting_types";
 import { ShiftTab } from "./tabs/ShiftTab";
 import { useLocalStorage } from "@repo/local_storage_hook";
-import { AutoTab } from "./tabs/AutoTab";
 import { PostMatchTab } from "./tabs/PostMatchTab";
 export interface TabProps {
   setForm: Dispatch<SetStateAction<ScoutingForm>>;
@@ -36,23 +39,37 @@ const TABS: Tab[] = [
   },
   {
     name: "Shift1",
-    Component: (props) => <ShiftTab tabIndex={0} {...props} />,
+    Component: (props) => (
+      <ShiftTab shiftType={"regular"} tabIndex={0} {...props} />
+    ),
   },
   {
     name: "Shift2",
-    Component: (props) => <ShiftTab tabIndex={1} {...props} />,
+    Component: (props) => (
+      <ShiftTab shiftType={"regular"} tabIndex={1} {...props} />
+    ),
   },
   {
     name: "Shift3",
-    Component: (props) => <ShiftTab tabIndex={2} {...props} />,
+    Component: (props) => (
+      <ShiftTab shiftType={"regular"} tabIndex={2} {...props} />
+    ),
   },
   {
     name: "Shift4",
-    Component: (props) => <ShiftTab tabIndex={3} {...props} />,
+    Component: (props) => (
+      <ShiftTab shiftType={"regular"} tabIndex={3} {...props} />
+    ),
   },
   {
     name: "Endgame",
-    Component: () => <div className="p-4">Endgame Content</div>,
+    Component: (props) => (
+      <ShiftTab shiftType={"endgame"} tabIndex={0} {...props} />
+    ),
+  },
+  {
+    name: "Climb",
+    Component: ClimbTab,
   },
   {
     name: "Post",

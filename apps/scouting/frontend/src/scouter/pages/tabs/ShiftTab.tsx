@@ -2,25 +2,44 @@
 
 import { useState, type FC } from "react";
 import type { TabProps } from "../ScoutMatch";
-import { ScoreMap } from "../../components/ScoreMap";
+import { ScoreMap, defaultPoint } from "../../components/ScoreMap";
 import type { Alliance, Point } from "@repo/scouting_types";
-import Stopwatch from "../../../components/stopwatch";
 import { MovementForm } from "../../components/MovementForm";
-import { defaultPoint } from "../../components/ScoreMap";
+import Stopwatch from "../../components/stopwatch";
+type ShiftType = "regular" | "transition" | "endgame";
+
 interface ShiftTabProps extends TabProps {
   tabIndex: number;
+  shiftType: ShiftType;
 }
 
 
 export const ShiftTab: FC<ShiftTabProps> = ({
   setForm,
   tabIndex,
+  shiftType,
   alliance,
   originTime,
   currentForm,
 }) => {
   const [mapPosition, setMapPosition] = useState<Point>();
   const [mapZone, setMapZone] = useState<Alliance>(alliance);
+
+  const handleSetForm = (cycle: { start: number; end: number }) => {
+    setForm((prevForm) => {
+      const prevEvents =
+        shiftType === "regular"
+          ? prevForm.tele.shifts[tabIndex].shootEvents
+          : shiftType === "transition"
+            ? prevForm.tele.transitionShift.shootEvents
+            : prevForm.tele.endgameShift.shootEvents;
+      prevEvents.push({
+        interval: cycle,
+        startPosition: mapPosition ?? { ...defaultPoint },
+      });
+      return prevForm;
+    });
+  };
 
   return (
     <div className="flex flex-row h-full w-full gap-3">
@@ -35,14 +54,7 @@ export const ShiftTab: FC<ShiftTabProps> = ({
       <div className="flex flex-col items-center gap-0.5 sm:gap-1 shrink-0 w-32 sm:w-36 min-h-0 py-0.5 sm:py-1">
         <Stopwatch
           addCycleTimeSeconds={(cycle) => {
-            setForm((prevForm) => {
-              const prevEvents = prevForm.tele.shifts[tabIndex].shootEvents;
-              prevEvents.push({
-                interval: cycle,
-                startPosition: mapPosition ?? { ...defaultPoint },
-              });
-              return prevForm;
-            });
+            handleSetForm(cycle);
           }}
           originTime={originTime}
           disabled={mapPosition === undefined}

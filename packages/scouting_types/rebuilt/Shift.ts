@@ -2,6 +2,8 @@
 import * as t from "io-ts";
 import { shootEventCodec } from "./ShootEvent";
 import { intervalCodec, maxInterval } from "./Interval";
+import type { autoClimbCodec } from "./Segments";
+import type { ScoutingForm } from "./ScoutingForm";
 
 export const shiftCodec = t.type({
   shootEvents: t.array(shootEventCodec),
@@ -20,11 +22,10 @@ export const climbTimeCodec = t.type({
 
 export const climbCodec = t.type({
   climbTime: climbTimeCodec,
-  climbSide: t.keyof({
-    none: null,
-    middle: null,
-    side: null,
-    support: null,
+  climbSide: t.type({
+    middle: t.boolean,
+    side: t.boolean,
+    support: t.boolean,
   }),
   level: t.keyof({
     L0: null,
@@ -39,14 +40,12 @@ type Interval = t.TypeOf<typeof intervalCodec>;
 
 export type SingleLevelTime = Partial<Record<ActiveClimbLevel, Interval>>;
 
-export type Climb = t.TypeOf<typeof climbCodec>;
-export type ClimbSide = Climb["climbSide"];
-export type ClimbLevel = Climb["level"];
-export type ClimbTime = Climb["climbTime"];
+export type Climb = ScoutingForm["auto" | "tele"]["climb"];
 
-export const climbSideValues = Object.keys(
-  climbCodec.props.climbSide.keys,
-) as ClimbSide[];
+export type TeleClimb = t.TypeOf<typeof climbCodec>;
+export type TeleClimbSide = TeleClimb["climbSide"];
+export type TeleClimbLevel = TeleClimb["level"];
+export type TeleClimbTime = TeleClimb["climbTime"];
 
 export const defaultClimb: t.TypeOf<typeof climbCodec> = {
   climbTime: {
@@ -54,6 +53,22 @@ export const defaultClimb: t.TypeOf<typeof climbCodec> = {
     L2: maxInterval,
     L3: maxInterval,
   },
-  climbSide: "middle",
+  climbSide: {
+    middle: false,
+    side: false,
+    support: false,
+  },
+  level: "L0",
+};
+
+export const defaultAutoClimb: t.TypeOf<typeof autoClimbCodec> = {
+  climbTime: {
+    L1: maxInterval,
+  },
+  climbSide: {
+    middle: false,
+    side: false,
+    support: false,
+  },
   level: "L0",
 };
