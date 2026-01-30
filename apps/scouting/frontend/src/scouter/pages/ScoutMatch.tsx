@@ -15,7 +15,9 @@ import {
 } from "@repo/scouting_types";
 import { ShiftTab } from "./tabs/ShiftTab";
 import { useLocalStorage } from "@repo/local_storage_hook";
-import { PostMatchTab } from "./tabs/PostMatchTab";
+import { PostMatchTab } from "./tabs/PostMatchTab"
+import { AutoTab } from "./tabs/AutoTab";
+import { ClimbTab } from "./tabs/ClimbTab";
 export interface TabProps {
   setForm: Dispatch<SetStateAction<ScoutingForm>>;
   currentForm: ScoutingForm;
