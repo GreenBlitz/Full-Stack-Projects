@@ -1,18 +1,17 @@
 // בס"ד
 
-import type { Match } from "@repo/scouting_types";
+export type GameObject<T extends string, AdditionalInfo> = Record<T, number> &
+  AdditionalInfo;
 
-export interface GameObject<T> {
-  match: Match;
-  gameEvents: T[];
-}
-
-export const addGameEvent = <T>(gameObject: GameObject<T>, event: T): void => {
-  gameObject.gameEvents.push(event);
+export const addGameEvent = <T extends string>(
+  gameObject: GameObject<T, unknown>,
+  event: T,
+): void => {
+  gameObject[event]++;
 };
 
-export interface GameObjectWithPoints<T> {
-  gameObject: GameObject<T>;
-  calculatePoints: (gameObject: GameObject<T>) => number;
-  calculateRP: (gameObject: GameObject<T>) => number;
+export interface GameObjectWithPoints<T extends string> {
+  gameObject: GameObject<T, unknown>;
+  calculatePoints: (gameObject: GameObject<T, unknown>) => number;
+  calculateRP: (gameObject: GameObject<T, unknown>) => number;
 }

@@ -4,15 +4,17 @@ import type { Match, Point, ShootEvent } from "@repo/scouting_types";
 import { calculateFuelByAveraging } from "./fuel-averaging";
 import { calculateFuelByMatch } from "./fuel-match";
 
-export type BPS = GameObject<{ shoot: number[]; score: number[] }>;
-
-export interface FuelObject {
-  scored: number;
-  shot: number;
-  missed: number;
-  position: Point;
+export interface BPS {
+  events: { shoot: number[]; score: number[] }[];
   match: Match;
 }
+
+export type FuelObject = GameObject<
+  "scored" | "shot" | "missed",
+  {
+    position: Point;
+  }
+>;
 
 export const createFuelObject = (
   shot: ShootEvent,
@@ -25,12 +27,12 @@ export const createFuelObject = (
   );
 
   if (sameMatch) {
-    return calculateFuelByMatch(shot, sameMatch, match);
+    return calculateFuelByMatch(shot, sameMatch);
   }
 
   return calculateFuelByAveraging(
     shot,
     match,
-    bpses.flatMap((bps) => bps.gameEvents),
+    bpses.flatMap((bps) => bps.events),
   );
 };
