@@ -11,7 +11,9 @@ export default defineConfig([
   pluginReact.configs.flat["jsx-runtime"],
   tseslint.configs.recommendedTypeChecked,
   {
-    languageOptions: { parserOptions: { projectService: true } },
+    languageOptions: {
+      parserOptions: { projectService: true },
+    },
   },
   { ignores: ["**/dist/**", "**/bundle.js"] },
   {
