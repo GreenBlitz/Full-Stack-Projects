@@ -50,7 +50,7 @@ const radiusToDiameterRatio = 2;
 const dotDiameter = dotRadius * radiusToDiameterRatio;
 
 const firstTouchIndex = 0;
-
+export const defaultPoint: Point = { x: 0, y: 0 };
 const getRobotPosition = (
   touch: Touch,
   imageRect: DOMRect,
@@ -120,7 +120,7 @@ export const ScoreMap: FC<ScoreMapProps> = ({
 
     pipe(
       normalizedPoint,
-      (point) => normalizePosition(point, { x: imageSize.x, y: imageSize.y }),
+      (point) => normalizePosition(point, imageSize),
       (point) => alliancizePosition(alliance, point),
       (point) => (alliance === mapZone ? point : switchZone(point)),
       (point) => ({ x: Math.round(point.x), y: Math.round(point.y) }),

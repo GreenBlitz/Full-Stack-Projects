@@ -5,7 +5,7 @@ import type { Alliance, Point } from "@repo/scouting_types";
 import Stopwatch from "../../../components/stopwatch";
 import { MovementForm } from "../../components/MovementForm";
 import type { TabProps } from "../ScoutMatch";
-import { defaultPoint } from "./ShiftTab";
+import { defaultPoint } from "../../components/ScoreMap";
 
 export const AutoTab: FC<TabProps> = ({
   setForm,
@@ -50,7 +50,6 @@ export const AutoTab: FC<TabProps> = ({
             }));
           }}
           currentMovement={currentForm.auto.movement}
-          isAuto={true}
         />
         <button
           className={`bg-${mapZone}-800 h-8 sm:h-10 w-32 text-[10px] sm:text-xs px-2`}

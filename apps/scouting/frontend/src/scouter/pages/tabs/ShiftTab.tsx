@@ -6,12 +6,11 @@ import { ScoreMap } from "../../components/ScoreMap";
 import type { Alliance, Point } from "@repo/scouting_types";
 import Stopwatch from "../../../components/stopwatch";
 import { MovementForm } from "../../components/MovementForm";
-
+import { defaultPoint } from "../../components/ScoreMap";
 interface ShiftTabProps extends TabProps {
   tabIndex: number;
 }
 
-export const defaultPoint: Point = { x: 0, y: 0 };
 
 export const ShiftTab: FC<ShiftTabProps> = ({
   setForm,
