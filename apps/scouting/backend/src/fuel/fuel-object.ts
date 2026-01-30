@@ -12,7 +12,7 @@ export interface BPS {
 export type FuelObject = GameObject<
   "scored" | "shot" | "missed",
   {
-    position: Point;
+    positions: Point[];
   }
 >;
 

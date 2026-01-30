@@ -24,6 +24,6 @@ export const calculateFuelByMatch = (
     shot: shotAmount,
     scored: scoredAmount,
     missed: shotAmount - scoredAmount,
-    position: shot.startPosition,
+    positions: [shot.startPosition],
   };
 };

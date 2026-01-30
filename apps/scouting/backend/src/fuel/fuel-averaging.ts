@@ -92,6 +92,6 @@ export const calculateFuelByAveraging = (
     scored: scoredAmount,
     shot: shotAmount,
     missed: shotAmount - scoredAmount,
-    position: shot.startPosition,
+    positions: [shot.startPosition],
   };
 };
