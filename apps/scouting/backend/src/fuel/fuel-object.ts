@@ -9,8 +9,9 @@ export interface BPS {
   match: Match;
 }
 
+type FuelEvents = "scored" | "shot" | "missed";
 export type FuelObject = GameObject<
-  "scored" | "shot" | "missed",
+  FuelEvents,
   {
     positions: Point[];
   }
