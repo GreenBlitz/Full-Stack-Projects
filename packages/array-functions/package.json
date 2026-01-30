@@ -1,0 +1,9 @@
+{
+  "name": "@repo/array-functions",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./index.ts"
+  }
+}
