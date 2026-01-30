@@ -14,12 +14,14 @@ interface StopwatchProps {
   addCycleTimeSeconds: Dispatch<Interval>;
   originTime: number;
   disabled: boolean;
+  size?: "default" | "compact";
 }
 
 const Stopwatch: React.FC<StopwatchProps> = ({
   addCycleTimeSeconds,
   originTime,
   disabled,
+  size = "default",
 }) => {
   const [isRunning, setIsRunning] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(INITIAL_TIME_MILLISECONDS);
@@ -96,12 +98,19 @@ const Stopwatch: React.FC<StopwatchProps> = ({
     return `${seconds}:${milliseconds}`;
   };
 
+  const isCompact = size === "compact";
+
   return (
-    <div className="flex flex-col items-center py-6 px-5">
+    <div
+      className={`flex flex-col items-center ${
+        isCompact ? "py-1 px-1 sm:py-2 sm:px-2" : "py-6 px-5"
+      }`}
+    >
       <div
         className={`
-          select-none cursor-pointer rounded-2xl px-4 py-4
-          text-3xl font-mono font-semibold shadow-lg transition-all duration-150
+          select-none cursor-pointer rounded-2xl
+          ${isCompact ? "px-2 py-1 text-xl sm:px-3 sm:py-2 sm:text-2xl" : "px-4 py-4 text-3xl"}
+          font-mono font-semibold shadow-lg transition-all duration-150
           ${disabled ? "bg-slate-800 text-slate-900" : isRunning ? "bg-emerald-500 text-white scale-95" : "bg-slate-800 text-green-400 hover:bg-slate-700"}
         `}
         onMouseDown={start}
