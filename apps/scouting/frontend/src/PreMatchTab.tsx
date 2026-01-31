@@ -45,6 +45,7 @@ const PreMatchTab: FC<{
           </div>
         </div>
         <div className="flex flex-row items-center justify-between w-[460px] text-green-500">
+            <div className="outputTeam"> Team Number:</div>
           <div className="ml-auto">
             <input
               type="number"
