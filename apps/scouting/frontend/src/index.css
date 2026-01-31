@@ -130,4 +130,24 @@ button:focus-visible {
   --color-blackBlitz: #001100;
 }
 
-/* 
+.inputStyle{
+  padding: 18px;
+  background-color: black;
+  color: green;
+  border: 2px solid lime;
+  border-radius: 15px;
+  font-size: 20px;
+  width: 300px;
+  margin: 10px 0;
+};
+
+ .style{
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+        align-items: center;
+        margin: auto;
+        padding: 20px 0;
+      }
+
