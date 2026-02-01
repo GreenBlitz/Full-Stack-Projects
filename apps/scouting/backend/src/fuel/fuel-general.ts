@@ -1,22 +1,18 @@
 // בס"ד
-import type { BPS } from "./fuel-object";
+import type { BPS, FuelObject } from "./fuel-object";
 import { createFuelObject } from "./fuel-object";
 import type { ScoutingForm, ShootEvent } from "@repo/scouting_types";
-interface   ShiftFuel {
-    scored: number;
-    missed: number;
-    shot: number;
-}
+
 interface GeneralFuelData {
-    fullGame:ShiftFuel;
-    auto:ShiftFuel;
-    tele:ShiftFuel;
+    fullGame:FuelObject;
+    auto:FuelObject;
+    tele:FuelObject;
 }
 
 const calculateShiftFuel = (shifts: { 
     shootEvents: ShootEvent[] 
     }[], match: ScoutingForm["match"],
-    bpsArray: BPS[]): ShiftFuel => {
+    bpsArray: BPS[]): FuelObject => {
     const fuelObjects = shifts
         .flatMap(shift => shift.shootEvents)
         .map(event => createFuelObject(event, match, bpsArray));
@@ -24,8 +20,9 @@ const calculateShiftFuel = (shifts: {
     return fuelObjects.reduce((acc, fuelObject) => ({
         scored: acc.scored + fuelObject.scored,
         missed: acc.missed + fuelObject.missed,
-        shot: acc.shot + fuelObject.shot
-    }), { scored: 0, missed: 0, shot: 0 });
+        shot: acc.shot + fuelObject.shot,
+        positions: [...acc.positions, ...fuelObject.positions]
+    }), { scored: 0, missed: 0, shot: 0, positions: [] });
 }
 
 export const calculateFuel = (scoutingForm: ScoutingForm, bpsArray: BPS[]): GeneralFuelData => {
