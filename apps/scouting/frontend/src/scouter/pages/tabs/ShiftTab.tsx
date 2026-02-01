@@ -27,7 +27,7 @@ export const ShiftTab: FC<ShiftTabProps> = ({
   const handleSetForm = (cycle: { start: number; end: number }) => {
     setForm((prevForm) => {
       const prevEvents =
-        shiftType === "regular"
+        shiftType === "teleop"
           ? prevForm.tele.shifts[tabIndex].shootEvents
           : shiftType === "transition"
             ? prevForm.tele.transitionShift.shootEvents

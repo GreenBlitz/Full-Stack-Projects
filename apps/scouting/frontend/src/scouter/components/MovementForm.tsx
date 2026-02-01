@@ -1,9 +1,7 @@
 // בס"ד
 
 import type { Dispatch, FC } from "react";
-import type { ScoutingForm } from "@repo/scouting_types";
-
-export type Movement = ScoutingForm["tele" | "auto"]["movement"];
+import type { Movement } from "@repo/scouting_types";
 
 interface MovementFormProps {
   setMovement: Dispatch<Movement>;

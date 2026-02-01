@@ -44,25 +44,25 @@ const TABS: Tab[] = [
   {
     name: "Shift1",
     Component: (props) => (
-      <ShiftTab shiftType={"regular"} tabIndex={0} {...props} />
+      <ShiftTab shiftType={"teleop"} tabIndex={0} {...props} />
     ),
   },
   {
     name: "Shift2",
     Component: (props) => (
-      <ShiftTab shiftType={"regular"} tabIndex={1} {...props} />
+      <ShiftTab shiftType={"teleop"} tabIndex={1} {...props} />
     ),
   },
   {
     name: "Shift3",
     Component: (props) => (
-      <ShiftTab shiftType={"regular"} tabIndex={2} {...props} />
+      <ShiftTab shiftType={"teleop"} tabIndex={2} {...props} />
     ),
   },
   {
     name: "Shift4",
     Component: (props) => (
-      <ShiftTab shiftType={"regular"} tabIndex={3} {...props} />
+      <ShiftTab shiftType={"teleop"} tabIndex={3} {...props} />
     ),
   },
   {

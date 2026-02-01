@@ -1,5 +1,6 @@
 // בס"ד
 import * as t from "io-ts";
+import type { ScoutingForm } from "./ScoutingForm";
 
 export const teleMovementCodec = t.type({
   bumpStuck: t.boolean,
@@ -19,3 +20,4 @@ export const defaultMovement: t.TypeOf<typeof movementCodec> = {
   bumpStuck: false,
 };
 
+export type Movement = ScoutingForm["tele" | "auto"]["movement"];
