@@ -1,64 +1,54 @@
 // בס"ד
 import type { BPS } from "./fuel-object";
 import { createFuelObject } from "./fuel-object";
-import type { ScoutingForm } from "@repo/scouting_types"; 
-interface   ReturnShift {
+import type { ScoutingForm } from "@repo/scouting_types";
+import type { ShootEvent } from "@repo/scouting_types"; 
+interface   ShiftFuel {
     scored: number;
     missed: number;
     shot: number;
 }
-export const calculateFuel = (scoutingForm: ScoutingForm, bpsArray: BPS[]): {fullGameReturn:ReturnShift,autoReturn:ReturnShift,teleReturn:ReturnShift} => {
-    const fullGameReturn:ReturnShift = {
-        scored: 0,
-        missed: 0,
-        shot: 0
-    }
-    const autoReturn:ReturnShift = {
-        scored: 0,
-        missed: 0,
-        shot: 0
-    }
-    const teleReturn:ReturnShift = {
-        scored: 0,
-        missed: 0,
-        shot: 0
-    }
+interface ReturnFuel {
+    fullGameReturn:ShiftFuel;
+    autoReturn:ShiftFuel;
+    teleReturn:ShiftFuel;
+}
 
+const calculateShiftFuel = (shifts: { 
+    shootEvents: ShootEvent[] 
+    }[], match: ScoutingForm["match"],
+    bpsArray: BPS[]): ShiftFuel => {
+    const fuelObjects = shifts
+        .flatMap(shift => shift.shootEvents)
+        .map(event => createFuelObject(event, match, bpsArray));
+    
+    return fuelObjects.reduce((acc, fuelObject) => ({
+        scored: acc.scored + fuelObject.scored,
+        missed: acc.missed + fuelObject.missed,
+        shot: acc.shot + fuelObject.shot
+    }), { scored: 0, missed: 0, shot: 0 });
+}
 
-    const autoFuelObjects = scoutingForm.auto.shootEvents
-        .map(event => createFuelObject(event, scoutingForm.match, bpsArray));
-
-    const teleFuelObjects = [
+export const calculateFuel = (scoutingForm: ScoutingForm, bpsArray: BPS[]): ReturnFuel => {
+    const teleShifts = [
         ...scoutingForm.tele.shifts,
         scoutingForm.tele.endgameShift,
         scoutingForm.tele.transitionShift
-    ].flatMap(shift => shift.shootEvents).map(event => createFuelObject(event, scoutingForm.match, bpsArray));
-    const fullGameFuelObjects =
-    [
+    ];
+    
+    const fullGameShifts = [
         ...scoutingForm.tele.shifts,
         scoutingForm.tele.endgameShift,
         scoutingForm.tele.transitionShift,
         scoutingForm.auto,
-    ]
-        .filter(shift => Array.isArray(shift.shootEvents))
-        .flatMap(shift => shift.shootEvents)
-        .concat(scoutingForm.auto.shootEvents)
-        .map(event => createFuelObject(event, scoutingForm.match, bpsArray));
+    ];
 
-    fullGameFuelObjects.forEach(fuelObject => {
-        fullGameReturn.scored += fuelObject.scored;
-        fullGameReturn.missed += fuelObject.missed;
-        fullGameReturn.shot += fuelObject.shot;
-    });
-    autoFuelObjects.forEach(fuelObject => {
-        autoReturn.scored += fuelObject.scored;
-        autoReturn.missed += fuelObject.missed;
-        autoReturn.shot += fuelObject.shot;
-    });
-    teleFuelObjects.forEach(fuelObject => {
-        teleReturn.scored += fuelObject.scored;
-        teleReturn.missed += fuelObject.missed;
-        teleReturn.shot += fuelObject.shot;
-    });
-    return { fullGameReturn, autoReturn, teleReturn };
+    const autoReturn = calculateShiftFuel([scoutingForm.auto], scoutingForm.match, bpsArray);
+    const teleReturn = calculateShiftFuel(teleShifts, scoutingForm.match, bpsArray);
+    const fullGameReturn = calculateShiftFuel(fullGameShifts, scoutingForm.match, bpsArray);
+    return { 
+        fullGameReturn, 
+        autoReturn, 
+        teleReturn 
+    };
 }
