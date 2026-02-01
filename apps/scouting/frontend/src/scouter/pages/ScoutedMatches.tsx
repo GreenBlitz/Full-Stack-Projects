@@ -99,7 +99,7 @@ export const ScoutedMatches: FC = () => {
             <div className="flex flex-col flex-1 min-w-0">
               <div className="mb-2">
                 <h2 className="text-lg uppercase font-bold truncate">
-                  {selectedMatch.matchType} #{selectedMatch.matchNumber}
+                  {selectedMatch.match.type} #{selectedMatch.match.number}
                 </h2>
                 <p className="text-xs text-gray-500 leading-tight">
                   Scan to transfer scout data
