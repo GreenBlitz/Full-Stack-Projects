@@ -12,6 +12,9 @@ export const defaultShift: t.TypeOf<typeof shiftCodec> = {
   shootEvents: [],
 };
 
+export type Shift = t.TypeOf<typeof shiftCodec>;
+export type ShiftsArray = Shift[];
+
 export const levelTimeCodec = t.union([intervalCodec, t.null]);
 
 export const climbTimeCodec = t.type({

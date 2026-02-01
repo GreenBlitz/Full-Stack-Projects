@@ -55,7 +55,7 @@ export const defaultTele: t.TypeOf<typeof teleCodec> = {
   transitionShift: defaultShift,
   shifts: [defaultShift, defaultShift, defaultShift, defaultShift],
   endgameShift: defaultShift,
-  movement: defaultMovement,
+  movement: { bumpStuck: false },
   climb: defaultClimb,
 };
 

@@ -6,3 +6,4 @@ export * from "./Interval";
 export * from "./Shift";
 export * from "./Segments";
 export * from "./Movement";
+export * from "./Serde";
