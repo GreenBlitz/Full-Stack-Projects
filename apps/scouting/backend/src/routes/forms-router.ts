@@ -12,7 +12,7 @@ import { mongofyQuery } from "../middleware/query";
 
 export const formsRouter = Router();
 
-const getCollection = flow(
+export const getCollection = flow(
   getDb,
   map((db) => db.collection<ScoutingForm>("forms")),
 );
