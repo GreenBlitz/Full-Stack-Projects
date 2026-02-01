@@ -11,3 +11,4 @@ export const shootEventCodec = t.type({
 });
 
 export type ShootEvent = t.TypeOf<typeof shootEventCodec>;
+export type shootEventsArray = { shootEvents: ShootEvent[] }[]
