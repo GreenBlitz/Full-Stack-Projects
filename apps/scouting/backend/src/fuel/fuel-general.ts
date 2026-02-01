@@ -1,17 +1,16 @@
 // בס"ד
 import type { BPS } from "./fuel-object";
 import { createFuelObject } from "./fuel-object";
-import type { ScoutingForm } from "@repo/scouting_types";
-import type { ShootEvent } from "@repo/scouting_types"; 
+import type { ScoutingForm, ShootEvent } from "@repo/scouting_types";
 interface   ShiftFuel {
     scored: number;
     missed: number;
     shot: number;
 }
-interface ReturnFuel {
-    fullGameReturn:ShiftFuel;
-    autoReturn:ShiftFuel;
-    teleReturn:ShiftFuel;
+interface GeneralFuelData {
+    fullGame:ShiftFuel;
+    auto:ShiftFuel;
+    tele:ShiftFuel;
 }
 
 const calculateShiftFuel = (shifts: { 
@@ -29,26 +28,23 @@ const calculateShiftFuel = (shifts: {
     }), { scored: 0, missed: 0, shot: 0 });
 }
 
-export const calculateFuel = (scoutingForm: ScoutingForm, bpsArray: BPS[]): ReturnFuel => {
+export const calculateFuel = (scoutingForm: ScoutingForm, bpsArray: BPS[]): GeneralFuelData => {
     const teleShifts = [
         ...scoutingForm.tele.shifts,
         scoutingForm.tele.endgameShift,
         scoutingForm.tele.transitionShift
     ];
-    
     const fullGameShifts = [
-        ...scoutingForm.tele.shifts,
-        scoutingForm.tele.endgameShift,
-        scoutingForm.tele.transitionShift,
+        ...teleShifts,
         scoutingForm.auto,
     ];
-
-    const autoReturn = calculateShiftFuel([scoutingForm.auto], scoutingForm.match, bpsArray);
-    const teleReturn = calculateShiftFuel(teleShifts, scoutingForm.match, bpsArray);
-    const fullGameReturn = calculateShiftFuel(fullGameShifts, scoutingForm.match, bpsArray);
+    const bindcalcShiftFuel = (shifts: { shootEvents: ShootEvent[] }[]) => calculateShiftFuel(shifts, scoutingForm.match, bpsArray);
+    const autoFuel = bindcalcShiftFuel([scoutingForm.auto]);
+    const teleFuel = bindcalcShiftFuel(teleShifts);
+    const fullGameFuel = bindcalcShiftFuel(fullGameShifts);
     return { 
-        fullGameReturn, 
-        autoReturn, 
-        teleReturn 
+        fullGame: fullGameFuel, 
+        auto: autoFuel, 
+        tele: teleFuel 
     };
 }
