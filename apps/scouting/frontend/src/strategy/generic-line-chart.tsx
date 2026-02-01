@@ -12,7 +12,7 @@ import {
   Legend,
   Filler
 } from 'chart.js';
-import { lineChartData } from './data-for-charts';
+import { lineChartData } from './data-templates-for-charts';
 
 ChartJS.register(
   LineElement,
