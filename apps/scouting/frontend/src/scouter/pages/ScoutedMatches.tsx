@@ -2,16 +2,17 @@
 import { useState, type FC } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { useLocalStorage } from "@repo/local_storage_hook";
-import {
-  type ScoutingForm,
-  scoutingFormSerde,
-} from "@repo/scouting_types";
+import { type ScoutingForm, scoutingFormSerde } from "@repo/scouting_types";
 import { serialize } from "@repo/serde";
 import { LuQrCode } from "react-icons/lu";
 import { MdFileUpload } from "react-icons/md";
 import { IoIosRemoveCircle } from "react-icons/io";
 
 const ICON_SIZE = 20;
+
+// level of extra data used for error correction
+// medium uses around 15% of data
+const ERROR_CORRECTION_LEVEL: "L" | "M" | "Q" | "H" = "M";
 
 const decoder = new TextDecoder("utf-8");
 export const ScoutedMatches: FC = () => {
@@ -91,7 +92,7 @@ export const ScoutedMatches: FC = () => {
                 value={decoder.decode(
                   serialize(scoutingFormSerde.serializer, selectedMatch),
                 )}
-                level="M"
+                level={ERROR_CORRECTION_LEVEL}
               />
             </div>
 
