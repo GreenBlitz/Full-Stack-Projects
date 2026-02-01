@@ -7,7 +7,7 @@ import { ScoutedMatches } from "./scouter/pages/ScoutedMatches";
 const App: FC = () => {
   return (
     <Routes>
-      <Route path="*" element={<ScoutedMatches />} />
+      <Route path="/" element={<ScoutedMatches />} />
       <Route path="/scout" element={<ScoutMatch />} />
     </Routes>
   );
