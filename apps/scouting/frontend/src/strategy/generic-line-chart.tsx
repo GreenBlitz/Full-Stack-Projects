@@ -1,6 +1,5 @@
 //בס"ד
 import { Line } from 'react-chartjs-2';
-
 import {
   Chart as ChartJS,
   LineElement,
@@ -12,7 +11,8 @@ import {
   Legend,
   Filler
 } from 'chart.js';
-import { lineChartData } from './data-templates-for-charts';
+import { lineChartData } from './datasets.ts/test-dataset';
+import type { LineChartProps } from './data-templates-for-charts';
 
 ChartJS.register(
   LineElement,
@@ -25,6 +25,6 @@ ChartJS.register(
   Filler
 );
 
-export const LineGraph = () =>{
-    return <Line options={{}} data={lineChartData} />
+export const LineGraph = (lineChartProps: LineChartProps) =>{
+    return <Line options={{}} data={lineChartProps.dataSets} />
 }
