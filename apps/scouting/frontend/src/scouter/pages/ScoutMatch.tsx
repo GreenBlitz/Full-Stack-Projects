@@ -15,6 +15,7 @@ import {
 } from "@repo/scouting_types";
 import { ShiftTab } from "./tabs/ShiftTab";
 import { useLocalStorage } from "@repo/local_storage_hook";
+import { useNavigate } from "react-router-dom";
 import { PostMatchTab } from "./tabs/PostMatchTab"
 import { AutoTab } from "./tabs/AutoTab";
 import { ClimbTab } from "./tabs/ClimbTab";
@@ -90,6 +91,7 @@ const STARTING_TAB_INDEX = 0;
 
 const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
   const activeTabRef = useRef<HTMLButtonElement | null>(null);
+  const navigate = useNavigate();
 
   const goToPrev = () => {
     setActiveTab((prev) => prev - MOVEMENT_AMOUNT);
@@ -109,13 +111,24 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
 
   return (
     <div className="relative flex flex-col pr-1 p-4 max-w-37.5 max-h-screen">
-      <button
-        onClick={goToPrev}
-        disabled={activeTabIndex === STARTING_TAB_INDEX}
-        className="scouter-navigation-button"
-      >
-        ⬆<br /> Prev
-      </button>
+      <div className="w-full">
+        <button
+          className="my-auto w-full bg-[#e83e2e] h-8"
+          onClick={() => {
+            void navigate("/");
+          }}
+        >
+          Back
+        </button>
+
+        <button
+          onClick={goToPrev}
+          disabled={activeTabIndex === STARTING_TAB_INDEX}
+          className="scouter-navigation-button"
+        >
+          ⬆<br /> Prev
+        </button>
+      </div>
       <nav
         className="
           gap-2 
@@ -131,7 +144,7 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
               setActiveTab(index);
             }}
             className={`
-                shrink-0 flex w-full py-3 text-sm font-bold rounded-xl 
+                shrink-0 flex w-full py-3 font-bold rounded-xl
                 transition-all duration-300 text-left relative overflow-hidden group
                 px-2
                 ${
@@ -182,7 +195,7 @@ export const ScoutMatch: FC = () => {
     >
       <div
         className="flex flex-row max-w-5xl w-full mx-auto bg-linear-to-br
-       from-black via-gray-900 to-black border-2 border-green-500 
+       from-black via-gray-900 to-black border-2 border-green-500
        rounded-2xl shadow-[0_0_30px_rgba(34,197,94,0.3)] overflow-hidden h-[90vh] relative"
       >
         <SideBar setActiveTab={setActiveTab} activeTabIndex={activeTabIndex} />
