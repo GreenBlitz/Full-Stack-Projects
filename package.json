@@ -17,6 +17,7 @@
     "@eslint-react/eslint-plugin": "^2.3.5",
     "@types/dotenv": "^6.1.1",
     "@types/express": "^5.0.5",
+    "@types/is-odd": "^3.0.4",
     "@types/node": "^24.10.1",
     "cross-env": "^10.1.0",
     "esbuild": "^0.27.0",
@@ -24,8 +25,10 @@
     "prettier": "^3.6.2",
     "turbo": "^2.6.1",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.47.0"
+    "typescript-eslint": "^8.47.0",
+    "vite-plugin-pwa": "^1.2.0"
   },
+
   "engines": {
     "node": ">=18"
   },
@@ -49,6 +52,7 @@
     "html5-qrcode": "^2.3.8",
     "http-status-codes": "^2.3.0",
     "io-ts": "^2.2.22",
+    "is-odd": "^3.0.1",
     "tailwindcss": "^4.1.17",
     "tsx": "^4.21.0",
     "usehooks-ts": "^3.1.1"

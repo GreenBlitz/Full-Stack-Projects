@@ -8,54 +8,73 @@ import {
   type SetStateAction,
   useState,
 } from "react";
-import { defaultScoutForm, type ScoutingForm } from "@repo/scouting_types";
-import { Buttons } from "../../PreMatchTab";
-
-
+import {
+  defaultScoutForm,
+  type Alliance,
+  type ScoutingForm,
+} from "@repo/scouting_types";
+import { ShiftTab } from "./tabs/ShiftTab";
+import { useLocalStorage } from "@repo/local_storage_hook";
+import { PostMatchTab } from "./tabs/PostMatchTab";
+import { AutoTab } from "./tabs/AutoTab";
+import { ClimbTab } from "./tabs/ClimbTab";
+export interface TabProps {
+  setForm: Dispatch<SetStateAction<ScoutingForm>>;
+  currentForm: ScoutingForm;
+  alliance: Alliance;
+  originTime: number;
+}
 interface Tab {
   name: string;
-  Component: FC<{
-    form: ScoutingForm;
-    setForm: Dispatch<SetStateAction<ScoutingForm>>;
-  }>;
+  Component: FC<TabProps>;
 }
 const TABS: Tab[] = [
   {
     name: "Pre",
     Component: Buttons,
   },
-  { name: "Auto", Component: () => <div className="p-4">Auto Content</div> },
+  { name: "Auto", Component: AutoTab },
   {
     name: "Trans",
     Component: () => <div className="p-4">Transition Content</div>,
   },
   {
-    name: "Tele",
-    Component: () => <div className="p-4">Teleop Content</div>,
-  },
-  {
     name: "Shift1",
-    Component: () => <div className="p-4">Shift1 Content</div>,
+    Component: (props) => (
+      <ShiftTab shiftType={"regular"} tabIndex={0} {...props} />
+    ),
   },
   {
     name: "Shift2",
-    Component: () => <div className="p-4">Shift2 Content</div>,
+    Component: (props) => (
+      <ShiftTab shiftType={"regular"} tabIndex={1} {...props} />
+    ),
   },
   {
     name: "Shift3",
-    Component: () => <div className="p-4">Shift3 Content</div>,
+    Component: (props) => (
+      <ShiftTab shiftType={"regular"} tabIndex={2} {...props} />
+    ),
   },
   {
     name: "Shift4",
-    Component: () => <div className="p-4">Shift4 Content</div>,
+    Component: (props) => (
+      <ShiftTab shiftType={"regular"} tabIndex={3} {...props} />
+    ),
   },
   {
     name: "Endgame",
-    Component: () => <div className="p-4">Endgame Content</div>,
+    Component: (props) => (
+      <ShiftTab shiftType={"endgame"} tabIndex={0} {...props} />
+    ),
+  },
+  {
+    name: "Climb",
+    Component: ClimbTab,
   },
   {
     name: "Post",
-    Component: () => <div className="p-4">Post Match Content</div>,
+    Component: PostMatchTab,
   },
 ];
 
@@ -63,21 +82,17 @@ interface SideBarProps {
   setActiveTab: Dispatch<SetStateAction<number>>;
   activeTabIndex: number;
 }
-
 const ONE_ARRAY_ELEMENT = 1;
 const MOVEMENT_AMOUNT = 1;
 const STARTING_TAB_INDEX = 0;
-
 const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
   const activeTabRef = useRef<HTMLButtonElement | null>(null);
-
   const goToPrev = () => {
     setActiveTab((prev) => prev - MOVEMENT_AMOUNT);
   };
   const goToNext = () => {
     setActiveTab((prev) => prev + MOVEMENT_AMOUNT);
   };
-
   useEffect(() => {
     if (activeTabRef.current) {
       activeTabRef.current.scrollIntoView({
@@ -86,7 +101,6 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
       });
     }
   }, [activeTabIndex]);
-
   return (
     <div className="relative flex flex-col pr-1 p-4 max-w-37.5 max-h-screen">
       <button
@@ -94,7 +108,7 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
         disabled={activeTabIndex === STARTING_TAB_INDEX}
         className="scouter-navigation-button"
       >
-      <br /> Prev
+        <br /> Prev
       </button>
       <nav
         className="
@@ -113,6 +127,7 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
             className={`
                 shrink-0 flex w-full py-3 text-sm font-bold rounded-xl 
                 transition-all duration-300 text-left relative overflow-hidden group
+                px-2
                 ${
                   activeTabIndex === index
                     ? "highlighted-tab"
@@ -138,17 +153,19 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
   );
 };
 
-const createNewScoutingForm = () => structuredClone(defaultScoutForm);
-
+export const createNewScoutingForm = (): ScoutingForm =>
+  JSON.parse(JSON.stringify(defaultScoutForm));
 export const ScoutMatch: FC = () => {
-  const [scoutingForm, setScoutingForm] = useState(createNewScoutingForm());
+  const [scoutingForm, setScoutingForm] = useLocalStorage(
+    "form",
+    createNewScoutingForm(),
+  );
   const [activeTabIndex, setActiveTab] = useState(STARTING_TAB_INDEX);
-
+  const originTime = useMemo(() => Date.now(), []);
   const CurrentTab = useMemo(
     () => TABS[activeTabIndex].Component,
     [activeTabIndex],
   );
-
   return (
     <div
       className="max-h-screen bg-black p-4 md:p-6 flex items-center justify-center
@@ -160,14 +177,18 @@ export const ScoutMatch: FC = () => {
        rounded-2xl shadow-[0_0_30px_rgba(34,197,94,0.3)] overflow-hidden h-[90vh] relative"
       >
         <SideBar setActiveTab={setActiveTab} activeTabIndex={activeTabIndex} />
-
         <div className="flex-1 flex flex-col overflow-hidden p-2 relative z-10">
           <div
-            className="flex-1 text-green-100 overflow-y-auto pr-2
-           bg-black/40 rounded-xl p-6 border border-green-500/20 shadow-inner
+            className="flex-1 min-h-0 text-green-100 overflow-hidden pr-2
+           bg-black/40 rounded-xl p-3 sm:p-4 lg:p-6 border border-green-500/20 shadow-inner
             animate-in fade-in slide-in-from-right-4 duration-300"
           >
-            <CurrentTab form={scoutingForm} setForm={setScoutingForm} />
+            <CurrentTab
+              setForm={setScoutingForm}
+              alliance="red"
+              originTime={originTime}
+              currentForm={scoutingForm}
+            />
           </div>
         </div>
       </div>

@@ -6,3 +6,4 @@ export const maxInterval: t.TypeOf<typeof intervalCodec> = {
   start: 0,
   end: 262143,
 };
+export type Interval = t.TypeOf<typeof intervalCodec>
