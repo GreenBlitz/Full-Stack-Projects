@@ -18,3 +18,4 @@ export const defaultMovement: t.TypeOf<typeof movementCodec> = {
   bumpPass: false,
   bumpStuck: false,
 };
+

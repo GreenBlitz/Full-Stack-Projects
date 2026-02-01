@@ -47,6 +47,9 @@ export type TeleClimbSide = TeleClimb["climbSide"];
 export type TeleClimbLevel = TeleClimb["level"];
 export type TeleClimbTime = TeleClimb["climbTime"];
 
+export type ShiftType = "regular" | "transition" | "endgame";
+
+
 export const defaultClimb: t.TypeOf<typeof climbCodec> = {
   climbTime: {
     L1: maxInterval,
@@ -72,3 +75,4 @@ export const defaultAutoClimb: t.TypeOf<typeof autoClimbCodec> = {
   },
   level: "L0",
 };
+

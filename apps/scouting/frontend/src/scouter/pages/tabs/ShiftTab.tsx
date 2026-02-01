@@ -3,10 +3,9 @@
 import { useState, type FC } from "react";
 import type { TabProps } from "../ScoutMatch";
 import { ScoreMap, defaultPoint } from "../../components/ScoreMap";
-import type { Alliance, Point } from "@repo/scouting_types";
+import type { Alliance, Point, ShiftType } from "@repo/scouting_types";
 import { MovementForm } from "../../components/MovementForm";
 import Stopwatch from "../../components/stopwatch";
-type ShiftType = "regular" | "transition" | "endgame";
 
 interface ShiftTabProps extends TabProps {
   tabIndex: number;
