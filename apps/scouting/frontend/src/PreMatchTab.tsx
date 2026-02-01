@@ -2,7 +2,7 @@ import React, { type FC, type Dispatch, type SetStateAction } from "react";
 import { type ScoutingForm } from "@repo/scouting_types";
 
 const MATCH_NUMBER_MAX = 127;
-const TEAM_NUMBER_MAX  = 16383;
+const TEAM_NUMBER_MAX = 16383;
 const PreMatchTab: FC<{
   form: ScoutingForm;
   setForm: Dispatch<SetStateAction<ScoutingForm>>;
@@ -11,7 +11,7 @@ const PreMatchTab: FC<{
     <div>
       <div className="flex flex-col items-center w-full gap-3 py-5 mx-auto">
         <div className="flex w-[460px] justify-between items-center text-green-500">
-            <div className="outputName"> Scouter Name:</div>
+          <div className="outputName"> Scouter Name:</div>
           <div className="ml-auto">
             <input
               type="text"
@@ -25,58 +25,60 @@ const PreMatchTab: FC<{
           </div>
         </div>
         <div className="flex flex-row items-center justify-between w-[460px] text-green-500">
-            <div className="outputMatch"> Match Number:</div>
+          <div className="outputMatch"> Match Number:</div>
           <div className="ml-auto">
             <input
               type="number"
               placeholder=""
               className="inputStyle"
-              value={form.matchNumber}
-              min="0"
-              defaultValue=" "
+              value={form.match.number}
+              min={0}
               max={MATCH_NUMBER_MAX}
               onChange={(e) => {
                 setForm((prev) => ({
                   ...prev,
-                  matchNumber: parseInt(e.target.value),
+                  matchNumber: Number(e.target.value),
                 }));
               }}
             />
           </div>
         </div>
         <div className="flex flex-row items-center justify-between w-[460px] text-green-500">
-            <div className="outputTeam"> Team Number:</div>
+          <div className="outputTeam"> Team Number:</div>
           <div className="ml-auto">
             <input
               type="number"
               placeholder=""
               className="inputStyle"
-              min=""
-              max={TEAM_NUMBER_MAX }
+              min={0}
+              max={TEAM_NUMBER_MAX}
               value={form.teamNumber}
               onChange={(e) => {
                 setForm((prev) => ({
                   ...prev,
-                  teamNumber: parseInt(e.target.value),
+                  teamNumber: Number(e.target.value),
                 }));
               }}
             />
           </div>
         </div>
         <div className="flex flex-row items-center justify-between w-[460px] text-green-500">
-            <div className="outputTeam"> Match Type:</div>
+          <div className="outputTeam"> Match Type:</div>
           <div className="ml-auto">
             <select
               className="inputStyle"
-              value={form.matchType}
+              value={form.match.type}
               onChange={(e) =>
                 setForm((prev) => ({
                   ...prev,
-                  matchType: e.target.value as
-                    | "practice"
+                  match: {
+                    ...prev.match,
+                    type: e.target.value as
+                      | "practice"
                     | "qualification"
                     | "playoff",
-                }))
+               },
+               }))
               }
             >
               <option value="practice">Practice</option>
