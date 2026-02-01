@@ -1,0 +1,45 @@
+[33m0019577[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mscouting/feat/pre-match[m[33m, [m[1;31morigin/scouting/feat/pre-match[m[33m)[m HEAD@{0}: reset: moving to HEAD
+[33m0019577[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mscouting/feat/pre-match[m[33m, [m[1;31morigin/scouting/feat/pre-match[m[33m)[m HEAD@{1}: reset: moving to HEAD~2
+[33md9a720d[m HEAD@{2}: reset: moving to HEAD~1
+[33mbb64c54[m HEAD@{3}: reset: moving to HEAD~1
+[33m2308c05[m HEAD@{4}: reset: moving to HEAD~1
+[33mc7f4d69[m HEAD@{5}: reset: moving to HEAD~1
+[33m8476597[m HEAD@{6}: commit: i dont know why but tje commit isnt working
+[33mc7f4d69[m HEAD@{7}: commit (merge): after CR
+[33m2308c05[m HEAD@{8}: commit: i fixed the CR again
+[33mbb64c54[m HEAD@{9}: commit: i fixed the CR again
+[33md9a720d[m HEAD@{10}: reset: moving to HEAD~1
+[33m2a77068[m HEAD@{11}: reset: moving to HEAD~1
+[33md956570[m HEAD@{12}: reset: moving to HEAD~1
+[33ma1023f4[m HEAD@{13}: commit: after another commit
+[33md956570[m HEAD@{14}: commit: i fixed the CR
+[33m2a77068[m HEAD@{15}: commit: so i centered the div
+[33md9a720d[m HEAD@{16}: commit: so it works now and i think it looks fine
+[33m5cfcf20[m HEAD@{17}: reset: moving to HEAD~1
+[33mae60d2e[m HEAD@{18}: reset: moving to HEAD~1
+[33m46bece2[m HEAD@{19}: reset: moving to HEAD~1
+[33m22e2655[m HEAD@{20}: reset: moving to HEAD~1
+[33m7251769[m HEAD@{21}: commit: one more try....
+[33m22e2655[m HEAD@{22}: commit: i think its the right code
+[33m46bece2[m HEAD@{23}: commit: ignore the previous commit
+[33mae60d2e[m HEAD@{24}: commit: i tried to do something but i dont know if its working
+[33m5cfcf20[m HEAD@{25}: commit: add my shit to the scouting
+[33m0019577[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mscouting/feat/pre-match[m[33m, [m[1;31morigin/scouting/feat/pre-match[m[33m)[m HEAD@{26}: commit: pre shit
+[33me336f87[m HEAD@{27}: commit (merge): yuval fix conflict
+[33m4f5a860[m HEAD@{28}: checkout: moving from master to scouting/feat/pre-match
+[33mddb6ac1[m[33m ([m[1;32mmaster[m[33m)[m HEAD@{29}: pull: Fast-forward
+[33m07ecdd8[m HEAD@{30}: checkout: moving from scouting/feat/pre-match to master
+[33m4f5a860[m HEAD@{31}: commit: yuvalsProject
+[33m1ed9e7f[m HEAD@{32}: merge origin/master: Merge made by the 'ort' strategy.
+[33m53bf771[m HEAD@{33}: commit: yuvalButtons
+[33m07ecdd8[m HEAD@{34}: checkout: moving from master to scouting/feat/pre-match
+[33m07ecdd8[m HEAD@{35}: reset: moving to HEAD~1
+[33m9f5e3eb[m HEAD@{36}: commit: yuvalButtons
+[33m07ecdd8[m HEAD@{37}: pull: Fast-forward
+[33mfe1cbf2[m HEAD@{38}: checkout: moving from gb-limelight-recorder to master
+[33mda00e95[m[33m ([m[1;32mgb-limelight-recorder[m[33m)[m HEAD@{39}: reset: moving to HEAD
+[33mda00e95[m[33m ([m[1;32mgb-limelight-recorder[m[33m)[m HEAD@{40}: checkout: moving from yuval to gb-limelight-recorder
+[33m248b48d[m[33m ([m[1;31morigin/yuval[m[33m, [m[1;32myuval[m[33m)[m HEAD@{41}: reset: moving to HEAD
+[33m248b48d[m[33m ([m[1;31morigin/yuval[m[33m, [m[1;32myuval[m[33m)[m HEAD@{42}: commit: yuval - + name
+[33mfe1cbf2[m HEAD@{43}: checkout: moving from master to yuval
+[33mfe1cbf2[m HEAD@{44}: clone: from https://github.com/GreenBlitz/Full-Stack-Template.git
