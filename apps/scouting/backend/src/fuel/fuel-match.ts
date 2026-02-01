@@ -1,5 +1,5 @@
 // בס"ד
-import type { Match, ShootEvent } from "@repo/scouting_types";
+import type { ShootEvent } from "@repo/scouting_types";
 import type { BPS, FuelObject } from "./fuel-object";
 
 const getIncludedShots = (section: number[], shot: ShootEvent) => {
@@ -11,9 +11,8 @@ const getIncludedShots = (section: number[], shot: ShootEvent) => {
 export const calculateFuelByMatch = (
   shot: ShootEvent,
   bps: BPS,
-  match: Match,
 ): FuelObject => {
-  const shotBps = bps.gameEvents.map((section) => ({
+  const shotBps = bps.events.map((section) => ({
     score: getIncludedShots(section.score, shot),
     shoot: getIncludedShots(section.shoot, shot),
   }));
@@ -25,7 +24,6 @@ export const calculateFuelByMatch = (
     shot: shotAmount,
     scored: scoredAmount,
     missed: shotAmount - scoredAmount,
-    match,
-    position: shot.startPosition,
+    positions: [shot.startPosition],
   };
 };

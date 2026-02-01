@@ -68,7 +68,7 @@ const correctSectionToTimeFromEnd = (sections: number[]) => {
 export const calculateFuelByAveraging = (
   shot: ShootEvent,
   match: Match,
-  sections: BPS["gameEvents"],
+  sections: BPS["events"],
 ): FuelObject => {
   const shotLength = shot.interval.end - shot.interval.start;
 
@@ -92,7 +92,6 @@ export const calculateFuelByAveraging = (
     scored: scoredAmount,
     shot: shotAmount,
     missed: shotAmount - scoredAmount,
-    position: shot.startPosition,
-    match,
+    positions: [shot.startPosition],
   };
 };
