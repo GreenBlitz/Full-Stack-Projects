@@ -12,6 +12,7 @@ import {
   Legend,
   Filler
 } from 'chart.js';
+import { lineChartData } from './data-for-charts';
 
 ChartJS.register(
   LineElement,
@@ -25,5 +26,5 @@ ChartJS.register(
 );
 
 export const LineGraph = () =>{
-    return <Line></Line>
+    return <Line options={{}} data={lineChartData} />
 }
