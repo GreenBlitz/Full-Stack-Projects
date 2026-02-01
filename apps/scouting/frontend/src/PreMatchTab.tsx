@@ -1,8 +1,8 @@
 import React, { type FC, type Dispatch, type SetStateAction } from "react";
 import { type ScoutingForm } from "@repo/scouting_types";
 
-const MatchNumber = 127;
-const MATCH_NUMBER_MAX  = 16383;
+const MATCH_NUMBER_MAX = 127;
+const TEAM_NUMBER_MAX  = 16383;
 const PreMatchTab: FC<{
   form: ScoutingForm;
   setForm: Dispatch<SetStateAction<ScoutingForm>>;
@@ -34,7 +34,7 @@ const PreMatchTab: FC<{
               value={form.matchNumber}
               min="0"
               defaultValue=" "
-              max={MatchNumber}
+              max={MATCH_NUMBER_MAX}
               onChange={(e) => {
                 setForm((prev) => ({
                   ...prev,
@@ -52,7 +52,7 @@ const PreMatchTab: FC<{
               placeholder=""
               className="inputStyle"
               min=""
-              max={MATCH_NUMBER_MAX }
+              max={TEAM_NUMBER_MAX }
               value={form.teamNumber}
               onChange={(e) => {
                 setForm((prev) => ({
