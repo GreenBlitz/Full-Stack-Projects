@@ -1,20 +1,17 @@
 // בס"ד
-import type { AllPossibleGameEvents, GameEventsCounter } from "./game-events";
 
-export interface GameObject<T extends AllPossibleGameEvents> {
-  name: string;
-  gameEvents: GameEventsCounter<T>;
-}
+export type GameObject<T extends string, AdditionalInfo> = Record<T, number> &
+  AdditionalInfo;
 
-export const addGameEvent = <T extends AllPossibleGameEvents>(
-  gameObject: GameObject<T>,
+export const addGameEvent = <T extends string>(
+  gameObject: GameObject<T, unknown>,
   event: T,
 ): void => {
-  gameObject.gameEvents[event]++;
+  gameObject[event]++;
 };
 
-export interface GameObjectWithPoints<T extends AllPossibleGameEvents> {
-  gameObject: GameObject<T>;
-  calculatePoints: (gameObject: GameObject<T>) => number;
-  calculateRP: (gameObject: GameObject<T>) => number;
+export interface GameObjectWithPoints<T extends string> {
+  gameObject: GameObject<T, unknown>;
+  calculatePoints: (gameObject: GameObject<T, unknown>) => number;
+  calculateRP: (gameObject: GameObject<T, unknown>) => number;
 }

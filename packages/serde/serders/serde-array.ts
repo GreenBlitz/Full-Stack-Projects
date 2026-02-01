@@ -6,7 +6,7 @@ import { serdeUnsignedInt } from "./serde-number";
 const arrayLengthDefaultBitCount = 12;
 export const serdeArray = <T>(
   itemSerde: Serde<T>,
-  bitCount = arrayLengthDefaultBitCount
+  bitCount = arrayLengthDefaultBitCount,
 ): Serde<T[]> => {
   const arrayLengthSerde = serdeUnsignedInt(bitCount);
   return {
@@ -27,7 +27,7 @@ export const serdeArray = <T>(
 };
 
 export const serdeStringifiedArray = <T>(
-  itemSerde: Serde<T>
+  itemSerde: Serde<T>,
 ): Serde<string> => ({
   serializer(serializedData: BitArray, arr: string) {
     serdeArray(itemSerde).serializer(serializedData, JSON.parse(arr));

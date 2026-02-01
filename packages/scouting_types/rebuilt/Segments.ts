@@ -3,6 +3,7 @@ import * as t from "io-ts";
 import { defaultMovement, movementCodec, teleMovementCodec } from "./Movement";
 import {
   climbCodec,
+  defaultAutoClimb,
   defaultClimb,
   defaultShift,
   levelTimeCodec,
@@ -30,7 +31,7 @@ export const autoCodec = t.intersection([
   t.type({
     movement: movementCodec,
     chosenAuto: autoTypes,
-    climb: climbCodec,
+    climb: autoClimbCodec,
   }),
   shiftCodec,
 ]);
@@ -38,7 +39,7 @@ export const autoCodec = t.intersection([
 export const defaultAuto: t.TypeOf<typeof autoCodec> = {
   movement: defaultMovement,
   chosenAuto: "trenchFuelMiddle",
-  climb: defaultClimb,
+  climb: defaultAutoClimb,
   ...defaultShift,
 };
 
@@ -54,7 +55,7 @@ export const defaultTele: t.TypeOf<typeof teleCodec> = {
   transitionShift: defaultShift,
   shifts: [defaultShift, defaultShift, defaultShift, defaultShift],
   endgameShift: defaultShift,
-  movement: defaultMovement,
+  movement: { bumpStuck: false },
   climb: defaultClimb,
 };
 
