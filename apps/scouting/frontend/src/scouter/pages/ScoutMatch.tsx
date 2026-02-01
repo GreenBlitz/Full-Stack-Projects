@@ -16,8 +16,9 @@ import {
 import { ShiftTab } from "./tabs/ShiftTab";
 import { useLocalStorage } from "@repo/local_storage_hook";
 import { useNavigate } from "react-router-dom";
-
-import { PostMatchTab } from "./tabs/PostMatchTab";
+import { PostMatchTab } from "./tabs/PostMatchTab"
+import { AutoTab } from "./tabs/AutoTab";
+import { ClimbTab } from "./tabs/ClimbTab";
 export interface TabProps {
   setForm: Dispatch<SetStateAction<ScoutingForm>>;
   currentForm: ScoutingForm;
@@ -34,30 +35,44 @@ const TABS: Tab[] = [
     name: "Pre",
     Component: () => <div className="p-4">Pre Match</div>,
   },
-  { name: "Auto", Component: () => <div className="p-4">Auto Content</div> },
+  { name: "Auto", Component: AutoTab },
   {
     name: "Trans",
     Component: () => <div className="p-4">Transition Content</div>,
   },
   {
     name: "Shift1",
-    Component: (props) => <ShiftTab tabIndex={0} {...props} />,
+    Component: (props) => (
+      <ShiftTab shiftType={"regular"} tabIndex={0} {...props} />
+    ),
   },
   {
     name: "Shift2",
-    Component: (props) => <ShiftTab tabIndex={1} {...props} />,
+    Component: (props) => (
+      <ShiftTab shiftType={"regular"} tabIndex={1} {...props} />
+    ),
   },
   {
     name: "Shift3",
-    Component: (props) => <ShiftTab tabIndex={2} {...props} />,
+    Component: (props) => (
+      <ShiftTab shiftType={"regular"} tabIndex={2} {...props} />
+    ),
   },
   {
     name: "Shift4",
-    Component: (props) => <ShiftTab tabIndex={3} {...props} />,
+    Component: (props) => (
+      <ShiftTab shiftType={"regular"} tabIndex={3} {...props} />
+    ),
   },
   {
     name: "Endgame",
-    Component: () => <div className="p-4">Endgame Content</div>,
+    Component: (props) => (
+      <ShiftTab shiftType={"endgame"} tabIndex={0} {...props} />
+    ),
+  },
+  {
+    name: "Climb",
+    Component: ClimbTab,
   },
   {
     name: "Post",
@@ -168,7 +183,6 @@ export const ScoutMatch: FC = () => {
   const [activeTabIndex, setActiveTab] = useState(STARTING_TAB_INDEX);
 
   const originTime = useMemo(() => Date.now(), []);
-console.log(scoutingForm);//remove this its for build
   const CurrentTab = useMemo(
     () => TABS[activeTabIndex].Component,
     [activeTabIndex],
@@ -188,8 +202,8 @@ console.log(scoutingForm);//remove this its for build
 
         <div className="flex-1 flex flex-col overflow-hidden p-2 relative z-10">
           <div
-            className="flex-1 text-green-100 overflow-y-auto pr-2
-           bg-black/40 rounded-xl p-6 border border-green-500/20 shadow-inner
+            className="flex-1 min-h-0 text-green-100 overflow-hidden pr-2
+           bg-black/40 rounded-xl p-3 sm:p-4 lg:p-6 border border-green-500/20 shadow-inner
             animate-in fade-in slide-in-from-right-4 duration-300"
           >
             <CurrentTab

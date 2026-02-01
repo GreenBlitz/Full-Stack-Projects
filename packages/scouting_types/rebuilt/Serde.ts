@@ -74,9 +74,8 @@ export const serdeAuto = createRecordSerde<typeof defaultAuto>({
 
 const serdeFields = {
   scouterName: serdeString(),
-  matchNumber: serdeUnsignedInt(MATCH_NUMBER_BIT_COUNT),
+  match: serdeUnsignedInt(MATCH_NUMBER_BIT_COUNT),
   teamNumber: serdeUnsignedInt(TEAM_NUMBER_BIT_COUNT),
-  matchType: serdeEnumedString(["qualification", "playoff", "practice"]),
   comment: serdeString(),
   auto: serdeAuto,
   tele: serdeTele,

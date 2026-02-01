@@ -37,10 +37,10 @@ export const ScoutedMatches: FC = () => {
           <div className="flex justify-between items-center">
             <div>
               <span className="text-xs font-bold uppercase tracking-wider text-emerald-500">
-                {match.matchType}
+                {match.match.type}
               </span>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                Match #{match.matchNumber}
+                Match #{match.match.number}
               </h3>
             </div>
             <div className="flex flex-row">
