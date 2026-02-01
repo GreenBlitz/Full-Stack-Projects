@@ -101,13 +101,13 @@ export const ScoreMap: FC<ScoreMapProps> = ({
     if (!isHolding) {
       return;
     }
-    const container = containerRef.current;
-    const image = imageRef.current;
-    if (!(container&&image)) {
+    const containerElement = containerRef.current;
+    const imageElement = imageRef.current;
+    if (!(containerElement&&imageElement)) {
       return;
     }
-    const containerRect = container.getBoundingClientRect();
-    const imageRect = image.getBoundingClientRect();
+    const containerRect = containerElement.getBoundingClientRect();
+    const imageRect = imageElement.getBoundingClientRect();
     const touch = event.targetTouches[firstTouchIndex];
 
     const { mapPoint: dotPoint, normalizedPoint, imageSize } = getRobotPosition(
