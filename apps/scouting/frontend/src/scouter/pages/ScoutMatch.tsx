@@ -15,7 +15,7 @@ import {
 } from "@repo/scouting_types";
 import { ShiftTab } from "./tabs/ShiftTab";
 import { useLocalStorage } from "@repo/local_storage_hook";
-import { PostMatchTab } from "./tabs/PostMatchTab"
+import { PostMatchTab } from "./tabs/PostMatchTab";
 import { AutoTab } from "./tabs/AutoTab";
 import { ClimbTab } from "./tabs/ClimbTab";
 export interface TabProps {
@@ -36,8 +36,10 @@ const TABS: Tab[] = [
   },
   { name: "Auto", Component: AutoTab },
   {
-    name: "Trans",
-    Component: () => <div className="p-4">Transition Content</div>,
+    name: "Transition",
+    Component: (props) => (
+      <ShiftTab shiftType={"transition"} tabIndex={0} {...props} />
+    ),
   },
   {
     name: "Shift1",
