@@ -2,11 +2,11 @@
 import type { GameObjectWithPoints } from "./game-object";
 import type { GameObjectScoringData } from "./scoring-data";
 
-export interface ScoringCalculator<T extends AllPossibleGameEvents> {
+export interface ScoringCalculator<T extends string> {
   gameObjectsScoringData: GameObjectScoringData<T>[];
 }
 
-export const addScoring = <T extends AllPossibleGameEvents>(
+export const addScoring = <T extends string>(
   scoringCalculator: ScoringCalculator<T>,
   gameObjectWithPoints: GameObjectWithPoints<T>,
 ): void => {

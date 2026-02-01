@@ -35,7 +35,8 @@ export const calculateFuel = (scoutingForm: ScoutingForm, bpsArray: BPS[]): Gene
         ...teleShifts,
         scoutingForm.auto,
     ];
-    const bindcalcShiftFuel = (shifts: { shootEvents: ShootEvent[] }[]) => calculateShiftFuel(shifts, scoutingForm.match, bpsArray);
+    const bindcalcShiftFuel = (shifts: { shootEvents: ShootEvent[] }[]) => 
+        calculateShiftFuel(shifts, scoutingForm.match, bpsArray);
     const autoFuel = bindcalcShiftFuel([scoutingForm.auto]);
     const teleFuel = bindcalcShiftFuel(teleShifts);
     const fullGameFuel = bindcalcShiftFuel(fullGameShifts);
