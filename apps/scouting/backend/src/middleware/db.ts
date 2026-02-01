@@ -8,7 +8,7 @@ import { pipe } from "fp-ts/lib/function";
 const url = process.env.MONGO_URI ?? "mongodb://localhost:27017";
 const dbName = "scouting";
 
-const client = new MongoClient(url);
+const client: MongoClient = new MongoClient(url);
 
 let db: Db | undefined = undefined; // 😭 has to happen
 
