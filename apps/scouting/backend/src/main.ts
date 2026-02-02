@@ -1,9 +1,11 @@
 // בס"ד
 import express from "express";
 import { apiRouter } from "./routes";
-import { GameObject, GameObjectWithPoints, addGameEvent } from "./game-object";
-import { CoralEvent, AlgaeEvent, GameEventsCounter, AllPossibleGameEvents } from "./game-events";
-import { addScoring, ScoringCalculator } from "./scoring-calculator";
+import type { GameObject, GameObjectWithPoints } from "./game-object";
+import  { addGameEvent } from "./game-object";
+import type { CoralEvent, AlgaeEvent, GameEventsCounter, AllPossibleGameEvents } from "./game-events";
+import type { ScoringCalculator } from "./scoring-calculator";
+import { addScoring } from "./scoring-calculator";
 import { calculatePointsCoral, calculateRPCoral } from "./game-object-coral";
 import { calculatePointsAlgae, calculateRPAlgae } from "./game-object-algae";
 
