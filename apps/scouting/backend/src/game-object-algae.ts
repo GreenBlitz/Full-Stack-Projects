@@ -10,6 +10,7 @@ export function calculatePointsAlgae(algae: GameObject<AlgaeEvent>): number {
         return algae.gameEvents.Net*netScoring
         +algae.gameEvents.Processor*processorScoring
     }
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function calculateRPAlgae(algae: GameObject<AlgaeEvent>): number {
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         return 0;

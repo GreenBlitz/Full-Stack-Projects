@@ -1,5 +1,5 @@
 // בס"ד
-import type { GameObject, GameObjectWithPoints } from "./game-object";
+import type { GameObjectWithPoints } from "./game-object";
 import type { AllPossibleGameEvents } from "./game-events";
 import type { GameObjectScoringData } from "./scoring-data";
 
@@ -10,7 +10,7 @@ export interface ScoringCalculator<T extends AllPossibleGameEvents> {
 export function addScoring<T extends AllPossibleGameEvents>(
   scoringCalculator: ScoringCalculator<T>,
   gameObjectWithPoints: GameObjectWithPoints<T>,
-):void {
+): void {
   const tempGameObjectScoringData: GameObjectScoringData<T> = {
     gameObject: gameObjectWithPoints.gameObject,
     pointsScoredWithGameObject: gameObjectWithPoints.calculatePoints(
