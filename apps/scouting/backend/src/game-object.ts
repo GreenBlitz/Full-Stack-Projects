@@ -12,6 +12,6 @@ export function addGameEvent<T extends AllPossibleGameEvents>(gameObject: GameOb
 
 export interface GameObjectWithPoints<T extends AllPossibleGameEvents>{
     gameObject: GameObject<T>,
-     calculatePoints: (gameObject: GameObject<T>) => number,
-     calculateRP: (gameObject: GameObject<T>) => number
+    calculatePoints: (gameObject: GameObject<T>) => number,
+    calculateRP: (gameObject: GameObject<T>) => number
 }
