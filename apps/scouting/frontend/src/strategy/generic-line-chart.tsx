@@ -31,14 +31,16 @@ import type { LineChartProps } from "./data-templates-for-charts";
 const convertDataToLineChartFormat = ({
   dataSetsProps,
 }: LineChartProps): ChartData<"line", number[], string> => {
-  const labels = Object.keys(dataSetsProps[0]?.points ?? {});
+  const pointDefaultValue = 0;
+  
 
+  const labels = Object.keys(dataSetsProps[0]?.points ?? {});
   return {
     labels,
-    datasets: dataSetsProps.map((ds) => ({
-      label: ds.name,
-      data: labels.map((l) => ds.points[l] ?? 0),
-      borderColor: ds.color ?? "blue",
+    datasets: dataSetsProps.map((dataset) => ({
+      label: dataset.name,
+      data: labels.map((label) => dataset.points[label] ?? pointDefaultValue),
+      borderColor: dataset.color ?? "blue",
       fill: false,
     })),
   };
