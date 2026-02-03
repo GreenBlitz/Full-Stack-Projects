@@ -26,8 +26,23 @@ ChartJS.register(
 
 import type { ChartData, ChartOptions } from "chart.js";
 
-export const LineGraph = ({ dataSetsProps, min, max }: LineChartProps) => {
+const convertDataToValidFormat: ChartData<"line", number[], string> = ({
+  dataSetsProps
+}: DataSet<any>[] ) => {
   const labels = Object.keys(dataSetsProps[0]?.points ?? {});
+  return {
+    labels,
+    datasets: dataSetsProps.map((ds) => ({
+      label: ds.name,
+      data: labels.map((l) => ds.points[l] ?? 0),
+      borderColor: ds.color ?? "blue",
+      fill: false,
+    }))
+  }
+};
+
+export const LineGraph = ({ dataSetsProps, min, max }: LineChartProps) => {
+  
 
   const data: ChartData<"line", number[], string> = {
     labels,
