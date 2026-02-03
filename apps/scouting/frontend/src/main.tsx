@@ -4,7 +4,7 @@ import { createRoot } from "react-dom/client";
 import { registerSW } from "virtual:pwa-register";
 import "./index.css";
 import { BrowserRouter } from "react-router-dom";
-import { PieGraph } from "./strategy/generic-line-chart";
+import { PieGraph } from "./strategy/generic-pie-chart";
 import { scoringQual1 } from "./strategy/datasets.ts/test-dataset";
 
 registerSW({ immediate: true });

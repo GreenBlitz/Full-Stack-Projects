@@ -1,5 +1,5 @@
 //בס"ד
-import { Line, Pie } from "react-chartjs-2";
+import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   LineElement,
@@ -22,11 +22,11 @@ ChartJS.register(
   Tooltip,
   Legend,
   Filler,
-  ArcElement
+  ArcElement,
 );
 
 import type { ChartData, ChartOptions } from "chart.js";
-import type { DataSet, LineChartProps } from "./data-templates-for-charts";
+import type { LineChartProps } from "./data-templates-for-charts";
 
 const convertDataToLineChartFormat = ({
   dataSetsProps,
@@ -52,33 +52,4 @@ export const LineGraph = ({ dataSetsProps, min, max }: LineChartProps) => {
   };
   const data = convertDataToLineChartFormat({ dataSetsProps });
   return <Line data={data} options={options} />;
-};
-
-const convertDataToPieChartFormat = ({
-  name,
-  points,
-  color,
-}: DataSet<string | number>): ChartData<"pie", number[], string> => {
-  const labels = Object.keys(points);
-  const values = Object.values(points);
-
-  return {
-    labels,
-    datasets: [
-      {
-        label: name,
-        data: values,
-        backgroundColor: labels.map(() => color ?? "blue"), // optional
-      },
-    ],
-  };
-};
-
-export const PieGraph = ({ name, points, color }: DataSet<string | number>) => {
-  const data = convertDataToPieChartFormat({ name, points, color });
-  const options: ChartOptions<"pie"> = {
-  responsive: true,
-  maintainAspectRatio: false, 
-};
-  return <Pie data={data} options={options} />;
 };
