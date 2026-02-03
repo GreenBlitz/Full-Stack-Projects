@@ -13,7 +13,7 @@ registerSW({ immediate: true });
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
-      <LineGraph></LineGraph>
+      <LineGraph dataSetsProps={[]}></LineGraph>
     </BrowserRouter>
   </StrictMode>,
 );
