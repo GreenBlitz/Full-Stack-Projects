@@ -7,14 +7,18 @@ import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import { Line } from "react-chartjs-2";
 import { LineGraph } from "./strategy/generic-line-chart";
-import { scoringTeams } from "./strategy/datasets.ts/test-dataset";
+import { lineChartProps } from "./strategy/datasets.ts/test-dataset";
 
 registerSW({ immediate: true });
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
-      <LineGraph dataSetsProps={[scoringTeams]}></LineGraph>
+      <LineGraph
+        dataSetsProps={lineChartProps.dataSetsProps}
+        min={lineChartProps.min}
+        max={lineChartProps.max}
+      ></LineGraph>
     </BrowserRouter>
   </StrictMode>,
 );
