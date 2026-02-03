@@ -7,13 +7,14 @@ import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import { Line } from "react-chartjs-2";
 import { LineGraph } from "./strategy/generic-line-chart";
+import { scoringTeams } from "./strategy/datasets.ts/test-dataset";
 
 registerSW({ immediate: true });
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
-      <LineGraph dataSetsProps={[]}></LineGraph>
+      <LineGraph dataSetsProps={[scoringTeams]}></LineGraph>
     </BrowserRouter>
   </StrictMode>,
 );
