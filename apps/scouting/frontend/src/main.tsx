@@ -9,7 +9,7 @@ import { Line } from "react-chartjs-2";
 import { LineGraph, PieGraph } from "./strategy/generic-line-chart";
 import {
   lineChartProps,
-  scoring4590,
+  scoringQual1,
 } from "./strategy/datasets.ts/test-dataset";
 
 registerSW({ immediate: true });
@@ -18,9 +18,9 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
       <PieGraph
-        name={scoring4590.name}
-        points={scoring4590.points}
-        color={scoring4590.color}
+        name={scoringQual1.name}
+        points={scoringQual1.points}
+        color={scoringQual1.color}
       ></PieGraph>
     </BrowserRouter>
   </StrictMode>,
