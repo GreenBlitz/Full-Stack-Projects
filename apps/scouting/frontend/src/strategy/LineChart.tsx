@@ -36,7 +36,7 @@ export interface LineChartProps {
 const convertDataToLineChartFormat = ({
   dataSetsProps,
 }: LineChartProps): ChartData<"line", number[], string> => {
-  const defaultColor = "red";
+  const defaultColors = ["blue", "red", "violet", "orange"];
 
   const labels = Array.from(
     new Set(dataSetsProps.flatMap((ds) => Object.keys(ds.points))),
@@ -44,10 +44,10 @@ const convertDataToLineChartFormat = ({
 
   return {
     labels,
-    datasets: dataSetsProps.map((dataset) => ({
+    datasets: dataSetsProps.map((dataset, index) => ({
       label: dataset.name,
       data: labels.map((label) => dataset.points[label] ?? null),
-      borderColor: dataset.color ?? defaultColor,
+      borderColor: dataset.color ?? defaultColors[index % defaultColors.length],
     })),
   };
 };
