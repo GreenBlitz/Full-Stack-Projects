@@ -55,11 +55,17 @@ const dotDiameter = dotRadius * radiusToDiameterRatio;
 
 const firstTouchIndex = 0;
 export const defaultPoint: Point = { x: 0, y: 0 };
+
+interface RobotPositionInfo {
+  mapPoint: Point;
+  normalizedPoint: Point;
+  imageSize: Point;
+}
 const getRobotPosition = (
   touch: Touch,
   imageRect: DOMRect,
   containerRect: DOMRect,
-) => {
+): RobotPositionInfo => {
   const x = touch.clientX - imageRect.left;
   const y = touch.clientY - imageRect.top;
 
