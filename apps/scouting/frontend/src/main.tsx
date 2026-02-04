@@ -5,18 +5,22 @@ import { registerSW } from "virtual:pwa-register";
 import "./index.css";
 import { BrowserRouter } from "react-router-dom";
 import { PieGraph } from "./strategy/generic-pie-chart";
-import { greenBlitzQuals } from "./strategy/datasets.ts/test-dataset";
+import {
+  greenBlitzQuals,
+  lineChartProps,
+} from "./strategy/datasets.ts/test-dataset";
+import { LineGraph } from "./strategy/generic-line-chart";
 
 registerSW({ immediate: true });
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
-      <PieGraph
-        name={greenBlitzQuals.name}
-        points={greenBlitzQuals.points}
-        color={greenBlitzQuals.color}
-      ></PieGraph>
+      <LineGraph
+        dataSetsProps={lineChartProps.dataSetsProps}
+        max={lineChartProps.max}
+        min={lineChartProps.min}
+      />
     </BrowserRouter>
   </StrictMode>,
 );
