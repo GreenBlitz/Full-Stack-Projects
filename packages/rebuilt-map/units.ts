@@ -23,7 +23,10 @@ const distanceFromDifference = (difference: Point): number =>
   Math.sqrt(difference.x * difference.x + difference.y * difference.y);
 
 const distance = (p1: Point, p2: Point): number =>
-  distanceFromDifference({ x: p1.x - p2.x, y: p1.y - p2.y });
+  distanceFromDifference({
+    x: p1.x - p2.x,
+    y: p1.y - p2.y,
+  });
 
 export const distanceFromHub = (point: Point): number =>
   distance(point, CENTER_HUB_POINT_CENTIMETERS);
