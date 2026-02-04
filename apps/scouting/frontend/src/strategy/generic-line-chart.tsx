@@ -31,15 +31,15 @@ import type { LineChartProps } from "./data-templates-for-charts";
 const convertDataToLineChartFormat = ({
   dataSetsProps,
 }: LineChartProps): ChartData<"line", number[], string> => {
-  const pointDefaultValue = 0;
-  
+  const labels = Array.from(
+    new Set(dataSetsProps.flatMap((ds) => Object.keys(ds.points))),
+  );
 
-  const labels = Object.keys(dataSetsProps[0]?.points ?? {});
   return {
     labels,
     datasets: dataSetsProps.map((dataset) => ({
       label: dataset.name,
-      data: labels.map((label) => dataset.points[label] ?? pointDefaultValue),
+      data: labels.map((label) => dataset.points[label] ?? null), // 👈 gap, not fake zero
       borderColor: dataset.color ?? "blue",
       fill: false,
     })),
