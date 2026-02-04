@@ -1,12 +1,7 @@
 // בס"ד
-import type { Point } from "@repo/scouting_types";
+import { convertFromPixelsToCentimeters, distanceFromHub } from "@repo/rebuilt_map";
 import type { FuelEvents, FuelObject } from "./fuel-object";
 import { calculateAverage } from "@repo/array-functions";
-
-const hubPosition = { x: 1, y: 2 };
-export const distanceFromHub = (point: Point): number => {
-  return Math.sqrt(Math.pow(point.x, 2) + Math.pow(point.y, 2));
-};
 
 const averageFuel = (fuels: FuelObject[]): FuelObject => {
   const averageOfKey = (key: FuelEvents) =>
@@ -26,7 +21,10 @@ export const splitByDistances = <T extends number>(
   const distancedFuels = distances.map((distance) => ({
     distance,
     fuel: fuels.filter((fuel) =>
-      fuel.positions.every((position) => distanceFromHub(position) < distance),
+      fuel.positions.every(
+        (position) =>
+          distanceFromHub(convertFromPixelsToCentimeters(position)) < distance,
+      ),
     ),
   }));
 
