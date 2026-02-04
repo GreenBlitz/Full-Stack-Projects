@@ -7,6 +7,11 @@ export const calculateSum = <T>(
 ): number =>
   arr.reduce((sum, value) => sum + transformation(value), startingSumValue);
 
+export const calculateAverage = <T>(
+  arr: T[],
+  transformation: (value: T) => number,
+): number => calculateSum(arr, transformation) / arr.length;
+
 export const getMax = <T>(arr: T[], transformation: (value: T) => number): T =>
   arr
     .map((item) => ({ value: transformation(item), item }))
