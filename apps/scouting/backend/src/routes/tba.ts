@@ -31,7 +31,6 @@ import type { Type } from "io-ts";
 import { getDb } from "../middleware/db";
 import { getMax } from "@repo/array-functions";
 import { fold as booleanFold } from "fp-ts/boolean";
-import { chainFirstIOK } from "fp-ts/lib/IOEither";
 
 export const tbaRouter = Router();
 
