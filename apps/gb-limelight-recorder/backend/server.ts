@@ -2,11 +2,9 @@
 import express from "express";
 import { RecordingProcess } from "./RecordingProcess.js";
 import cors from "cors";
-import ping from "ping";
-import fs from "fs";
-import path from "path";
 import { pingCameras } from "./PingRobot.js";
 import { useEffect } from "react";
+import { join } from "path";
 
 const app = express();
 const port = 5000;
@@ -17,8 +15,6 @@ type cameraObj = {
   camURL: string
   ffmpegProcess: RecordingProcess | null
 };
-
-const usbRoot = "E:/"; // CHANGE if needed
 
 const leftCamObj: cameraObj = {
   name: "left",
@@ -36,18 +32,6 @@ const rightCamObj: cameraObj = {
   ffmpegProcess: null
 };
 const cameras: cameraObj[] = [leftCamObj, objectCamObj, rightCamObj];
-
-function createSessionFolder(): string {
-  if (!fs.existsSync(usbRoot)) {
-    throw new Error("USB drive not connected");
-  }
-
-  const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-  const sessionDir = path.join(usbRoot, `recording-${timestamp}`);
-
-  fs.mkdirSync(sessionDir, { recursive: true });
-  return sessionDir;
-}
 
 // --- HELLO ---
 app.get("/", (req, res) => {
@@ -74,12 +58,10 @@ function startRecording() {
     return;
   }
 
-  const sessionDir = createSessionFolder();
-
   for (let i = 0; i < three; i++) {
     cameras[i].ffmpegProcess = new RecordingProcess(
       cameras[i].name,
-      path.join(sessionDir, `${cameras[i].name}.mp4`)
+      join(process.env.USERPROFILE ?? "", "Downloads")
     );
     cameras[i].ffmpegProcess?.startRecording();
   }
