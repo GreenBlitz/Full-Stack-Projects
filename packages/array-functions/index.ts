@@ -7,6 +7,11 @@ export const calculateSum = <T>(
 ): number =>
   arr.reduce((sum, value) => sum + transformation(value), startingSumValue);
 
+export const calculateAverage = <T>(
+  arr: T[],
+  transformation: (value: T) => number,
+): number => calculateSum(arr, transformation) / arr.length;
+
 const FIRST_ELEMENT_ID = 0;
 const LAST_ELEMENT_BACKWARDS_INDEX = 1;
 export const firstElement = <T>(arr: T[]): T => arr[FIRST_ELEMENT_ID];

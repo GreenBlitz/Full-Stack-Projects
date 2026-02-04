@@ -9,7 +9,7 @@ export interface BPS {
   match: Match;
 }
 
-type FuelEvents = "scored" | "shot" | "missed";
+export type FuelEvents = "scored" | "shot" | "missed";
 export type FuelObject = GameObject<
   FuelEvents,
   {
