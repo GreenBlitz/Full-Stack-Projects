@@ -20,14 +20,20 @@ const RAMP_LAST_OFFSET = 1;
 
 interface ColorStop {
   stop: number;
-  color: [number, number, number];
+  color: ColorRGB;
 }
 
-const rgb = (red: number, green: number, blue: number): [number, number, number] => [
+interface ColorRGB {
+  red: number;
+  green: number;
+  blue: number;
+}
+
+const rgb = (red: number, green: number, blue: number): ColorRGB => ({
   red,
   green,
   blue,
-];
+});
 
 const COLOR_BLUE_DARK = rgb(BYTE_ZERO, BYTE_ZERO, BYTE_MID);
 const COLOR_BLUE = rgb(BYTE_ZERO, BYTE_LOW, BYTE_MAX);
@@ -48,7 +54,7 @@ const COLOR_RAMP: ColorStop[] = [
 const lerp = (start: number, end: number, t: number): number =>
   start + (end - start) * t;
 
-const getRampColor = (value: number): [r:number, g:number, b:number] => {
+const getRampColor = (value: number): ColorRGB => {
   const clamped = Math.min(NORMALIZED_MAX, Math.max(NORMALIZED_MIN, value));
   const ramp = COLOR_RAMP.slice(COLOR_RAMP_OFFSET, -RAMP_LAST_OFFSET);
   const rampPairs = ramp.slice(COLOR_RAMP_OFFSET, -RAMP_INDEX_STEP);
@@ -65,14 +71,11 @@ const getRampColor = (value: number): [r:number, g:number, b:number] => {
     if (clamped >= start.stop && clamped <= end.stop) {
       const range = end.stop - start.stop || NORMALIZED_MAX;
       const time = (clamped - start.stop) / range;
-      const interpolated = start.color.map((channel, colorIndex) =>
-        Math.round(lerp(channel, end.color[colorIndex], time)),
-      );
-      result.value = [
-        interpolated[CHANNEL_RED] ?? BYTE_ZERO,
-        interpolated[CHANNEL_GREEN] ?? BYTE_ZERO,
-        interpolated[CHANNEL_BLUE] ?? BYTE_ZERO,
-      ];
+      result.value = {
+        red: Math.round(lerp(start.color.red, end.color.red, time)),
+        green: Math.round(lerp(start.color.green, end.color.green, time)),
+        blue: Math.round(lerp(start.color.blue, end.color.blue, time)),
+      };
       found.value = true;
     }
   });
@@ -94,10 +97,10 @@ export const colorizeHeatmapImageData = (
       return;
     }
     const intensity = Math.min(NORMALIZED_MAX, (alpha / BYTE_MAX) * intensityGain);
-    const [r, g, b] = getRampColor(intensity);
-    data[index + CHANNEL_RED] = r;
-    data[index + CHANNEL_GREEN] = g;
-    data[index + CHANNEL_BLUE] = b;
+    const color = getRampColor(intensity);
+    data[index + CHANNEL_RED] = color.red;
+    data[index + CHANNEL_GREEN] = color.green;
+    data[index + CHANNEL_BLUE] = color.blue;
     data[index + CHANNEL_ALPHA] = Math.round(BYTE_MAX * intensity);
   });
 };

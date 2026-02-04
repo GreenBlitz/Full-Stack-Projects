@@ -2,23 +2,24 @@
 import type { FC } from "react";
 import { useEffect, useRef } from "react";
 import { colorizeHeatmapImageData } from "./HeatMapIntensityColorizer";
+import type { Point } from "@repo/scouting_types";
 import { isEmpty } from "@repo/array-functions";
 
 interface HeatMapIntensityCanvasProps {
-  points: { x: number; y: number }[];
+  points: Point[];
   radius: number;
   width: number;
   height: number;
 }
 
 const boundaryBeginning = 0;
-const ONE = 1;
-const TWO = 2;
+const OFFSET_AMOUNT = 1;
+const HALF_CIRCLE = 2;
 const OVERLAY_BLUR_PX = 20;
 const INTENSITY_GAIN = 1.5;
 const SOFTEN_RADIUS_MULTIPLIER = 2;
 const MIN_RADIUS_PX = 0.8;
-const FULL_CIRCLE = Math.PI * TWO;
+const FULL_CIRCLE_PERIMETER = Math.PI * HALF_CIRCLE;
 const RADIUS_FADE_START = "#000000";
 const RADIUS_FADE_END = "#00000000";
 
@@ -72,10 +73,10 @@ const drawIntensityField = (
       softenedRadius,
     );
     gradient.addColorStop(boundaryBeginning, RADIUS_FADE_START);
-    gradient.addColorStop(ONE, RADIUS_FADE_END);
+    gradient.addColorStop(OFFSET_AMOUNT, RADIUS_FADE_END);
     context.fillStyle = gradient;
     context.beginPath();
-    context.arc(point.x, point.y, softenedRadius, boundaryBeginning, FULL_CIRCLE);
+    context.arc(point.x, point.y, softenedRadius, boundaryBeginning, FULL_CIRCLE_PERIMETER);
     context.fill();
   });
   context.filter = "none";
