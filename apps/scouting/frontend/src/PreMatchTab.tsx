@@ -1,5 +1,5 @@
+//בס"ד
 import React, { type FC, type Dispatch, type SetStateAction } from "react";
-import { type ScoutingForm } from "@repo/scouting_types";
 import type { TabProps } from "./scouter/pages/ScoutMatch";
 const MATCH_NUMBER_MAX = 127;
 const TEAM_NUMBER_MAX = 16383;
@@ -14,10 +14,10 @@ const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
             className="inputStyle w-[340px] h-full"
             value={form.scouterName}
             onChange={(event) =>
-              setForm((prev) => ({
+              {setForm((prev) => ({
                 ...prev,
                 scouterName: event.target.value,
-              }))
+              }))}
             }
           />
         </div>
@@ -32,13 +32,13 @@ const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
             max={MATCH_NUMBER_MAX}
             value={form.match.number}
             onChange={(event) =>
-              setForm((prev) => ({
+              {setForm((prev) => ({
                 ...prev,
                 match: {
                   ...prev.match,
                   number: Number(event.target.value),
                 },
-              }))
+              }))}
             }
           />
         </div>
@@ -53,11 +53,11 @@ const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
             max={TEAM_NUMBER_MAX}
             value={form.teamNumber}
             onChange={(event) =>
-              setForm((prev) => ({
+              {setForm((prev) => ({
                 ...prev,
                 teamNumber: Number(event.target.value),
               }))
-            }
+            }}
           />
         </div>
       </div>
@@ -68,7 +68,7 @@ const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
             className="inputStyle w-[363px] h-full"
             value={form.match.type}
             onChange={(event) =>
-              setForm((prev) => ({
+              {setForm((prev) => ({
                 ...prev,
                 match: {
                   ...prev.match,
@@ -78,7 +78,7 @@ const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
                     | "playoff",
                 },
               }))
-            }
+            }}
           >
             <option value="practice">Practice</option>
             <option value="qualification">Qualification</option>
