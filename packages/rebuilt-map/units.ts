@@ -16,11 +16,11 @@ export const convertFromPixelsToCentimeters = (point: Point): Point => ({
   y: (point.y / FIELD_HEIGHT_PIXELS) * FIELD_SIZE_CENTIMETERS.y,
 });
 
-export const distanceFromHub = (point: Point): number => {
-  const difference = {
-    x: point.x - CENTER_HUB_POINT_CENTIMETERS.x,
-    y: point.y - CENTER_HUB_POINT_CENTIMETERS.y,
-  };
-  // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-  return Math.sqrt(Math.pow(difference.x, 2) + Math.pow(difference.y, 2));
-};
+const distanceFromDifference = (difference: Point): number =>
+  Math.sqrt(difference.x * difference.x + difference.y * difference.y);
+
+const distance = (p1: Point, p2: Point): number =>
+  distanceFromDifference({ x: p1.x - p2.x, y: p1.y - p2.y });
+
+export const distanceFromHub = (point: Point): number =>
+  distance(point, CENTER_HUB_POINT_CENTIMETERS);
