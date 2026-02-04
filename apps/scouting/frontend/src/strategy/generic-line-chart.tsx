@@ -33,7 +33,7 @@ const convertDataToLineChartFormat = ({
 }: LineChartProps): ChartData<"line", number[], string> => {
   const labels = Array.from(
     new Set(dataSetsProps.flatMap((ds) => Object.keys(ds.points))),
-  );
+  ).sort((a, b) => Number(a) - Number(b));
 
   return {
     labels,
