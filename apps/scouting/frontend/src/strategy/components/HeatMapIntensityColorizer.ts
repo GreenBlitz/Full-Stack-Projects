@@ -57,12 +57,13 @@ const getRampColor = (value: number): ColorRGB => {
       return;
     }
     const end = ramp[index + RAMP_INDEX_STEP];
-    if (clamped >= start.stop && clamped <= end.stop) {
+    if (clamped < start.stop || clamped > end.stop) {
+      return;
+    }
       const range = end.stop - start.stop || NORMALIZED_MAX;
       const time = (clamped - start.stop) / range;
       result.value = lerpColor(start.color, end.color, time);
       found.value = true;
-    }
   });
 
   return result.value;
