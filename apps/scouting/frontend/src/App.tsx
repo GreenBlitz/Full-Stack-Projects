@@ -11,13 +11,18 @@ const SQUARE_ASPECT_RATIO = 1;
 const App: FC = () => {
   return (
     <Routes>
-      <Route path="*" element={<ScoutedMatches />} />
       <Route path="/scout" element={<ScoutMatch />} />
+      <Route path="*" element={<ScoutedMatches />} />
       <Route
         path="/HeatMap"
         element={
           <HeatMap
-            positions={[]}
+            positions={[
+              { x: 100, y: 100 },
+              { x: 200, y: 200 },
+              { x: 300, y: 100 },
+              { x: 150, y: 300 },
+            ]}
             path={`/full-field-${FIELD_IMAGE_DIMENSION}.png`}
             aspectRatio={SQUARE_ASPECT_RATIO}
           />
