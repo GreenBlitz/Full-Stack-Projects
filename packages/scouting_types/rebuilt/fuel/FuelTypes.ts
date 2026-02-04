@@ -8,6 +8,9 @@ export interface GeneralFuelData {
   tele: FuelObject;
 }
 
+export type GameTime = keyof GeneralFuelData;
+
+
 export interface BPS {
   events: { shoot: number[]; score: number[] }[];
   match: Match;
