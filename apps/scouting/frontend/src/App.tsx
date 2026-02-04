@@ -8,7 +8,7 @@ import GeneralDataTable from "./scouter/components/GeneralDataTable";
 const App: FC = () => {
   return (
     <>
-      <GeneralDataTable filters={{ "match.type": "qualification" }} />
+      <GeneralDataTable filters={{ "match[type]": "qualification" }} />
     </>
   );
 };
