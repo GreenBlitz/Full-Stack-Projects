@@ -8,7 +8,7 @@ export const greenBlitzQuals: DataSet<string> = {
     2: 30,
     3: 40,
     6: 33,
-    9:22
+    9: 22,
   },
   color: "green",
 };
