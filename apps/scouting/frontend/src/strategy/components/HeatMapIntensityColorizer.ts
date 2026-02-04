@@ -22,12 +22,12 @@ interface ColorRGB {
   blue: number;
 }
 const COLOR_RAMP: ColorStop[] = [
-  { stop: NORMALIZED_MIN, color: { red: 0, green: 0, blue: 128 } },
+  { stop: 0, color: { red: 0, green: 0, blue: 128 } },
   { stop: 0.2, color: { red: 0, green: 64, blue: 255 } },
   { stop: 0.4, color: { red: 0, green: 255, blue: 255 } },
   { stop: 0.6, color: { red: 0, green: 255, blue: 0 }},
   { stop: 0.8, color: { red: 255, green: 255, blue: 0 } },
-  { stop: NORMALIZED_MAX, color: { red: 255, green: 0, blue: 0 } },
+  { stop: 1, color: { red: 255, green: 0, blue: 0 } },
 ];
 
 const lerp = (start: number, end: number, t: number): number =>
