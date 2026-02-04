@@ -1,8 +1,5 @@
 // בס"ד
-import {
-  convertFromPixelsToCentimeters,
-  distanceFromHub,
-} from "@repo/rebuilt_map";
+import { convertPixelToCentimeters, distanceFromHub } from "@repo/rebuilt_map";
 import type { FuelEvents, FuelObject } from "./fuel-object";
 import { calculateAverage } from "@repo/array-functions";
 
@@ -28,8 +25,7 @@ export const splitByDistances = <T extends number>(
         fuels.filter((fuel) =>
           fuel.positions.every(
             (position) =>
-              distanceFromHub(convertFromPixelsToCentimeters(position)) <
-              distance,
+              distanceFromHub(convertPixelToCentimeters(position)) < distance,
           ),
         ),
       ),
