@@ -14,6 +14,7 @@ export const MovementForm: FC<MovementFormProps> = ({
 }) => {
   return (
     <div className="flex flex-col items-center gap-1 shrink-0">
+      <div className="bg-rose-500 w-0 h-0" />
       {"trenchPass" in currentMovement && (
         <>
           <button
