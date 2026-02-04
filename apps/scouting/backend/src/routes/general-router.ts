@@ -41,9 +41,7 @@ generalRouter.get("/", (req, res) => {
           generalCalculateFuel(form, EXAMPLE_BPS);
         }),
       //write a way to get only the avarages
-      forEach((calculatedFuel)=>{
-
-      })
+      forEach((calculatedFuel) => {}),
     ),
 
     fold(
