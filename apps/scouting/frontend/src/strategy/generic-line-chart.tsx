@@ -26,8 +26,13 @@ ChartJS.register(
 );
 
 import type { ChartData, ChartOptions } from "chart.js";
-import type { LineChartProps } from "./data-templates-for-charts";
+import type { DataSet } from "./data-templates-for-charts";
 
+export interface LineChartProps {
+  dataSetsProps: DataSet<any>[];
+  max?: number;
+  min?: number;
+}
 const convertDataToLineChartFormat = ({
   dataSetsProps,
 }: LineChartProps): ChartData<"line", number[], string> => {

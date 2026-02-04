@@ -1,5 +1,6 @@
 // בס"ד
-import type { DataSet, LineChartProps } from "../data-templates-for-charts";
+import type { DataSet } from "../data-templates-for-charts";
+import type { LineChartProps } from "../generic-line-chart";
 
 export const greenBlitzQuals: DataSet<string> = {
   name: "greenBlitzQuals",

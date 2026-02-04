@@ -5,8 +5,4 @@ export interface DataSet<T extends string | number> {
   color?: string; //assign color if not defined
 }
 
-export interface LineChartProps {
-  dataSetsProps: DataSet<any>[];
-  max?: number;
-  min?: number;
-}
+
