@@ -3,6 +3,7 @@ import * as t from "io-ts";
 
 export const matchesProps = t.type({
   event: t.string,
+  maxMatch: t.number
 });
 
 export type TBAMatchesProps = t.TypeOf<typeof matchesProps>;
