@@ -33,6 +33,8 @@ const convertDataToPieChartFormat = ({
   points,
   color,
 }: DataSet<string | number>): ChartData<"pie", number[], string> => {
+  const defaultColor = "red";
+
   const labels = Object.keys(points);
   const values = Object.values(points);
 
@@ -42,7 +44,7 @@ const convertDataToPieChartFormat = ({
       {
         label: name,
         data: values,
-        backgroundColor: labels.map(() => color ?? "blue"), // optional
+        backgroundColor: labels.map(() => color ?? defaultColor),
       },
     ],
   };

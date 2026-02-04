@@ -10,17 +10,14 @@ import {
   lineChartProps,
 } from "./strategy/datasets.ts/test-dataset";
 import { LineGraph } from "./strategy/generic-line-chart";
+import App from "./App";
 
 registerSW({ immediate: true });
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
-      <LineGraph
-        dataSetsProps={lineChartProps.dataSetsProps}
-        max={lineChartProps.max}
-        min={lineChartProps.min}
-      />
+      <App />
     </BrowserRouter>
   </StrictMode>,
 );
