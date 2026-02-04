@@ -1,18 +1,28 @@
 // בס"ד
 import type { DataSet, LineChartProps } from "../data-templates-for-charts";
 
-export const scoringQual1: DataSet<string> = {
-  name: "scoringQual1",
+export const greenBlitzQuals: DataSet<string> = {
+  name: "greenBlitzQuals",
   points: {
-    "GreenBlitz 4590": 50,
-    "Orbit 1690": 30,
-    "Makers Assenble 5951": 40
+    1: 50,
+    2: 30,
+    3: 40,
+  },
+  color: "green",
+};
+
+export const maQuals: DataSet<string> = {
+  name: "maQuals",
+  points: {
+    1: 10,
+    3: 60,
+    5: 20,
   },
   color: "green",
 };
 
 export const lineChartProps: LineChartProps = {
-  dataSetsProps: [scoringQual1],
+  dataSetsProps: [greenBlitzQuals, maQuals],
   max: 100,
   min: 0,
 };

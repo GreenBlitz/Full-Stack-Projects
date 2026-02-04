@@ -39,9 +39,8 @@ const convertDataToLineChartFormat = ({
     labels,
     datasets: dataSetsProps.map((dataset) => ({
       label: dataset.name,
-      data: labels.map((label) => dataset.points[label] ?? null), // 👈 gap, not fake zero
+      data: labels.map((label) => dataset.points[label] ?? null),
       borderColor: dataset.color ?? "blue",
-      fill: false,
     })),
   };
 };
