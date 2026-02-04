@@ -10,6 +10,7 @@ import {
 import type { GameTime, TeamNumberAndFuelData } from "@repo/scouting_types";
 import type React from "react";
 import { useState, useEffect } from "react";
+import { ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
 
 const fetchFuelData = async (filters = {}) => {
   const params = new URLSearchParams(filters);
@@ -40,7 +41,9 @@ interface GeneralDataTableProps {
 
 const DIGITS_AFTER_DOT = 1;
 
-const GeneralDataTable: React.FC<GeneralDataTableProps> = ({ filters }) => {
+export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
+  filters,
+}) => {
   const [data, setData] = useState<TeamNumberAndFuelData[]>([]);
   const [gameTime, setGameTime] = useState<GameTime>("tele");
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -95,18 +98,19 @@ const GeneralDataTable: React.FC<GeneralDataTableProps> = ({ filters }) => {
   });
 
   return (
-    <div className="flex flex-col gap-4 p-4">
-      <div className="flex gap-2 justify-center bg-gray-100 p-2 rounded-lg">
+    <div className="flex flex-col gap-6 p-4 bg-slate-950 min-h-screen">
+      {/* Game Time Switcher */}
+      <div className="flex gap-1.5 justify-center bg-slate-900/50 p-1.5 rounded-2xl border border-white/5 self-center">
         {(["auto", "tele", "fullGame"] as GameTime[]).map((time) => (
           <button
             key={time}
             onClick={() => {
               setGameTime(time);
             }}
-            className={`px-4 py-2 rounded-md transition-all ${
+            className={`px-5 py-2 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all border ${
               gameTime === time
-                ? "bg-blue-600 text-white shadow-md"
-                : "bg-white text-gray-700 hover:bg-gray-200"
+                ? "bg-emerald-500 text-slate-950 border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]"
+                : "bg-transparent text-slate-500 border-transparent hover:text-slate-300"
             }`}
           >
             {time}
@@ -114,15 +118,16 @@ const GeneralDataTable: React.FC<GeneralDataTableProps> = ({ filters }) => {
         ))}
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-gray-200 shadow-sm">
-        <table className="w-full text-left text-sm">
-          <thead className="bg-gray-50 border-b border-gray-200">
+      {/* Table Container */}
+      <div className="overflow-hidden rounded-2xl border border-white/10 bg-slate-900/40 backdrop-blur-sm shadow-2xl">
+        <table className="w-full text-left text-sm border-collapse">
+          <thead className="bg-slate-800/50 border-b border-white/10">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="px-6 py-4 font-semibold text-gray-900 cursor-pointer select-none"
+                    className="px-6 py-4 font-black text-slate-400 uppercase tracking-widest text-[10px] cursor-pointer select-none transition-colors hover:bg-slate-800"
                     onClick={header.column.getToggleSortingHandler()}
                   >
                     <div className="flex items-center gap-2">
@@ -130,24 +135,28 @@ const GeneralDataTable: React.FC<GeneralDataTableProps> = ({ filters }) => {
                         header.column.columnDef.header,
                         header.getContext(),
                       )}
-                      {{
-                        asc: "ascending",
-                        desc: "descending",
-                      }[header.column.getIsSorted() as string] ?? "sort"}
+                      <span className="text-emerald-500/50">
+                        {{
+                          asc: <ChevronUp size={12} strokeWidth={3} />,
+                          desc: <ChevronDown size={12} strokeWidth={3} />,
+                        }[header.column.getIsSorted() as string] ?? (
+                          <ChevronsUpDown size={12} strokeWidth={2} />
+                        )}
+                      </span>
                     </div>
                   </th>
                 ))}
               </tr>
             ))}
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-white/5">
             {table.getRowModel().rows.map((row) => (
               <tr
                 key={row.id}
-                className="hover:bg-blue-50/50 transition-colors"
+                className="hover:bg-emerald-500/5 transition-colors group"
               >
                 {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="px-6 py-4">
+                  <td key={cell.id} className="px-6 py-4 whitespace-nowrap">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}
@@ -159,5 +168,3 @@ const GeneralDataTable: React.FC<GeneralDataTableProps> = ({ filters }) => {
     </div>
   );
 };
-
-export default GeneralDataTable;
