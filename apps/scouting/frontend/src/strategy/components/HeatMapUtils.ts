@@ -1,5 +1,5 @@
 // בס"ד
-import type { Point } from "../../../../../../packages/scouting_types/rebuilt";
+import type { Point } from "@repo/scouting_types";
 
 export interface HeatmapRenderer {
   setDimensions?: (width: number,
