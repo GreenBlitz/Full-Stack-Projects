@@ -12,6 +12,11 @@ export const calculateAverage = <T>(
   transformation: (value: T) => number,
 ): number => calculateSum(arr, transformation) / arr.length;
 
+export const getMax = <T>(arr: T[], transformation: (value: T) => number): T =>
+  arr
+    .map((item) => ({ value: transformation(item), item }))
+    .reduce((max, curr) => (curr.value > max.value ? curr : max)).item;
+
 const FIRST_ELEMENT_ID = 0;
 const LAST_ELEMENT_BACKWARDS_INDEX = 1;
 export const firstElement = <T>(arr: T[]): T => arr[FIRST_ELEMENT_ID];
