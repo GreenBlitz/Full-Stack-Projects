@@ -4,11 +4,14 @@
 import { Router } from "express";
 import { getCollection } from "./forms-router";
 import { pipe } from "fp-ts/lib/function";
-import { fold, map } from "fp-ts/lib/TaskEither";
+import { flatMap, fold, map, tryCatch } from "fp-ts/lib/TaskEither";
 import { mongofyQuery } from "../middleware/query";
+import type { GeneralFuelData } from "../fuel/fuel-general";
 import { generalCalculateFuel } from "../fuel/fuel-general";
-import type { BPS } from "../fuel/fuel-object";
+import type { BPS, FuelObject } from "../fuel/fuel-object";
 import { StatusCodes } from "http-status-codes";
+import { first } from "fp-ts/lib/Semigroup";
+import { reduce } from "fp-ts/lib/Foldable";
 
 export const generalRouter = Router();
 
@@ -31,26 +34,95 @@ const EXAMPLE_BPS: BPS[] = [
   },
 ];
 
-generalRouter.get("/", (req, res) => {
-  pipe(
+interface TeamNumberAndFuelData {
+  teamNumber: number;
+  generalFuelData: GeneralFuelData;
+}
+
+const calcAverage = (num1: number, num2: number) => {
+  return (num1 + num2) / 2;
+};
+
+const calcAverageFuelObject = (
+  firstData: FuelObject,
+  secondData: FuelObject,
+) => {
+  const newData: FuelObject = {
+    scored: calcAverage(firstData.scored, secondData.scored),
+    shot: calcAverage(firstData.shot, secondData.shot),
+    missed: calcAverage(firstData.missed, secondData.missed),
+    positions: [...firstData.positions, ...secondData.positions],
+  };
+  return newData;
+};
+
+const calcAverageGeneralFuelData = (fuelData: GeneralFuelData[]) => {
+  if (fuelData.length === 1 || fuelData.length === 0) {
+    return fuelData[0];
+  }
+  return fuelData.reduce((accumulatedFuelData, currentFuelData) => {
+    const newFuelData: GeneralFuelData = {
+      fullGame: calcAverageFuelObject(
+        accumulatedFuelData.fullGame,
+        currentFuelData.fullGame,
+      ),
+      auto: calcAverageFuelObject(
+        accumulatedFuelData.auto,
+        currentFuelData.auto,
+      ),
+      tele: calcAverageFuelObject(
+        accumulatedFuelData.tele,
+        currentFuelData.tele,
+      ),
+    };
+    return newFuelData;
+  }, fuelData[0]);
+};
+
+generalRouter.get("/", async (req, res) => {
+  await pipe(
     getCollection(),
-    map((collection) => collection.find(mongofyQuery(req.query)).toArray()),
-    map(
-      async (forms) =>
-        (await forms).map((form) => {
-          generalCalculateFuel(form, EXAMPLE_BPS);
-        }),
-      //write a way to get only the avarages
-      forEach((calculatedFuel) => {}),
+    flatMap((collection) =>
+      tryCatch(
+        () => collection.find(mongofyQuery(req.query)).toArray(),
+        (error) => ({ status: 500, reason: `DB Error: ${error}` }),
+      ),
     ),
+    map((forms) =>
+      forms.map((form) => {
+        const newFuelData: TeamNumberAndFuelData = {
+          teamNumber: form.teamNumber,
+          generalFuelData: generalCalculateFuel(form, EXAMPLE_BPS),
+        };
+        return newFuelData;
+      }),
+    ),
+
+    map((generalFuelsData) => {
+      const teamMap: Map<number, TeamNumberAndFuelData> = new Map();
+      generalFuelsData.forEach((current) => {
+        if (teamMap.has(current.teamNumber)) return;
+
+        const sameTeamFuelData = generalFuelsData.filter(
+          (teamAndFuelData) =>
+            teamAndFuelData.teamNumber === current.teamNumber,
+        );
+        const averagedFuelData: TeamNumberAndFuelData = {
+          teamNumber: current.teamNumber,
+          generalFuelData: calcAverageGeneralFuelData(
+            sameTeamFuelData.map((fuelData) => fuelData.generalFuelData),
+          ),
+        };
+        teamMap.set(current.teamNumber, averagedFuelData);
+      });
+      return Array.from(teamMap.values());
+    }),
 
     fold(
       (error) => () =>
         Promise.resolve(res.status(error.status).send(error.reason)),
-      (calculatedFuel) => async () =>
-        res
-          .status(StatusCodes.OK)
-          .json({ calculatedFuel: await calculatedFuel }),
+      (calculatedFuel) => () =>
+        Promise.resolve(res.status(StatusCodes.OK).json({ calculatedFuel })),
     ),
-  );
+  )();
 });
