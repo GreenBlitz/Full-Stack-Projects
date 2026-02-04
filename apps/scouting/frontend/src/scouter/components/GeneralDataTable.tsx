@@ -21,7 +21,7 @@ const fetchFuelData = async (filters = {}) => {
 
     const data = await response.json();
 
-    return data.calculatedFuel;
+    return data.calculatedFuel as ;
   } catch (err) {
     console.error("Fetch failed:", err);
     throw err;

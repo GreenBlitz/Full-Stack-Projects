@@ -21,7 +21,6 @@ export type FuelObject = GameObject<
   }
 >;
 
-
 export type GameObject<T extends string, AdditionalInfo> = Record<T, number> &
   AdditionalInfo;
 
@@ -36,4 +35,9 @@ export interface GameObjectWithPoints<T extends string> {
   gameObject: GameObject<T, unknown>;
   calculatePoints: (gameObject: GameObject<T, unknown>) => number;
   calculateRP: (gameObject: GameObject<T, unknown>) => number;
+}
+
+export interface TeamNumberAndFuelData {
+  teamNumber: number;
+  generalFuelData: GeneralFuelData;
 }

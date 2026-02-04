@@ -8,9 +8,13 @@ import { flatMap, fold, map, tryCatch } from "fp-ts/lib/TaskEither";
 import { mongofyQuery } from "../middleware/query";
 import { generalCalculateFuel } from "../fuel/fuel-general";
 import { StatusCodes } from "http-status-codes";
-import { first } from "fp-ts/lib/Semigroup";
-import { reduce } from "fp-ts/lib/Foldable";
-import type { BPS, FuelObject, GeneralFuelData } from "@repo/scouting_types";
+
+import type {
+  BPS,
+  FuelObject,
+  GeneralFuelData,
+  TeamNumberAndFuelData,
+} from "@repo/scouting_types";
 
 export const generalRouter = Router();
 
@@ -33,13 +37,13 @@ const EXAMPLE_BPS: BPS[] = [
   },
 ];
 
-export interface TeamNumberAndFuelData {
-  teamNumber: number;
-  generalFuelData: GeneralFuelData;
-}
+const DIVIDE_BY_TO_GET_AVERAGE = 2;
+const ONE_ITEM_ARRAY = 1;
+const EMPTY_ARRAY = 0;
+const FIRST_ARRAY_ITEM = 0;
 
 const calcAverage = (num1: number, num2: number) => {
-  return (num1 + num2) / 2;
+  return (num1 + num2) / DIVIDE_BY_TO_GET_AVERAGE;
 };
 
 const calcAverageFuelObject = (
@@ -56,8 +60,8 @@ const calcAverageFuelObject = (
 };
 
 const calcAverageGeneralFuelData = (fuelData: GeneralFuelData[]) => {
-  if (fuelData.length === 1 || fuelData.length === 0) {
-    return fuelData[0];
+  if (fuelData.length === ONE_ITEM_ARRAY || fuelData.length === EMPTY_ARRAY) {
+    return fuelData[FIRST_ARRAY_ITEM];
   }
   return fuelData.reduce((accumulatedFuelData, currentFuelData) => {
     const newFuelData: GeneralFuelData = {
@@ -75,7 +79,7 @@ const calcAverageGeneralFuelData = (fuelData: GeneralFuelData[]) => {
       ),
     };
     return newFuelData;
-  }, fuelData[0]);
+  }, fuelData[FIRST_ARRAY_ITEM]);
 };
 
 generalRouter.get("/", async (req, res) => {
