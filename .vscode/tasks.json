@@ -42,7 +42,7 @@
       "id": "project",
       "description": "Full Stack Projects worth running",
       "type": "pickString",
-      "options": ["template", "test", "scouting"]
+      "options": ["template", "test", "scouting","fuel-counter"]
     },
     
     {
