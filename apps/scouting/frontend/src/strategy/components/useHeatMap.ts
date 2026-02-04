@@ -2,8 +2,7 @@
 import { useRef, useEffect, useCallback, useState } from "react";
 import type { RefObject } from "react";
 import type { Point } from "../../../../../../packages/scouting_types/rebuilt";
-import h337 from "heatmap.js";
-import { HEAT_STYLE, HEAT_VALUES, LAYOUT, mapHeatPoints, type HeatmapInstance } from "./HeatMapUtils";
+import { HEAT_STYLE, HEAT_VALUES, LAYOUT, mapHeatPoints } from "./HeatMapUtils";
 
 export interface UseHeatMapResult {
   heatmapLayerRef: RefObject<HTMLDivElement | null>;
@@ -20,8 +19,8 @@ export const useHeatMap = (
   aspectRatio: number,
 ): UseHeatMapResult => {
   const heatmapLayerRef = useRef<HTMLDivElement>(null);
-  const heatmapRef = useRef<HeatmapInstance | null>(null);
   const imgRef = useRef<HTMLImageElement>(null);
+  const resizeFrameRef = useRef<number | null>(null);
   const [fallbackPoints, setFallbackPoints] = useState<{ x: number; y: number }[]>([]);
   const [overlaySize, setOverlaySize] = useState<{ width: number; height: number }>({
     width: LAYOUT.zeroSize,
@@ -29,40 +28,10 @@ export const useHeatMap = (
   });
   const READY_IMAGE_SIZE = LAYOUT.zeroSize;
 
-  const ensureCanvasSizedAndOnTop = useCallback(() => {
-    const instance = heatmapRef.current;
-    const layer = heatmapLayerRef.current;
-    if (!instance || !layer) {
-      return;
-    }
-
-    const w = Math.round(layer.clientWidth);
-    const h = Math.round(layer.clientHeight);
-    if (w <= LAYOUT.zeroSize || h <= LAYOUT.zeroSize) {
-      return;
-    }
-
-    const renderer = instance._renderer;
-    if (renderer?.setDimensions) {
-      renderer.setDimensions(w, h);
-    }
-
-    const canvas = renderer?.canvas;
-    if (canvas) {
-      canvas.style.position = "absolute";
-      canvas.style.inset = "0";
-      canvas.style.zIndex = "2";
-      canvas.style.pointerEvents = "none";
-    }
-  }, []);
-
   const updateHeatmap = useCallback(() => {
-    const instance = heatmapRef.current;
     const img = imgRef.current;
     const layer = heatmapLayerRef.current;
-    if (!instance || !img || !layer) return;
-
-    ensureCanvasSizedAndOnTop();
+    if (!img || !layer) return;
 
     const layerRect = layer.getBoundingClientRect();
     const roundedWidth = Math.round(layerRect.width);
@@ -95,26 +64,18 @@ export const useHeatMap = (
       value: HEAT_VALUES.point,
     });
 
-    setFallbackPoints(data.map((point) => ({ x: point.x, y: point.y })));
-    instance.setData({ min: HEAT_VALUES.min, max: HEAT_VALUES.max, data });
-    instance.repaint();
-  }, [positions, ensureCanvasSizedAndOnTop]);
-
-  useEffect(() => {
-    const container = heatmapLayerRef.current;
-    if (!container) {
-      return undefined;
-    }
-
-    heatmapRef.current = h337.create({ container, ...HEAT_STYLE });
-    ensureCanvasSizedAndOnTop();
-    updateHeatmap();
-
-    return () => {
-      container.innerHTML = "";
-      heatmapRef.current = null;
-    };
-  }, [ensureCanvasSizedAndOnTop, updateHeatmap]);
+    const nextPoints = data.map((point) => ({ x: point.x, y: point.y }));
+    setFallbackPoints((prev) =>
+      prev.length === nextPoints.length &&
+      prev.every(
+        (point, index) =>
+          point.x === nextPoints[index]?.x &&
+          point.y === nextPoints[index]?.y,
+      )
+        ? prev
+        : nextPoints,
+    );
+  }, [positions]);
 
   useEffect(() => {
     if (imgRef.current?.complete && imgRef.current.naturalWidth > READY_IMAGE_SIZE) {
@@ -129,8 +90,13 @@ export const useHeatMap = (
     }
 
     const observer = new ResizeObserver(() => {
-      ensureCanvasSizedAndOnTop();
-      updateHeatmap();
+      if (resizeFrameRef.current !== null) {
+        return;
+      }
+      resizeFrameRef.current = requestAnimationFrame(() => {
+        resizeFrameRef.current = null;
+        updateHeatmap();
+      });
     });
 
     observer.observe(layer);
@@ -138,12 +104,20 @@ export const useHeatMap = (
     return () => {
       observer.disconnect();
     };
-  }, [ensureCanvasSizedAndOnTop, updateHeatmap]);
+  }, [updateHeatmap]);
 
   const handleImageLoad = useCallback(() => {
-    ensureCanvasSizedAndOnTop();
     updateHeatmap();
-  }, [ensureCanvasSizedAndOnTop, updateHeatmap]);
+  }, [updateHeatmap]);
+
+  useEffect(
+    () => () => {
+      if (resizeFrameRef.current !== null) {
+        cancelAnimationFrame(resizeFrameRef.current);
+      }
+    },
+    [],
+  );
 
   return {
     heatmapLayerRef,

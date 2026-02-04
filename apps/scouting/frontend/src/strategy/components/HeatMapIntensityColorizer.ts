@@ -1,10 +1,12 @@
 // בס"ד
 const NORMALIZED_MIN = 0;
 const NORMALIZED_MAX = 1;
+const COLOR_RAMP_OFFSET = 0;
 const BYTE_ZERO = 0;
 const BYTE_LOW = 64;
 const BYTE_MID = 128;
 const BYTE_MAX = 255;
+const CHANNEL_STRIDE = 4;
 const CHANNEL_RED = 0;
 const CHANNEL_GREEN = 1;
 const CHANNEL_BLUE = 2;
@@ -42,8 +44,7 @@ const lerp = (start: number, end: number, t: number): number =>
 
 const getRampColor = (value: number): [number, number, number] => {
   const clamped = Math.min(NORMALIZED_MAX, Math.max(NORMALIZED_MIN, value));
-  COLOR_RAMP.forEach((colorStop, index): [number, number, number] | undefined => {
-    const start = colorStop;
+  for (const [index, start] of COLOR_RAMP.slice(COLOR_RAMP_OFFSET, -RAMP_LAST_OFFSET).entries()) {
     const end = COLOR_RAMP[index + RAMP_INDEX_STEP];
     if (clamped >= start.stop && clamped <= end.stop) {
       const range = end.stop - start.stop || NORMALIZED_MAX;
@@ -54,8 +55,7 @@ const getRampColor = (value: number): [number, number, number] => {
         Math.round(lerp(start.color[CHANNEL_BLUE], end.color[CHANNEL_BLUE], t)),
       ];
     }
-    return undefined;
-  });
+  }
   return COLOR_RAMP[COLOR_RAMP.length - RAMP_LAST_OFFSET].color;
 };
 
@@ -64,8 +64,11 @@ export const colorizeHeatmapImageData = (
   intensityGain: number,
 ): void => {
   const { data } = imageData;
-  data.forEach((value, index) => {
-    const alpha = value;
+  data.forEach((notUsed, index) => {
+    if (index % CHANNEL_STRIDE !== BYTE_ZERO) {
+      return;
+    }
+    const alpha = data[index + CHANNEL_ALPHA];
     if (alpha === BYTE_ZERO) {
       return;
     }
