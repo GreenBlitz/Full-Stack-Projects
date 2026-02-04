@@ -53,10 +53,10 @@ const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
           min={0}
           max={TEAM_NUMBER_MAX}
           value={form.teamNumber}
-          onChange={(e) =>
+          onChange={(event) =>
             setForm((prev) => ({
               ...prev,
-              teamNumber: Number(e.target.value),
+              teamNumber: Number(event.target.value),
             }))
           }
         />
