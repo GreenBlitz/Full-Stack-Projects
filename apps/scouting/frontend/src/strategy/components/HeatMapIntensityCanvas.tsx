@@ -2,6 +2,7 @@
 import type { FC } from "react";
 import { useEffect, useRef } from "react";
 import { colorizeHeatmapImageData } from "./HeatMapIntensityColorizer";
+import { isEmpty } from "@repo/array-functions";
 
 interface HeatMapIntensityCanvasProps {
   points: { x: number; y: number }[];
@@ -10,7 +11,7 @@ interface HeatMapIntensityCanvasProps {
   height: number;
 }
 
-const ZERO = 0;
+const boundaryBeginning = 0;
 const ONE = 1;
 const TWO = 2;
 const OVERLAY_BLUR_PX = 20;
@@ -18,8 +19,67 @@ const INTENSITY_GAIN = 1.5;
 const SOFTEN_RADIUS_MULTIPLIER = 2;
 const MIN_RADIUS_PX = 0.8;
 const FULL_CIRCLE = Math.PI * TWO;
-const RADIUS_FADE_START = "rgba(0, 0, 0, 1)";
-const RADIUS_FADE_END = "rgba(0, 0, 0, 0)";
+const RADIUS_FADE_START = "#000000";
+const RADIUS_FADE_END = "#00000000";
+
+const ensureCanvasSize = (canvas: HTMLCanvasElement, width: number, height: number): void => {
+  canvas.width = width;
+  canvas.height = height;
+};
+
+const clearCanvas = (
+  context: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+): void => {
+  context.clearRect(boundaryBeginning, boundaryBeginning, width, height);
+};
+
+const createOffscreenContext = (
+  width: number,
+  height: number,
+): { canvas: HTMLCanvasElement; context: CanvasRenderingContext2D } | null => {
+  const offscreen = document.createElement("canvas");
+  offscreen.width = width;
+  offscreen.height = height;
+  const context = offscreen.getContext("2d");
+  if (!context) {
+    return null;
+  }
+  return { canvas: offscreen, context };
+};
+
+const drawIntensityField = (
+  context: CanvasRenderingContext2D,
+  points: { x: number; y: number }[],
+  radius: number,
+): void => {
+  clearCanvas(context, context.canvas.width, context.canvas.height);
+  context.globalCompositeOperation = "lighter";
+  context.filter = `blur(${OVERLAY_BLUR_PX}px)`;
+
+  const softenedRadius = Math.max(
+    MIN_RADIUS_PX,
+    Math.round(radius * SOFTEN_RADIUS_MULTIPLIER),
+  );
+  points.forEach((point) => {
+    const gradient = context.createRadialGradient(
+      point.x,
+      point.y,
+      boundaryBeginning,
+      point.x,
+      point.y,
+      softenedRadius,
+    );
+    gradient.addColorStop(boundaryBeginning, RADIUS_FADE_START);
+    gradient.addColorStop(ONE, RADIUS_FADE_END);
+    context.fillStyle = gradient;
+    context.beginPath();
+    context.arc(point.x, point.y, softenedRadius, boundaryBeginning, FULL_CIRCLE);
+    context.fill();
+  });
+  context.filter = "none";
+};
 
 export const HeatMapIntensityCanvas: FC<HeatMapIntensityCanvasProps> = ({
   points,
@@ -31,77 +91,38 @@ export const HeatMapIntensityCanvas: FC<HeatMapIntensityCanvasProps> = ({
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas || width <= ZERO || height <= ZERO) {
+    if (!canvas || width <= boundaryBeginning || height <= boundaryBeginning) {
       return;
     }
-
-    if (canvas.width !== width || canvas.height !== height) {
-      canvas.width = width;
-      canvas.height = height;
-    }
-
+    ensureCanvasSize(canvas, width, height);
     const context = canvas.getContext("2d");
     if (!context) {
       return;
     }
 
-    context.clearRect(ZERO, ZERO, canvas.width, canvas.height);
-    if (points.length === ZERO) {
+    clearCanvas(context, canvas.width, canvas.height);
+    if (isEmpty(points)) {
       return;
     }
 
-    const offscreen = document.createElement("canvas");
-    offscreen.width = canvas.width;
-    offscreen.height = canvas.height;
-    const offscreenContext = offscreen.getContext("2d");
-    if (!offscreenContext) {
+    const offscreenPayload = createOffscreenContext(canvas.width, canvas.height);
+    if (!offscreenPayload) {
       return;
     }
 
-    offscreenContext.clearRect(ZERO, ZERO, offscreen.width, offscreen.height);
-    offscreenContext.globalCompositeOperation = "lighter";
-    offscreenContext.filter = `blur(${OVERLAY_BLUR_PX}px)`;
-
-    const softenedRadius = Math.max(
-      MIN_RADIUS_PX,
-      Math.round(radius * SOFTEN_RADIUS_MULTIPLIER),
-    );
-    points.forEach((point) => {
-      const gradient = offscreenContext.createRadialGradient(
-        point.x,
-        point.y,
-        ZERO,
-        point.x,
-        point.y,
-        softenedRadius,
-      );
-      gradient.addColorStop(ZERO, RADIUS_FADE_START);
-      gradient.addColorStop(ONE, RADIUS_FADE_END);
-      offscreenContext.fillStyle = gradient;
-      offscreenContext.beginPath();
-      offscreenContext.arc(point.x, point.y, softenedRadius, ZERO, FULL_CIRCLE);
-      offscreenContext.fill();
-    });
-
-    offscreenContext.filter = "none";
+    const offscreenContext = offscreenPayload.context;
+    drawIntensityField(offscreenContext, points, radius);
     const imageData = offscreenContext.getImageData(
-      ZERO,
-      ZERO,
-      offscreen.width,
-      offscreen.height,
+      boundaryBeginning,
+      boundaryBeginning,
+      offscreenPayload.canvas.width,
+      offscreenPayload.canvas.height,
     );
     colorizeHeatmapImageData(imageData, INTENSITY_GAIN);
-    context.putImageData(imageData, ZERO, ZERO);
+    context.putImageData(imageData, boundaryBeginning, boundaryBeginning);
   }, [points, radius, width, height]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      style={{
-        width: "100%",
-        height: "100%",
-        display: "block",
-      }}
-    />
+    <canvas ref={canvasRef} className="block h-full w-full" />
   );
 };

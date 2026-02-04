@@ -13,25 +13,8 @@ const useLocalStorage = <T>(
       return initialValue;
     }
     const item = window.localStorage.getItem(key);
-    let parsedItem = initialValue;
-    if (item) {
-      try {
-        parsedItem = JSON.parse(item) as T;
-      } catch (error) {
-        console.warn(
-          `useLocalStorage failed to parse key "${key}", resetting to initialValue`,
-          error,
-        );
-      }
-    }
-    try {
-      localStorage.setItem(key, JSON.stringify(parsedItem));
-    } catch (error) {
-      console.warn(
-        `useLocalStorage failed to persist key "${key}" during init`,
-        error,
-      );
-    }
+    const parsedItem = item ? (JSON.parse(item) as T) : initialValue;
+    localStorage.setItem(key, JSON.stringify(parsedItem));
     return parsedItem;
   });
 
@@ -39,14 +22,7 @@ const useLocalStorage = <T>(
     const valueToStore = value instanceof Function ? value(storedValue) : value;
     setStoredValue(valueToStore);
     if (typeof window !== "undefined") {
-      try {
-        window.localStorage.setItem(key, JSON.stringify(valueToStore));
-      } catch (error) {
-        console.warn(
-          `useLocalStorage failed to persist key "${key}"`,
-          error,
-        );
-      }
+      window.localStorage.setItem(key, JSON.stringify(valueToStore));
     }
   };
 

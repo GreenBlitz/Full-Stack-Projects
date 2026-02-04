@@ -1,6 +1,6 @@
 // בס"ד
 import type { FC } from "react";
-import type { Point } from "../../../../../../packages/scouting_types/rebuilt";
+import type { Point } from "@repo/scouting_types";
 import { HeatMapOverlay } from "./HeatMapOverlay";
 import { useHeatMap } from "./useHeatMap";
 
@@ -18,39 +18,19 @@ export const HeatMap: FC<HeatMapProps> = ({ positions, path, aspectRatio }) => {
   );
 
   return (
-    <div
-      style={{
-        width: "100vw",
-        height: "100vh",
-        position: "relative",
-      }}
-    >
+    <div className="relative h-screen w-screen">
       <img
         ref={imgRef}
         src={path}
         alt="Field Map"
         onLoad={handleImageLoad}
-        style={{
-          width: "100%",
-          height: "100%",
-          objectFit: "contain",
-          aspectRatio,
-          position: "absolute",
-          inset: 0,
-          zIndex: 0,
-        }}
+        className="absolute inset-0 h-full w-full object-contain z-0"
+        style={{ aspectRatio }}
       />
 
       <div
         ref={heatmapLayerRef}
-        style={{
-          position: "absolute",
-          inset: 0,
-          zIndex: 1,
-          pointerEvents: "none",
-          width: "100%",
-          height: "100%",
-        }}
+        className="absolute inset-0 z-[1] h-full w-full pointer-events-none"
       />
       <HeatMapOverlay
         points={fallbackPoints}

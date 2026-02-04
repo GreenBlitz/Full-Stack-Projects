@@ -1,7 +1,6 @@
 // בס"ד
-import { useRef, useEffect, useCallback, useState } from "react";
-import type { RefObject } from "react";
-import type { Point } from "../../../../../../packages/scouting_types/rebuilt";
+import { useRef, useEffect, useCallback, useState, type RefObject } from "react";
+import type { Point } from "@repo/scouting_types";
 import { HEAT_STYLE, HEAT_VALUES, LAYOUT, mapHeatPoints } from "./HeatMapUtils";
 
 export interface UseHeatMapResult {
@@ -29,16 +28,16 @@ export const useHeatMap = (
   const READY_IMAGE_SIZE = LAYOUT.zeroSize;
 
   const updateHeatmap = useCallback(() => {
-    const img = imgRef.current;
-    const layer = heatmapLayerRef.current;
-    if (!img || !layer) return;
+    const img = imgRef.current;//put the img
+    const layer = heatmapLayerRef.current;//put the layer
+    if (!img || !layer) return;//if the img or the layer is not found, return
 
     const layerRect = layer.getBoundingClientRect();
     const roundedWidth = Math.round(layerRect.width);
     const roundedHeight = Math.round(layerRect.height);
-    if (roundedWidth <= LAYOUT.zeroSize || roundedHeight <= LAYOUT.zeroSize) return;
+    if (roundedWidth <= LAYOUT.zeroSize || roundedHeight <= LAYOUT.zeroSize) return;//if the width or the height is less than 0, return
     setOverlaySize((prev) =>
-      prev.width === roundedWidth && prev.height === roundedHeight
+      prev.width === roundedWidth && prev.height === roundedHeight//if the width and the height are the same as the rounded width and the rounded height, return the previous size
         ? prev
         : { width: roundedWidth, height: roundedHeight },
     );

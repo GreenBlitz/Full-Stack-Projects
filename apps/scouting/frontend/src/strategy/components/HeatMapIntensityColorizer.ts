@@ -23,12 +23,18 @@ interface ColorStop {
   color: [number, number, number];
 }
 
-const COLOR_BLUE_DARK: [number, number, number] = [BYTE_ZERO, BYTE_ZERO, BYTE_MID];
-const COLOR_BLUE: [number, number, number] = [BYTE_ZERO, BYTE_LOW, BYTE_MAX];
-const COLOR_CYAN: [number, number, number] = [BYTE_ZERO, BYTE_MAX, BYTE_MAX];
-const COLOR_GREEN: [number, number, number] = [BYTE_ZERO, BYTE_MAX, BYTE_ZERO];
-const COLOR_YELLOW: [number, number, number] = [BYTE_MAX, BYTE_MAX, BYTE_ZERO];
-const COLOR_RED: [number, number, number] = [BYTE_MAX, BYTE_ZERO, BYTE_ZERO];
+const rgb = (red: number, green: number, blue: number): [number, number, number] => [
+  red,
+  green,
+  blue,
+];
+
+const COLOR_BLUE_DARK = rgb(BYTE_ZERO, BYTE_ZERO, BYTE_MID);
+const COLOR_BLUE = rgb(BYTE_ZERO, BYTE_LOW, BYTE_MAX);
+const COLOR_CYAN = rgb(BYTE_ZERO, BYTE_MAX, BYTE_MAX);
+const COLOR_GREEN = rgb(BYTE_ZERO, BYTE_MAX, BYTE_ZERO);
+const COLOR_YELLOW = rgb(BYTE_MAX, BYTE_MAX, BYTE_ZERO);
+const COLOR_RED = rgb(BYTE_MAX, BYTE_ZERO, BYTE_ZERO);
 
 const COLOR_RAMP: ColorStop[] = [
   { stop: NORMALIZED_MIN, color: COLOR_BLUE_DARK },
@@ -42,21 +48,36 @@ const COLOR_RAMP: ColorStop[] = [
 const lerp = (start: number, end: number, t: number): number =>
   start + (end - start) * t;
 
-const getRampColor = (value: number): [number, number, number] => {
+const getRampColor = (value: number): [r:number, g:number, b:number] => {
   const clamped = Math.min(NORMALIZED_MAX, Math.max(NORMALIZED_MIN, value));
-  for (const [index, start] of COLOR_RAMP.slice(COLOR_RAMP_OFFSET, -RAMP_LAST_OFFSET).entries()) {
-    const end = COLOR_RAMP[index + RAMP_INDEX_STEP];
+  const ramp = COLOR_RAMP.slice(COLOR_RAMP_OFFSET, -RAMP_LAST_OFFSET);
+  const rampPairs = ramp.slice(COLOR_RAMP_OFFSET, -RAMP_INDEX_STEP);
+  
+  const fallback = ramp[ramp.length - RAMP_LAST_OFFSET].color;
+  const result = { value: fallback };
+  const found = { value: false };
+
+  rampPairs.forEach((start, index) => {
+    if (found.value) {
+      return;
+    }
+    const end = ramp[index + RAMP_INDEX_STEP];
     if (clamped >= start.stop && clamped <= end.stop) {
       const range = end.stop - start.stop || NORMALIZED_MAX;
-      const t = (clamped - start.stop) / range;
-      return [
-        Math.round(lerp(start.color[CHANNEL_RED], end.color[CHANNEL_RED], t)),
-        Math.round(lerp(start.color[CHANNEL_GREEN], end.color[CHANNEL_GREEN], t)),
-        Math.round(lerp(start.color[CHANNEL_BLUE], end.color[CHANNEL_BLUE], t)),
+      const time = (clamped - start.stop) / range;
+      const interpolated = start.color.map((channel, colorIndex) =>
+        Math.round(lerp(channel, end.color[colorIndex], time)),
+      );
+      result.value = [
+        interpolated[CHANNEL_RED] ?? BYTE_ZERO,
+        interpolated[CHANNEL_GREEN] ?? BYTE_ZERO,
+        interpolated[CHANNEL_BLUE] ?? BYTE_ZERO,
       ];
+      found.value = true;
     }
-  }
-  return COLOR_RAMP[COLOR_RAMP.length - RAMP_LAST_OFFSET].color;
+  });
+
+  return result.value;
 };
 
 export const colorizeHeatmapImageData = (
