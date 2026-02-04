@@ -1,5 +1,8 @@
 // בס"ד
-import { convertFromPixelsToCentimeters, distanceFromHub } from "@repo/rebuilt_map";
+import {
+  convertFromPixelsToCentimeters,
+  distanceFromHub,
+} from "@repo/rebuilt_map";
 import type { FuelEvents, FuelObject } from "./fuel-object";
 import { calculateAverage } from "@repo/array-functions";
 
