@@ -18,10 +18,11 @@ const App: FC = () => {
         element={
           <HeatMap
             positions={[
-              { x: 100, y: 100 },
+              { x: 180, y: 100 },
               { x: 200, y: 200 },
               { x: 300, y: 100 },
               { x: 150, y: 300 },
+              { x: 200, y: 500 },
             ]}
             path={`/full-field-${FIELD_IMAGE_DIMENSION}.png`}
             aspectRatio={SQUARE_ASPECT_RATIO}

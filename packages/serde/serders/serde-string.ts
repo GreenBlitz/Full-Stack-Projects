@@ -37,12 +37,12 @@ export const serdeEnumedString = <Options extends string>(
     serializer(serializedData: BitArray, data: Options) {
       const neededBits = bitsNeeded(possibleValues.length);
 
-      for (let i = 0; i < possibleValues.length; i++) {
-        if (data == possibleValues[i]) {
-          serdeUnsignedInt(neededBits).serializer(serializedData, i);
+      possibleValues.forEach((value, index) => {
+        if (data == value) {
+          serdeUnsignedInt(neededBits).serializer(serializedData, index);
           return;
         }
-      }
+      });
       throw new Error(
         `value ${data} is not included in possible values: ${possibleValues.toString()}`
       );

@@ -1,5 +1,4 @@
 // בס"ד
-/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
 import type { FC } from "react";
 import type { Point } from "../../../../../../packages/scouting_types/rebuilt";
 import { HeatMapOverlay } from "./HeatMapOverlay";
