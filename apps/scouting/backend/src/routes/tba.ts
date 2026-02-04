@@ -9,9 +9,9 @@ import {
 } from "../middleware/verification";
 import {
   matchesProps,
-  type ScoreBreakdown2026,
   scoreBreakdown2026,
   tbaMatch,
+  type TBAMatchesProps,
 } from "@repo/scouting_types";
 import { right } from "fp-ts/lib/Either";
 import { StatusCodes } from "http-status-codes";
@@ -76,7 +76,7 @@ const insertMatches = (matches: TBAMatches) =>
     getCollection(),
     map((collection) => collection.insertMany(matches)),
   );
-const getCurrentMatches = flow(
+const getStoredMatches = flow(
   getCollection,
   flatMap((collection) =>
     tryCatch(collection.find().toArray, (error) => ({
@@ -85,34 +85,39 @@ const getCurrentMatches = flow(
     })),
   ),
 );
+
+const getMatches = flow(
+  flatMap((body: TBAMatchesProps) =>
+    pipe(
+      getStoredMatches(),
+      map((currentMatches) => ({ currentMatches, body })),
+    ),
+  ),
+  flatMap(({ currentMatches, body }) =>
+    pipe(
+      getMax(currentMatches, (match) => match.match_number).match_number <
+        body.maxMatch,
+      booleanFold(
+        () =>
+          pipe(
+            fetchTba(`/event/${body.event}/matches`, tbaMatches),
+            map((fetchedMatches) => {
+              insertMatches(fetchedMatches);
+              return fetchedMatches;
+            }),
+          ),
+        () => fromEither(right(currentMatches)),
+      ),
+    ),
+  ),
+);
+
 tbaRouter.post("/matches", async (req, res) => {
   await pipe(
     right(req),
     createBodyVerificationPipe(matchesProps),
     fromEither,
-    flatMap((body) =>
-      pipe(
-        getCurrentMatches(),
-        map((currentMatches) => ({ currentMatches, body })),
-      ),
-    ),
-    flatMap(({ currentMatches, body }) =>
-      pipe(
-        getMax(currentMatches, (match) => match.match_number).match_number <
-          body.maxMatch,
-        booleanFold(
-          () =>
-            pipe(
-              fetchTba(`/event/${body.event}/matches`, tbaMatches),
-              map((fetchedMatches) => {
-                insertMatches(fetchedMatches);
-                return fetchedMatches;
-              }),
-            ),
-          () => fromEither(right(currentMatches)),
-        ),
-      ),
-    ),
+    getMatches,
     fold(
       (error) => () =>
         new Promise((resolve) => {
