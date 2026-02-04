@@ -13,6 +13,9 @@ import {
   ArcElement,
 } from "chart.js";
 
+import type { ChartData, ChartOptions } from "chart.js";
+import type { DataSet } from "./dataset-template";
+
 ChartJS.register(
   LineElement,
   PointElement,
@@ -24,9 +27,6 @@ ChartJS.register(
   Filler,
   ArcElement,
 );
-
-import type { ChartData, ChartOptions } from "chart.js";
-import type { DataSet } from "./data-templates-for-charts";
 
 export interface LineChartProps {
   dataSetsProps: DataSet<any>[];

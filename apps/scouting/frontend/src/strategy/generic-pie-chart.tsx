@@ -13,6 +13,9 @@ import {
   ArcElement,
 } from "chart.js";
 
+import type { ChartData, ChartOptions } from "chart.js";
+import type { DataSet } from "./dataset-template";
+
 ChartJS.register(
   LineElement,
   PointElement,
@@ -22,11 +25,8 @@ ChartJS.register(
   Tooltip,
   Legend,
   Filler,
-  ArcElement
+  ArcElement,
 );
-
-import type { ChartData, ChartOptions } from "chart.js";
-import type { DataSet } from "./data-templates-for-charts";
 
 const convertDataToPieChartFormat = ({
   name,
@@ -51,8 +51,8 @@ const convertDataToPieChartFormat = ({
 export const PieGraph = ({ name, points, color }: DataSet<string | number>) => {
   const data = convertDataToPieChartFormat({ name, points, color });
   const options: ChartOptions<"pie"> = {
-  responsive: true,
-  maintainAspectRatio: false, 
-};
+    responsive: true,
+    maintainAspectRatio: false,
+  };
   return <Pie data={data} options={options} />;
 };
