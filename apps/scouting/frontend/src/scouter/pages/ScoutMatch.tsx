@@ -15,8 +15,8 @@ import {
 } from "@repo/scouting_types";
 import { ShiftTab } from "./tabs/ShiftTab";
 import { useLocalStorage } from "@repo/local_storage_hook";
-import { useNavigate } from "react-router-dom";
 import { PostMatchTab } from "./tabs/PostMatchTab";
+import { useNavigate } from "react-router-dom";
 import { AutoTab } from "./tabs/AutoTab";
 import { ClimbTab } from "./tabs/ClimbTab";
 import { PreMatchTab } from "../../PreMatchTab";
@@ -37,31 +37,33 @@ const TABS: Tab[] = [
   },
   { name: "Auto", Component: AutoTab },
   {
-    name: "Trans",
-    Component: () => <div className="p-4">Transition Content</div>,
+    name: "Transition",
+    Component: (props) => (
+      <ShiftTab shiftType={"transition"} tabIndex={0} {...props} />
+    ),
   },
   {
     name: "Shift1",
     Component: (props) => (
-      <ShiftTab shiftType={"regular"} tabIndex={0} {...props} />
+      <ShiftTab shiftType={"teleop"} tabIndex={0} {...props} />
     ),
   },
   {
     name: "Shift2",
     Component: (props) => (
-      <ShiftTab shiftType={"regular"} tabIndex={1} {...props} />
+      <ShiftTab shiftType={"teleop"} tabIndex={1} {...props} />
     ),
   },
   {
     name: "Shift3",
     Component: (props) => (
-      <ShiftTab shiftType={"regular"} tabIndex={2} {...props} />
+      <ShiftTab shiftType={"teleop"} tabIndex={2} {...props} />
     ),
   },
   {
     name: "Shift4",
     Component: (props) => (
-      <ShiftTab shiftType={"regular"} tabIndex={3} {...props} />
+      <ShiftTab shiftType={"teleop"} tabIndex={3} {...props} />
     ),
   },
   {
