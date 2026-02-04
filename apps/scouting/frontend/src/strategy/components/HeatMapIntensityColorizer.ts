@@ -3,8 +3,6 @@ const NORMALIZED_MIN = 0;
 const NORMALIZED_MAX = 1;
 const COLOR_RAMP_OFFSET = 0;
 const BYTE_ZERO = 0;
-const BYTE_LOW = 64;
-const BYTE_MID = 128;
 const BYTE_MAX = 255;
 const CHANNEL_STRIDE = 4;
 const CHANNEL_RED = 0;
@@ -17,7 +15,6 @@ const COLOR_STOP_GREEN = 0.6;
 const COLOR_STOP_WARM = 0.8;
 const RAMP_INDEX_STEP = 1;
 const RAMP_LAST_OFFSET = 1;
-
 interface ColorStop {
   stop: number;
   color: ColorRGB;
@@ -28,31 +25,23 @@ interface ColorRGB {
   green: number;
   blue: number;
 }
-
-const rgb = (red: number, green: number, blue: number): ColorRGB => ({
-  red,
-  green,
-  blue,
-});
-
-const COLOR_BLUE_DARK = rgb(BYTE_ZERO, BYTE_ZERO, BYTE_MID);
-const COLOR_BLUE = rgb(BYTE_ZERO, BYTE_LOW, BYTE_MAX);
-const COLOR_CYAN = rgb(BYTE_ZERO, BYTE_MAX, BYTE_MAX);
-const COLOR_GREEN = rgb(BYTE_ZERO, BYTE_MAX, BYTE_ZERO);
-const COLOR_YELLOW = rgb(BYTE_MAX, BYTE_MAX, BYTE_ZERO);
-const COLOR_RED = rgb(BYTE_MAX, BYTE_ZERO, BYTE_ZERO);
-
 const COLOR_RAMP: ColorStop[] = [
-  { stop: NORMALIZED_MIN, color: COLOR_BLUE_DARK },
-  { stop: COLOR_STOP_COOL, color: COLOR_BLUE },
-  { stop: COLOR_STOP_CYAN, color: COLOR_CYAN },
-  { stop: COLOR_STOP_GREEN, color: COLOR_GREEN },
-  { stop: COLOR_STOP_WARM, color: COLOR_YELLOW },
-  { stop: NORMALIZED_MAX, color: COLOR_RED },
+  { stop: NORMALIZED_MIN, color: { red: 0, green: 0, blue: 128 } },
+  { stop: COLOR_STOP_COOL, color: { red: 0, green: 64, blue: 255 } },
+  { stop: COLOR_STOP_CYAN, color: { red: 0, green: 255, blue: 255 } },
+  { stop: COLOR_STOP_GREEN, color: { red: 0, green: 255, blue: 0 }},
+  { stop: COLOR_STOP_WARM, color: { red: 255, green: 255, blue: 0 } },
+  { stop: NORMALIZED_MAX, color: { red: 255, green: 0, blue: 0 } },
 ];
 
 const lerp = (start: number, end: number, t: number): number =>
   start + (end - start) * t;
+
+const lerpColor = (start: ColorRGB, end: ColorRGB, t: number): ColorRGB => ({
+  red: Math.round(lerp(start.red, end.red, t)),
+  green: Math.round(lerp(start.green, end.green, t)),
+  blue: Math.round(lerp(start.blue, end.blue, t)),
+});
 
 const getRampColor = (value: number): ColorRGB => {
   const clamped = Math.min(NORMALIZED_MAX, Math.max(NORMALIZED_MIN, value));
@@ -62,7 +51,7 @@ const getRampColor = (value: number): ColorRGB => {
   const fallback = ramp[ramp.length - RAMP_LAST_OFFSET].color;
   const result = { value: fallback };
   const found = { value: false };
-
+  
   rampPairs.forEach((start, index) => {
     if (found.value) {
       return;
@@ -71,11 +60,7 @@ const getRampColor = (value: number): ColorRGB => {
     if (clamped >= start.stop && clamped <= end.stop) {
       const range = end.stop - start.stop || NORMALIZED_MAX;
       const time = (clamped - start.stop) / range;
-      result.value = {
-        red: Math.round(lerp(start.color.red, end.color.red, time)),
-        green: Math.round(lerp(start.color.green, end.color.green, time)),
-        blue: Math.round(lerp(start.color.blue, end.color.blue, time)),
-      };
+      result.value = lerpColor(start.color, end.color, time);
       found.value = true;
     }
   });
