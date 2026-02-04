@@ -1,8 +1,8 @@
 // בס"ד
 import type { GameObject } from "../game-object";
 import type { Match, Point, ShootEvent } from "@repo/scouting_types";
-import { calculateFuelByAveraging } from "./fuel-averaging";
-import { calculateFuelByMatch } from "./fuel-match";
+import { calculateFuelByAveraging } from "./calculations/fuel-averaging";
+import { calculateFuelByMatch } from "./calculations/fuel-match";
 
 export interface BPS {
   events: { shoot: number[]; score: number[] }[];
