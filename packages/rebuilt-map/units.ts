@@ -5,7 +5,10 @@ export const ALLIANCE_ZONE_WIDTH_PIXELS = 395;
 export const TWO_THIRDS_FIELD_WIDTH_PIXELS = 1010;
 export const FIELD_HEIGHT_PIXELS = 652;
 
-const FIELD_SIZE_CENTIMETERS = { x: 1654, y: 807 };
+const FIELD_SIZE_CENTIMETERS = {
+  x: 1654,
+  y: 807,
+};
 const CENTER_HUB_POINT_CENTIMETERS = {
   x: 462.534,
   y: 403.5,
