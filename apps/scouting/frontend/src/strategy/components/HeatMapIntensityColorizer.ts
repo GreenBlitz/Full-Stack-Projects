@@ -9,10 +9,6 @@ const CHANNEL_RED = 0;
 const CHANNEL_GREEN = 1;
 const CHANNEL_BLUE = 2;
 const CHANNEL_ALPHA = 3;
-const COLOR_STOP_COOL = 0.2;
-const COLOR_STOP_CYAN = 0.4;
-const COLOR_STOP_GREEN = 0.6;
-const COLOR_STOP_WARM = 0.8;
 const RAMP_INDEX_STEP = 1;
 const RAMP_LAST_OFFSET = 1;
 interface ColorStop {
@@ -27,10 +23,10 @@ interface ColorRGB {
 }
 const COLOR_RAMP: ColorStop[] = [
   { stop: NORMALIZED_MIN, color: { red: 0, green: 0, blue: 128 } },
-  { stop: COLOR_STOP_COOL, color: { red: 0, green: 64, blue: 255 } },
-  { stop: COLOR_STOP_CYAN, color: { red: 0, green: 255, blue: 255 } },
-  { stop: COLOR_STOP_GREEN, color: { red: 0, green: 255, blue: 0 }},
-  { stop: COLOR_STOP_WARM, color: { red: 255, green: 255, blue: 0 } },
+  { stop: 0.2, color: { red: 0, green: 64, blue: 255 } },
+  { stop: 0.4, color: { red: 0, green: 255, blue: 255 } },
+  { stop: 0.6, color: { red: 0, green: 255, blue: 0 }},
+  { stop: 0.8, color: { red: 255, green: 255, blue: 0 } },
   { stop: NORMALIZED_MAX, color: { red: 255, green: 0, blue: 0 } },
 ];
 
