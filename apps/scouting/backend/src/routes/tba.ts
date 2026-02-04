@@ -22,6 +22,7 @@ import {
   fromEither,
   tryCatch,
   map,
+  chainFirstTaskK,
 } from "fp-ts/lib/TaskEither";
 import { flow, pipe } from "fp-ts/lib/function";
 import { map as taskMap } from "fp-ts/lib/Task";
@@ -30,6 +31,7 @@ import type { Type } from "io-ts";
 import { getDb } from "../middleware/db";
 import { getMax } from "@repo/array-functions";
 import { fold as booleanFold } from "fp-ts/boolean";
+import { chainFirstIOK } from "fp-ts/lib/IOEither";
 
 export const tbaRouter = Router();
 
@@ -101,10 +103,10 @@ const getMatches = flow(
         () =>
           pipe(
             fetchTba(`/event/${body.event}/matches`, tbaMatches),
-            map((fetchedMatches) => {
-              insertMatches(fetchedMatches);
-              return fetchedMatches;
-            }),
+            chainFirstTaskK(
+              (fetchedMatches) => async () =>
+                Promise.resolve(insertMatches(fetchedMatches)),
+            ),
           ),
         () => fromEither(right(currentMatches)),
       ),
