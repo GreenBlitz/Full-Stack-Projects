@@ -1,6 +1,5 @@
 // בס"ד
-import type { Match, ShootEvent } from "@repo/scouting_types";
-import type { BPS, FuelObject } from "./fuel-object";
+import type { BPS, FuelObject, Match, ShootEvent } from "@repo/scouting_types";
 import { calculateSum, firstElement, lastElement } from "@repo/array-functions";
 
 const EMPTY_INTERVAL_DURATION = 0;

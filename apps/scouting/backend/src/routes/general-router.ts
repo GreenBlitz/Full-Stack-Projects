@@ -6,12 +6,11 @@ import { getCollection } from "./forms-router";
 import { pipe } from "fp-ts/lib/function";
 import { flatMap, fold, map, tryCatch } from "fp-ts/lib/TaskEither";
 import { mongofyQuery } from "../middleware/query";
-import type { GeneralFuelData } from "../fuel/fuel-general";
 import { generalCalculateFuel } from "../fuel/fuel-general";
-import type { BPS, FuelObject } from "../fuel/fuel-object";
 import { StatusCodes } from "http-status-codes";
 import { first } from "fp-ts/lib/Semigroup";
 import { reduce } from "fp-ts/lib/Foldable";
+import type { BPS, FuelObject, GeneralFuelData } from "@repo/scouting_types";
 
 export const generalRouter = Router();
 
@@ -34,7 +33,7 @@ const EXAMPLE_BPS: BPS[] = [
   },
 ];
 
-interface TeamNumberAndFuelData {
+export interface TeamNumberAndFuelData {
   teamNumber: number;
   generalFuelData: GeneralFuelData;
 }
