@@ -26,3 +26,20 @@ export const lastElement = <T>(arr: T[]): T =>
 const EMPTY_ARRAY_LENGTH = 0;
 export const isEmpty = (arr: unknown[]): boolean =>
   arr.length === EMPTY_ARRAY_LENGTH;
+
+export const mapObject = <K extends string, A, B>(
+  obj: Record<K, A>,
+  transformation: (value: A) => B,
+): Record<K, B> => {
+  /* 
+   these eslint warnings are because 
+   entries and fromEntries
+   dont save the type of the keys they get
+  */
+  const entries: [K, B][] = Object.entries<A>(obj).map(([key, value]) => [
+    key as K,
+    transformation(value),
+  ]);
+
+  return Object.fromEntries(entries) as unknown as Record<K, B>;
+};

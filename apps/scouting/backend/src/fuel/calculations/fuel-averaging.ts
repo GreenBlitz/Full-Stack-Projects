@@ -62,7 +62,9 @@ const compareSections = (a: number[], b: number[]) =>
 
 const correctSectionToTimeFromEnd = (sections: number[]) => {
   const endTimestamp = lastElement(sections);
-  return sections.map((timestamp) => endTimestamp - timestamp);
+  return sections
+    .filter((timestamp) => timestamp < endTimestamp)
+    .map((timestamp) => endTimestamp - timestamp);
 };
 
 export const calculateFuelByAveraging = (

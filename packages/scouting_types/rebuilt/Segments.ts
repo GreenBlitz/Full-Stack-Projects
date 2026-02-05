@@ -1,6 +1,10 @@
 // בס"ד
 import * as t from "io-ts";
-import { defaultMovement, movementCodec, teleMovementCodec } from "./Movement";
+import {
+  defaultMovement,
+  autoMovementCodec,
+  teleMovementCodec,
+} from "./Movement";
 import {
   climbCodec,
   defaultAutoClimb,
@@ -29,7 +33,7 @@ export const autoClimbCodec = t.type({
 
 export const autoCodec = t.intersection([
   t.type({
-    movement: movementCodec,
+    movement: autoMovementCodec,
     chosenAuto: autoTypes,
     climb: autoClimbCodec,
   }),

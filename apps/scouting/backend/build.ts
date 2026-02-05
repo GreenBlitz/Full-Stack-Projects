@@ -14,6 +14,7 @@ const buildSettings = {
   minify: true,
   platform: "node",
   target: ["ES2022"],
+  loader: { ".png": "file" },
   format: "cjs",
   external: ["@repo/config-env"],
 } satisfies Parameters<typeof build>[0];
