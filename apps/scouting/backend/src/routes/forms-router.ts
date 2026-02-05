@@ -1,14 +1,23 @@
 // בס"ד
 
-import { Router } from "express";
+import { type Request, Router } from "express";
 import { flow, pipe } from "fp-ts/lib/function";
 import { getDb } from "../middleware/db";
-import { flatMap, fold, fromEither, map } from "fp-ts/lib/TaskEither";
+import {
+  filterOrElse,
+  flatMap,
+  fold,
+  fromEither,
+  map,
+} from "fp-ts/lib/TaskEither";
 import { scoutingFormCodec, type ScoutingForm } from "@repo/scouting_types";
 import { StatusCodes } from "http-status-codes";
 import { createBodyVerificationPipe } from "../middleware/verification";
 import { right } from "fp-ts/lib/Either";
 import { mongofyQuery } from "../middleware/query";
+import type { Type } from "io-ts";
+import * as t from "io-ts";
+import { isEmpty } from "@repo/array-functions";
 
 export const formsRouter = Router();
 
@@ -30,18 +39,40 @@ formsRouter.get("/", async (req, res) => {
   )();
 });
 
-formsRouter.post("/single", async (req, res) => {
-  await pipe(
+const getCollectionAndBody = <U>(req: Request, codec: Type<U, unknown>) =>
+  pipe(
     getCollection(),
     flatMap((collection) =>
       pipe(
         right(req),
-        createBodyVerificationPipe(scoutingFormCodec),
+        createBodyVerificationPipe(codec),
         fromEither,
-        map((form) => ({ collection, form })),
+        map((body) => ({ collection, body })),
       ),
     ),
-    map(({ collection, form }) => collection.insertOne(form)),
+  );
+
+formsRouter.post("/single", async (req, res) => {
+  await pipe(
+    getCollectionAndBody(req, scoutingFormCodec),
+    map(({ collection, body }) => collection.insertOne(body)),
+    fold(
+      (error) => () =>
+        Promise.resolve(res.status(error.status).send(error.reason)),
+      (result) => async () =>
+        res.status(StatusCodes.OK).json({ result: await result }),
+    ),
+  )();
+});
+
+formsRouter.post("/multiple", async (req, res) => {
+  await pipe(
+    getCollectionAndBody(req, t.array(scoutingFormCodec)),
+    filterOrElse(
+      ({ body }) => isEmpty(body),
+      () => ({ status: StatusCodes.BAD_REQUEST, reason: `Empty Form Array` }),
+    ),
+    map(({ collection, body }) => collection.insertMany(body)),
     fold(
       (error) => () =>
         Promise.resolve(res.status(error.status).send(error.reason)),
