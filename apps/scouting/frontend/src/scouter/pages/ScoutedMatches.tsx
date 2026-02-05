@@ -7,6 +7,7 @@ import { serialize } from "@repo/serde";
 import { LuQrCode } from "react-icons/lu";
 import { MdFileUpload } from "react-icons/md";
 import { IoIosRemoveCircle } from "react-icons/io";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 const ICON_SIZE = 20;
 
@@ -21,18 +22,39 @@ export const ScoutedMatches: FC = () => {
     [],
   );
   const [selectedMatch, setSelectedMatch] = useState<ScoutingForm>();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const submitMatch = () => {
-    //will implement in another PR
-    console.log("Submitted!");
+  const submitMatch = async (form: ScoutingForm) => {
+    setIsLoading(true);
+    try {
+      await fetch("/api/v1/forms/single", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
+    } catch (error: unknown) {
+      alert(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
+  if (isLoading) {
+    return (
+      <div className="w-full h-screen flex items-center justify-center ">
+        <AiOutlineLoading3Quarters className="text-8xl animate-spin mx-auto my-" />
+      </div>
+    );
+  }
 
   return (
-    <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4 w-full h-screen">
       {scoutedMatches.map((match, index) => (
         <div
           key={index}
-          className="bg-zinc-900 shadow-[0_0_15px_rgba(34,197,94,0.1)] rounded-xl p-5 border border-gray-100 dark:border-gray-700 cursor-pointer transition-transform hover:scale-[1.02]"
+          className="bg-zinc-900 shadow-[0_0_15px_rgba(34,197,94,0.1)] rounded-xl p-5 border 
+            border-gray-100 dark:border-gray-700 cursor-pointer transition-transform hover:scale-[1.02] h-26"
         >
           <div className="flex justify-between items-center">
             <div>
@@ -55,7 +77,9 @@ export const ScoutedMatches: FC = () => {
                 <IoIosRemoveCircle size={ICON_SIZE} />
               </div>
               <div
-                onClick={submitMatch}
+                onClick={() => {
+                  void submitMatch(match);
+                }}
                 className="h-min my-auto mx-2 bg-green-600 p-2 rounded-2xl"
               >
                 <MdFileUpload size={ICON_SIZE} />
