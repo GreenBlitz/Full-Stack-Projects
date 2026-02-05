@@ -7,9 +7,9 @@ import { createTypeCheckingEndpointFlow } from "../middleware/verification";
 import { teamsProps } from "@repo/scouting_types/teams";
 import { flatMap, fromEither, map } from "fp-ts/lib/TaskEither";
 import { getFormsCollection } from "./forms-router";
-import { castItem } from "../middleware/query";
 import { StatusCodes } from "http-status-codes";
 import { map as eitherMap } from "fp-ts/Either";
+import { castItem } from "@repo/type-utils";
 
 export const teamsRouter = Router();
 
