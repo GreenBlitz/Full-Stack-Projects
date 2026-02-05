@@ -81,7 +81,10 @@ generalRouter.get("/", async (req, res) => {
     flatMap((collection) =>
       tryCatch(
         () => collection.find(mongofyQuery(req.query)).toArray(),
-        (error) => ({ status: 500, reason: `DB Error: ${error}` }),
+        (error) => ({
+          status: StatusCodes.INTERNAL_SERVER_ERROR,
+          reason: `DB Error: ${error}`,
+        }),
       ),
     ),
     map((forms) =>
