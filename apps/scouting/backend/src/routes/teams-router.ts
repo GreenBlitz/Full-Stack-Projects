@@ -15,7 +15,7 @@ import type {
   Shift,
   TeamData,
 } from "@repo/scouting_types";
-import { teamsProps } from "@repo/scouting_types";
+import { ACCURACY_DISTANCES, teamsProps } from "@repo/scouting_types";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
 import { calculateSum, mapObject } from "@repo/array-functions";
 import { createFuelObject, type BPS } from "../fuel/fuel-object";
@@ -24,8 +24,6 @@ import { calculateFuelStatisticsOfShift } from "../fuel/fuel-general";
 
 export const teamsRouter = Router();
 
-// eslint-disable-next-line @typescript-eslint/no-magic-numbers
-const DISTANCES = [1, 2, 20] as const;
 
 interface SectionForm {
   match: Match;
@@ -46,7 +44,7 @@ const processFuelAndAccuracy = (
         .flatMap((shift) => shift.shootEvents)
         .map((event) => createFuelObject(event, form.match, bpses)),
     ),
-    DISTANCES,
+    ACCURACY_DISTANCES,
   ),
 
   copr: 0,

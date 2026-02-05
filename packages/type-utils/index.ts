@@ -1,6 +1,6 @@
 // בס"ד
 import { constFalse, constTrue, flow, identity } from "fp-ts/lib/function";
-import { type Either, fold, getOrElse, orElse } from "fp-ts/lib/Either";
+import { type Either, getOrElse, orElse } from "fp-ts/lib/Either";
 import type { Refinement } from "fp-ts/lib/Refinement";
 import { left, right } from "fp-ts/lib/Either";
 import { mapObject } from "@repo/array-functions";

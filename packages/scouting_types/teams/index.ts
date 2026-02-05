@@ -13,7 +13,8 @@ export const teamsProps = t.type({
   teams: t.array(t.number),
 });
 
-type AccuracyDistances = 1 | 2 | 20;
+// eslint-disable-next-line @typescript-eslint/no-magic-numbers
+export const ACCURACY_DISTANCES = [1, 2, 20] as const;
 
 // to be replaced with actual fuel object
 // once the fuel package is merged
@@ -27,7 +28,7 @@ interface FuelObject {
 type MatchedEntry<Entry> = { match: Match } & Entry;
 export interface SectionTeamData {
   fuel: MatchedEntry<FuelObject>[];
-  accuracy: Record<AccuracyDistances, FuelObject>;
+  accuracy: Record<(typeof ACCURACY_DISTANCES)[number], FuelObject>;
 
   copr: number; //Compoent offensive power ranking (from tba)
   cdpr: number; //Component defensive power ranking (from tba)
