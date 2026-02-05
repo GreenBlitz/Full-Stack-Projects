@@ -9,13 +9,16 @@ import { mongofyQuery } from "../middleware/query";
 import { generalCalculateFuel } from "../fuel/fuel-general";
 import { StatusCodes } from "http-status-codes";
 
-import type {
-  BPS,
-  FuelObject,
-  GeneralFuelData,
-} from "@repo/scouting_types";
+import type { BPS, FuelObject, GeneralFuelData } from "@repo/scouting_types";
+import { averageFuel } from "../fuel/distance-split";
 
 export const generalRouter = Router();
+
+interface AccumulatedFuelData {
+  fullGame: FuelObject[];
+  auto: FuelObject[];
+  tele: FuelObject[];
+}
 
 const EXAMPLE_BPS: BPS[] = [
   {
@@ -36,49 +39,38 @@ const EXAMPLE_BPS: BPS[] = [
   },
 ];
 
-const DIVIDE_BY_TO_GET_AVERAGE = 2;
 const ONE_ITEM_ARRAY = 1;
 const EMPTY_ARRAY = 0;
 const FIRST_ARRAY_ITEM = 0;
-
-const calcAverage = (num1: number, num2: number) => {
-  return (num1 + num2) / DIVIDE_BY_TO_GET_AVERAGE;
-};
-
-const calcAverageFuelObject = (
-  firstData: FuelObject,
-  secondData: FuelObject,
-) => {
-  const newData: FuelObject = {
-    scored: calcAverage(firstData.scored, secondData.scored),
-    shot: calcAverage(firstData.shot, secondData.shot),
-    missed: calcAverage(firstData.missed, secondData.missed),
-    positions: [...firstData.positions, ...secondData.positions],
-  };
-  return newData;
-};
 
 const calcAverageGeneralFuelData = (fuelData: GeneralFuelData[]) => {
   if (fuelData.length === ONE_ITEM_ARRAY || fuelData.length === EMPTY_ARRAY) {
     return fuelData[FIRST_ARRAY_ITEM];
   }
-  return fuelData.reduce((accumulatedFuelData, currentFuelData) => {
-    const newFuelData: GeneralFuelData = {
-      fullGame: calcAverageFuelObject(
-        accumulatedFuelData.fullGame,
-        currentFuelData.fullGame,
-      ),
-      auto: calcAverageFuelObject(
-        accumulatedFuelData.auto,
-        currentFuelData.auto,
-      ),
-      tele: calcAverageFuelObject(
-        accumulatedFuelData.tele,
-        currentFuelData.tele,
-      ),
-    };
-    return newFuelData;
-  }, fuelData[FIRST_ARRAY_ITEM]);
+
+  const accumulatedFuelData: AccumulatedFuelData =
+    fuelData.reduce<AccumulatedFuelData>(
+      (accumulated, currentFuelData) => {
+        return {
+          fullGame: [...accumulated.fullGame, currentFuelData.fullGame],
+          auto: [...accumulated.auto, currentFuelData.auto],
+          tele: [...accumulated.tele, currentFuelData.tele],
+        };
+      },
+      {
+        fullGame: [],
+        auto: [],
+        tele: [],
+      },
+    );
+
+  const averagedFuelData: GeneralFuelData = {
+    fullGame: averageFuel(accumulatedFuelData.fullGame),
+    auto: averageFuel(accumulatedFuelData.auto),
+    tele: averageFuel(accumulatedFuelData.tele),
+  };
+
+  return averagedFuelData;
 };
 
 generalRouter.get("/", async (req, res) => {

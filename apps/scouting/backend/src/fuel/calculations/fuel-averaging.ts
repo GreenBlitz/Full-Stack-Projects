@@ -1,10 +1,6 @@
 // בס"ד
-<<<<<<< HEAD:apps/scouting/backend/src/fuel/fuel-averaging.ts
-import type { BPS, FuelObject, Match, ShootEvent } from "@repo/scouting_types";
-=======
 import type { Match, ShootEvent } from "@repo/scouting_types";
 import type { BPS, FuelObject } from "../fuel-object";
->>>>>>> origin/master:apps/scouting/backend/src/fuel/calculations/fuel-averaging.ts
 import { calculateSum, firstElement, lastElement } from "@repo/array-functions";
 
 const EMPTY_INTERVAL_DURATION = 0;
