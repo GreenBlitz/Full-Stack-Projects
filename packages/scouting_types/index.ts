@@ -1,6 +1,5 @@
 // בס"ד
-export * from "./rebuilt/scouting_form";
-export * from "./rebuilt/fuel";
+export * from "./rebuilt";
 
 export * from "./tba";
 

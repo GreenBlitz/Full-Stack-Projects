@@ -94,20 +94,18 @@ generalRouter.get("/", async (req, res) => {
       })),
     ),
 
-    map((generalFuelsData) => {
-      return generalFuelsData.reduce<Record<number, GeneralFuelData[]>>(
-        (accumulatorRecord, fuelData) => {
-          return {
-            ...accumulatorRecord,
-            [fuelData.teamNumber]: [
-              ...accumulatorRecord[fuelData.teamNumber],
-              fuelData.generalFuelData,
-            ],
-          };
-        },
+    map((generalFuelsData) =>
+      generalFuelsData.reduce<Record<number, GeneralFuelData[]>>(
+        (accumulatorRecord, fuelData) => ({
+          ...accumulatorRecord,
+          [fuelData.teamNumber]: [
+            ...accumulatorRecord[fuelData.teamNumber],
+            fuelData.generalFuelData,
+          ],
+        }),
         {},
-      );
-    }),
+      ),
+    ),
 
     map((teamAndAllFuelData) => {
       const teamAndAvaragedFuelData: Record<number, GeneralFuelData> = {};

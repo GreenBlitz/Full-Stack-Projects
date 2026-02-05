@@ -5,6 +5,7 @@ import {
   getCoreRowModel,
   getSortedRowModel,
   useReactTable,
+  type Header,
   type SortingState,
 } from "@tanstack/react-table";
 import type {
@@ -163,10 +164,11 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
                         header.getContext(),
                       )}
                       <span className="text-emerald-500/50">
-                        {{
-                          asc: <ChevronUp size={12} strokeWidth={3} />,
-                          desc: <ChevronDown size={12} strokeWidth={3} />,
-                        }[header.column.getIsSorted() as string] ?? (
+                        {header.column.getIsSorted() === "asc" ? (
+                          <ChevronUp size={12} strokeWidth={3} />
+                        ) : header.column.getIsSorted() === "desc" ? (
+                          <ChevronDown size={12} strokeWidth={3} />
+                        ) : (
                           <ChevronsUpDown size={12} strokeWidth={2} />
                         )}
                       </span>
