@@ -53,7 +53,8 @@ const DIGITS_AFTER_DOT = 1;
 export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
   filters,
 }) => {
-  const [teamNumberAndFuelData, setTeamNumberAndFuelData] = useState<TeamNumberAndFuelData>({});
+  const [teamNumberAndFuelData, setTeamNumberAndFuelData] =
+    useState<TeamNumberAndFuelData>({});
   const [gameTime, setGameTime] = useState<GameTime>("tele");
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -61,12 +62,16 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
     fetchFuelData(filters).then(setTeamNumberAndFuelData).catch(console.error);
   }, [filters]);
 
-  const tableData = useMemo(() => {
-    return Object.entries(teamNumberAndFuelData).map(([teamNumber, generalFuelData]) => ({
-      teamNumber: Number(teamNumber),
-      generalFuelData,
-    }));
-  }, [teamNumberAndFuelData]);
+  const tableData = useMemo(
+    () =>
+      Object.entries(teamNumberAndFuelData).map(
+        ([teamNumber, generalFuelData]) => ({
+          teamNumber: Number(teamNumber),
+          generalFuelData,
+        }),
+      ),
+    [teamNumberAndFuelData],
+  );
 
   const columnHelper = createColumnHelper<TableRow>();
 
