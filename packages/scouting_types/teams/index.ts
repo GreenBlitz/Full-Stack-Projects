@@ -14,7 +14,7 @@ export const teamsProps = t.type({
 });
 
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-export const ACCURACY_DISTANCES = [1, 2, 20] as const;
+export const ACCURACY_DISTANCES = [100, 200, 2000] as const;
 
 // to be replaced with actual fuel object
 // once the fuel package is merged

@@ -40,23 +40,25 @@ interface SectionForm {
 const processFuelAndAccuracy = (
   forms: SectionForm[],
   bpses: BPS[],
-): SectionTeamData => ({
-  fuel: forms.map((form) => ({
-    match: form.match,
-    ...calculateFuelStatisticsOfShift(form.match, bpses, form.shifts),
-  })),
-  accuracy: splitByDistances(
-    forms.flatMap((form) =>
-      form.shifts
-        .flatMap((shift) => shift.shootEvents)
-        .map((event) => createFuelObject(event, form.match, bpses)),
+): SectionTeamData => {
+  return {
+    fuel: forms.map((form) => ({
+      match: form.match,
+      ...calculateFuelStatisticsOfShift(form.match, bpses, form.shifts),
+    })),
+    accuracy: splitByDistances(
+      forms.flatMap((form) =>
+        form.shifts
+          .flatMap((shift) => shift.shootEvents)
+          .map((event) => createFuelObject(event, form.match, bpses)),
+      ),
+      ACCURACY_DISTANCES,
     ),
-    ACCURACY_DISTANCES,
-  ),
 
-  copr: 0,
-  cdpr: 0,
-});
+    copr: 0,
+    cdpr: 0,
+  };
+};
 
 const processTeam = (bpses: BPS[], forms: ScoutingForm[]): TeamData => {
   const tele = {
@@ -114,7 +116,19 @@ const processTeam = (bpses: BPS[], forms: ScoutingForm[]): TeamData => {
   return { tele, auto, fullGame, metrics: { epa: 0, bps: 0 } };
 };
 
-const getBPSes = (): BPS[] => [];
+const getBPSes = (): BPS[] => [
+  {
+    events: [
+      {
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        score: [1000, 2000, 3000],
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        shoot: [1000, 1400, 2000, 3000],
+      },
+    ],
+    match: { type: "qualification", number: 8 },
+  },
+];
 
 teamsRouter.get("/", async (req, res) => {
   await pipe(
