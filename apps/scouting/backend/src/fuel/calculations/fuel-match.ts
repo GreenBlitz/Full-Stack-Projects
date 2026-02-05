@@ -1,6 +1,6 @@
 // בס"ד
 import type { ShootEvent } from "@repo/scouting_types";
-import type { BPS, FuelObject } from "./fuel-object";
+import type { BPS, FuelObject } from "../fuel-object";
 
 const getIncludedShots = (section: number[], shot: ShootEvent) => {
   return section.filter(
