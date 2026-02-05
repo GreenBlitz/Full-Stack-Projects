@@ -50,6 +50,25 @@ export const ScoutedMatches: FC = () => {
       setIsLoading(false);
     }
   };
+
+  const submitAll = async () => {
+    setIsLoading(true);
+    try {
+      await fetch("/api/v1/forms/multiple", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(scoutedMatches),
+      });
+      setScoutedMatches([]);
+    } catch (error: unknown) {
+      alert(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="w-full h-screen flex items-center justify-center">
@@ -170,7 +189,7 @@ export const ScoutedMatches: FC = () => {
         <button
           className="bg-linear-to-r from-green-700 to-green-800 shadow-[0_0_15px_rgba(34,250,94,0.4)] w-full h-12 mt-auto"
           onClick={() => {
-            console.log("submit");
+            void submitAll();
           }}
         >
           Submit All
