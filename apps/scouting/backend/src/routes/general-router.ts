@@ -9,11 +9,7 @@ import { mongofyQuery } from "../middleware/query";
 import { generalCalculateFuel } from "../fuel/fuel-general";
 import { StatusCodes } from "http-status-codes";
 
-import type {
-  BPS,
-  FuelObject,
-  GeneralFuelData,
-} from "@repo/scouting_types";
+import type { BPS, FuelObject, GeneralFuelData } from "@repo/scouting_types";
 import { averageFuel } from "../fuel/distance-split";
 import { firstElement, isEmpty } from "@repo/array-functions";
 
@@ -25,24 +21,9 @@ interface AccumulatedFuelData {
   tele: FuelObject[];
 }
 
-const EXAMPLE_BPS: BPS[] = [
-  {
-    match: {
-      number: 42,
-      type: "qualification",
-    },
-    events: [
-      {
-        shoot: [12, 45, 88, 110],
-        score: [12, 88],
-      },
-      {
-        shoot: [135, 140],
-        score: [135, 140],
-      },
-    ],
-  },
-];
+const getBPS = () => {
+  return [];
+};
 
 const ONE_ITEM_ARRAY = 1;
 
@@ -89,7 +70,7 @@ generalRouter.get("/", async (req, res) => {
     map((forms) =>
       forms.map((form) => ({
         teamNumber: form.teamNumber,
-        generalFuelData: generalCalculateFuel(form, EXAMPLE_BPS),
+        generalFuelData: generalCalculateFuel(form, getBPS()),
       })),
     ),
 
