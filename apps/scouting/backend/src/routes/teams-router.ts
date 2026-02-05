@@ -4,7 +4,15 @@ import { Router } from "express";
 import { right } from "fp-ts/lib/Either";
 import { pipe } from "fp-ts/lib/function";
 import { createTypeCheckingEndpointFlow } from "../middleware/verification";
-import { flatMap, fold, fromEither, map, tryCatch } from "fp-ts/lib/TaskEither";
+import {
+  flatMap,
+  fold,
+  fromEither,
+  left as taskLeft,
+  right as taskRight,
+  map,
+  tryCatch,
+} from "fp-ts/lib/TaskEither";
 import { getFormsCollection } from "./forms-router";
 import { StatusCodes } from "http-status-codes";
 import { castItem } from "@repo/type-utils";
@@ -17,13 +25,12 @@ import type {
 } from "@repo/scouting_types";
 import { ACCURACY_DISTANCES, teamsProps } from "@repo/scouting_types";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
-import { calculateSum, mapObject } from "@repo/array-functions";
+import { calculateSum, isEmpty, mapObject } from "@repo/array-functions";
 import { createFuelObject, type BPS } from "../fuel/fuel-object";
 import { splitByDistances } from "../fuel/distance-split";
 import { calculateFuelStatisticsOfShift } from "../fuel/fuel-general";
 
 export const teamsRouter = Router();
-
 
 interface SectionForm {
   match: Match;
@@ -133,6 +140,14 @@ teamsRouter.get("/", async (req, res) => {
           reason: `Error Getting Teams From DB: ${error}`,
         }),
       ),
+    ),
+    flatMap((item) =>
+      isEmpty(item)
+        ? taskLeft({
+            status: StatusCodes.BAD_GATEWAY,
+            reason: `Form Array Is Empty`,
+          })
+        : taskRight(item),
     ),
     map(groupBy((form) => form.teamNumber.toString())),
     map((teams) => ({ teams, bpses: getBPSes() })),
