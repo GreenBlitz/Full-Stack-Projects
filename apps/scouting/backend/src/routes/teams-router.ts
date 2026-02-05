@@ -4,11 +4,10 @@ import { Router } from "express";
 import { right } from "fp-ts/lib/Either";
 import { pipe } from "fp-ts/lib/function";
 import { createTypeCheckingEndpointFlow } from "../middleware/verification";
-import { teamsProps } from "@repo/scouting_types/teams";
+import { type TeamData, teamsProps } from "@repo/scouting_types/teams";
 import { flatMap, fold, fromEither, map, tryCatch } from "fp-ts/lib/TaskEither";
 import { getFormsCollection } from "./forms-router";
 import { StatusCodes } from "http-status-codes";
-import { map as eitherMap } from "fp-ts/Either";
 import { castItem } from "@repo/type-utils";
 import type { ScoutingForm } from "@repo/scouting_types";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
@@ -16,15 +15,18 @@ import { mapObject } from "@repo/array-functions";
 
 export const teamsRouter = Router();
 
-const processTeam = (forms: ScoutingForm[]) => {};
+const processTeam = (forms: ScoutingForm[]): TeamData => {
+  return {} as TeamData;
+};
 
-teamsRouter.get("/", (req, res) =>
-  pipe(
+teamsRouter.get("/", async (req, res) => {
+  await pipe(
     getFormsCollection(),
     flatMap((collection) =>
       pipe(
-        right(req.query),
-        eitherMap(castItem),
+        req.query,
+        castItem,
+        right,
         createTypeCheckingEndpointFlow(teamsProps, (error) => ({
           status: StatusCodes.BAD_REQUEST,
           reason: `Incorrect Query Parameters: ${error}`,
@@ -33,12 +35,9 @@ teamsRouter.get("/", (req, res) =>
         map(({ teams }) => ({ collection, teams })),
       ),
     ),
-    map(({ collection, teams }) =>
-      collection.find({ teamNumber: { $in: teams } }).toArray(),
-    ),
-    flatMap((item) =>
+    flatMap(({ collection, teams }) =>
       tryCatch(
-        () => item,
+        () => collection.find({ teamNumber: { $in: teams } }).toArray(),
         (error) => ({
           status: StatusCodes.INTERNAL_SERVER_ERROR,
           reason: `Error Getting Teams From DB: ${error}`,
@@ -53,5 +52,5 @@ teamsRouter.get("/", (req, res) =>
       (teams) => () =>
         Promise.resolve(res.status(StatusCodes.OK).json({ teams })),
     ),
-  ),
-);
+  )();
+});
