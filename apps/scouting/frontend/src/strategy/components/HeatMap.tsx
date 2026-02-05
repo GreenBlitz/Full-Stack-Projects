@@ -7,25 +7,25 @@ import { useHeatMap } from "./useHeatMap";
 interface HeatMapProps {
   positions: Point[];
   path: string;
-  aspectRatio: number;
+  aspectRatio: number;//width/height  
 }
 
-export const HeatMap: FC<HeatMapProps> = ({ positions, path, aspectRatio }) => {
+export const HeatMap: FC<HeatMapProps> = (heatmap) => {
   const { heatmapLayerRef, imgRef, fallbackPoints, handleImageLoad, radius, overlaySize } = useHeatMap(
-    positions,
-    path,
-    aspectRatio,
+    heatmap.positions,
+    heatmap.path,
+    heatmap.aspectRatio,
   );
 
   return (
     <div className="relative h-screen w-screen">
       <img
         ref={imgRef}
-        src={path}
+        src={heatmap.path}
         alt="Field Map"
         onLoad={handleImageLoad}
         className="absolute inset-0 h-full w-full object-contain z-0"
-        style={{ aspectRatio }}
+        style={{ aspectRatio: heatmap.aspectRatio }}
       />
 
       <div

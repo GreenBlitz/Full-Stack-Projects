@@ -1,7 +1,6 @@
 // בס"ד
 const NORMALIZED_MIN = 0;
 const NORMALIZED_MAX = 1;
-const COLOR_RAMP_OFFSET = 0;
 const BYTE_ZERO = 0;
 const BYTE_MAX = 255;
 const CHANNEL_STRIDE = 4;
@@ -10,7 +9,6 @@ const CHANNEL_GREEN = 1;
 const CHANNEL_BLUE = 2;
 const CHANNEL_ALPHA = 3;
 const RAMP_INDEX_STEP = 1;
-const RAMP_LAST_OFFSET = 1;
 interface ColorStop {
   stop: number;
   color: ColorRGB;
@@ -22,49 +20,59 @@ interface ColorRGB {
   blue: number;
 }
 const COLOR_RAMP: ColorStop[] = [
-  { stop: 0, color: { red: 0, green: 0, blue: 128 } },
-  { stop: 0.2, color: { red: 0, green: 64, blue: 255 } },
+  { stop: 0, color: { red: 0, green: 0, blue: 255 } },
+  { stop: 0.2, color: { red: 0, green: 128, blue: 255 } },
   { stop: 0.4, color: { red: 0, green: 255, blue: 255 } },
   { stop: 0.6, color: { red: 0, green: 255, blue: 0 }},
   { stop: 0.8, color: { red: 255, green: 255, blue: 0 } },
   { stop: 1, color: { red: 255, green: 0, blue: 0 } },
 ];
 
+// Linearly interpolate between two numbers (t in [0,1]).
 const lerp = (start: number, end: number, t: number): number =>
   start + (end - start) * t;
 
+// Linearly interpolate each RGB channel.
 const lerpColor = (start: ColorRGB, end: ColorRGB, t: number): ColorRGB => ({
   red: Math.round(lerp(start.red, end.red, t)),
   green: Math.round(lerp(start.green, end.green, t)),
   blue: Math.round(lerp(start.blue, end.blue, t)),
 });
 
+// Map a normalized intensity value into a ramp color.
 const getRampColor = (value: number): ColorRGB => {
-  const clamped = Math.min(NORMALIZED_MAX, Math.max(NORMALIZED_MIN, value));
-  const ramp = COLOR_RAMP.slice(COLOR_RAMP_OFFSET, -RAMP_LAST_OFFSET);
-  const rampPairs = ramp.slice(COLOR_RAMP_OFFSET, -RAMP_INDEX_STEP);
-  
-  const fallback = ramp[ramp.length - RAMP_LAST_OFFSET].color;
-  const result = { value: fallback };
+  const normalized = Math.min(
+    NORMALIZED_MAX,
+    Math.max(
+      NORMALIZED_MIN,
+      (value - NORMALIZED_MIN) / (NORMALIZED_MAX - NORMALIZED_MIN || NORMALIZED_MAX),
+    ),
+  );
+  const lastIndex = COLOR_RAMP.length - RAMP_INDEX_STEP;
+  const [first = { stop: NORMALIZED_MIN, color: { red: BYTE_ZERO, green: BYTE_ZERO, blue: BYTE_ZERO } }] =
+    COLOR_RAMP;
+  if (normalized <= first.stop) {
+    return first.color;
+  }
+  const fallback = COLOR_RAMP[lastIndex]?.color ?? first.color;
+  const match = { value: fallback };
   const found = { value: false };
-  
-  rampPairs.forEach((start, index) => {
+  COLOR_RAMP.slice(RAMP_INDEX_STEP).forEach((end, index) => {
     if (found.value) {
       return;
     }
-    const end = ramp[index + RAMP_INDEX_STEP];
-    if (clamped < start.stop || clamped > end.stop) {
-      return;
-    }
+    const start = COLOR_RAMP[index];
+    if (normalized <= end.stop) {
       const range = end.stop - start.stop || NORMALIZED_MAX;
-      const time = (clamped - start.stop) / range;
-      result.value = lerpColor(start.color, end.color, time);
+      const time = (normalized - start.stop) / range;
+      match.value = lerpColor(start.color, end.color, time);
       found.value = true;
+    }
   });
-
-  return result.value;
+  return match.value;
 };
 
+// Convert alpha-only heatmap data into an RGB ramp with boosted intensity.
 export const colorizeHeatmapImageData = (
   imageData: ImageData,
   intensityGain: number,

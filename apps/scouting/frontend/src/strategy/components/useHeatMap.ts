@@ -15,7 +15,7 @@ export interface UseHeatMapResult {
 export const useHeatMap = (
   positions: Point[],
   path: string,
-  aspectRatio: number,
+  aspectRatio?: number,
 ): UseHeatMapResult => {
   const heatmapLayerRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
