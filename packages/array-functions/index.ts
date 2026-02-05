@@ -26,3 +26,14 @@ export const lastElement = <T>(arr: T[]): T =>
 const EMPTY_ARRAY_LENGTH = 0;
 export const isEmpty = (arr: unknown[]): boolean =>
   arr.length === EMPTY_ARRAY_LENGTH;
+
+export const mapObject = <K extends keyof any, A, B>(
+  obj: Record<K, A>,
+  transformation: (value: A) => B,
+): Record<K, B> => {
+  const entries = Object.entries<A>(obj).map(([key, value]) => [
+    key,
+    transformation(value),
+  ]);
+  return Object.fromEntries(entries);
+};
