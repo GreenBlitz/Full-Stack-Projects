@@ -5,7 +5,6 @@ import {
   getCoreRowModel,
   getSortedRowModel,
   useReactTable,
-  type Header,
   type SortingState,
 } from "@tanstack/react-table";
 import type {

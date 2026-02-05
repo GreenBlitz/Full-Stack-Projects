@@ -13,7 +13,6 @@ import type {
   BPS,
   FuelObject,
   GeneralFuelData,
-  TeamNumberAndFuelData,
 } from "@repo/scouting_types";
 import { averageFuel } from "../fuel/distance-split";
 import { firstElement, isEmpty } from "@repo/array-functions";
