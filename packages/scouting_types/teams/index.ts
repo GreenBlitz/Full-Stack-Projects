@@ -25,21 +25,24 @@ interface FuelObject {
 }
 
 type MatchedEntry<Entry> = { match: Match } & Entry;
-export interface SectionTeamData<
+export interface SectionTeamData {
+  fuel: MatchedEntry<FuelObject>[];
+  accuracy: Record<AccuracyDistances, FuelObject>;
+
+  copr: number; //Compoent offensive power ranking (from tba)
+  cdpr: number; //Component defensive power ranking (from tba)
+}
+interface SectionSpecificTeamData<
   Movement extends TeleMovement = TeleMovement,
   Climbing extends Climb = TeleClimb,
 > {
   movement: Record<keyof Movement, number>;
   climbs: MatchedEntry<Climbing>[];
-  fuel: MatchedEntry<FuelObject>[];
-  accuracy: Record<AccuracyDistances, FuelObject>;
-
-  copr: number;//Compoent offensive power ranking (from tba)
-  cdpr: number;//Component defensive power ranking (from tba)
 }
+
 export interface TeamData {
-  tele: SectionTeamData;
-  auto: SectionTeamData<AutoMovement, AutoClimb>;
+  tele: SectionTeamData & SectionSpecificTeamData;
+  auto: SectionTeamData & SectionSpecificTeamData<AutoMovement, AutoClimb>;
   fullGame: SectionTeamData;
   metrics: { epa: number; bps: number };
 }

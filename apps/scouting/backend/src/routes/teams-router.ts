@@ -8,41 +8,105 @@ import { flatMap, fold, fromEither, map, tryCatch } from "fp-ts/lib/TaskEither";
 import { getFormsCollection } from "./forms-router";
 import { StatusCodes } from "http-status-codes";
 import { castItem } from "@repo/type-utils";
-import {
-  type ScoutingForm,
-  type SectionTeamData,
-  type TeamData,
-  teamsProps,
+import type {
+  Match,
+  ScoutingForm,
+  SectionTeamData,
+  Shift,
+  TeamData,
 } from "@repo/scouting_types";
+import { teamsProps } from "@repo/scouting_types";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
 import { calculateSum, mapObject } from "@repo/array-functions";
-import type { BPS } from "../fuel/fuel-object";
+import { createFuelObject, type BPS } from "../fuel/fuel-object";
 import { splitByDistances } from "../fuel/distance-split";
 import { calculateFuelStatisticsOfShift } from "../fuel/fuel-general";
 
 export const teamsRouter = Router();
 
+// eslint-disable-next-line @typescript-eslint/no-magic-numbers
+const DISTANCES = [1, 2, 20] as const;
+
+interface SectionForm {
+  match: Match;
+  shifts: Shift[];
+}
+
+const processFuelAndAccuracy = (
+  forms: SectionForm[],
+  bpses: BPS[],
+): SectionTeamData => ({
+  fuel: forms.map((form) => ({
+    match: form.match,
+    ...calculateFuelStatisticsOfShift(form.match, bpses, form.shifts),
+  })),
+  accuracy: splitByDistances(
+    forms.flatMap((form) =>
+      form.shifts
+        .flatMap((shift) => shift.shootEvents)
+        .map((event) => createFuelObject(event, form.match, bpses)),
+    ),
+    DISTANCES,
+  ),
+
+  copr: 0,
+  cdpr: 0,
+});
+
 const processTeam = (bpses: BPS[], forms: ScoutingForm[]): TeamData => {
-  const tele: SectionTeamData = {
+  const tele = {
     movement: {
       bumpStuck: calculateSum(forms, (form) =>
         Number(form.tele.movement.bumpStuck),
       ),
     },
     climbs: forms.map((form) => ({ match: form.match, ...form.tele.climb })),
-    fuel: forms.map((form) => ({
+    ...processFuelAndAccuracy(
+      forms.map((form) => ({
+        match: form.match,
+        shifts: [
+          form.tele.transitionShift,
+          form.tele.endgameShift,
+          ...form.tele.shifts,
+        ],
+      })),
+      bpses,
+    ),
+  };
+  const auto = {
+    movement: {
+      bumpStuck: calculateSum(forms, (form) =>
+        Number(form.auto.movement.bumpStuck),
+      ),
+      bumpPass: calculateSum(forms, (form) =>
+        Number(form.auto.movement.bumpPass),
+      ),
+      trenchPass: calculateSum(forms, (form) =>
+        Number(form.auto.movement.trenchPass),
+      ),
+    },
+    climbs: forms.map((form) => ({ match: form.match, ...form.auto.climb })),
+    ...processFuelAndAccuracy(
+      forms.map((form) => ({
+        match: form.match,
+        shifts: [form.auto],
+      })),
+      bpses,
+    ),
+  };
+  const fullGame = processFuelAndAccuracy(
+    forms.map((form) => ({
       match: form.match,
-      ...calculateFuelStatisticsOfShift(form.match, bpses, [
-        form.tele.endgameShift,
+      shifts: [
+        form.auto,
         form.tele.transitionShift,
         ...form.tele.shifts,
-      ]),
+        form.tele.endgameShift,
+      ],
     })),
-    accuracy: null,
-    copr: 0,
-    cdpr: 0,
-  };
-  return { tele } as TeamData;
+    bpses,
+  );
+  return { tele, auto, fullGame, metrics: { epa: 0, bps: 0 } };
 };
 
 const getBPSes = (): BPS[] => [];

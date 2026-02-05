@@ -16,7 +16,7 @@ const averageFuel = (fuels: FuelObject[]): FuelObject => {
 
 export const splitByDistances = <T extends number>(
   fuels: FuelObject[],
-  distances: T[],
+  distances: readonly T[],
 ): Record<T, FuelObject> =>
   Object.assign(
     {},
