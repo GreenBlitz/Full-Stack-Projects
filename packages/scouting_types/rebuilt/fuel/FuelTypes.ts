@@ -40,7 +40,6 @@ export interface GameObjectWithPoints<T extends string> {
   calculateRP: (gameObject: GameObject<T, unknown>) => number;
 }
 
-export interface TeamNumberAndFuelData {
-  teamNumber: number;
-  generalFuelData: GeneralFuelData;
-}
+
+
+export type TeamNumberAndFuelData = Record<number, GeneralFuelData>

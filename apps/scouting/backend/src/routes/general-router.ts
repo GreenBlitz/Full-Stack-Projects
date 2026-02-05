@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */ //for the example bps
 
 import { Router } from "express";
-import { getCollection } from "./forms-router";
+import { getFormsCollection } from "./forms-router";
 import { pipe } from "fp-ts/lib/function";
 import { flatMap, fold, map, tryCatch } from "fp-ts/lib/TaskEither";
 import { mongofyQuery } from "../middleware/query";
@@ -13,7 +13,6 @@ import type {
   BPS,
   FuelObject,
   GeneralFuelData,
-  TeamNumberAndFuelData,
 } from "@repo/scouting_types";
 
 export const generalRouter = Router();
@@ -84,7 +83,7 @@ const calcAverageGeneralFuelData = (fuelData: GeneralFuelData[]) => {
 
 generalRouter.get("/", async (req, res) => {
   await pipe(
-    getCollection(),
+    getFormsCollection(),
     flatMap((collection) =>
       tryCatch(
         () => collection.find(mongofyQuery(req.query)).toArray(),
@@ -92,33 +91,29 @@ generalRouter.get("/", async (req, res) => {
       ),
     ),
     map((forms) =>
-      forms.map((form) => {
-        const newFuelData: TeamNumberAndFuelData = {
-          teamNumber: form.teamNumber,
-          generalFuelData: generalCalculateFuel(form, EXAMPLE_BPS),
-        };
-        return newFuelData;
-      }),
+      forms.map((form) => ({
+        teamNumber: form.teamNumber,
+        generalFuelData: generalCalculateFuel(form, EXAMPLE_BPS),
+      })),
     ),
 
     map((generalFuelsData) => {
-      const teamMap: Map<number, TeamNumberAndFuelData> = new Map();
-      generalFuelsData.forEach((current) => {
-        if (teamMap.has(current.teamNumber)) return;
+      const teamAndAllFuelData: Record<number, GeneralFuelData[]> =
+        generalFuelsData.reduce((finalRecord, fuelData) => {
+          finalRecord[fuelData.teamNumber]
+            ? finalRecord[fuelData.teamNumber].push(fuelData.generalFuelData)
+            : (finalRecord[fuelData.teamNumber] = [fuelData.generalFuelData]);
 
-        const sameTeamFuelData = generalFuelsData.filter(
-          (teamAndFuelData) =>
-            teamAndFuelData.teamNumber === current.teamNumber,
-        );
-        const averagedFuelData: TeamNumberAndFuelData = {
-          teamNumber: current.teamNumber,
-          generalFuelData: calcAverageGeneralFuelData(
-            sameTeamFuelData.map((fuelData) => fuelData.generalFuelData),
-          ),
-        };
-        teamMap.set(current.teamNumber, averagedFuelData);
+          return finalRecord;
+        }, {});
+
+      const teamAndAvaragedFuelData: Record<number, GeneralFuelData> = {};
+      Object.entries(teamAndAllFuelData).forEach(([teamNumber, fuelArray]) => {
+        teamAndAvaragedFuelData[teamNumber] =
+          calcAverageGeneralFuelData(fuelArray);
       });
-      return Array.from(teamMap.values());
+
+      return teamAndAvaragedFuelData;
     }),
 
     fold(

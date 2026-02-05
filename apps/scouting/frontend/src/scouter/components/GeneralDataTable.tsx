@@ -7,10 +7,19 @@ import {
   useReactTable,
   type SortingState,
 } from "@tanstack/react-table";
-import type { GameTime, TeamNumberAndFuelData } from "@repo/scouting_types";
+import type {
+  GameTime,
+  GeneralFuelData,
+  TeamNumberAndFuelData,
+} from "@repo/scouting_types";
 import type React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
+
+interface TableRow {
+  teamNumber: number;
+  generalFuelData: GeneralFuelData;
+}
 
 const fetchFuelData = async (filters = {}) => {
   const params = new URLSearchParams(filters);
@@ -28,7 +37,7 @@ const fetchFuelData = async (filters = {}) => {
     }
 
     const data = await response.json();
-    return data.calculatedFuel as TeamNumberAndFuelData[];
+    return data.calculatedFuel as TeamNumberAndFuelData;
   } catch (err) {
     console.error("Fetch failed:", err);
     throw err;
@@ -44,32 +53,47 @@ const DIGITS_AFTER_DOT = 1;
 export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
   filters,
 }) => {
-  const [data, setData] = useState<TeamNumberAndFuelData[]>([]);
+  const [teamNumberAndFuelData, setTeamNumberAndFuelData] = useState<TeamNumberAndFuelData>({});
   const [gameTime, setGameTime] = useState<GameTime>("tele");
   const [sorting, setSorting] = useState<SortingState>([]);
 
   useEffect(() => {
-    fetchFuelData(filters).catch(console.error);
+    fetchFuelData(filters).then(setTeamNumberAndFuelData).catch(console.error);
   }, [filters]);
 
-  const columnHelper = createColumnHelper<TeamNumberAndFuelData>();
+  const tableData = useMemo(() => {
+    return Object.entries(teamNumberAndFuelData).map(([teamNumber, generalFuelData]) => ({
+      teamNumber: Number(teamNumber),
+      generalFuelData,
+    }));
+  }, [teamNumberAndFuelData]);
+
+  const columnHelper = createColumnHelper<TableRow>();
 
   const columns = [
     columnHelper.accessor("teamNumber", {
       header: "Team Number",
       cell: (info) => (
-        <span className="font-bold text-blue-600">{info.getValue()}</span>
+        <span className="font-black text-emerald-400">{info.getValue()}</span>
       ),
     }),
     columnHelper.accessor((row) => row.generalFuelData[gameTime].shot, {
       id: "shot",
       header: "Shot",
-      cell: (info) => info.getValue().toFixed(DIGITS_AFTER_DOT),
+      cell: (info) => (
+        <span className="text-slate-300 font-medium">
+          {info.getValue().toFixed(DIGITS_AFTER_DOT)}
+        </span>
+      ),
     }),
     columnHelper.accessor((row) => row.generalFuelData[gameTime].scored, {
       id: "scored",
       header: "Scored",
-      cell: (info) => info.getValue().toFixed(DIGITS_AFTER_DOT),
+      cell: (info) => (
+        <span className="text-emerald-400 font-bold">
+          {info.getValue().toFixed(DIGITS_AFTER_DOT)}
+        </span>
+      ),
     }),
     columnHelper.accessor(
       (row) => {
@@ -80,7 +104,7 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
         id: "missed",
         header: "Missed",
         cell: (info) => (
-          <span className="text-red-500">
+          <span className="text-rose-500/90 font-medium">
             {info.getValue().toFixed(DIGITS_AFTER_DOT)}
           </span>
         ),
@@ -89,7 +113,7 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
   ];
 
   const table = useReactTable({
-    data,
+    data: tableData,
     columns,
     state: { sorting },
     onSortingChange: setSorting,
@@ -99,7 +123,6 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
 
   return (
     <div className="flex flex-col gap-6 p-4 bg-slate-950 min-h-screen">
-      {/* Game Time Switcher */}
       <div className="flex gap-1.5 justify-center bg-slate-900/50 p-1.5 rounded-2xl border border-white/5 self-center">
         {(["auto", "tele", "fullGame"] as GameTime[]).map((time) => (
           <button
@@ -118,7 +141,6 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
         ))}
       </div>
 
-      {/* Table Container */}
       <div className="overflow-hidden rounded-2xl border border-white/10 bg-slate-900/40 backdrop-blur-sm shadow-2xl">
         <table className="w-full text-left text-sm border-collapse">
           <thead className="bg-slate-800/50 border-b border-white/10">

@@ -12,14 +12,14 @@ import { mongofyQuery } from "../middleware/query";
 
 export const formsRouter = Router();
 
-export const getCollection = flow(
+export const getFormsCollection = flow(
   getDb,
   map((db) => db.collection<ScoutingForm>("forms")),
 );
 
 formsRouter.get("/", async (req, res) => {
   await pipe(
-    getCollection(),
+    getFormsCollection(),
     map((collection) => collection.find(mongofyQuery(req.query)).toArray()),
     fold(
       (error) => () =>
@@ -32,7 +32,7 @@ formsRouter.get("/", async (req, res) => {
 
 formsRouter.post("/single", async (req, res) => {
   await pipe(
-    getCollection(),
+    getFormsCollection(),
     flatMap((collection) =>
       pipe(
         right(req),
