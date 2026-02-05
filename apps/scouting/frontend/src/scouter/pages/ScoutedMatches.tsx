@@ -36,14 +36,16 @@ export const ScoutedMatches: FC = () => {
   const submitMatch = async (form: ScoutingForm, index: number) => {
     setIsLoading(true);
     try {
-      await fetch("/api/v1/forms/single", {
+      const response = await fetch("/api/v1/forms/single", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(form),
       });
-      removeMatch(index);
+      if (response.ok) {
+        removeMatch(index);
+      }
     } catch (error: unknown) {
       alert(error);
     } finally {
@@ -54,14 +56,16 @@ export const ScoutedMatches: FC = () => {
   const submitAll = async () => {
     setIsLoading(true);
     try {
-      await fetch("/api/v1/forms/multiple", {
+      const response = await fetch("/api/v1/forms/multiple", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(scoutedMatches),
       });
-      setScoutedMatches([]);
+      if (response.ok) {
+        setScoutedMatches([]);
+      }
     } catch (error: unknown) {
       alert(error);
     } finally {
