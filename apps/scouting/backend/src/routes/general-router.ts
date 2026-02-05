@@ -9,8 +9,14 @@ import { mongofyQuery } from "../middleware/query";
 import { generalCalculateFuel } from "../fuel/fuel-general";
 import { StatusCodes } from "http-status-codes";
 
-import type { BPS, FuelObject, GeneralFuelData } from "@repo/scouting_types";
+import type {
+  BPS,
+  FuelObject,
+  GeneralFuelData,
+  TeamNumberAndFuelData,
+} from "@repo/scouting_types";
 import { averageFuel } from "../fuel/distance-split";
+import { firstElement, isEmpty } from "@repo/array-functions";
 
 export const generalRouter = Router();
 
@@ -40,23 +46,19 @@ const EXAMPLE_BPS: BPS[] = [
 ];
 
 const ONE_ITEM_ARRAY = 1;
-const EMPTY_ARRAY = 0;
-const FIRST_ARRAY_ITEM = 0;
 
 const calcAverageGeneralFuelData = (fuelData: GeneralFuelData[]) => {
-  if (fuelData.length === ONE_ITEM_ARRAY || fuelData.length === EMPTY_ARRAY) {
-    return fuelData[FIRST_ARRAY_ITEM];
+  if (fuelData.length === ONE_ITEM_ARRAY || isEmpty(fuelData)) {
+    return firstElement(fuelData);
   }
 
   const accumulatedFuelData: AccumulatedFuelData =
     fuelData.reduce<AccumulatedFuelData>(
-      (accumulated, currentFuelData) => {
-        return {
-          fullGame: [...accumulated.fullGame, currentFuelData.fullGame],
-          auto: [...accumulated.auto, currentFuelData.auto],
-          tele: [...accumulated.tele, currentFuelData.tele],
-        };
-      },
+      (accumulated, currentFuelData) => ({
+        fullGame: [...accumulated.fullGame, currentFuelData.fullGame],
+        auto: [...accumulated.auto, currentFuelData.auto],
+        tele: [...accumulated.tele, currentFuelData.tele],
+      }),
       {
         fullGame: [],
         auto: [],
@@ -90,15 +92,21 @@ generalRouter.get("/", async (req, res) => {
     ),
 
     map((generalFuelsData) => {
-      const teamAndAllFuelData: Record<number, GeneralFuelData[]> =
-        generalFuelsData.reduce((finalRecord, fuelData) => {
-          finalRecord[fuelData.teamNumber]
-            ? finalRecord[fuelData.teamNumber].push(fuelData.generalFuelData)
-            : (finalRecord[fuelData.teamNumber] = [fuelData.generalFuelData]);
+      return generalFuelsData.reduce<Record<number, GeneralFuelData[]>>(
+        (accumulatorRecord, fuelData) => {
+          return {
+            ...accumulatorRecord,
+            [fuelData.teamNumber]: [
+              ...accumulatorRecord[fuelData.teamNumber],
+              fuelData.generalFuelData,
+            ],
+          };
+        },
+        {},
+      );
+    }),
 
-          return finalRecord;
-        }, {});
-
+    map((teamAndAllFuelData) => {
       const teamAndAvaragedFuelData: Record<number, GeneralFuelData> = {};
       Object.entries(teamAndAllFuelData).forEach(([teamNumber, fuelArray]) => {
         teamAndAvaragedFuelData[teamNumber] =
