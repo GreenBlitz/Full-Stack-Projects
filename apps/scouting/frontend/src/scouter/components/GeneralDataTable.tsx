@@ -16,6 +16,8 @@ import type React from "react";
 import { useState, useEffect, useMemo } from "react";
 import { ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
 
+type FuelMetricKey = "shot" | "scored" | "missed";
+
 interface TableRow {
   teamNumber: number;
   generalFuelData: GeneralFuelData;
@@ -75,6 +77,17 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
 
   const columnHelper = createColumnHelper<TableRow>();
 
+  const createColumn = (headerAndId: FuelMetricKey, style: string) =>
+    columnHelper.accessor((row) => row.generalFuelData[gameTime][headerAndId], {
+      id: headerAndId,
+      header: headerAndId,
+      cell: (info) => (
+        <span className={style}>
+          {info.getValue().toFixed(DIGITS_AFTER_DOT)}
+        </span>
+      ),
+    });
+
   const columns = [
     columnHelper.accessor("teamNumber", {
       header: "Team Number",
@@ -82,39 +95,10 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
         <span className="font-black text-emerald-400">{info.getValue()}</span>
       ),
     }),
-    columnHelper.accessor((row) => row.generalFuelData[gameTime].shot, {
-      id: "shot",
-      header: "Shot",
-      cell: (info) => (
-        <span className="text-slate-300 font-medium">
-          {info.getValue().toFixed(DIGITS_AFTER_DOT)}
-        </span>
-      ),
-    }),
-    columnHelper.accessor((row) => row.generalFuelData[gameTime].scored, {
-      id: "scored",
-      header: "Scored",
-      cell: (info) => (
-        <span className="text-emerald-400 font-bold">
-          {info.getValue().toFixed(DIGITS_AFTER_DOT)}
-        </span>
-      ),
-    }),
-    columnHelper.accessor(
-      (row) => {
-        const stats = row.generalFuelData[gameTime];
-        return stats.shot - stats.scored;
-      },
-      {
-        id: "missed",
-        header: "Missed",
-        cell: (info) => (
-          <span className="text-rose-500/90 font-medium">
-            {info.getValue().toFixed(DIGITS_AFTER_DOT)}
-          </span>
-        ),
-      },
-    ),
+
+    createColumn("shot", "text-slate-300 font-medium"),
+    createColumn("scored", "text-emerald-400 font-bold"),
+    createColumn("missed", "text-rose-500/90 font-medium"),
   ];
 
   const table = useReactTable({
