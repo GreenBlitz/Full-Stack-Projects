@@ -3,13 +3,13 @@ import type { FC } from "react";
 import { ScoutMatch } from "./scouter/pages/ScoutMatch";
 import { Route, Routes } from "react-router-dom";
 import { ScoutedMatches } from "./scouter/pages/ScoutedMatches";
-import { GeneralDataTable } from "./scouter/components/GeneralDataTable";
 
 const App: FC = () => {
   return (
-    <>
-      <GeneralDataTable filters={{ "match[type]": "qualification" }} />
-    </>
+    <Routes>
+      <Route path="*" element={<ScoutedMatches />} />
+      <Route path="/scout" element={<ScoutMatch />} />
+    </Routes>
   );
 };
 export default App;
