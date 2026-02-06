@@ -21,13 +21,13 @@ interface AccumulatedFuelData {
   tele: FuelObject[];
 }
 
-const getBPS = () => {
+export const getBPS = () => {
   return [];
 };
 
 const ONE_ITEM_ARRAY = 1;
 
-const calcAverageGeneralFuelData = (fuelData: GeneralFuelData[]) => {
+export const calcAverageGeneralFuelData = (fuelData: GeneralFuelData[]) => {
   if (fuelData.length === ONE_ITEM_ARRAY || isEmpty(fuelData)) {
     return firstElement(fuelData);
   }

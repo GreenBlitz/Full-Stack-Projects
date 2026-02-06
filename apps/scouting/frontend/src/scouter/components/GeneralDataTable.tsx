@@ -77,6 +77,7 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
 
   const columnHelper = createColumnHelper<TableRow>();
 
+
   const createColumn = (headerAndId: FuelMetricKey, style: string) =>
     columnHelper.accessor((row) => row.generalFuelData[gameTime][headerAndId], {
       id: headerAndId,
