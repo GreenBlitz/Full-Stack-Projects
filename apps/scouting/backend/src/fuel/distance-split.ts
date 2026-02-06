@@ -3,7 +3,7 @@ import { convertPixelToCentimeters, distanceFromHub } from "@repo/rebuilt_map";
 import type { FuelEvents, FuelObject } from "./fuel-object";
 import { calculateAverage } from "@repo/array-functions";
 
-const averageFuel = (fuels: FuelObject[]): FuelObject => {
+export const averageFuel = (fuels: FuelObject[]): FuelObject => {
   const averageOfKey = (key: FuelEvents) =>
     calculateAverage(fuels, (value) => value[key]);
   return {
