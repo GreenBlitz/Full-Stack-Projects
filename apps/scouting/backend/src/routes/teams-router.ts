@@ -4,9 +4,6 @@ import { Router } from "express";
 import { right } from "fp-ts/lib/Either";
 import { pipe } from "fp-ts/lib/function";
 import { createTypeCheckingEndpointFlow } from "../middleware/verification";
-<<<<<<< HEAD
-import { flatMap, fold, fromEither, map, tryCatch } from "fp-ts/lib/TaskEither";
-=======
 import {
   flatMap,
   fold,
@@ -16,7 +13,6 @@ import {
   map,
   tryCatch,
 } from "fp-ts/lib/TaskEither";
->>>>>>> origin/master
 import { getFormsCollection } from "./forms-router";
 import { StatusCodes } from "http-status-codes";
 import { castItem } from "@repo/type-utils";
@@ -29,21 +25,13 @@ import type {
 } from "@repo/scouting_types";
 import { ACCURACY_DISTANCES, teamsProps } from "@repo/scouting_types";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
-<<<<<<< HEAD
-import { calculateSum, mapObject } from "@repo/array-functions";
-=======
 import { calculateSum, isEmpty, mapObject } from "@repo/array-functions";
->>>>>>> origin/master
 import { createFuelObject, type BPS } from "../fuel/fuel-object";
 import { splitByDistances } from "../fuel/distance-split";
 import { calculateFuelStatisticsOfShift } from "../fuel/fuel-general";
 
 export const teamsRouter = Router();
 
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/master
 interface SectionForm {
   match: Match;
   shifts: Shift[];
