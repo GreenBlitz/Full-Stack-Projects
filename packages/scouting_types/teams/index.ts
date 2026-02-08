@@ -39,3 +39,5 @@ export interface TeamData {
   fullGame: SectionTeamData;
   metrics: { epa: number; bps: number };
 }
+
+export type GamePhase = "tele" | "auto" | "fullGame";
