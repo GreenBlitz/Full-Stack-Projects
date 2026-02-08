@@ -4,26 +4,18 @@ import type {
   AutoClimb,
   AutoMovement,
   Climb,
+  FuelObject,
   Match,
   TeleClimb,
   TeleMovement,
 } from "../rebuilt";
 
 export const teamsProps = t.type({
-  teams: t.array(t.number),
+  teams: t.union([t.array(t.number), t.number]),
 });
 
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-export const ACCURACY_DISTANCES = [1, 2, 20] as const;
-
-// to be replaced with actual fuel object
-// once the fuel package is merged
-
-interface FuelObject {
-  scored: number;
-  shot: number;
-  missed: number;
-}
+export const ACCURACY_DISTANCES = [100, 200, 2000] as const;
 
 type MatchedEntry<Entry> = { match: Match } & Entry;
 export interface SectionTeamData {

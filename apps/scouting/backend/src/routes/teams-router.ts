@@ -4,7 +4,19 @@ import { Router } from "express";
 import { right } from "fp-ts/lib/Either";
 import { pipe } from "fp-ts/lib/function";
 import { createTypeCheckingEndpointFlow } from "../middleware/verification";
+<<<<<<< HEAD
 import { flatMap, fold, fromEither, map, tryCatch } from "fp-ts/lib/TaskEither";
+=======
+import {
+  flatMap,
+  fold,
+  fromEither,
+  left as taskLeft,
+  right as taskRight,
+  map,
+  tryCatch,
+} from "fp-ts/lib/TaskEither";
+>>>>>>> origin/master
 import { getFormsCollection } from "./forms-router";
 import { StatusCodes } from "http-status-codes";
 import { castItem } from "@repo/type-utils";
@@ -17,14 +29,21 @@ import type {
 } from "@repo/scouting_types";
 import { ACCURACY_DISTANCES, teamsProps } from "@repo/scouting_types";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
+<<<<<<< HEAD
 import { calculateSum, mapObject } from "@repo/array-functions";
+=======
+import { calculateSum, isEmpty, mapObject } from "@repo/array-functions";
+>>>>>>> origin/master
 import { createFuelObject, type BPS } from "../fuel/fuel-object";
 import { splitByDistances } from "../fuel/distance-split";
 import { calculateFuelStatisticsOfShift } from "../fuel/fuel-general";
 
 export const teamsRouter = Router();
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/master
 interface SectionForm {
   match: Match;
   shifts: Shift[];
@@ -33,23 +52,25 @@ interface SectionForm {
 const processFuelAndAccuracy = (
   forms: SectionForm[],
   bpses: BPS[],
-): SectionTeamData => ({
-  fuel: forms.map((form) => ({
-    match: form.match,
-    ...calculateFuelStatisticsOfShift(form.match, bpses, form.shifts),
-  })),
-  accuracy: splitByDistances(
-    forms.flatMap((form) =>
-      form.shifts
-        .flatMap((shift) => shift.shootEvents)
-        .map((event) => createFuelObject(event, form.match, bpses)),
+): SectionTeamData => {
+  return {
+    fuel: forms.map((form) => ({
+      match: form.match,
+      ...calculateFuelStatisticsOfShift(form.match, bpses, form.shifts),
+    })),
+    accuracy: splitByDistances(
+      forms.flatMap((form) =>
+        form.shifts
+          .flatMap((shift) => shift.shootEvents)
+          .map((event) => createFuelObject(event, form.match, bpses)),
+      ),
+      ACCURACY_DISTANCES,
     ),
-    ACCURACY_DISTANCES,
-  ),
 
-  copr: 0,
-  cdpr: 0,
-});
+    copr: 0,
+    cdpr: 0,
+  };
+};
 
 const processTeam = (bpses: BPS[], forms: ScoutingForm[]): TeamData => {
   const tele = {
@@ -107,7 +128,19 @@ const processTeam = (bpses: BPS[], forms: ScoutingForm[]): TeamData => {
   return { tele, auto, fullGame, metrics: { epa: 0, bps: 0 } };
 };
 
-const getBPSes = (): BPS[] => [];
+const getBPSes = (): BPS[] => [
+  {
+    events: [
+      {
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        score: [1000, 2000, 3000],
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        shoot: [1000, 1400, 2000, 3000],
+      },
+    ],
+    match: { type: "qualification", number: 8 },
+  },
+];
 
 teamsRouter.get("/", async (req, res) => {
   await pipe(
@@ -125,6 +158,10 @@ teamsRouter.get("/", async (req, res) => {
         map(({ teams }) => ({ collection, teams })),
       ),
     ),
+    map(({ collection, teams }) => ({
+      collection,
+      teams: typeof teams === "number" ? [teams] : teams,
+    })),
     flatMap(({ collection, teams }) =>
       tryCatch(
         () => collection.find({ teamNumber: { $in: teams } }).toArray(),
@@ -133,6 +170,14 @@ teamsRouter.get("/", async (req, res) => {
           reason: `Error Getting Teams From DB: ${error}`,
         }),
       ),
+    ),
+    flatMap((item) =>
+      isEmpty(item)
+        ? taskLeft({
+            status: StatusCodes.BAD_GATEWAY,
+            reason: `Form Array Is Empty`,
+          })
+        : taskRight(item),
     ),
     map(groupBy((form) => form.teamNumber.toString())),
     map((teams) => ({ teams, bpses: getBPSes() })),
