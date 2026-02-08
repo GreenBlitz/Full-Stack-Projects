@@ -3,6 +3,7 @@ import type { GamePhase, TeamData } from "@repo/scouting_types";
 import { useEffect, useMemo, useState, type FC } from "react";
 import { FRC_TEAM_NUMBERS, FRC_TEAMS } from "@repo/frc";
 import { firstElement } from "@repo/array-functions";
+import { TeamSelect } from "./TeamSelect";
 
 interface TeamTabProps {
   phase: GamePhase;
@@ -30,27 +31,7 @@ export const TeamTab: FC<TeamTabProps> = ({ phase }) => {
 
   return (
     <div className="text-black">
-      <input
-        onChange={(event) => {
-          setTeamNumber(Number(event.currentTarget.value));
-        }}
-        type="number"
-        className="bg-white"
-      />
-      <select
-        className="bg-slate-400"
-        onChange={(event) => {
-          setTeamNumber(
-            Number(firstElement(event.currentTarget.value.split(":"))),
-          );
-        }}
-      >
-        {FRC_TEAMS.map((team) => (
-          <option
-            key={team.teamNumber}
-          >{`${team.teamNumber}:${team.nickname}`}</option>
-        ))}
-      </select>
+      <TeamSelect setTeamNumber={setTeamNumber} />
     </div>
   );
 };
