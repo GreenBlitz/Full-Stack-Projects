@@ -1,6 +1,6 @@
 // בס"ד
 import type { Match, ShootEvent } from "@repo/scouting_types";
-import type { BPS, FuelObject } from "./fuel-object";
+import type { BPS, FuelObject } from "../fuel-object";
 import { calculateSum, firstElement, lastElement } from "@repo/array-functions";
 
 const EMPTY_INTERVAL_DURATION = 0;
@@ -62,7 +62,9 @@ const compareSections = (a: number[], b: number[]) =>
 
 const correctSectionToTimeFromEnd = (sections: number[]) => {
   const endTimestamp = lastElement(sections);
-  return sections.map((timestamp) => endTimestamp - timestamp);
+  return sections
+    .filter((timestamp) => timestamp < endTimestamp)
+    .map((timestamp) => endTimestamp - timestamp);
 };
 
 export const calculateFuelByAveraging = (

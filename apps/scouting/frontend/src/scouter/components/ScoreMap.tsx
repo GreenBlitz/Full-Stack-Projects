@@ -10,6 +10,13 @@ import {
   type Touch,
 } from "react";
 import type { Alliance, Point } from "@repo/scouting_types";
+import {
+  ALLIANCE_ZONE_WIDTH_PIXELS,
+  FIELD_HEIGHT_PIXELS,
+  TWO_THIRDS_FIELD_WIDTH_PIXELS,
+  blueField,
+  redField,
+} from "@repo/rebuilt_map";
 import { pipe } from "fp-ts/lib/function";
 
 interface ScoreMapProps {
@@ -19,17 +26,14 @@ interface ScoreMapProps {
   mapZone: Alliance;
 }
 
-const ALLIANCE_ZONE_WIDTH_PIXELS = 395;
-const TWO_THIRDS_WIDTH_PIXELS = 1010;
-const HEIGHT_PIXELS = 652;
 const alliancizePosition = (alliance: Alliance, position: Point): Point => {
   if (alliance === "red") {
     return position;
   }
 
   return {
-    x: TWO_THIRDS_WIDTH_PIXELS - position.x,
-    y: HEIGHT_PIXELS - position.y,
+    x: TWO_THIRDS_FIELD_WIDTH_PIXELS - position.x,
+    y: FIELD_HEIGHT_PIXELS - position.y,
   };
 };
 
@@ -41,8 +45,8 @@ const switchZone = (point: Point) => {
 };
 
 const normalizePosition = (point: Point, bounds: Point) => ({
-  x: (point.x * TWO_THIRDS_WIDTH_PIXELS) / bounds.x,
-  y: (point.y * HEIGHT_PIXELS) / bounds.y,
+  x: (point.x * TWO_THIRDS_FIELD_WIDTH_PIXELS) / bounds.x,
+  y: (point.y * FIELD_HEIGHT_PIXELS) / bounds.y,
 });
 
 const dotRadius = 10;
@@ -51,11 +55,17 @@ const dotDiameter = dotRadius * radiusToDiameterRatio;
 
 const firstTouchIndex = 0;
 export const defaultPoint: Point = { x: 0, y: 0 };
+
+interface RobotPositionInfo {
+  mapPoint: Point;
+  normalizedPoint: Point;
+  imageSize: Point;
+}
 const getRobotPosition = (
   touch: Touch,
   imageRect: DOMRect,
   containerRect: DOMRect,
-) => {
+): RobotPositionInfo => {
   const x = touch.clientX - imageRect.left;
   const y = touch.clientY - imageRect.top;
 
@@ -77,12 +87,12 @@ const getRobotPosition = (
       y: boundedY + imageRect.top - containerRect.top,
     },
     normalizedPoint: {
-       x: boundedX,
-       y: boundedY 
-      },
-    imageSize: { 
-      x: imageRect.width, 
-      y: imageRect.height 
+      x: boundedX,
+      y: boundedY,
+    },
+    imageSize: {
+      x: imageRect.width,
+      y: imageRect.height,
     },
   };
 };
@@ -103,18 +113,18 @@ export const ScoreMap: FC<ScoreMapProps> = ({
     }
     const containerElement = containerRef.current;
     const imageElement = imageRef.current;
-    if (!(containerElement&&imageElement)) {
+    if (!(containerElement && imageElement)) {
       return;
     }
     const containerRect = containerElement.getBoundingClientRect();
     const imageRect = imageElement.getBoundingClientRect();
     const touch = event.targetTouches[firstTouchIndex];
 
-    const { mapPoint: dotPoint, normalizedPoint, imageSize } = getRobotPosition(
-      touch,
-      imageRect,
-      containerRect,
-    );
+    const {
+      mapPoint: dotPoint,
+      normalizedPoint,
+      imageSize,
+    } = getRobotPosition(touch, imageRect, containerRect);
 
     setMapPoint(dotPoint);
 
@@ -136,7 +146,7 @@ export const ScoreMap: FC<ScoreMapProps> = ({
     >
       <img
         ref={imageRef}
-        src={`/${mapZone}-field-4418.png`}
+        src={mapZone === "red" ? redField : blueField}
         onTouchMove={handleMapClick}
         onTouchStart={() => {
           setHolding(true);

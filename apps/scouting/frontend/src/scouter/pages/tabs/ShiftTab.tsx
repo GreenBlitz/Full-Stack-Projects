@@ -3,10 +3,9 @@
 import { useState, type FC } from "react";
 import type { TabProps } from "../ScoutMatch";
 import { ScoreMap, defaultPoint } from "../../components/ScoreMap";
-import type { Alliance, Point } from "@repo/scouting_types";
+import type { Alliance, Point, ShiftType } from "@repo/scouting_types";
 import { MovementForm } from "../../components/MovementForm";
 import Stopwatch from "../../components/stopwatch";
-type ShiftType = "regular" | "transition" | "endgame";
 
 interface ShiftTabProps extends TabProps {
   tabIndex: number;
@@ -28,7 +27,7 @@ export const ShiftTab: FC<ShiftTabProps> = ({
   const handleSetForm = (cycle: { start: number; end: number }) => {
     setForm((prevForm) => {
       const prevEvents =
-        shiftType === "regular"
+        shiftType === "teleop"
           ? prevForm.tele.shifts[tabIndex].shootEvents
           : shiftType === "transition"
             ? prevForm.tele.transitionShift.shootEvents

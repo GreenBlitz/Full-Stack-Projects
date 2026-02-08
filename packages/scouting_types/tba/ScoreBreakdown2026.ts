@@ -56,3 +56,5 @@ export const scoreBreakdown2026 = t.type({
   totalTowerPoints: t.number,
   totalPoints: t.number,
 });
+
+export type ScoreBreakdown2026 = t.TypeOf<typeof scoreBreakdown2026>;

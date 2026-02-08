@@ -1,9 +1,7 @@
 // בס"ד
 
 import type { Dispatch, FC } from "react";
-import type { ScoutingForm } from "@repo/scouting_types";
-
-type Movement = ScoutingForm["tele"|"auto"]["movement"];
+import type { Movement } from "@repo/scouting_types";
 
 interface MovementFormProps {
   setMovement: Dispatch<Movement>;
@@ -16,25 +14,26 @@ export const MovementForm: FC<MovementFormProps> = ({
 }) => {
   return (
     <div className="flex flex-col items-center gap-1 shrink-0">
+      <div className="bg-rose-500 w-0 h-0" />
       {"trenchPass" in currentMovement && (
         <>
           <button
-            className={`bg-${(currentMovement).trenchPass ? "rose-500" : "slate-800"} w-32 h-8 sm:h-10 md:h-12 px-2 text-xs shrink-0`}
+            className={`bg-${currentMovement.trenchPass ? "rose-500" : "slate-800"} w-32 h-8 sm:h-10 md:h-12 px-2 text-xs shrink-0`}
             onClick={() => {
               setMovement({
                 ...currentMovement,
-                trenchPass: !(currentMovement).trenchPass,
+                trenchPass: !currentMovement.trenchPass,
               });
             }}
           >
             Pass Trench
           </button>
           <button
-            className={`bg-${(currentMovement).bumpPass ? "rose-500" : "slate-800"} w-32 h-8 sm:h-10 md:h-12 px-2 text-xs shrink-0`}
+            className={`bg-${currentMovement.bumpPass ? "rose-500" : "slate-800"} w-32 h-8 sm:h-10 md:h-12 px-2 text-xs shrink-0`}
             onClick={() => {
               setMovement({
                 ...currentMovement,
-                bumpPass: !(currentMovement).bumpPass,
+                bumpPass: !currentMovement.bumpPass,
               });
             }}
           >
