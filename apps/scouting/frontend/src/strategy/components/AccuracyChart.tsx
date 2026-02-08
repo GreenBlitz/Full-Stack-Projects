@@ -14,6 +14,7 @@ interface AccuracyChartProps {
 const LOW_ACCURACY_THRESHOLD = 0.4;
 const MEDIUM_ACCURACY_THRESHOULD = 0.7;
 const PERCENT_SCALING_FACTOR = 100;
+const ICON_SIZE = 30;
 
 export const AccuracyChart: FC<AccuracyChartProps> = ({ metrics }) => {
   const getProgressColor = (percent: number) => {
@@ -25,16 +26,20 @@ export const AccuracyChart: FC<AccuracyChartProps> = ({ metrics }) => {
   };
 
   const cards = [
-    { label: "Auto Accuracy", value: metrics.auto, icon: <Target size={14} /> },
     {
-      label: "Teleop Accuracy",
-      value: metrics.teleop,
-      icon: <Crosshair size={14} />,
+      label: "Auto",
+      value: metrics.auto,
+      icon: <Target size={ICON_SIZE} />,
     },
     {
-      label: "Total Accuracy",
+      label: "Teleop",
+      value: metrics.teleop,
+      icon: <Crosshair size={ICON_SIZE} />,
+    },
+    {
+      label: "Total",
       value: metrics.overall,
-      icon: <BarChart3 size={14} />,
+      icon: <BarChart3 size={ICON_SIZE} />,
     },
   ];
 
@@ -46,13 +51,12 @@ export const AccuracyChart: FC<AccuracyChartProps> = ({ metrics }) => {
           className="relative overflow-hidden bg-slate-900/40 backdrop-blur-md border border-white/5 p-3 rounded-2xl flex flex-col items-center gap-1 shadow-xl"
         >
           {/* Subtle Background Glow */}
-          
 
           <div
             className={`absolute -bottom-4 -right-4 w-12 h-12 blur-2xl opacity-20 rounded-full ${firstElement(getProgressColor(card.value).split(" ")).replace("text", "bg")}`}
           />
 
-          <div className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-tighter text-slate-500">
+          <div className="flex items-center gap-1.5 text-sm font-black uppercase tracking-tighter text-slate-500">
             {card.icon}
             {card.label}
           </div>

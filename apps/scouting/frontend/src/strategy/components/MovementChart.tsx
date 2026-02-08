@@ -36,15 +36,15 @@ export const MovementChart: FC<MovementChartProps> = ({ movements }) => {
   };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-md mx-auto p-2">
+    <div className="grid grid-cols-3 gap-3 w-full max-w-md mx-auto p-2">
       {Object.entries(movements).map(([key, value]) => (
         <div
           key={key}
-          className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all shadow-lg ${getBgColor(
+          className={`flex flex-col items-center text-center justify-center p-4 rounded-2xl border-2 transition-all shadow-lg ${getBgColor(
             value,
           )}`}
         >
-          <span className="text-[10px] uppercase tracking-widest opacity-70 font-black mb-1">
+          <span className="text-xl uppercase tracking-widest opacity-70 font-black mb-1">
             {formatLabel(key)}
           </span>
           <span className="text-3xl font-black">{value}</span>
