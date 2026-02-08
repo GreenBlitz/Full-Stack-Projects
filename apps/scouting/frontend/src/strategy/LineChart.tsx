@@ -14,7 +14,7 @@ import {
 } from "chart.js";
 
 import type { ChartData, ChartOptions } from "chart.js";
-import type { DataSet } from "./Dataset";
+import type { DataSet, PointDataset } from "./Dataset";
 import type { FC } from "react";
 
 ChartJS.register(
@@ -30,7 +30,7 @@ ChartJS.register(
 );
 
 export interface LineChartProps {
-  dataSetsProps: DataSet<any>[];
+  dataSetsProps: PointDataset<any>[];
   max?: number;
   min?: number;
 }
@@ -54,7 +54,7 @@ const convertDataToLineChartFormat = ({
           // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           point ? point.value : null,
         ) as number[],
-        pointStyle: (context) => dataPoints[context.dataIndex].className,
+        pointStyle: (context) => dataPoints[context.dataIndex].pointStyle,
         borderColor:
           dataset.color ?? defaultColors[index % defaultColors.length],
       };
