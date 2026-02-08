@@ -5,11 +5,15 @@ import type { TabProps } from "../ScoutMatch";
 import { ClimbInput } from "../../components/ClimbInput";
 import type { Climb } from "@repo/scouting_types";
 
+export interface ClimbTabProps extends TabProps{
+  isAuto: boolean;
+}
 
-export const ClimbTab: FC<TabProps> = ({
+export const ClimbTab: FC<ClimbTabProps> = ({
   setForm,
   originTime,
   currentForm,
+  isAuto,
 }) => {
   const updateClimbForm = (updates: Climb) => {
     const phase = "L2" in updates.climbTime ? "tele" : "auto";
@@ -29,7 +33,7 @@ export const ClimbTab: FC<TabProps> = ({
   return (
     <div className="flex flex-row h-full w-full">
       <ClimbInput
-        isAuto={false}
+        isAuto={isAuto}
         originTime={originTime}
         updateClimbForm={updateClimbForm}
         currentForm={currentForm}
