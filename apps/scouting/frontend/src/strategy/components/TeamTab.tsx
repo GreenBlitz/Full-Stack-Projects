@@ -1,11 +1,17 @@
 // בס"ד
-import type { FuelObject, GamePhase, TeamData } from "@repo/scouting_types";
+import type {
+  FuelObject,
+  GamePhase,
+  MatchedEntry,
+  TeamData,
+} from "@repo/scouting_types";
 import { useEffect, useMemo, useState, type FC } from "react";
 import { FRC_TEAM_NUMBERS } from "@repo/frc";
 import { firstElement } from "@repo/array-functions";
 import { TeamSelect } from "./TeamSelect";
 import { MovementChart } from "./MovementChart";
 import { AccuracyChart } from "./AccuracyChart";
+import { LineChart } from "../LineChart";
 
 interface TeamTabProps {
   phase: GamePhase;
@@ -27,6 +33,19 @@ const NO_FUEL_SHOT = 0;
 const calculateAccuracy = (fuel: FuelObject) =>
   fuel.shot > NO_FUEL_SHOT ? fuel.scored / fuel.shot : NO_FUEL_SHOT;
 
+const FIRST_CHARACTER = 0;
+
+const createDataset = (
+  data: MatchedEntry<FuelObject>[],
+  key: "missed" | "scored" | "shot",
+) =>
+  Object.fromEntries(
+    data.map((entry) => [
+      entry.match.type[FIRST_CHARACTER] + entry.match.number,
+      { value: entry[key] },
+    ]),
+  );
+
 export const TeamTab: FC<TeamTabProps> = ({ phase }) => {
   const [teamData, setTeamData] = useState<TeamData>();
   const [teamNumber, setTeamNumber] = useState<number>();
@@ -40,7 +59,7 @@ export const TeamTab: FC<TeamTabProps> = ({ phase }) => {
   }, [teamNumber]);
 
   return (
-    <div className="text-black">
+    <div className="flex flex-col text-black items-center">
       <div className="bg-rose-500" />
       <div className="bg-yellow-500" />
       <div className="bg-emerald-500" />
@@ -56,6 +75,26 @@ export const TeamTab: FC<TeamTabProps> = ({ phase }) => {
             more: calculateAccuracy(data.accuracy[MORE_DISTANCE]),
           }}
         />
+      )}
+      {data && (
+        <div className="w-96 h-64 p-4 items-center bg-slate-900/40 backdrop-blur-md border border-white/10 rounded-3xl shadow-2xl">
+          <LineChart
+            dataSetsProps={[
+              {
+                name: "Scored",
+                points: createDataset(data.fuel, "scored"),
+              },
+              {
+                name: "Missed",
+                points: createDataset(data.fuel, "missed"),
+              },
+              {
+                name: "Shot",
+                points: createDataset(data.fuel, "shot"),
+              },
+            ]}
+          />
+        </div>
       )}
     </div>
   );

@@ -14,7 +14,7 @@ import {
 } from "chart.js";
 
 import type { ChartData, ChartOptions } from "chart.js";
-import type { DataSet, PointDataset } from "./Dataset";
+import type { PointDataset } from "./Dataset";
 import type { FC } from "react";
 
 ChartJS.register(
@@ -62,10 +62,32 @@ const convertDataToLineChartFormat = ({
   };
 };
 
-export const LineGraph: FC<LineChartProps> = ({ dataSetsProps, min, max }) => {
+export const LineChart: FC<LineChartProps> = ({ dataSetsProps, min, max }) => {
   const options: ChartOptions<"line"> = {
     scales: {
-      y: { min, max },
+      x: {
+        ticks: {
+          color: "white",
+          font: {
+            size: 12,
+            weight: "bold",
+          },
+        },
+      },
+      y: {
+        min,
+        max,
+        ticks: {
+          color: "white",
+          font: {
+            size: 12,
+            weight: "bold",
+          },
+        },
+        grid: {
+          color: "rgba(255, 255, 255, 0.2)",
+        },
+      },
     },
   };
   const data = convertDataToLineChartFormat({ dataSetsProps });
