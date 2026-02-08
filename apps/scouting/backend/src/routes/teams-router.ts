@@ -146,6 +146,10 @@ teamsRouter.get("/", async (req, res) => {
         map(({ teams }) => ({ collection, teams })),
       ),
     ),
+    map(({ collection, teams }) => ({
+      collection,
+      teams: typeof teams === "number" ? [teams] : teams,
+    })),
     flatMap(({ collection, teams }) =>
       tryCatch(
         () => collection.find({ teamNumber: { $in: teams } }).toArray(),

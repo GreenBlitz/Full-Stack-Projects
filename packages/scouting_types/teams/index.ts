@@ -11,7 +11,7 @@ import type {
 } from "../rebuilt";
 
 export const teamsProps = t.type({
-  teams: t.array(t.number),
+  teams: t.union([t.array(t.number), t.number]),
 });
 
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers
