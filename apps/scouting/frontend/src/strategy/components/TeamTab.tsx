@@ -16,10 +16,6 @@ import { LineChart } from "../LineChart";
 import type { DataPoint } from "../Dataset";
 import { PhaseToggle } from "./PhaseToggle";
 
-interface TeamTabProps {
-  phase: GamePhase;
-}
-
 const METER_CENTIMETERS = 100;
 const TWO_METER_CENTIMETERS = 200;
 const MORE_DISTANCE = 2000;
@@ -46,7 +42,7 @@ const createShotDataset = (data: MatchedEntry<FuelObject>[], key: FuelEvents) =>
       { value: entry[key] },
     ]),
   );
-export const TeamTab: FC<TeamTabProps> = () => {
+export const TeamTab: FC = () => {
   const [phase, setPhase] = useState<GamePhase>("tele");
   const [teamData, setTeamData] = useState<TeamData>();
   const [teamNumber, setTeamNumber] = useState<number>();
@@ -103,6 +99,7 @@ export const TeamTab: FC<TeamTabProps> = () => {
       {data && "climbs" in data && (
         <div className="w-96 h-64 p-4 items-center bg-slate-900/40 backdrop-blur-md border border-white/10 rounded-3xl shadow-2xl">
           <LineChart
+            min={0}
             dataSetsProps={[
               {
                 name: "Climb",
