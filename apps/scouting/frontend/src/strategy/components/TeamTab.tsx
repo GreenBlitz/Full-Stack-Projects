@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState, type FC } from "react";
 import { FRC_TEAM_NUMBERS, FRC_TEAMS } from "@repo/frc";
 import { firstElement } from "@repo/array-functions";
 import { TeamSelect } from "./TeamSelect";
+import { MovementChart } from "./MovementChart";
 
 interface TeamTabProps {
   phase: GamePhase;
@@ -31,7 +32,10 @@ export const TeamTab: FC<TeamTabProps> = ({ phase }) => {
 
   return (
     <div className="text-black">
-      <TeamSelect setTeamNumber={setTeamNumber} />
+      <TeamSelect teamNumber={teamNumber} setTeamNumber={setTeamNumber} />
+      {data && "movement" in data && (
+        <MovementChart movements={data.movement} />
+      )}
     </div>
   );
 };
