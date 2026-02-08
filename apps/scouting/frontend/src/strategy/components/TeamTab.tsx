@@ -14,6 +14,7 @@ import { MovementChart } from "./MovementChart";
 import { AccuracyChart } from "./AccuracyChart";
 import { LineChart } from "../LineChart";
 import type { DataPoint } from "../Dataset";
+import { PhaseToggle } from "./PhaseToggle";
 
 interface TeamTabProps {
   phase: GamePhase;
@@ -35,16 +36,18 @@ const NO_FUEL_SHOT = 0;
 const calculateAccuracy = (fuel: FuelObject) =>
   fuel.shot > NO_FUEL_SHOT ? fuel.scored / fuel.shot : NO_FUEL_SHOT;
 
-const FIRST_CHARACTER = 0;
+const FIRST_MATCH_TYPE_CHARACTER = 0;
+const CLIMB_LEVEL_LEVEL_CHARACTER = 1;
 
 const createShotDataset = (data: MatchedEntry<FuelObject>[], key: FuelEvents) =>
   Object.fromEntries(
     data.map((entry) => [
-      entry.match.type[FIRST_CHARACTER] + entry.match.number,
+      entry.match.type[FIRST_MATCH_TYPE_CHARACTER] + entry.match.number,
       { value: entry[key] },
     ]),
   );
-export const TeamTab: FC<TeamTabProps> = ({ phase }) => {
+export const TeamTab: FC<TeamTabProps> = () => {
+  const [phase, setPhase] = useState<GamePhase>("tele");
   const [teamData, setTeamData] = useState<TeamData>();
   const [teamNumber, setTeamNumber] = useState<number>();
   const data = useMemo(() => teamData?.[phase], [teamData, phase]);
@@ -62,9 +65,8 @@ export const TeamTab: FC<TeamTabProps> = ({ phase }) => {
       <div className="bg-yellow-500" />
       <div className="bg-emerald-500" />
       <TeamSelect teamNumber={teamNumber} setTeamNumber={setTeamNumber} />
-      {data && "movement" in data && (
-        <MovementChart movements={data.movement} />
-      )}
+      <PhaseToggle activeMode={phase} setActiveMode={setPhase} />
+
       {data && (
         <AccuracyChart
           metrics={{
@@ -106,9 +108,10 @@ export const TeamTab: FC<TeamTabProps> = ({ phase }) => {
                 name: "Climb",
                 points: Object.fromEntries(
                   data.climbs.map<[string, DataPoint]>((climb) => [
-                    climb.match.type[FIRST_CHARACTER] + climb.match.number,
+                    climb.match.type[FIRST_MATCH_TYPE_CHARACTER] +
+                      climb.match.number,
                     {
-                      value: Number(climb.level[1]),
+                      value: Number(climb.level[CLIMB_LEVEL_LEVEL_CHARACTER]),
                       pointStyle: climb.climbSide.middle
                         ? "dash"
                         : climb.climbSide.side
@@ -125,6 +128,9 @@ export const TeamTab: FC<TeamTabProps> = ({ phase }) => {
             ]}
           />
         </div>
+      )}
+      {data && "movement" in data && (
+        <MovementChart movements={data.movement} />
       )}
     </div>
   );
