@@ -14,7 +14,7 @@ import {
 } from "chart.js";
 
 import type { ChartData, ChartOptions } from "chart.js";
-import type { DataSet } from "./DatasetTemplate";
+import type { DataSet } from "./Dataset";
 
 ChartJS.register(
   LineElement,
