@@ -38,7 +38,7 @@ const TABS: Tab[] = [
   { name: "Auto", Component: AutoTab },
   {
     name: "Climb",
-    Component: ClimbTab,
+    Component: (props) => <ClimbTab isAuto={true} {...props} />,
   },
   {
     name: "Transition",
@@ -78,7 +78,7 @@ const TABS: Tab[] = [
   },
   {
     name: "Climb",
-    Component: ClimbTab,
+    Component: (props) => <ClimbTab isAuto={false} {...props} />,
   },
   {
     name: "Post",
