@@ -1,4 +1,5 @@
 // בס"ד
+import { useLocalStorage } from "@repo/local_storage_hook";
 import { useState, type FC } from "react";
 
 interface StartGameButtonProps {
@@ -11,6 +12,7 @@ const MIN_MATCH_NUMBER = 1;
 const StartGameButton: FC<StartGameButtonProps> = ({ matchNumber, matchType }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string>("");
+  const [initalTime] = useLocalStorage("initialGame", new Date().toISOString())
 
   const handleStartGame = async () => {
     if (!matchNumber || matchNumber < MIN_MATCH_NUMBER) {
@@ -20,7 +22,6 @@ const StartGameButton: FC<StartGameButtonProps> = ({ matchNumber, matchType }) =
 
     setIsLoading(true);
     setMessage("");
-
     try {
       const response = await fetch(`/api/v1/game/start`, {
         method: "POST",
@@ -30,7 +31,7 @@ const StartGameButton: FC<StartGameButtonProps> = ({ matchNumber, matchType }) =
         body: JSON.stringify({
           matchNumber,
           matchType,
-          startTime: new Date().toISOString(),
+          startTime: initalTime
         }),
       });
 

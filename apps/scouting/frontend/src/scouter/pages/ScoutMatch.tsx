@@ -196,12 +196,12 @@ export const ScoutMatch: FC = () => {
            bg-black/40 rounded-xl p-3 sm:p-4 lg:p-6 border border-green-500/20 shadow-inner
             animate-in fade-in slide-in-from-right-4 duration-300"
           >
-              <CurrentTab
-                setForm={setScoutingForm}
-                currentForm={scoutingForm}
-                alliance="red"
-                originTime={originTime}
-              />
+            <CurrentTab
+              setForm={setScoutingForm}
+              currentForm={scoutingForm}
+              alliance="red"
+              originTime={originTime}
+            />
           </div>
         </div>
       </div>
