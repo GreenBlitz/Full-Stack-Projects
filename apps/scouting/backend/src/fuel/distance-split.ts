@@ -3,7 +3,7 @@ import { convertPixelToCentimeters, distanceFromHub } from "@repo/rebuilt_map";
 import type { FuelEvents, FuelObject } from "./fuel-object";
 import { calculateAverage, isEmpty } from "@repo/array-functions";
 
-const averageFuel = (fuels: FuelObject[]): FuelObject => {
+export const averageFuel = (fuels: FuelObject[]): FuelObject => {
   if (isEmpty(fuels)) {
     return { scored: 0, shot: 0, missed: 0, positions: [] };
   }
