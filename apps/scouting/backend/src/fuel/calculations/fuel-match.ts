@@ -1,6 +1,6 @@
 // בס"ד
-import type { ShootEvent } from "@repo/scouting_types";
-import type { BPS, FuelObject } from "../fuel-object";
+import type { FuelObject, ShootEvent } from "@repo/scouting_types";
+import type { BPS } from "../fuel-object";
 
 const getIncludedShots = (section: number[], shot: ShootEvent) => {
   return section.filter(
@@ -10,6 +10,7 @@ const getIncludedShots = (section: number[], shot: ShootEvent) => {
 };
 export const calculateFuelByMatch = (
   shot: ShootEvent,
+  isPass: boolean,
   bps: BPS,
 ): FuelObject => {
   const shotBps = bps.events.map((section) => ({
@@ -18,12 +19,24 @@ export const calculateFuelByMatch = (
   }));
 
   const shotAmount = shotBps.flatMap((section) => section.shoot).length;
+
+  if (isPass) {
+    return {
+      shot: shotAmount,
+      scored: 0,
+      missed: 0,
+      positions: [shot.startPosition],
+      pass: shotAmount,
+    };
+  }
+
   const scoredAmount = shotBps.flatMap((section) => section.score).length;
 
   return {
     shot: shotAmount,
     scored: scoredAmount,
     missed: shotAmount - scoredAmount,
+    pass: 0,
     positions: [shot.startPosition],
   };
 };

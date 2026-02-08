@@ -8,15 +8,14 @@ import {
   type SortingState,
 } from "@tanstack/react-table";
 import type {
+  FuelEvents,
   GameTime,
   GeneralFuelData,
   TeamNumberAndFuelData,
 } from "@repo/scouting_types";
 import type React from "react";
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
-
-type FuelMetricKey = "shot" | "scored" | "missed";
 
 interface TableRow {
   teamNumber: number;
@@ -78,7 +77,7 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
 
   const columnHelper = createColumnHelper<TableRow>();
 
-  const createColumn = (headerAndId: FuelMetricKey, style: string) =>
+  const createColumn = (headerAndId: FuelEvents, style: string) =>
     columnHelper.accessor((row) => row.generalFuelData[gameTime][headerAndId], {
       id: headerAndId,
       header: headerAndId,
@@ -101,6 +100,7 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
       createColumn("shot", "text-slate-300 font-medium"),
       createColumn("scored", "text-emerald-400 font-bold"),
       createColumn("missed", "text-rose-500/90 font-medium"),
+      createColumn("pass", "text-orange-400 font-medium"),
     ],
     [gameTime],
   );

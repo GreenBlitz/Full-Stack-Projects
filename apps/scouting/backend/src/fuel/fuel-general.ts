@@ -21,9 +21,10 @@ export const calculateFuelStatisticsOfShift = (
         scored: accumulate.scored + fuelObject.scored,
         missed: accumulate.missed + fuelObject.missed,
         shot: accumulate.shot + fuelObject.shot,
+        pass: accumulate.pass + fuelObject.pass,
         positions: [...accumulate.positions, ...fuelObject.positions],
       }),
-      { scored: 0, missed: 0, shot: 0, positions: [] },
+      { scored: 0, missed: 0, shot: 0,pass: 0, positions: [] },
     );
 
 export const generalCalculateFuel = (
