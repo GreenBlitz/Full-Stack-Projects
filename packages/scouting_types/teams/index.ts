@@ -4,6 +4,7 @@ import type {
   AutoClimb,
   AutoMovement,
   Climb,
+  FuelObject,
   Match,
   TeleClimb,
   TeleMovement,
@@ -15,15 +16,6 @@ export const teamsProps = t.type({
 
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers
 export const ACCURACY_DISTANCES = [100, 200, 2000] as const;
-
-// to be replaced with actual fuel object
-// once the fuel package is merged
-
-interface FuelObject {
-  scored: number;
-  shot: number;
-  missed: number;
-}
 
 type MatchedEntry<Entry> = { match: Match } & Entry;
 export interface SectionTeamData {
