@@ -75,7 +75,7 @@ generalRouter.get("/", async (req, res) => {
         (accumulatorRecord, fuelData) => ({
           ...accumulatorRecord,
           [fuelData.teamNumber]: [
-            ...(accumulatorRecord[fuelData.teamNumber]),
+            ...(accumulatorRecord[fuelData.teamNumber] ?? []),
             fuelData.generalFuelData,
           ],
         }),
