@@ -3,12 +3,7 @@
 import { Router } from "express";
 import { flow, pipe } from "fp-ts/lib/function";
 import { getDb } from "../middleware/db";
-import {
-  flatMap,
-  fold,
-  fromEither,
-  map,
-} from "fp-ts/lib/TaskEither";
+import { flatMap, fold, fromEither, map } from "fp-ts/lib/TaskEither";
 import { scoutingFormCodec, type ScoutingForm } from "@repo/scouting_types";
 import { StatusCodes } from "http-status-codes";
 import { createBodyVerificationPipe } from "../middleware/verification";
@@ -46,13 +41,13 @@ formsRouter.post("/", async (req, res) => {
         right(req),
         createBodyVerificationPipe(combinedCodec),
         fromEither,
-        map((body) => ({ collection, body })),
+        map((combinedBody) => ({ collection, combinedBody })),
       ),
     ),
-    map(({ collection, body }) =>
-      Array.isArray(body)
-        ? collection.insertMany(body)
-        : collection.insertOne(body),
+    map(({ collection, combinedBody }) =>
+      Array.isArray(combinedBody)
+        ? collection.insertMany(combinedBody)
+        : collection.insertOne(combinedBody),
     ),
     fold(
       (error) => () =>
