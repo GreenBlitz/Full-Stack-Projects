@@ -48,6 +48,8 @@ const convertDataToLineChartFormat = ({
     datasets: dataSetsProps.map((dataset, index) => {
       const dataPoints = labels.map((label) => dataset.points[label] ?? null);
 
+      const color =
+        dataset.color ?? defaultColors[index % defaultColors.length];
       return {
         label: dataset.name,
         data: dataPoints.map((point) =>
@@ -55,8 +57,9 @@ const convertDataToLineChartFormat = ({
           point ? point.value : null,
         ) as number[],
         pointStyle: (context) => dataPoints[context.dataIndex].pointStyle,
-        borderColor:
-          dataset.color ?? defaultColors[index % defaultColors.length],
+        borderColor: color,
+        pointRadius: dataset.size,
+        pointBackgroundColor: color,
       };
     }),
   };

@@ -13,6 +13,7 @@ import { TeamSelect } from "./TeamSelect";
 import { MovementChart } from "./MovementChart";
 import { AccuracyChart } from "./AccuracyChart";
 import { LineChart } from "../LineChart";
+import type { DataPoint } from "../Dataset";
 
 interface TeamTabProps {
   phase: GamePhase;
@@ -36,14 +37,13 @@ const calculateAccuracy = (fuel: FuelObject) =>
 
 const FIRST_CHARACTER = 0;
 
-const createDataset = (data: MatchedEntry<FuelObject>[], key: FuelEvents) =>
+const createShotDataset = (data: MatchedEntry<FuelObject>[], key: FuelEvents) =>
   Object.fromEntries(
     data.map((entry) => [
       entry.match.type[FIRST_CHARACTER] + entry.match.number,
       { value: entry[key] },
     ]),
   );
-
 export const TeamTab: FC<TeamTabProps> = ({ phase }) => {
   const [teamData, setTeamData] = useState<TeamData>();
   const [teamNumber, setTeamNumber] = useState<number>();
@@ -80,25 +80,52 @@ export const TeamTab: FC<TeamTabProps> = ({ phase }) => {
             dataSetsProps={[
               {
                 name: "Scored",
-                points: createDataset(data.fuel, "scored"),
+                points: createShotDataset(data.fuel, "scored"),
               },
               {
                 name: "Missed",
-                points: createDataset(data.fuel, "missed"),
+                points: createShotDataset(data.fuel, "missed"),
               },
               {
                 name: "Shot",
-                points: createDataset(data.fuel, "shot"),
+                points: createShotDataset(data.fuel, "shot"),
               },
               {
                 name: "Pass",
-                points: createDataset(data.fuel, "pass"),
+                points: createShotDataset(data.fuel, "pass"),
               },
             ]}
           />
         </div>
       )}
-      
+      {data && "climbs" in data && (
+        <div className="w-96 h-64 p-4 items-center bg-slate-900/40 backdrop-blur-md border border-white/10 rounded-3xl shadow-2xl">
+          <LineChart
+            dataSetsProps={[
+              {
+                name: "Climb",
+                points: Object.fromEntries(
+                  data.climbs.map<[string, DataPoint]>((climb) => [
+                    climb.match.type[FIRST_CHARACTER] + climb.match.number,
+                    {
+                      value: Number(climb.level[1]),
+                      pointStyle: climb.climbSide.middle
+                        ? "dash"
+                        : climb.climbSide.side
+                          ? "star"
+                          : climb.climbSide.support
+                            ? "triangle"
+                            : "dash",
+                    },
+                  ]),
+                ),
+                size: 10,
+                color: "#10b981",
+              },
+            ]}
+          />
+        </div>
+      )}
     </div>
   );
 };
