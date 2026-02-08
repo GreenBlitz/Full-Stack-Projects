@@ -3,10 +3,17 @@ import { FRC_TEAMS } from "@repo/frc";
 import type { FC } from "react";
 import { Users, Hash } from "lucide-react";
 
-export const TeamSelect: FC<{
+interface TeamSelectProps {
   teamNumber?: number;
   setTeamNumber: (team: number) => void;
-}> = ({ teamNumber, setTeamNumber }) => (
+}
+
+const EMPTY_TEAM_INPUT = 0;
+
+export const TeamSelect: FC<TeamSelectProps> = ({
+  teamNumber,
+  setTeamNumber,
+}) => (
   <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md mx-auto p-4 bg-slate-900/40 backdrop-blur-sm rounded-2xl border border-white/10 shadow-2xl">
     {/* Manual Number Input */}
     <div className="relative flex-1">
@@ -17,6 +24,7 @@ export const TeamSelect: FC<{
         onChange={(event) => {
           setTeamNumber(Number(event.currentTarget.value));
         }}
+        value={teamNumber === EMPTY_TEAM_INPUT ? undefined : teamNumber}
         type="number"
         placeholder="Team #"
         className="w-full pl-10 pr-4 py-3 bg-slate-950/50 border border-white/5 rounded-xl text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500/50 transition-all font-mono"

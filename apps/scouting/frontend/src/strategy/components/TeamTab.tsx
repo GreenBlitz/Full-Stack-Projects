@@ -5,6 +5,7 @@ import { FRC_TEAM_NUMBERS } from "@repo/frc";
 import { firstElement } from "@repo/array-functions";
 import { TeamSelect } from "./TeamSelect";
 import { MovementChart } from "./MovementChart";
+import { AccuracyChart } from "./AccuracyChart";
 
 interface TeamTabProps {
   phase: GamePhase;
@@ -32,9 +33,21 @@ export const TeamTab: FC<TeamTabProps> = ({ phase }) => {
 
   return (
     <div className="text-black">
+      <div className="bg-rose-500" />
+      <div className="bg-yellow-500" />
+      <div className="bg-emerald-500" />
       <TeamSelect teamNumber={teamNumber} setTeamNumber={setTeamNumber} />
       {data && "movement" in data && (
         <MovementChart movements={data.movement} />
+      )}
+      {data && (
+        <AccuracyChart
+          metrics={{
+            auto: 0.5,
+            teleop: 0.3,
+            overall: 0.7,
+          }}
+        />
       )}
     </div>
   );
