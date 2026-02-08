@@ -1,13 +1,13 @@
 // בס"ד
 import type { FC } from "react";
-import { Target, Crosshair, BarChart3 } from "lucide-react";
+import { Target, Crosshair, Locate } from "lucide-react";
 import { firstElement } from "@repo/array-functions";
 
 interface AccuracyChartProps {
   metrics: {
-    auto: number; // 0 to 1 (e.g., 0.85)
-    teleop: number;
-    overall: number;
+    meter: number; // 0 to 1 (e.g., 0.85)
+    twoMeter: number;
+    more: number;
   };
 }
 
@@ -27,19 +27,19 @@ export const AccuracyChart: FC<AccuracyChartProps> = ({ metrics }) => {
 
   const cards = [
     {
-      label: "Auto",
-      value: metrics.auto,
+      label: "Meter",
+      value: metrics.meter,
       icon: <Target size={ICON_SIZE} />,
     },
     {
-      label: "Teleop",
-      value: metrics.teleop,
+      label: "2 Meter",
+      value: metrics.twoMeter,
       icon: <Crosshair size={ICON_SIZE} />,
     },
     {
-      label: "Total",
-      value: metrics.overall,
-      icon: <BarChart3 size={ICON_SIZE} />,
+      label: "More",
+      value: metrics.more,
+      icon: <Locate size={ICON_SIZE} />,
     },
   ];
 

@@ -16,6 +16,8 @@ const RED_COLOR_AMOUNT = 0;
 const ORANGE_COLOR_AMOUNT = 1;
 const YELLOW_COLOR_AMOUNT = 2;
 
+const TELE_MOVEMENT_AMOUNT = 1;
+
 export const MovementChart: FC<MovementChartProps> = ({ movements }) => {
   // Helper to determine color based on count
   const getBgColor = (count: number) => {
@@ -37,10 +39,10 @@ export const MovementChart: FC<MovementChartProps> = ({ movements }) => {
 
   return (
     <div className="grid grid-cols-3 gap-3 w-full max-w-md mx-auto p-2">
-      {Object.entries(movements).map(([key, value]) => (
+      {Object.entries(movements).map(([key, value], index, arr) => (
         <div
           key={key}
-          className={`flex flex-col items-center text-center justify-center p-4 rounded-2xl border-2 transition-all shadow-lg ${getBgColor(
+          className={`flex flex-col ${arr.length === TELE_MOVEMENT_AMOUNT ? "col-start-2" : ""} items-center text-center justify-center p-4 rounded-2xl border-2 transition-all shadow-lg ${getBgColor(
             value,
           )}`}
         >
