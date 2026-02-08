@@ -43,7 +43,7 @@ const convertDataToPieChartFormat = ({
     datasets: [
       {
         label: name,
-        data: values,
+        data: values.map((point) => point.value),
         backgroundColor: labels.map(() => color ?? defaultColor),
       },
     ],

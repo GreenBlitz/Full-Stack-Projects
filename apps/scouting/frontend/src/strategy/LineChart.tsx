@@ -15,6 +15,7 @@ import {
 
 import type { ChartData, ChartOptions } from "chart.js";
 import type { DataSet } from "./Dataset";
+import type { FC } from "react";
 
 ChartJS.register(
   LineElement,
@@ -44,15 +45,24 @@ const convertDataToLineChartFormat = ({
 
   return {
     labels,
-    datasets: dataSetsProps.map((dataset, index) => ({
-      label: dataset.name,
-      data: labels.map((label) => dataset.points[label] ?? null),
-      borderColor: dataset.color ?? defaultColors[index % defaultColors.length],
-    })),
+    datasets: dataSetsProps.map((dataset, index) => {
+      const dataPoints = labels.map((label) => dataset.points[label] ?? null);
+
+      return {
+        label: dataset.name,
+        data: dataPoints.map((point) =>
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+          point ? point.value : null,
+        ) as number[],
+        pointStyle: (context) => dataPoints[context.dataIndex].className,
+        borderColor:
+          dataset.color ?? defaultColors[index % defaultColors.length],
+      };
+    }),
   };
 };
 
-export const LineGraph = ({ dataSetsProps, min, max }: LineChartProps) => {
+export const LineGraph: FC<LineChartProps> = ({ dataSetsProps, min, max }) => {
   const options: ChartOptions<"line"> = {
     scales: {
       y: { min, max },
