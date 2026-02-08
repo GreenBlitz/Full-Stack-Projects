@@ -11,7 +11,7 @@ const App: FC = () => {
     <Routes>
       <Route path="*" element={<ScoutedMatches />} />
       <Route path="/scout" element={<ScoutMatch />} />
-      <Route path="/team" element={<TeamTab phase="auto" />} />
+      <Route path="/team" element={<TeamTab phase="tele" />} />
       <Route path="/general" element={<GeneralDataTable filters={{}} />} />
     </Routes>
   );

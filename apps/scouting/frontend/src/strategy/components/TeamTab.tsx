@@ -1,5 +1,6 @@
 // בס"ד
 import type {
+  FuelEvents,
   FuelObject,
   GamePhase,
   MatchedEntry,
@@ -35,10 +36,7 @@ const calculateAccuracy = (fuel: FuelObject) =>
 
 const FIRST_CHARACTER = 0;
 
-const createDataset = (
-  data: MatchedEntry<FuelObject>[],
-  key: "missed" | "scored" | "shot",
-) =>
+const createDataset = (data: MatchedEntry<FuelObject>[], key: FuelEvents) =>
   Object.fromEntries(
     data.map((entry) => [
       entry.match.type[FIRST_CHARACTER] + entry.match.number,
@@ -92,10 +90,15 @@ export const TeamTab: FC<TeamTabProps> = ({ phase }) => {
                 name: "Shot",
                 points: createDataset(data.fuel, "shot"),
               },
+              {
+                name: "Pass",
+                points: createDataset(data.fuel, "pass"),
+              },
             ]}
           />
         </div>
       )}
+      
     </div>
   );
 };
