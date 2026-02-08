@@ -2,7 +2,7 @@
 import { useState, type FC } from "react";
 import { ScoreMap } from "../../components/ScoreMap";
 import type { Alliance, Point } from "@repo/scouting_types";
-import Stopwatch from "../../components/stopwatch";
+import Stopwatch from "../../components/Stopwatch";
 import { MovementForm } from "../../components/MovementForm";
 import type { TabProps } from "../ScoutMatch";
 import { defaultPoint } from "../../components/ScoreMap";
@@ -46,7 +46,10 @@ export const AutoTab: FC<TabProps> = ({
           setMovement={(value) => {
             setForm((prevForm) => ({
               ...prevForm,
-              auto: { ...prevForm.auto, movement: { ...prevForm.auto.movement, ...value } },
+              auto: {
+                ...prevForm.auto,
+                movement: { ...prevForm.auto.movement, ...value },
+              },
             }));
           }}
           currentMovement={currentForm.auto.movement}

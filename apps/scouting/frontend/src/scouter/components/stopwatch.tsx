@@ -9,6 +9,8 @@ const INITIAL_TIME_MILLISECONDS = 0;
 const CYCLE_TIME_MILLISECONDS = 10;
 const DECIMAL_PLACES = 2;
 const DECIMAL_PLACES_MILLISECONDS = 3;
+const VIBRATION_DURATION_MILLISECONDS = 50;
+
 
 interface StopwatchProps {
   addCycleTimeSeconds: Dispatch<Interval>;
@@ -71,6 +73,7 @@ const Stopwatch: React.FC<StopwatchProps> = ({
 
     startTimeRef.current = Date.now() - elapsedTime;
     setIsRunning(true);
+    navigator.vibrate(VIBRATION_DURATION_MILLISECONDS);
   };
 
   const stop = () => {
@@ -86,6 +89,7 @@ const Stopwatch: React.FC<StopwatchProps> = ({
     addCycleTimeSeconds(cycleStopwatchCounter);
 
     setIsRunning(false);
+    navigator.vibrate(VIBRATION_DURATION_MILLISECONDS);
     reset();
   };
 

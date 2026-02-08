@@ -5,13 +5,12 @@ import type { TabProps } from "../ScoutMatch";
 import { ScoreMap, defaultPoint } from "../../components/ScoreMap";
 import type { Alliance, Point, ShiftType } from "@repo/scouting_types";
 import { MovementForm } from "../../components/MovementForm";
-import Stopwatch from "../../components/stopwatch";
+import Stopwatch from "../../components/Stopwatch";
 
 interface ShiftTabProps extends TabProps {
   tabIndex: number;
   shiftType: ShiftType;
 }
-
 
 export const ShiftTab: FC<ShiftTabProps> = ({
   setForm,
