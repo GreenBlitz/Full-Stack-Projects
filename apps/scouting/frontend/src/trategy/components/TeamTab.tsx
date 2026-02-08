@@ -1,6 +1,6 @@
 // בס"ד
 import type { GamePhase, TeamData } from "@repo/scouting_types";
-import { useEffect, useState, type FC } from "react";
+import { useEffect, useMemo, useState, type FC } from "react";
 
 interface TeamTabProps {
   phase: GamePhase;
@@ -13,14 +13,16 @@ async function fetchTeamData(team: number) {
 }
 
 export const TeamTab: FC<TeamTabProps> = ({ phase }) => {
-  const [data, setData] = useState<TeamData>();
+  const [teamData, setTeamData] = useState<TeamData>();
   const [teamNumber, setTeamNumber] = useState<number>();
+  const data = useMemo(() => teamData?.[phase], [teamData, phase]);
 
   useEffect(() => {
     if (!teamNumber) {
       return;
     }
-    fetchTeamData(teamNumber).then(setData).catch(alert);
+    fetchTeamData(teamNumber).then(setTeamData).catch(alert);
   }, [teamNumber]);
+  
   return <div>TeamTab</div>;
 };

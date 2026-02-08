@@ -116,7 +116,7 @@ const processTeam = (bpses: BPS[], forms: ScoutingForm[]): TeamData => {
   return { tele, auto, fullGame, metrics: { epa: 0, bps: 0 } };
 };
 
-const getBPSes = (): BPS[] => [
+export const getBPSes = (): BPS[] => [
   {
     events: [
       {
