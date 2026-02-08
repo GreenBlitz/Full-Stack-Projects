@@ -1,7 +1,7 @@
 // בס"ד
 import type { GamePhase, TeamData } from "@repo/scouting_types";
 import { useEffect, useMemo, useState, type FC } from "react";
-import { FRC_TEAM_NUMBERS, FRC_TEAMS } from "@repo/frc";
+import { FRC_TEAM_NUMBERS } from "@repo/frc";
 import { firstElement } from "@repo/array-functions";
 import { TeamSelect } from "./TeamSelect";
 import { MovementChart } from "./MovementChart";

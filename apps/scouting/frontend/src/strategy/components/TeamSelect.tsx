@@ -1,5 +1,4 @@
 // בס"ד
-import { firstElement } from "@repo/array-functions";
 import { FRC_TEAMS } from "@repo/frc";
 import type { FC } from "react";
 import { Users, Hash } from "lucide-react";
