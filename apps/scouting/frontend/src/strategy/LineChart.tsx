@@ -39,7 +39,7 @@ const convertDataToLineChartFormat = ({
   const defaultColors = ["blue", "red", "violet", "orange"];
 
   const labels = Array.from(
-    new Set(dataSetsProps.flatMap((ds) => Object.keys(ds.points))),
+    new Set(dataSetsProps.flatMap((dataset) => Object.keys(dataset.points))),
   ).sort((a, b) => Number(a) - Number(b));
 
   return {
