@@ -37,7 +37,7 @@ const TABS: Tab[] = [
   },
   { name: "Auto", Component: AutoTab },
   {
-    name: "Climb Auto",
+    name: "Climb",
     Component: ClimbTab,
   },
   {
