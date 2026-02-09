@@ -5,7 +5,7 @@ import { firstElement } from "@repo/array-functions";
 
 interface AccuracyChartProps {
   metrics: {
-    meter: number; // 0 to 1 (e.g., 0.85)
+    meter: number;
     twoMeter: number;
     more: number;
   };
