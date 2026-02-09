@@ -36,7 +36,7 @@ export const ScoutedMatches: FC = () => {
   const submitMatch = async (form: ScoutingForm, index: number) => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/v1/forms/single", {
+      const response = await fetch("/api/v1/forms", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -56,7 +56,7 @@ export const ScoutedMatches: FC = () => {
   const submitAll = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/v1/forms/multiple", {
+      const response = await fetch("/api/v1/forms", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

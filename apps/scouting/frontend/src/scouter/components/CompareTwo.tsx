@@ -47,7 +47,6 @@ const fetchTeamNumbers = async () => {
       const errorText = await response.text();
       throw new Error(`Server Error: ${errorText}`);
     }
-
     const data = await response.json();
     return data.teamNumbers as number[];
   } catch (err) {
