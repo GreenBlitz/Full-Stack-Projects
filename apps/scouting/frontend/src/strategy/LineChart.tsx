@@ -14,7 +14,7 @@ import {
 } from "chart.js";
 
 import type { ChartData, ChartOptions } from "chart.js";
-import type { DataPoint,  PointDataset } from "./Dataset";
+import type { DataPoint, PointDataset } from "./Dataset";
 import type { FC } from "react";
 
 ChartJS.register(
@@ -46,15 +46,15 @@ const convertDataToLineChartFormat = ({
   return {
     labels,
     datasets: dataSetsProps.map((dataset, index) => {
-      const dataPoints = labels.map<DataPoint | null>((label) => dataset.points[label] ?? null);
+      const dataPoints = labels.map<DataPoint | null>(
+        (label) => dataset.points[label] ?? null,
+      );
 
       const color =
         dataset.color ?? defaultColors[index % defaultColors.length];
       return {
         label: dataset.name,
-        data: dataPoints.map((point) =>
-          point ? point.value : null,
-        ) as number[],
+        data: dataPoints.map((point) => point?.value) as number[],
         pointStyle: (context) => dataPoints[context.dataIndex]?.pointStyle,
         borderColor: color,
         pointRadius: dataset.size,
