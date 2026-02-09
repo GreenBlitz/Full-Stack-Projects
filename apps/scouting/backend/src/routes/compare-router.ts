@@ -99,9 +99,7 @@ compareRouter.get("/teams", (req, res) => {
         }),
       ),
     ),
-    map((forms) => {
-      forms.map((form) => form.teamNumber);
-    }),
+    map((forms) => forms.map((form) => form.teamNumber)),
     fold(
       (error) => () =>
         Promise.resolve(res.status(error.status).send(error.reason)),
