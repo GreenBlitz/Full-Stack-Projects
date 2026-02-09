@@ -14,7 +14,8 @@ import {
 } from "chart.js";
 
 import type { ChartData, ChartOptions } from "chart.js";
-import type {  PieDataset } from "./Dataset";
+import type { PieDataset } from "./Dataset";
+import type { FC } from "react";
 
 ChartJS.register(
   LineElement,
@@ -50,7 +51,11 @@ const convertDataToPieChartFormat = ({
   };
 };
 
-export const PieGraph = ({ name, points, color }: PieDataset<string | number>) => {
+export const PieGraph: FC<PieDataset<string | number>> = ({
+  name,
+  points,
+  color,
+}) => {
   const data = convertDataToPieChartFormat({ name, points, color });
   const options: ChartOptions<"pie"> = {
     responsive: true,

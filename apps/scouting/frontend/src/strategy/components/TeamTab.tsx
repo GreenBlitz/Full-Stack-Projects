@@ -56,7 +56,7 @@ export const TeamTab: FC = () => {
   }, [teamNumber]);
 
   return (
-    <div className="flex flex-col text-black items-center">
+    <div className="flex flex-col text-black items-center bg-slate-950">
       <div className="bg-rose-500" />
       <div className="bg-yellow-500" />
       <div className="bg-emerald-500" />

@@ -1,5 +1,5 @@
 //בס"ד
-import { Line } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   LineElement,
@@ -9,34 +9,32 @@ import {
   Title,
   Tooltip,
   Legend,
-  Filler,
-  ArcElement,
+  BarElement,
 } from "chart.js";
 
 import type { ChartData, ChartOptions } from "chart.js";
-import type { PointDataset } from "./Dataset";
+import type { PieDataset } from "./Dataset";
 import type { FC } from "react";
 
 ChartJS.register(
-  LineElement,
-  PointElement,
-  LinearScale,
   CategoryScale,
+  LinearScale,
+  BarElement,
   Title,
   Tooltip,
   Legend,
-  Filler,
-  ArcElement,
+  PointElement,
+  LineElement,
 );
 
 export interface LineChartProps {
-  dataSetsProps: PointDataset<string | number>[];
+  dataSetsProps: PieDataset<string | number>[];
   max?: number;
   min?: number;
 }
-const convertDataToLineChartFormat = ({
+const convertDataToBarChartFormat = ({
   dataSetsProps,
-}: LineChartProps): ChartData<"line", number[], string> => {
+}: LineChartProps): ChartData<"bar", number[], string> => {
   const defaultColors = ["blue", "red", "violet", "orange"];
 
   const labels = Array.from(
@@ -46,27 +44,20 @@ const convertDataToLineChartFormat = ({
   return {
     labels,
     datasets: dataSetsProps.map((dataset, index) => {
-      const dataPoints = labels.map((label) => dataset.points[label] ?? null);
-
       const color =
         dataset.color ?? defaultColors[index % defaultColors.length];
       return {
         label: dataset.name,
-        data: dataPoints.map((point) =>
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-          point ? point.value : null,
-        ) as number[],
-        pointStyle: (context) => dataPoints[context.dataIndex].pointStyle,
+        data: labels.map((label) => dataset.points[label] ?? null),
         borderColor: color,
-        pointRadius: dataset.size,
         pointBackgroundColor: color,
       };
     }),
   };
 };
 
-export const LineChart: FC<LineChartProps> = ({ dataSetsProps, min, max }) => {
-  const options: ChartOptions<"line"> = {
+export const BarChart: FC<LineChartProps> = ({ dataSetsProps, min, max }) => {
+  const options: ChartOptions<"bar"> = {
     scales: {
       x: {
         ticks: {
@@ -93,6 +84,6 @@ export const LineChart: FC<LineChartProps> = ({ dataSetsProps, min, max }) => {
       },
     },
   };
-  const data = convertDataToLineChartFormat({ dataSetsProps });
-  return <Line data={data} options={options} />;
+  const data = convertDataToBarChartFormat({ dataSetsProps });
+  return <Bar data={data} options={options} />;
 };
