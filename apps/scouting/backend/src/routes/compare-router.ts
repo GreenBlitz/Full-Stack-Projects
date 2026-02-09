@@ -20,8 +20,6 @@ import { generalCalculateFuel } from "../fuel/fuel-general";
 
 export const compareRouter = Router();
 
-//move these to a CompareTypes file or smth
-
 type GamePeriod = "auto" | "fullGame";
 
 const DIGITS_AFTER_DOT = 2;
@@ -85,6 +83,33 @@ const findTimesClimbedToLevels = (forms: ScoutingForm[]) => {
     L3: timesClimedToLevel("L3", climbedLevels),
   };
 };
+
+compareRouter.get("/teams", (req, res) => {
+  pipe(
+    getFormsCollection(),
+    flatMap((collection) =>
+      tryCatch(
+        () =>
+          collection
+            .find(mongofyQuery({ "match.type": "qualification" }))
+            .toArray(),
+        (error) => ({
+          status: StatusCodes.INTERNAL_SERVER_ERROR,
+          reason: `DB Error: ${error}`,
+        }),
+      ),
+    ),
+    map((forms) => {
+      forms.map((form) => form.teamNumber);
+    }),
+    fold(
+      (error) => () =>
+        Promise.resolve(res.status(error.status).send(error.reason)),
+      (teamNumbers) => () =>
+        Promise.resolve(res.status(StatusCodes.OK).json({ teamNumbers })),
+    ),
+  );
+});
 
 compareRouter.get("/", (req, res) => {
   pipe(
