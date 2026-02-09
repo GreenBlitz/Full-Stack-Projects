@@ -56,7 +56,6 @@ export const PhaseToggle: FC<{
               {option.label}
             </span>
 
-            {/* Subtle indicator for active state */}
             {isActive && (
               <div className="absolute -bottom-1 w-1 h-1 bg-white rounded-full" />
             )}

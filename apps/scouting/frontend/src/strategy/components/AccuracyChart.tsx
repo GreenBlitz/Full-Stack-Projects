@@ -50,7 +50,6 @@ export const AccuracyChart: FC<AccuracyChartProps> = ({ metrics }) => {
           key={card.label}
           className="relative overflow-hidden bg-slate-900/40 backdrop-blur-md border border-white/5 p-3 rounded-2xl flex flex-col items-center gap-1 shadow-xl"
         >
-          {/* Subtle Background Glow */}
 
           <div
             className={`absolute -bottom-4 -right-4 w-12 h-12 blur-2xl opacity-20 rounded-full ${firstElement(getProgressColor(card.value).split(" ")).replace("text", "bg")}`}
@@ -68,7 +67,6 @@ export const AccuracyChart: FC<AccuracyChartProps> = ({ metrics }) => {
             <span className="text-xs ml-0.5 opacity-60">%</span>
           </div>
 
-          {/* Mini progress bar at the bottom */}
           <div className="w-full h-1 bg-white/5 rounded-full mt-1 overflow-hidden">
             <div
               className={`h-full transition-all duration-1000 ${firstElement(getProgressColor(card.value).split(" ")).replace("text", "bg")}`}

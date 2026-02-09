@@ -19,7 +19,6 @@ const YELLOW_COLOR_AMOUNT = 2;
 const TELE_MOVEMENT_AMOUNT = 1;
 
 export const MovementChart: FC<MovementChartProps> = ({ movements }) => {
-  // Helper to determine color based on count
   const getBgColor = (count: number) => {
     if (count === RED_COLOR_AMOUNT)
       return "bg-rose-500/20 border-rose-500/50 text-rose-200";
@@ -30,7 +29,6 @@ export const MovementChart: FC<MovementChartProps> = ({ movements }) => {
     return "bg-emerald-500/20 border-emerald-500/50 text-emerald-200";
   };
 
-  // Helper to format labels (e.g., trenchPass -> Trench Pass)
   const formatLabel = (label: string) => {
     return label
       .replace(/([A-Z])/g, " $1")

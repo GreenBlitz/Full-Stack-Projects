@@ -15,7 +15,6 @@ export const TeamSelect: FC<TeamSelectProps> = ({
   setTeamNumber,
 }) => (
   <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md mx-auto p-4 bg-slate-900/40 backdrop-blur-sm rounded-2xl border border-white/10 shadow-2xl">
-    {/* Manual Number Input */}
     <div className="relative flex-1">
       <div className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-500/50">
         <Hash size={16} />
@@ -31,7 +30,6 @@ export const TeamSelect: FC<TeamSelectProps> = ({
       />
     </div>
 
-    {/* Team Dropdown */}
     <div className="relative flex-2">
       <div className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-500/50 pointer-events-none">
         <Users size={16} />
@@ -56,7 +54,6 @@ export const TeamSelect: FC<TeamSelectProps> = ({
           </option>
         ))}
       </select>
-      {/* Custom arrow for the select */}
       <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
         <svg
           width="10"
