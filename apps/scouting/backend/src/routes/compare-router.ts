@@ -21,26 +21,6 @@ import { generalCalculateFuel } from "../fuel/fuel-general";
 export const compareRouter = Router();
 
 //move these to a CompareTypes file or smth
-export interface TimeClimedToLevels {
-  L1: number;
-  L2: number;
-  L3: number;
-}
-
-export interface TeamCompareData {
-  teamNumber: number;
-  averageFuelInGame: number;
-  averageFuelInAuto: number;
-  maxClimbLevel: TeleClimbLevel;
-  timesClimbedToMax: number;
-  timesClimbedInAuto: number;
-  timesClimbedToLevels: TimeClimedToLevels;
-}
-
-export interface CompareData {
-  teamOne: TeamCompareData;
-  teamTwo: TeamCompareData;
-}
 
 type GamePeriod = "auto" | "fullGame";
 
