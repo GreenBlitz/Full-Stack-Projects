@@ -20,6 +20,60 @@ import { useNavigate } from "react-router-dom";
 import { AutoTab } from "./tabs/AutoTab";
 import { ClimbTab } from "./tabs/ClimbTab";
 import { PreMatchTab } from "../../PreMatchTab";
+
+export async function GET(req: Request) {
+  const url = new URL(req.url);
+  const matchNumber = Number(url.searchParams.get("matchNumber"));
+  const matchType = url.searchParams.get("matchType");
+
+  const game = await db.game.findFirst({
+    where: { matchNumber, matchType },
+    select: { id: true, startTime: true, status: true },
+    orderBy: { createdAt: "desc" },
+  });
+
+  if (!game) {
+    return Response.json({ game: null }, { status: 200 });
+  }
+
+  return Response.json({ game }, { status: 200 });
+}
+
+type MatchType = "qualification" | "playoff" | "practice";
+
+type GameResponse =
+  | { game: null }
+  | { game: { id: string; startTime: string; status?: string } };
+
+export function useGameStartTime(matchNumber: number, matchType: MatchType) {
+  const [startTime, setStartTime] = useState<string | null>(null);
+  const [isLoading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!matchNumber) return;
+
+    const ac = new AbortController();
+
+    (async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(
+          `/api/v1/game/current?matchNumber=${matchNumber}&matchType=${matchType}`,
+          { signal: ac.signal },
+        );
+        const data: GameResponse = await res.json();
+        setStartTime(data.game?.startTime ?? null);
+      } finally {
+        setLoading(false);
+      }
+    })();
+
+    return () => ac.abort();
+  }, [matchNumber, matchType]);
+
+  return { startTime, loading: isLoading };
+}
+
 export interface TabProps {
   setForm: Dispatch<SetStateAction<ScoutingForm>>;
   currentForm: ScoutingForm;
