@@ -53,8 +53,7 @@ export function useGameStartTime(matchNumber: number, matchType: MatchType) {
     if (!matchNumber) return;
 
     const ac = new AbortController();
-
-    (async () => {
+    void (async () => {
       setLoading(true);
       try {
         const res = await fetch(
