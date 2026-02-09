@@ -49,6 +49,7 @@ const createShotDataset = (data: MatchedEntry<FuelObject>[], key: FuelEvents) =>
   );
 
 const MILLISECONDS_TO_SECONDS = 1000;
+const DEFAULT_MEDIAN_CLIMB_TIME = 0;
 const calculateMedianClimbTimes = (times: (Interval | null)[]): number => {
   const relevantTimes = times.filter((time) => time !== null);
 
@@ -58,8 +59,7 @@ const calculateMedianClimbTimes = (times: (Interval | null)[]): number => {
   );
 
   if (isEmpty(climbDurationsSeconds)) {
-    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-    return 0;
+    return DEFAULT_MEDIAN_CLIMB_TIME;
   }
 
   return calculateMedian(climbDurationsSeconds, (time) => time);
@@ -187,20 +187,24 @@ export const TeamTab: FC = () => {
                   L1: calculateMedianClimbTimes(
                     data.climbs.map((climb) => climb.climbTime.L1),
                   ),
-                  L2: calculateMedianClimbTimes(
-                    data.climbs.map((climb) =>
-                      "L2" in climb.climbTime
-                        ? mapToTotalInterval(climb.climbTime, "L2")
-                        : null,
-                    ),
-                  ),
-                  L3: calculateMedianClimbTimes(
-                    data.climbs.map((climb) =>
-                      "L3" in climb.climbTime
-                        ? mapToTotalInterval(climb.climbTime, "L3")
-                        : null,
-                    ),
-                  ),
+                  ...(phase === "tele"
+                    ? {
+                        L2: calculateMedianClimbTimes(
+                          data.climbs.map((climb) =>
+                            "L2" in climb.climbTime
+                              ? mapToTotalInterval(climb.climbTime, "L2")
+                              : null,
+                          ),
+                        ),
+                        L3: calculateMedianClimbTimes(
+                          data.climbs.map((climb) =>
+                            "L3" in climb.climbTime
+                              ? mapToTotalInterval(climb.climbTime, "L3")
+                              : null,
+                          ),
+                        ),
+                      }
+                    : {}),
                 },
                 color: "green",
               },
