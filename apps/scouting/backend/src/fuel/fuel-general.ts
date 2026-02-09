@@ -4,7 +4,7 @@ import type { BPS, FuelObject, GeneralFuelData, ScoutingForm, ShiftsArray } from
 
 
 
-const calculateFuelStatisticsOfShift = (
+export const calculateFuelStatisticsOfShift = (
     match: ScoutingForm["match"],
     bpsArray: BPS[], shifts: ShiftsArray): FuelObject => 
         shifts

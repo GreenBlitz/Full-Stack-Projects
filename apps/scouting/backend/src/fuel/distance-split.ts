@@ -1,11 +1,15 @@
 // בס"ד
 import { convertPixelToCentimeters, distanceFromHub } from "@repo/rebuilt_map";
 import type { FuelEvents, FuelObject } from "./fuel-object";
-import { calculateAverage } from "@repo/array-functions";
+import { calculateAverage, isEmpty } from "@repo/array-functions";
 
 export const averageFuel = (fuels: FuelObject[]): FuelObject => {
+  if (isEmpty(fuels)) {
+    return { scored: 0, shot: 0, missed: 0, positions: [] };
+  }
   const averageOfKey = (key: FuelEvents) =>
     calculateAverage(fuels, (value) => value[key]);
+
   return {
     scored: averageOfKey("scored"),
     shot: averageOfKey("shot"),
@@ -16,7 +20,7 @@ export const averageFuel = (fuels: FuelObject[]): FuelObject => {
 
 export const splitByDistances = <T extends number>(
   fuels: FuelObject[],
-  distances: T[],
+  distances: readonly T[],
 ): Record<T, FuelObject> =>
   Object.assign(
     {},
