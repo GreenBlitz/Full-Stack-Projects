@@ -1,5 +1,4 @@
 //בס"ד
-/* eslint-disable @typescript-eslint/no-magic-numbers */ //for the example bps
 
 import { Router } from "express";
 import { getFormsCollection } from "./forms-router";
@@ -8,10 +7,10 @@ import { flatMap, fold, map, tryCatch } from "fp-ts/lib/TaskEither";
 import { mongofyQuery } from "../middleware/query";
 import { generalCalculateFuel } from "../fuel/fuel-general";
 import { StatusCodes } from "http-status-codes";
-
 import type { BPS, FuelObject, GeneralFuelData } from "@repo/scouting_types";
 import { averageFuel } from "../fuel/distance-split";
 import { firstElement, isEmpty } from "@repo/array-functions";
+import { getBPSes } from "./teams-router";
 
 export const generalRouter = Router();
 
@@ -20,10 +19,6 @@ interface AccumulatedFuelData {
   auto: FuelObject[];
   tele: FuelObject[];
 }
-
-export const getBPS = () => {
-  return [];
-};
 
 const ONE_ITEM_ARRAY = 1;
 
@@ -70,7 +65,7 @@ generalRouter.get("/", async (req, res) => {
     map((forms) =>
       forms.map((form) => ({
         teamNumber: form.teamNumber,
-        generalFuelData: generalCalculateFuel(form, getBPS()),
+        generalFuelData: generalCalculateFuel(form, getBPSes()),
       })),
     ),
 
@@ -79,7 +74,7 @@ generalRouter.get("/", async (req, res) => {
         (accumulatorRecord, fuelData) => ({
           ...accumulatorRecord,
           [fuelData.teamNumber]: [
-            ...accumulatorRecord[fuelData.teamNumber],
+            ...(accumulatorRecord[fuelData.teamNumber] ?? []),
             fuelData.generalFuelData,
           ],
         }),

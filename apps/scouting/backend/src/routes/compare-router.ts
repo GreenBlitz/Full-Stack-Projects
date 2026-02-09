@@ -15,8 +15,9 @@ import {
 import { mongofyQuery } from "../middleware/query";
 import { StatusCodes } from "http-status-codes";
 import { firstElement, isEmpty } from "@repo/array-functions";
-import { calcAverageGeneralFuelData, getBPS } from "./general-router";
+import { calcAverageGeneralFuelData } from "./general-router";
 import { generalCalculateFuel } from "../fuel/fuel-general";
+import { getBPSes } from "./teams-router";
 
 export const compareRouter = Router();
 
@@ -24,13 +25,14 @@ type GamePeriod = "auto" | "fullGame";
 
 const DIGITS_AFTER_DOT = 2;
 const INITIAL_COUNTER_VALUE = 0;
+const INCREMENT = 1;
 
 const calculateAverageScoredFuel = (
   forms: ScoutingForm[],
   gamePeriod: GamePeriod,
 ) => {
   const generalFuelData = forms.map((form) =>
-    generalCalculateFuel(form, getBPS()),
+    generalCalculateFuel(form, getBPSes()),
   );
   const averagedFuelData = calcAverageGeneralFuelData(generalFuelData);
 
@@ -56,7 +58,7 @@ const findTimesClimbedToMax = (
 ) => {
   return forms.reduce(
     (counter, form) =>
-      form.tele.climb.level === maxLevel ? counter++ : counter,
+      form.tele.climb.level === maxLevel ? counter + INCREMENT : counter,
     INITIAL_COUNTER_VALUE,
   );
 };

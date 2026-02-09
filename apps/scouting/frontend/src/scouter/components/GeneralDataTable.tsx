@@ -70,13 +70,13 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
         ([teamNumber, generalFuelData]) => ({
           teamNumber: Number(teamNumber),
           generalFuelData,
+          _uiKey: gameTime,
         }),
       ),
-    [teamNumberAndFuelData],
+    [teamNumberAndFuelData, gameTime],
   );
 
   const columnHelper = createColumnHelper<TableRow>();
-
 
   const createColumn = (headerAndId: FuelMetricKey, style: string) =>
     columnHelper.accessor((row) => row.generalFuelData[gameTime][headerAndId], {
@@ -163,18 +163,26 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
             ))}
           </thead>
           <tbody className="divide-y divide-white/5">
-            {table.getRowModel().rows.map((row) => (
-              <tr
-                key={row.id}
-                className="hover:bg-emerald-500/5 transition-colors group"
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="px-6 py-4 whitespace-nowrap">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
+            {table.getRowModel().rows.map((row) => {
+              console.log("data:", tableData, "columns:", columns);
+              // for some reason these rows dont update unless
+              //they reference the tableData in them
+              return (
+                <tr
+                  key={row.id}
+                  className="hover:bg-emerald-500/5 transition-colors group"
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id} className="px-6 py-4 whitespace-nowrap">
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
