@@ -1,7 +1,7 @@
 // בס"ד
 import * as t from "io-ts";
 import { shootEventCodec } from "./ShootEvent";
-import { intervalCodec, maxInterval } from "./Interval";
+import { intervalCodec } from "./Interval";
 import type { autoClimbCodec } from "./Segments";
 import type { ScoutingForm } from "./ScoutingForm";
 
