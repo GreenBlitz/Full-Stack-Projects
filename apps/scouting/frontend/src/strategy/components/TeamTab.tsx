@@ -129,7 +129,9 @@ export const TeamTab: FC = () => {
       {data && "movement" in data && (
         <MovementChart movements={data.movement} />
       )}
-      {teamData && <MetricsChart {...teamData.metrics} />}
+      {teamData && phase === "fullGame" && (
+        <MetricsChart {...teamData.metrics} />
+      )}
     </div>
   );
 };
