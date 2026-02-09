@@ -35,7 +35,7 @@ export interface LineChartProps {
 const convertDataToBarChartFormat = ({
   dataSetsProps,
 }: LineChartProps): ChartData<"bar", number[], string> => {
-  const defaultColors = ["blue", "red", "violet", "orange"];
+  const defaultColors = ["red", "violet", "orange"];
 
   const labels = Array.from(
     new Set(dataSetsProps.flatMap((dataset) => Object.keys(dataset.points))),
@@ -43,14 +43,11 @@ const convertDataToBarChartFormat = ({
 
   return {
     labels,
-    datasets: dataSetsProps.map((dataset, index) => {
-      const color =
-        dataset.color ?? defaultColors[index % defaultColors.length];
+    datasets: dataSetsProps.map((dataset) => {
       return {
         label: dataset.name,
         data: labels.map((label) => dataset.points[label] ?? null),
-        borderColor: color,
-        pointBackgroundColor: color,
+        backgroundColor: defaultColors,
       };
     }),
   };

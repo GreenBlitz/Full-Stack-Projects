@@ -54,9 +54,9 @@ export type ShiftType = "auto" | "transition" | "teleop" | "endgame";
 
 export const defaultClimb: t.TypeOf<typeof climbCodec> = {
   climbTime: {
-    L1: maxInterval,
-    L2: maxInterval,
-    L3: maxInterval,
+    L1: null,
+    L2: null,
+    L3: null,
   },
   climbSide: {
     middle: false,
@@ -68,7 +68,7 @@ export const defaultClimb: t.TypeOf<typeof climbCodec> = {
 
 export const defaultAutoClimb: t.TypeOf<typeof autoClimbCodec> = {
   climbTime: {
-    L1: maxInterval,
+    L1: null,
   },
   climbSide: {
     middle: false,
