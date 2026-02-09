@@ -13,8 +13,8 @@ import { TeamSelect } from "./TeamSelect";
 import { MovementChart } from "./MovementChart";
 import { AccuracyChart } from "./AccuracyChart";
 import { LineChart } from "../LineChart";
-import type { DataPoint } from "../Dataset";
 import { PhaseToggle } from "./PhaseToggle";
+import { MetricsChart } from "./MetricsChart";
 
 const METER_CENTIMETERS = 100;
 const TWO_METER_CENTIMETERS = 200;
@@ -104,7 +104,7 @@ export const TeamTab: FC = () => {
               {
                 name: "Climb",
                 points: Object.fromEntries(
-                  data.climbs.map<[string, DataPoint]>((climb) => [
+                  data.climbs.map((climb) => [
                     climb.match.type[FIRST_MATCH_TYPE_CHARACTER] +
                       climb.match.number,
                     {
@@ -129,6 +129,7 @@ export const TeamTab: FC = () => {
       {data && "movement" in data && (
         <MovementChart movements={data.movement} />
       )}
+      {teamData && <MetricsChart {...teamData.metrics} />}
     </div>
   );
 };
