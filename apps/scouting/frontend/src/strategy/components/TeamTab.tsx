@@ -1,7 +1,5 @@
 // בס"ד
 import type {
-  AutoClimb,
-  Climb,
   FuelEvents,
   FuelObject,
   GamePhase,
@@ -25,8 +23,15 @@ const METER_CENTIMETERS = 100;
 const TWO_METER_CENTIMETERS = 200;
 const MORE_DISTANCE = 2000;
 
+const NO_DATA_ON_TEAM_STATUS = 502;
 async function fetchTeamData(team: number) {
   const response = await fetch(`/api/v1/team?teams=${team}`);
+
+  if (response.status === NO_DATA_ON_TEAM_STATUS) {
+    alert(`No Data on ${team}`);
+    return undefined;
+  }
+
   const data: {
     teams: Record<number, TeamData>;
   } = await response.json();

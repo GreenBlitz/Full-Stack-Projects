@@ -1,10 +1,5 @@
 // בס"ד
-import {
-  useState,
-  type FC,
-  type ForwardRefExoticComponent,
-  type RefAttributes,
-} from "react";
+import type { FC, ForwardRefExoticComponent, RefAttributes } from "react";
 import { Zap, Play, LayoutGrid, type LucideProps } from "lucide-react";
 import type { GamePhase } from "@repo/scouting_types";
 

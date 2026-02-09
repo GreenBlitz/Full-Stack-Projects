@@ -1,5 +1,5 @@
 // בס"ד
-import type { FuelObject, Match, ShootEvent } from "@repo/scouting_types";
+import type { FuelObject, ShootEvent } from "@repo/scouting_types";
 import type { BPS } from "../fuel-object";
 import { calculateSum, firstElement, lastElement } from "@repo/array-functions";
 
