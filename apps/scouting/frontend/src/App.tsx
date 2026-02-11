@@ -9,10 +9,10 @@ import { GeneralDataTable } from "./scouter/components/GeneralDataTable";
 const App: FC = () => {
   return (
     <Routes>
-      <Route path="*" element={<ScoutedMatches />} />
       <Route path="/scout" element={<ScoutMatch />} />
       <Route path="/team" element={<TeamTab/>} />
       <Route path="/general" element={<GeneralDataTable filters={{}} />} />
+      <Route path="*" element={<ScoutedMatches />} />
     </Routes>
   );
 };
