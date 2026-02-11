@@ -27,10 +27,10 @@ const LAST_SECTION_LENGTH = 1;
  */
 const calculateBallAmount = (
   sections: number[][],
-  shotLength: ShotStats,
+  shot: ShotStats,
 ): number => {
   // Base Case 1
-  if (shotLength.duration <= EMPTY_INTERVAL_DURATION) {
+  if (shot.duration <= EMPTY_INTERVAL_DURATION) {
     return NO_FUEL_COLLECTED;
   }
   // Base Case 2: Happens if no section is long enough for the shot length
@@ -38,7 +38,7 @@ const calculateBallAmount = (
     const onlySection = firstElement(sections);
     const ballAmount = onlySection.length;
     const sectionDuration = lastElement(onlySection);
-    return (ballAmount / sectionDuration) * shotLength.duration;
+    return (ballAmount / sectionDuration) * shot.duration;
   }
 
   // finds the average for the first interval, removes it and then recurses
@@ -51,7 +51,7 @@ const calculateBallAmount = (
   const firstIntervalSections = adjustedSections.map((section) =>
     section.filter(
       (timing) =>
-        timing <= FIRST_INTERVAL_BOUNDARY && timing <= shotLength.duration,
+        timing <= FIRST_INTERVAL_BOUNDARY && timing <= shot.duration,
     ),
   );
 
@@ -67,8 +67,8 @@ const calculateBallAmount = (
   return (
     avgBallsFirstInterval +
     calculateBallAmount(nonFirstSections, {
-      duration: shotLength.duration - firstIntervalDuration,
-      distance: shotLength.distance,
+      duration: shot.duration - firstIntervalDuration,
+      distance: shot.distance,
     })
   );
 };
