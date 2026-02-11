@@ -111,8 +111,8 @@ compareRouter.get("/teams", async (req, res) => {
   )();
 });
 
-compareRouter.get("/", (req, res) => {
-  pipe(
+compareRouter.get("/", async (req, res) => {
+  await pipe(
     getFormsCollection(),
     flatMap((collection) =>
       tryCatch(
@@ -156,5 +156,5 @@ compareRouter.get("/", (req, res) => {
       (teamCompareData) => () =>
         Promise.resolve(res.status(StatusCodes.OK).json({ teamCompareData })),
     ),
-  );
+  )();
 });

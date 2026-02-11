@@ -10,6 +10,7 @@ const compareUrl = "/api/v1/compare/";
 const MAX_SELECTED_TEAMS = 2;
 const DEFAULT_LEVEL = 0;
 const FIRST_INDEX = 0;
+const MIN_AMOUNT_CLIMB = 0;
 
 const fetchTeamCompareData = async (teamNumber: number) => {
   const params = new URLSearchParams({ teamNumber: teamNumber.toString() });
@@ -65,17 +66,25 @@ const StatBox = ({
   color: string;
 }) => (
   <div
-    className={`p-4 border-b flex flex-col items-center transition-colors ${color}`}
+    className={`p-6 border-b border-white/5 flex flex-col items-center transition-all duration-300 ${color}`}
   >
-    <span className="text-xs uppercase text-gray-500 font-bold">{label}</span>
-    <span className="text-2xl font-black">{value}</span>
+    <span className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">
+      {label}
+    </span>
+    <span className="text-3xl font-black tabular-nums">{value}</span>
   </div>
 );
 
 const LevelMiniStat = ({ label, count }: { label: string; count: number }) => (
-  <div className="flex flex-col items-center">
-    <span className="text-[10px] font-bold text-gray-400">{label}</span>
-    <span className="text-sm font-bold text-gray-700">{count}</span>
+  <div className="flex flex-col items-center px-3">
+    <span className="text-[10px] font-black text-slate-500 mb-0.5">
+      {label}
+    </span>
+    <span
+      className={`text-base font-bold ${count > MIN_AMOUNT_CLIMB ? "text-emerald-400" : "text-slate-700"}`}
+    >
+      {count}
+    </span>
   </div>
 );
 
@@ -118,18 +127,19 @@ export const CompareTwo: React.FC = () => {
     }
   };
 
+  // Theme-aware colors: Dark backgrounds with emerald/rose glows
   const getStatColor = (
     thisTeamStat: number,
     otherTeamStat: number,
     isHigherBetter = true,
   ) => {
-    if (thisTeamStat === otherTeamStat) return "bg-gray-50";
+    if (thisTeamStat === otherTeamStat) return "bg-slate-900/50 text-slate-400";
     const isWinner = isHigherBetter
       ? thisTeamStat > otherTeamStat
       : thisTeamStat < otherTeamStat;
     return isWinner
-      ? "bg-green-100 border-green-200"
-      : "bg-red-100 border-red-200";
+      ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+      : "bg-rose-500/5 text-rose-500/60 border-rose-500/10";
   };
 
   const levelToScore = (level: string) => {
@@ -138,18 +148,22 @@ export const CompareTwo: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col gap-6 p-6 font-sans">
-      <div className="flex flex-wrap gap-2 p-4 bg-gray-50 rounded-xl border border-gray-200">
+    <div className="flex flex-col gap-8 p-8 bg-slate-950 min-h-screen text-slate-200">
+      {/* Team Selection Header */}
+      <div className="flex flex-wrap items-center gap-3 p-5 bg-slate-900/40 rounded-2xl border border-white/10 backdrop-blur-md">
+        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mr-2">
+          Select Teams:
+        </span>
         {teamNumbers.map((teamNumber) => (
           <button
             key={teamNumber}
             onClick={() => {
               toggleTeamSelection(teamNumber);
             }}
-            className={`px-4 py-2 rounded-lg transition-all border-2 ${
+            className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border ${
               selectedTeams.includes(teamNumber)
-                ? "bg-blue-600 text-white border-blue-700"
-                : "bg-white text-gray-700 border-gray-200 hover:border-blue-300"
+                ? "bg-emerald-500 text-slate-950 border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.3)] scale-105"
+                : "bg-transparent text-slate-400 border-white/5 hover:border-emerald-500/50 hover:text-emerald-400"
             }`}
           >
             {teamNumber}
@@ -160,15 +174,15 @@ export const CompareTwo: React.FC = () => {
             void handleCompare();
           }}
           disabled={selectedTeams.length !== MAX_SELECTED_TEAMS || isLoading}
-          className="ml-auto px-8 py-2 bg-black text-white rounded-lg disabled:opacity-30 hover:bg-gray-800"
+          className="ml-auto px-10 py-2.5 bg-emerald-500 text-slate-950 text-xs font-black uppercase tracking-widest rounded-xl disabled:opacity-20 hover:bg-emerald-400 transition-all active:scale-95"
         >
           {isLoading ? "Loading..." : "Compare"}
         </button>
       </div>
 
       {comparisonData && (
-        <div className="grid grid-cols-2 gap-4">
-          {Object.values(comparisonData).map((team, idx) => {
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          {Object.values(comparisonData).map((team: TeamCompareData, idx) => {
             const other =
               idx === FIRST_INDEX
                 ? comparisonData.teamTwo
@@ -176,10 +190,15 @@ export const CompareTwo: React.FC = () => {
             return (
               <div
                 key={team.teamNumber}
-                className="border rounded-2xl overflow-hidden shadow-sm"
+                className="bg-slate-900/40 border border-white/10 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-sm"
               >
-                <div className="bg-gray-800 text-white p-4 text-center text-2xl font-bold">
-                  Team {team.teamNumber}
+                <div className="bg-slate-900 border-b border-white/10 py-6 text-center">
+                  <span className="text-[10px] uppercase tracking-[0.4em] font-bold text-emerald-500/60 block mb-1">
+                    Scouting Report
+                  </span>
+                  <span className="text-4xl font-black text-white">
+                    Team {team.teamNumber}
+                  </span>
                 </div>
 
                 <StatBox
@@ -201,27 +220,29 @@ export const CompareTwo: React.FC = () => {
                 />
 
                 <div
-                  className={`p-4 border-b flex flex-col items-center ${getStatColor(levelToScore(team.maxClimbLevel), levelToScore(other.maxClimbLevel))}`}
+                  className={`p-6 border-b border-white/5 flex flex-col items-center transition-all duration-300 ${getStatColor(levelToScore(team.maxClimbLevel), levelToScore(other.maxClimbLevel))}`}
                 >
-                  <span className="text-xs uppercase text-gray-500 font-bold">
+                  <span className="text-[10px] uppercase tracking-widest font-bold mb-1 opacity-60">
                     Max Climb Level
                   </span>
-                  <span className="text-2xl font-black">
+                  <span className="text-4xl font-black">
                     {team.maxClimbLevel}
                   </span>
-                  <span className="text-xs text-gray-600 mt-1">
+                  <span className="text-[11px] font-bold opacity-50 mt-1 uppercase tracking-tighter">
                     Reached {team.timesClimbedToMax} times
                   </span>
 
-                  <div className="flex gap-4 mt-3 pt-2 border-t border-black/5 w-full justify-center">
+                  <div className="flex gap-2 mt-5 p-3 bg-black/40 rounded-2xl w-full justify-center border border-white/5">
                     <LevelMiniStat
                       label="L1"
                       count={team.timesClimbedToLevels.L1}
                     />
+                    <div className="w-px h-8 bg-white/5 self-center" />
                     <LevelMiniStat
                       label="L2"
                       count={team.timesClimbedToLevels.L2}
                     />
+                    <div className="w-px h-8 bg-white/5 self-center" />
                     <LevelMiniStat
                       label="L3"
                       count={team.timesClimbedToLevels.L3}
