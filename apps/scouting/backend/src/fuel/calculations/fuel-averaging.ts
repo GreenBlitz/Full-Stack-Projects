@@ -1,6 +1,6 @@
 // בס"ד
-import type { Match, ShootEvent } from "@repo/scouting_types";
-import type { BPS, FuelObject } from "../fuel-object";
+import type { FuelObject, ShootEvent } from "@repo/scouting_types";
+import type { BPS } from "../fuel-object";
 import { calculateSum, firstElement, lastElement } from "@repo/array-functions";
 
 const EMPTY_INTERVAL_DURATION = 0;
@@ -69,22 +69,29 @@ const correctSectionToTimeFromEnd = (sections: number[]) => {
 
 export const calculateFuelByAveraging = (
   shot: ShootEvent,
-  match: Match,
+  isPass: boolean,
   sections: BPS["events"],
-): FuelObject => {
+): Partial<FuelObject> => {
   const shotLength = shot.interval.end - shot.interval.start;
 
-  const scoredAmount = calculateBallAmount(
+  const shotAmount = calculateBallAmount(
     sections
-      .map((section) => section.score)
+      .map((section) => section.shoot)
       .map(correctSectionToTimeFromEnd)
       .sort(compareSections),
     shotLength,
   );
 
-  const shotAmount = calculateBallAmount(
+  if (isPass) {
+    return {
+      shot: shotAmount,
+      passed: shotAmount,
+      positions: [shot.startPosition],
+    };
+  }
+  const scoredAmount = calculateBallAmount(
     sections
-      .map((section) => section.shoot)
+      .map((section) => section.score)
       .map(correctSectionToTimeFromEnd)
       .sort(compareSections),
     shotLength,

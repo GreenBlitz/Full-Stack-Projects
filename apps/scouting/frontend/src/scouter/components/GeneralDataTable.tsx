@@ -8,6 +8,7 @@ import {
   type SortingState,
 } from "@tanstack/react-table";
 import type {
+  FuelEvents,
   GameTime,
   GeneralFuelData,
   TeamNumberAndFuelData,
@@ -15,8 +16,6 @@ import type {
 import type React from "react";
 import { useState, useEffect, useMemo } from "react";
 import { ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
-
-type FuelMetricKey = "shot" | "scored" | "missed";
 
 interface TableRow {
   teamNumber: number;
@@ -70,14 +69,15 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
         ([teamNumber, generalFuelData]) => ({
           teamNumber: Number(teamNumber),
           generalFuelData,
+          _uiKey: gameTime,
         }),
       ),
-    [teamNumberAndFuelData],
+    [teamNumberAndFuelData, gameTime],
   );
 
   const columnHelper = createColumnHelper<TableRow>();
 
-  const createColumn = (headerAndId: FuelMetricKey, style: string) =>
+  const createColumn = (headerAndId: FuelEvents, style: string) =>
     columnHelper.accessor((row) => row.generalFuelData[gameTime][headerAndId], {
       id: headerAndId,
       header: headerAndId,
@@ -88,18 +88,22 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
       ),
     });
 
-  const columns = [
-    columnHelper.accessor("teamNumber", {
-      header: "Team Number",
-      cell: (info) => (
-        <span className="font-black text-emerald-400">{info.getValue()}</span>
-      ),
-    }),
+  const columns = useMemo(
+    () => [
+      columnHelper.accessor("teamNumber", {
+        header: "Team Number",
+        cell: (info) => (
+          <span className="font-black text-emerald-400">{info.getValue()}</span>
+        ),
+      }),
 
-    createColumn("shot", "text-slate-300 font-medium"),
-    createColumn("scored", "text-emerald-400 font-bold"),
-    createColumn("missed", "text-rose-500/90 font-medium"),
-  ];
+      createColumn("shot", "text-slate-300 font-medium"),
+      createColumn("scored", "text-emerald-400 font-bold"),
+      createColumn("missed", "text-rose-500/90 font-medium"),
+      createColumn("passed", "text-orange-400 font-medium"),
+    ],
+    [gameTime],
+  );
 
   const table = useReactTable({
     data: tableData,
@@ -162,18 +166,26 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
             ))}
           </thead>
           <tbody className="divide-y divide-white/5">
-            {table.getRowModel().rows.map((row) => (
-              <tr
-                key={row.id}
-                className="hover:bg-emerald-500/5 transition-colors group"
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="px-6 py-4 whitespace-nowrap">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
+            {table.getRowModel().rows.map((row) => {
+              console.log("data:", tableData, "columns:", columns);
+              // for some reason these rows dont update unless
+              //they reference the tableData in them
+              return (
+                <tr
+                  key={row.id}
+                  className="hover:bg-emerald-500/5 transition-colors group"
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id} className="px-6 py-4 whitespace-nowrap">
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
