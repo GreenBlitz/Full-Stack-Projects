@@ -67,6 +67,15 @@ const correctSectionToTimeFromEnd = (sections: number[]) => {
     .map((timestamp) => endTimestamp - timestamp);
 };
 
+const calculateFullSectionsBallAmount = (
+  sections: number[][],
+  shotLength: number,
+) =>
+  calculateBallAmount(
+    sections.map(correctSectionToTimeFromEnd).sort(compareSections),
+    shotLength,
+  );
+
 export const calculateFuelByAveraging = (
   shot: ShootEvent,
   match: Match,
@@ -74,19 +83,13 @@ export const calculateFuelByAveraging = (
 ): FuelObject => {
   const shotLength = shot.interval.end - shot.interval.start;
 
-  const scoredAmount = calculateBallAmount(
-    sections
-      .map((section) => section.score)
-      .map(correctSectionToTimeFromEnd)
-      .sort(compareSections),
+  const scoredAmount = calculateFullSectionsBallAmount(
+    sections.map((section) => section.score),
     shotLength,
   );
 
-  const shotAmount = calculateBallAmount(
-    sections
-      .map((section) => section.shoot)
-      .map(correctSectionToTimeFromEnd)
-      .sort(compareSections),
+  const shotAmount = calculateFullSectionsBallAmount(
+    sections.map((section) => section.shoot),
     shotLength,
   );
 
