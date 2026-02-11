@@ -1,6 +1,6 @@
 // בס"ד
-import type { Match, ShootEvent } from "@repo/scouting_types";
-import type { BPS, FuelObject } from "./fuel-object";
+import type { FuelObject, ShootEvent } from "@repo/scouting_types";
+import type { BPS } from "../fuel-object";
 import { calculateSum, firstElement, lastElement } from "@repo/array-functions";
 
 const EMPTY_INTERVAL_DURATION = 0;
@@ -62,7 +62,9 @@ const compareSections = (a: number[], b: number[]) =>
 
 const correctSectionToTimeFromEnd = (sections: number[]) => {
   const endTimestamp = lastElement(sections);
-  return sections.map((timestamp) => endTimestamp - timestamp);
+  return sections
+    .filter((timestamp) => timestamp < endTimestamp)
+    .map((timestamp) => endTimestamp - timestamp);
 };
 
 /**
@@ -74,25 +76,29 @@ const correctSectionToTimeFromEnd = (sections: number[]) => {
  */
 export const calculateFuelByAveraging = (
   shot: ShootEvent,
-  match: Match,
+  isPass: boolean,
   sections: BPS["events"],
-): FuelObject => {
-  // Calculate the duration of the shooting interval in milliseconds
+): Partial<FuelObject> => {
   const shotLength = shot.interval.end - shot.interval.start;
 
-  // Calculate average scored amount by processing score sections
-  const scoredAmount = calculateBallAmount(
+  const shotAmount = calculateBallAmount(
     sections
-      .map((section) => section.score)
+      .map((section) => section.shoot)
       .map(correctSectionToTimeFromEnd)
       .sort(compareSections),
     shotLength,
   );
 
-  // Calculate average shot amount by processing shoot sections
-  const shotAmount = calculateBallAmount(
+  if (isPass) {
+    return {
+      shot: shotAmount,
+      passed: shotAmount,
+      positions: [shot.positions[0]],
+    };
+  }
+  const scoredAmount = calculateBallAmount(
     sections
-      .map((section) => section.shoot)
+      .map((section) => section.score)
       .map(correctSectionToTimeFromEnd)
       .sort(compareSections),
     shotLength,

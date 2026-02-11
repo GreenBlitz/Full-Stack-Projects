@@ -1,6 +1,6 @@
 // בס"ד
-import type { ShootEvent } from "@repo/scouting_types";
-import type { BPS, FuelObject } from "./fuel-object";
+import type { FuelObject, ShootEvent } from "@repo/scouting_types";
+import type { BPS } from "../fuel-object";
 
 /**
  * Filters timestamps that fall within the shooting interval
@@ -23,9 +23,9 @@ const getIncludedShots = (section: number[], shot: ShootEvent) => {
  */
 export const calculateFuelByMatch = (
   shot: ShootEvent,
+  isPass: boolean,
   bps: BPS,
-): FuelObject => {
-  // Map each BPS event section to filtered shots within the shooting interval
+): Partial<FuelObject> => {
   const shotBps = bps.events.map((section) => ({
     score: getIncludedShots(section.score, shot),
     shoot: getIncludedShots(section.shoot, shot),
@@ -33,6 +33,15 @@ export const calculateFuelByMatch = (
 
   // Calculate total shots and scored shots by flattening all sections
   const shotAmount = shotBps.flatMap((section) => section.shoot).length;
+
+  if (isPass) {
+    return {
+      shot: shotAmount,
+      passed: shotAmount,
+      positions: [shot.positions[0]],
+    };
+  }
+
   const scoredAmount = shotBps.flatMap((section) => section.score).length;
 
   return {
