@@ -65,13 +65,22 @@ const correctSectionToTimeFromEnd = (sections: number[]) => {
   return sections.map((timestamp) => endTimestamp - timestamp);
 };
 
+/**
+ * Calculates fuel statistics for a shooting event by averaging across multiple matches
+ * @param shot - The shooting event containing interval and positions array
+ * @param match - The match information
+ * @param sections - Array of BPS event sections from multiple matches
+ * @returns FuelObject with averaged shot count, scored count, missed count, and positions array
+ */
 export const calculateFuelByAveraging = (
   shot: ShootEvent,
   match: Match,
   sections: BPS["events"],
 ): FuelObject => {
+  // Calculate the duration of the shooting interval in milliseconds
   const shotLength = shot.interval.end - shot.interval.start;
 
+  // Calculate average scored amount by processing score sections
   const scoredAmount = calculateBallAmount(
     sections
       .map((section) => section.score)
@@ -80,6 +89,7 @@ export const calculateFuelByAveraging = (
     shotLength,
   );
 
+  // Calculate average shot amount by processing shoot sections
   const shotAmount = calculateBallAmount(
     sections
       .map((section) => section.shoot)
@@ -92,6 +102,7 @@ export const calculateFuelByAveraging = (
     scored: scoredAmount,
     shot: shotAmount,
     missed: shotAmount - scoredAmount,
-    positions: [shot.startPosition],
+    // Use the positions array from the shot event (recorded every 0.1 seconds)
+    positions: shot.positions,
   };
 };

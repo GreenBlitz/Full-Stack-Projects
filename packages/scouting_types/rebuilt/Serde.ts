@@ -8,6 +8,7 @@ import {
   serdeString,
   serdeUnsignedInt,
 } from "@repo/serde";
+
 import type { Match, ScoutingForm } from "./ScoutingForm";
 import type { Interval } from "./Interval";
 import type { Point, ShootEvent } from "./ShootEvent";
@@ -16,7 +17,6 @@ import type { TeleClimb } from "./Shift";
 
 const MATCH_NUMBER_BIT_COUNT = 7;
 const TEAM_NUMBER_BIT_COUNT = 14;
-
 const TIME_MILLISECONDS_BIT_COUNT = 18;
 
 const serdeInterval = createRecordSerde<Interval>({
@@ -33,7 +33,7 @@ const serdePoint = createRecordSerde<Point>({
 const serdeShootEvents = serdeArray(
   createRecordSerde<ShootEvent>({
     interval: serdeInterval,
-    startPosition: serdePoint,
+    positions: serdeArray(serdePoint),
   }),
 );
 

@@ -15,6 +15,8 @@ interface StopwatchProps {
   originTime: number;
   disabled: boolean;
   size?: "default" | "compact";
+  onStart?: () => void;
+  onStop?: () => void;
 }
 
 const Stopwatch: React.FC<StopwatchProps> = ({
@@ -22,6 +24,8 @@ const Stopwatch: React.FC<StopwatchProps> = ({
   originTime,
   disabled,
   size = "default",
+  onStart,
+  onStop,
 }) => {
   const [isRunning, setIsRunning] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(INITIAL_TIME_MILLISECONDS);
@@ -71,6 +75,8 @@ const Stopwatch: React.FC<StopwatchProps> = ({
 
     startTimeRef.current = Date.now() - elapsedTime;
     setIsRunning(true);
+    // Call onStart callback if provided to notify parent component that shooting started
+    onStart?.();
   };
 
   const stop = () => {
@@ -87,6 +93,8 @@ const Stopwatch: React.FC<StopwatchProps> = ({
 
     setIsRunning(false);
     reset();
+    // Call onStop callback if provided to notify parent component that shooting stopped
+    onStop?.();
   };
 
   const formatTime = () => {

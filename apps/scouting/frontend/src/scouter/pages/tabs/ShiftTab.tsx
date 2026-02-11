@@ -1,11 +1,12 @@
 // בס"ד
-
 import { useState, type FC } from "react";
 import type { TabProps } from "../ScoutMatch";
 import { ScoreMap, defaultPoint } from "../../components/ScoreMap";
 import type { Alliance, Point } from "@repo/scouting_types";
 import { MovementForm } from "../../components/MovementForm";
 import Stopwatch from "../../components/stopwatch";
+import { usePositionRecording } from "../../hooks/usePositionRecording";
+
 type ShiftType = "regular" | "transition" | "endgame";
 
 interface ShiftTabProps extends TabProps {
@@ -13,6 +14,7 @@ interface ShiftTabProps extends TabProps {
   shiftType: ShiftType;
 }
 
+const EMPTY_ARRAY_LENGTH = 0;
 
 export const ShiftTab: FC<ShiftTabProps> = ({
   setForm,
@@ -24,6 +26,7 @@ export const ShiftTab: FC<ShiftTabProps> = ({
 }) => {
   const [mapPosition, setMapPosition] = useState<Point>();
   const [mapZone, setMapZone] = useState<Alliance>(alliance);
+  const { recordedPositionsRef, start, stop } = usePositionRecording(mapPosition);
 
   const handleSetForm = (cycle: { start: number; end: number }) => {
     setForm((prevForm) => {
@@ -33,10 +36,18 @@ export const ShiftTab: FC<ShiftTabProps> = ({
           : shiftType === "transition"
             ? prevForm.tele.transitionShift.shootEvents
             : prevForm.tele.endgameShift.shootEvents;
+
+      const positions =
+        recordedPositionsRef.current.length > EMPTY_ARRAY_LENGTH
+          ? recordedPositionsRef.current
+          : [mapPosition ?? { ...defaultPoint }];
+
       prevEvents.push({
         interval: cycle,
-        startPosition: mapPosition ?? { ...defaultPoint },
+        positions,
       });
+
+      recordedPositionsRef.current = [];
       return prevForm;
     });
   };
@@ -53,17 +64,18 @@ export const ShiftTab: FC<ShiftTabProps> = ({
       </div>
       <div className="flex flex-col items-center gap-0.5 sm:gap-1 shrink-0 w-32 sm:w-36 min-h-0 py-0.5 sm:py-1">
         <Stopwatch
-          addCycleTimeSeconds={(cycle) => {
-            handleSetForm(cycle);
-          }}
+          addCycleTimeSeconds={handleSetForm}
           originTime={originTime}
           disabled={mapPosition === undefined}
           size="compact"
+          onStart={start}
+          onStop={stop}
         />
         <MovementForm
           setMovement={(value) => {
             setForm((prevForm) => ({
               ...prevForm,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
               tele: { ...prevForm.tele, movement: value },
             }));
           }}

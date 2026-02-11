@@ -6,6 +6,9 @@ import Stopwatch from "../../components/stopwatch";
 import { MovementForm } from "../../components/MovementForm";
 import type { TabProps } from "../ScoutMatch";
 import { defaultPoint } from "../../components/ScoreMap";
+import { usePositionRecording } from "../../hooks/usePositionRecording";
+
+const EMPTY_ARRAY_LENGTH = 0;
 
 export const AutoTab: FC<TabProps> = ({
   setForm,
@@ -15,6 +18,7 @@ export const AutoTab: FC<TabProps> = ({
 }) => {
   const [mapPosition, setMapPosition] = useState<Point>();
   const [mapZone, setMapZone] = useState<Alliance>(alliance);
+  const { recordedPositionsRef, start, stop } = usePositionRecording(mapPosition);
 
   return (
     <div className="flex flex-row h-full w-full gap-3">
@@ -31,16 +35,25 @@ export const AutoTab: FC<TabProps> = ({
           addCycleTimeSeconds={(cycle) => {
             setForm((prevForm) => {
               const prevEvents = prevForm.auto.shootEvents;
+              const positions =
+                recordedPositionsRef.current.length > EMPTY_ARRAY_LENGTH
+                  ? recordedPositionsRef.current
+                  : [mapPosition ?? { ...defaultPoint }];
+
               prevEvents.push({
                 interval: cycle,
-                startPosition: mapPosition ?? { ...defaultPoint },
+                positions,
               });
+
+              recordedPositionsRef.current = [];
               return prevForm;
             });
           }}
           originTime={originTime}
           disabled={mapPosition === undefined}
           size="compact"
+          onStart={start}
+          onStop={stop}
         />
         <MovementForm
           setMovement={(value) => {
