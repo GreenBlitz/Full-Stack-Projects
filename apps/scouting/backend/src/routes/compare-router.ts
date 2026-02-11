@@ -36,18 +36,20 @@ const calculateAverageScoredFuel = (
   );
   const averagedFuelData = calcAverageGeneralFuelData(generalFuelData);
 
-  return Number(averagedFuelData[gamePeriod].scored.toFixed(DIGITS_AFTER_DOT));
+  return parseFloat(
+    averagedFuelData[gamePeriod].scored.toFixed(DIGITS_AFTER_DOT),
+  );
 };
 
 const findMaxClimbLevel = (forms: ScoutingForm[]) => {
   const fullGameClimbedLevels = forms
     .map((form) => form.tele.climb.level)
     .concat(forms.map((form) => form.auto.climb.level));
-  return "L3" in fullGameClimbedLevels
+  return fullGameClimbedLevels.includes("L3")
     ? "L3"
-    : "L2" in fullGameClimbedLevels
+    : fullGameClimbedLevels.includes("L2")
       ? "L2"
-      : "L1" in fullGameClimbedLevels
+      : fullGameClimbedLevels.includes("L1")
         ? "L1"
         : "L0";
 };
@@ -65,7 +67,8 @@ const findTimesClimbedToMax = (
 
 const findTimesClimbedInAuto = (forms: ScoutingForm[]) => {
   return forms.reduce(
-    (counter, form) => (form.auto.climb.level === "L1" ? counter++ : counter),
+    (counter, form) =>
+      form.auto.climb.level === "L1" ? counter + INCREMENT : counter,
     INITIAL_COUNTER_VALUE,
   );
 };
