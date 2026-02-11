@@ -2,6 +2,12 @@
 import type { Match, ShootEvent } from "@repo/scouting_types";
 import type { BPS, FuelObject } from "../fuel-object";
 import { calculateSum, firstElement, lastElement } from "@repo/array-functions";
+import { convertPixelToCentimeters, distanceFromHub } from "@repo/rebuilt_map";
+
+interface ShotStats {
+  duration: number;
+  distance: number;
+}
 
 const EMPTY_INTERVAL_DURATION = 0;
 const FIRST_INTERVAL_BOUNDARY = 0;
@@ -15,10 +21,10 @@ const LAST_SECTION_LENGTH = 1;
  */
 const calculateBallAmount = (
   sections: number[][],
-  shotLength: number,
+  shotLength: ShotStats,
 ): number => {
   // Base Case 1
-  if (shotLength <= EMPTY_INTERVAL_DURATION) {
+  if (shotLength.duration <= EMPTY_INTERVAL_DURATION) {
     return NO_FUEL_COLLECTED;
   }
   // Base Case 2: Happens if no section is long enough for the shot length
@@ -26,7 +32,7 @@ const calculateBallAmount = (
     const onlySection = firstElement(sections);
     const ballAmount = onlySection.length;
     const sectionDuration = lastElement(onlySection);
-    return (ballAmount / sectionDuration) * shotLength;
+    return (ballAmount / sectionDuration) * shotLength.duration;
   }
 
   // finds the average for the first interval, removes it and then recurses
@@ -38,7 +44,8 @@ const calculateBallAmount = (
   );
   const firstIntervalSections = adjustedSections.map((section) =>
     section.filter(
-      (timing) => timing <= FIRST_INTERVAL_BOUNDARY && timing <= shotLength,
+      (timing) =>
+        timing <= FIRST_INTERVAL_BOUNDARY && timing <= shotLength.duration,
     ),
   );
 
@@ -53,7 +60,10 @@ const calculateBallAmount = (
     );
   return (
     avgBallsFirstInterval +
-    calculateBallAmount(nonFirstSections, shotLength - firstIntervalDuration)
+    calculateBallAmount(nonFirstSections, {
+      duration: shotLength.duration - firstIntervalDuration,
+      distance: shotLength.distance,
+    })
   );
 };
 
@@ -67,14 +77,15 @@ const correctSectionToTimeFromEnd = (sections: number[]) => {
     .map((timestamp) => endTimestamp - timestamp);
 };
 
+const LAST_BALL = 1;
 const calculateFullSectionsBallAmount = (
   sections: number[][],
-  shotLength: number,
+  shot: ShotStats,
 ) =>
   calculateBallAmount(
     sections.map(correctSectionToTimeFromEnd).sort(compareSections),
-    shotLength,
-  );
+    shot,
+  ) + LAST_BALL;
 
 export const calculateFuelByAveraging = (
   shot: ShootEvent,
@@ -82,15 +93,19 @@ export const calculateFuelByAveraging = (
   sections: BPS["events"],
 ): FuelObject => {
   const shotLength = shot.interval.end - shot.interval.start;
+  const shotStats: ShotStats = {
+    duration: shotLength,
+    distance: distanceFromHub(convertPixelToCentimeters(shot.startPosition)),
+  };
 
   const scoredAmount = calculateFullSectionsBallAmount(
     sections.map((section) => section.score),
-    shotLength,
+    shotStats,
   );
 
   const shotAmount = calculateFullSectionsBallAmount(
     sections.map((section) => section.shoot),
-    shotLength,
+    shotStats,
   );
 
   return {
