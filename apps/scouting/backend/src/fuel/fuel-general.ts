@@ -24,20 +24,19 @@ export const calculateFuelStatisticsOfShift = (
         pass: accumulate.pass + fuelObject.pass,
         positions: [...accumulate.positions, ...fuelObject.positions],
       }),
-      { scored: 0, missed: 0, shot: 0,pass: 0, positions: [] },
+      { scored: 0, missed: 0, shot: 0, pass: 0, positions: [] },
     );
 
 export const generalCalculateFuel = (
   scoutingForm: ScoutingForm,
   bpsArray: BPS[],
 ): GeneralFuelData => {
-
   const teleShifts = [
+    scoutingForm.tele.transitionShift,
     ...scoutingForm.tele.shifts,
     scoutingForm.tele.endgameShift,
-    scoutingForm.tele.transitionShift,
   ];
-  const fullGameShifts = [...teleShifts, scoutingForm.auto];
+  const fullGameShifts = [scoutingForm.auto, ...teleShifts];
   const bindcalcShiftFuel = calculateFuelStatisticsOfShift.bind(
     null,
     scoutingForm.match,
