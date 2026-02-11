@@ -1,6 +1,5 @@
 // בס"ד
 
-import { firstElement } from "@repo/array-functions";
 import type { Point } from "@repo/scouting_types";
 
 const QUADRATIC_EXPONENT = 2;

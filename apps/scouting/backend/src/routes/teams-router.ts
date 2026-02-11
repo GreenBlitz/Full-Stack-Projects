@@ -17,6 +17,7 @@ import { getFormsCollection } from "./forms-router";
 import { StatusCodes } from "http-status-codes";
 import { castItem } from "@repo/type-utils";
 import type {
+  BPS,
   Match,
   ScoutingForm,
   SectionTeamData,
@@ -26,7 +27,7 @@ import type {
 import { ACCURACY_DISTANCES, teamsProps } from "@repo/scouting_types";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
 import { calculateSum, isEmpty, mapObject } from "@repo/array-functions";
-import { createFuelObject, type BPS } from "../fuel/fuel-object";
+import { createFuelObject } from "../fuel/fuel-object";
 import { splitByDistances } from "../fuel/distance-split";
 import { calculateFuelStatisticsOfShift } from "../fuel/fuel-general";
 

@@ -1,6 +1,5 @@
 // בס"ד
-import type { Match, ShootEvent } from "@repo/scouting_types";
-import type { BPS, FuelObject } from "../fuel-object";
+import type { BPS, FuelObject, Match, ShootEvent } from "@repo/scouting_types";
 import { calculateSum, firstElement, lastElement } from "@repo/array-functions";
 import { convertPixelToCentimeters, distanceFromHub } from "@repo/rebuilt_map";
 
@@ -67,6 +66,14 @@ const calculateBallAmount = (
   );
 };
 
+const calculateAccuracies = (sections: BPS["events"], shotDuration: number) => {
+  
+
+  const accuracies = sections.map(
+    (section) => section.score.length / section.shoot.length,
+  );
+};
+
 const compareSections = (a: number[], b: number[]) =>
   lastElement(a) - lastElement(b);
 
@@ -98,15 +105,12 @@ export const calculateFuelByAveraging = (
     distance: distanceFromHub(convertPixelToCentimeters(shot.startPosition)),
   };
 
-  const scoredAmount = calculateFullSectionsBallAmount(
-    sections.map((section) => section.score),
-    shotStats,
-  );
-
   const shotAmount = calculateFullSectionsBallAmount(
     sections.map((section) => section.shoot),
     shotStats,
   );
+
+  const scoredAmount = 0;
 
   return {
     scored: scoredAmount,
