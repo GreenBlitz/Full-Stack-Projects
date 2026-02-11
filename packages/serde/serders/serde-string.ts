@@ -10,25 +10,25 @@ export const serdeString = (): Serde<string> => ({
 
     serdeUnsignedInt(stringLengthBitCount).serializer(
       serializedData,
-      encodedString.length
+      encodedString.length,
     );
     serializedData.insertUInt8Array(
       encodedString,
-      encodedString.length * BIT_ARRAY_LENGTH
+      encodedString.length * BIT_ARRAY_LENGTH,
     );
   },
   deserializer(serializedData: BitArray): string {
     const encodedStringLength =
       serdeUnsignedInt(stringLengthBitCount).deserializer(serializedData);
     const encodedString = serializedData.consumeBits(
-      encodedStringLength * BIT_ARRAY_LENGTH
+      encodedStringLength * BIT_ARRAY_LENGTH,
     );
     return new TextDecoder().decode(encodedString);
   },
 });
 
 export const serdeEnumedString = <Options extends string>(
-  possibleValues: Options[]
+  possibleValues: Options[],
 ): Serde<Options> => {
   function bitsNeeded(possibleValuesCount: number): number {
     return Math.ceil(Math.log2(possibleValuesCount));
@@ -48,7 +48,7 @@ export const serdeEnumedString = <Options extends string>(
         return;
       }
       throw new Error(
-        `value ${data} is not included in possible values: ${possibleValues.toString()}`
+        `value ${data} is not included in possible values: ${possibleValues.toString()}`,
       );
     },
     deserializer(serializedData: BitArray): Options {
@@ -59,7 +59,7 @@ export const serdeEnumedString = <Options extends string>(
         return possibleValues[valueIdentifier];
       }
       throw new Error(
-        `valueIdentifier ${valueIdentifier} does not exist in possible values: ${possibleValues.toString()}`
+        `valueIdentifier ${valueIdentifier} does not exist in possible values: ${possibleValues.toString()}`,
       );
     },
   };

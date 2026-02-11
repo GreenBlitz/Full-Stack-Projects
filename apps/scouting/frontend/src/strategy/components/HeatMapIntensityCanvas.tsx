@@ -23,11 +23,6 @@ const FULL_CIRCLE_PERIMETER = Math.PI * HALF_CIRCLE;
 const RADIUS_FADE_START = "#000000";
 const RADIUS_FADE_END = "#00000000";
 
-const ensureCanvasSize = (canvas: HTMLCanvasElement, width: number, height: number): void => {
-  canvas.width = width;
-  canvas.height = height;
-};
-
 const clearCanvas = (
   context: CanvasRenderingContext2D,
   width: number,
@@ -95,7 +90,8 @@ export const HeatMapIntensityCanvas: FC<HeatMapIntensityCanvasProps> = ({
     if (!canvas || width <= boundaryBeginning || height <= boundaryBeginning) {
       return;
     }
-    ensureCanvasSize(canvas, width, height);
+    canvas.width = width;
+    canvas.height = height;
     const context = canvas.getContext("2d");
     if (!context) {
       return;

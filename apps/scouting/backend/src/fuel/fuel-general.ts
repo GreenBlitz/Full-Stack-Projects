@@ -1,15 +1,10 @@
 // בס"ד
-import type { BPS, FuelObject } from "./fuel-object";
 import { createFuelObject } from "./fuel-object";
-import type { ScoutingForm, ShiftsArray } from "@repo/scouting_types";
+import type { BPS, FuelObject, GeneralFuelData, ScoutingForm, ShiftsArray } from "@repo/scouting_types";
 
-interface GeneralFuelData {
-    fullGame:FuelObject;
-    auto:FuelObject;
-    tele:FuelObject;
-}
 
-const calculateFuelStatisticsOfShift = (
+
+export const calculateFuelStatisticsOfShift = (
     match: ScoutingForm["match"],
     bpsArray: BPS[], shifts: ShiftsArray): FuelObject => 
         shifts
