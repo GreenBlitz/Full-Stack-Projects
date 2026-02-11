@@ -49,7 +49,7 @@ const fetchTeamNumbers = async () => {
       throw new Error(`Server Error: ${errorText}`);
     }
     const data = await response.json();
-    return data.teamNumbers as number[];
+    return data.teamNumbers.sort() as number[];
   } catch (err) {
     console.error("Fetch failed:", err);
     throw err;
@@ -127,7 +127,6 @@ export const CompareTwo: React.FC = () => {
     }
   };
 
-  // Theme-aware colors: Dark backgrounds with emerald/rose glows
   const getStatColor = (
     thisTeamStat: number,
     otherTeamStat: number,
@@ -149,32 +148,36 @@ export const CompareTwo: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-8 p-8 bg-slate-950 min-h-screen text-slate-200">
-      {/* Team Selection Header */}
-      <div className="flex flex-wrap items-center gap-3 p-5 bg-slate-900/40 rounded-2xl border border-white/10 backdrop-blur-md">
-        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mr-2">
-          Select Teams:
-        </span>
-        {teamNumbers.map((teamNumber) => (
-          <button
-            key={teamNumber}
-            onClick={() => {
-              toggleTeamSelection(teamNumber);
-            }}
-            className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border ${
-              selectedTeams.includes(teamNumber)
-                ? "bg-emerald-500 text-slate-950 border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.3)] scale-105"
-                : "bg-transparent text-slate-400 border-white/5 hover:border-emerald-500/50 hover:text-emerald-400"
-            }`}
-          >
-            {teamNumber}
-          </button>
-        ))}
+      <div className="flex flex-col items-center gap-6 p-6 bg-slate-900/40 rounded-2xl border border-white/10 backdrop-blur-md">
+        <div className="flex flex-col items-center gap-3">
+          <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">
+            Select Teams
+          </span>
+          <div className="flex flex-wrap justify-center gap-3">
+            {teamNumbers.map((teamNumber) => (
+              <button
+                key={teamNumber}
+                onClick={() => {
+                  toggleTeamSelection(teamNumber);
+                }}
+                className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all border ${
+                  selectedTeams.includes(teamNumber)
+                    ? "bg-emerald-500 text-slate-950 border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.3)] scale-105"
+                    : "bg-transparent text-slate-400 border-white/5 hover:border-emerald-500/50 hover:text-emerald-400"
+                }`}
+              >
+                {teamNumber}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <button
           onClick={() => {
             void handleCompare();
           }}
           disabled={selectedTeams.length !== MAX_SELECTED_TEAMS || isLoading}
-          className="ml-auto px-10 py-2.5 bg-emerald-500 text-slate-950 text-xs font-black uppercase tracking-widest rounded-xl disabled:opacity-20 hover:bg-emerald-400 transition-all active:scale-95"
+          className="px-12 py-3 bg-emerald-500 text-slate-950 text-xs font-black uppercase tracking-widest rounded-xl disabled:opacity-20 hover:bg-emerald-400 transition-all active:scale-95 shadow-lg shadow-emerald-900/20"
         >
           {isLoading ? "Loading..." : "Compare"}
         </button>
