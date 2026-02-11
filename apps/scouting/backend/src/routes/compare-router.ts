@@ -86,8 +86,8 @@ const findTimesClimbedToLevels = (forms: ScoutingForm[]) => {
   };
 };
 
-compareRouter.get("/teams", (req, res) => {
-  pipe(
+compareRouter.get("/teams", async (req, res) => {
+  await pipe(
     getFormsCollection(),
     flatMap((collection) =>
       tryCatch(
@@ -108,7 +108,7 @@ compareRouter.get("/teams", (req, res) => {
       (teamNumbers) => () =>
         Promise.resolve(res.status(StatusCodes.OK).json({ teamNumbers })),
     ),
-  );
+  )();
 });
 
 compareRouter.get("/", (req, res) => {
