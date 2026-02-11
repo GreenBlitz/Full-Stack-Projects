@@ -128,7 +128,7 @@ const getBPSes = (): BPS[] => [
         positions: [{ x: 300, y: 200 }],
       },
     ],
-    match: { type: "qualification", number: 8 },
+    match: { type: "qualification", number: 10 },
   },
 ];
 
