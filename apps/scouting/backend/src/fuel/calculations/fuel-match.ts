@@ -12,7 +12,7 @@ export const calculateFuelByMatch = (
   shot: ShootEvent,
   isPass: boolean,
   bps: BPS,
-): FuelObject => {
+): Partial<FuelObject> => {
   const shotBps = bps.events.map((section) => ({
     score: getIncludedShots(section.score, shot),
     shoot: getIncludedShots(section.shoot, shot),
@@ -23,10 +23,8 @@ export const calculateFuelByMatch = (
   if (isPass) {
     return {
       shot: shotAmount,
-      scored: 0,
-      missed: 0,
-      positions: [shot.startPosition],
       pass: shotAmount,
+      positions: [shot.startPosition],
     };
   }
 
@@ -36,7 +34,6 @@ export const calculateFuelByMatch = (
     shot: shotAmount,
     scored: scoredAmount,
     missed: shotAmount - scoredAmount,
-    pass: 0,
     positions: [shot.startPosition],
   };
 };

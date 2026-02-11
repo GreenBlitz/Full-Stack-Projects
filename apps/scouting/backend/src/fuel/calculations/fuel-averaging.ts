@@ -71,7 +71,7 @@ export const calculateFuelByAveraging = (
   shot: ShootEvent,
   isPass: boolean,
   sections: BPS["events"],
-): FuelObject => {
+): Partial<FuelObject> => {
   const shotLength = shot.interval.end - shot.interval.start;
 
   const shotAmount = calculateBallAmount(
@@ -84,10 +84,8 @@ export const calculateFuelByAveraging = (
 
   if (isPass) {
     return {
-      scored: 0,
       shot: shotAmount,
       pass: shotAmount,
-      missed: 0,
       positions: [shot.startPosition],
     };
   }
@@ -103,7 +101,6 @@ export const calculateFuelByAveraging = (
     scored: scoredAmount,
     shot: shotAmount,
     missed: shotAmount - scoredAmount,
-    pass: 0,
     positions: [shot.startPosition],
   };
 };

@@ -17,6 +17,19 @@ export interface BPS {
 const isShotPass = (positionPixels: Point) =>
   positionPixels.x > ALLIANCE_ZONE_WIDTH_PIXELS;
 
+const emptyFuelObject: FuelObject = {
+  shot: 0,
+  pass: 0,
+  scored: 0,
+  missed: 0,
+  positions: [],
+};
+
+const putDefaultsInFuel = (fuel: Partial<FuelObject>) => ({
+  ...emptyFuelObject,
+  ...fuel,
+});
+
 export const createFuelObject = (
   shot: ShootEvent,
   match: Match,
@@ -29,13 +42,12 @@ export const createFuelObject = (
 
   const isPass = isShotPass(shot.startPosition);
 
-  if (sameMatch) {
-    return calculateFuelByMatch(shot,isPass, sameMatch);
-  }
-
-  return calculateFuelByAveraging(
-    shot,
-    isPass,
-    bpses.flatMap((bps) => bps.events),
-  );
+  const partialFuel = sameMatch
+    ? calculateFuelByMatch(shot, isPass, sameMatch)
+    : calculateFuelByAveraging(
+        shot,
+        isPass,
+        bpses.flatMap((bps) => bps.events),
+      );
+  return putDefaultsInFuel(partialFuel);
 };

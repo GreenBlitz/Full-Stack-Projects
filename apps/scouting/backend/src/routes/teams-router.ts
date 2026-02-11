@@ -116,7 +116,7 @@ const processTeam = (bpses: BPS[], forms: ScoutingForm[]): TeamData => {
   return { tele, auto, fullGame, metrics: { epa: 0, bps: 0 } };
 };
 
-export const getBPSes = (): BPS[] => [
+export const getAllBPS = (): BPS[] => [
   {
     events: [
       {
@@ -168,7 +168,7 @@ teamsRouter.get("/", async (req, res) => {
         : taskRight(item),
     ),
     map(groupBy((form) => form.teamNumber.toString())),
-    map((teams) => ({ teams, bpses: getBPSes() })),
+    map((teams) => ({ teams, bpses: getAllBPS() })),
     map(({ teams, bpses }) => mapObject(teams, processTeam.bind(null, bpses))),
     fold(
       (error) => () =>

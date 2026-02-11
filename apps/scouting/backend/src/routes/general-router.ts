@@ -11,7 +11,7 @@ import { StatusCodes } from "http-status-codes";
 import type { FuelObject, GeneralFuelData } from "@repo/scouting_types";
 import { averageFuel } from "../fuel/distance-split";
 import { firstElement, isEmpty } from "@repo/array-functions";
-import { getBPSes } from "./teams-router";
+import { getAllBPS } from "./teams-router";
 
 export const generalRouter = Router();
 
@@ -66,7 +66,7 @@ generalRouter.get("/", async (req, res) => {
     map((forms) =>
       forms.map((form) => ({
         teamNumber: form.teamNumber,
-        generalFuelData: generalCalculateFuel(form, getBPSes()),
+        generalFuelData: generalCalculateFuel(form, getAllBPS()),
       })),
     ),
 
