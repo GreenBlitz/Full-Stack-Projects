@@ -142,7 +142,7 @@ compareRouter.get("/", async (req, res) => {
     }),
     map((teamForms) => ({
       teamNumber: firstElement(teamForms).teamNumber,
-      avarageFuelInGame: calculateAverageScoredFuel(teamForms, "fullGame"),
+      averageFuelInGame: calculateAverageScoredFuel(teamForms, "fullGame"),
       averageFuelInAuto: calculateAverageScoredFuel(teamForms, "auto"),
       maxClimbLevel: findMaxClimbLevel(teamForms),
       timesClimbedToMax: findTimesClimbedToMax(
