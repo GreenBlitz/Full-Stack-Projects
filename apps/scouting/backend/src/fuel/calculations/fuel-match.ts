@@ -23,7 +23,7 @@ export const calculateFuelByMatch = (
   if (isPass) {
     return {
       shot: shotAmount,
-      pass: shotAmount,
+      passed: shotAmount,
       positions: [shot.startPosition],
     };
   }

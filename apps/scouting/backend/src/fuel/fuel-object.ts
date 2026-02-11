@@ -19,7 +19,7 @@ const isShotPass = (positionPixels: Point) =>
 
 const emptyFuelObject: FuelObject = {
   shot: 0,
-  pass: 0,
+  passed: 0,
   scored: 0,
   missed: 0,
   positions: [],

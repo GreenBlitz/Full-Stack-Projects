@@ -21,10 +21,10 @@ export const calculateFuelStatisticsOfShift = (
         scored: accumulate.scored + fuelObject.scored,
         missed: accumulate.missed + fuelObject.missed,
         shot: accumulate.shot + fuelObject.shot,
-        pass: accumulate.pass + fuelObject.pass,
+        passed: accumulate.passed + fuelObject.passed,
         positions: [...accumulate.positions, ...fuelObject.positions],
       }),
-      { scored: 0, missed: 0, shot: 0, pass: 0, positions: [] },
+      { scored: 0, missed: 0, shot: 0, passed: 0, positions: [] },
     );
 
 export const generalCalculateFuel = (
@@ -37,16 +37,16 @@ export const generalCalculateFuel = (
     scoutingForm.tele.endgameShift,
   ];
   const fullGameShifts = [scoutingForm.auto, ...teleShifts];
-  const bindcalcShiftFuel = calculateFuelStatisticsOfShift.bind(
+  const calculateShiftFuel = calculateFuelStatisticsOfShift.bind(
     null,
     scoutingForm.match,
     bpsArray,
   );
 
-  const autoFuel = bindcalcShiftFuel([scoutingForm.auto]);
+  const autoFuel = calculateShiftFuel([scoutingForm.auto]);
 
-  const teleFuel = bindcalcShiftFuel(teleShifts);
-  const fullGameFuel = bindcalcShiftFuel(fullGameShifts);
+  const teleFuel = calculateShiftFuel(teleShifts);
+  const fullGameFuel = calculateShiftFuel(fullGameShifts);
   return {
     fullGame: fullGameFuel,
     auto: autoFuel,

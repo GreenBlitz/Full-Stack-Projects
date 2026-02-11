@@ -32,7 +32,7 @@ export const AccuracyChart: FC<AccuracyChartProps> = ({ metrics }) => {
       icon: <Target size={ICON_SIZE} />,
     },
     {
-      label: "2 Meter",
+      label: "2 Meters",
       value: metrics.twoMeter,
       icon: <Crosshair size={ICON_SIZE} />,
     },

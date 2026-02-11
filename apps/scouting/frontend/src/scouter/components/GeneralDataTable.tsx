@@ -100,7 +100,7 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
       createColumn("shot", "text-slate-300 font-medium"),
       createColumn("scored", "text-emerald-400 font-bold"),
       createColumn("missed", "text-rose-500/90 font-medium"),
-      createColumn("pass", "text-orange-400 font-medium"),
+      createColumn("passed", "text-orange-400 font-medium"),
     ],
     [gameTime],
   );

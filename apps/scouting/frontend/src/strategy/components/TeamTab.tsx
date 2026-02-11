@@ -42,7 +42,6 @@ const calculateAccuracy = (fuel: FuelObject) =>
   fuel.shot > NO_FUEL_SHOT ? fuel.scored / fuel.shot : NO_FUEL_SHOT;
 
 const FIRST_MATCH_TYPE_CHARACTER = 0;
-
 const createShotDataset = (data: MatchedEntry<FuelObject>[], key: FuelEvents) =>
   Object.fromEntries(
     data.map((entry) => [
@@ -101,7 +100,7 @@ export const TeamTab: FC = () => {
               },
               {
                 name: "Pass",
-                points: createShotDataset(data.fuel, "pass"),
+                points: createShotDataset(data.fuel, "passed"),
               },
             ]}
           />
