@@ -38,7 +38,7 @@ export const calculateFuelByMatch = (
     return {
       shot: shotAmount,
       passed: shotAmount,
-      positions: [shot.positions[0]],
+      positions: shot.positions,
     };
   }
 
@@ -48,7 +48,6 @@ export const calculateFuelByMatch = (
     shot: shotAmount,
     scored: scoredAmount,
     missed: shotAmount - scoredAmount,
-    // Use the positions array from the shot event (recorded every 0.1 seconds)
     positions: shot.positions,
   };
 };

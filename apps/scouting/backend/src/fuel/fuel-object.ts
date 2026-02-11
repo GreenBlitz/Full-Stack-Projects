@@ -8,14 +8,15 @@ import type {
 import { calculateFuelByAveraging } from "./calculations/fuel-averaging";
 import { calculateFuelByMatch } from "./calculations/fuel-match";
 import { ALLIANCE_ZONE_WIDTH_PIXELS } from "@repo/rebuilt_map";
+import { firstElement } from "@repo/array-functions";
 
 export interface BPS {
   events: { shoot: number[]; score: number[] }[];
   match: Match;
 }
 
-const isShotPass = (positionPixels: Point) =>
-  positionPixels.x > ALLIANCE_ZONE_WIDTH_PIXELS;
+const isShotPass = (positions: Point[]) =>
+  firstElement(positions).x > ALLIANCE_ZONE_WIDTH_PIXELS;
 
 const emptyFuelObject: FuelObject = {
   shot: 0,
@@ -40,7 +41,7 @@ export const createFuelObject = (
       value.match.number === match.number && value.match.type === match.type,
   );
 
-  const isPass = isShotPass(shot.startPosition);
+  const isPass = isShotPass(shot.positions);
 
   const partialFuel = sameMatch
     ? calculateFuelByMatch(shot, isPass, sameMatch)

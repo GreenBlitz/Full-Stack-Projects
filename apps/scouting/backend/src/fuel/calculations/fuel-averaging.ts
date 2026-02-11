@@ -93,7 +93,7 @@ export const calculateFuelByAveraging = (
     return {
       shot: shotAmount,
       passed: shotAmount,
-      positions: [shot.positions[0]],
+      positions: shot.positions,
     };
   }
   const scoredAmount = calculateBallAmount(
@@ -108,7 +108,6 @@ export const calculateFuelByAveraging = (
     scored: scoredAmount,
     shot: shotAmount,
     missed: shotAmount - scoredAmount,
-    // Use the positions array from the shot event (recorded every 0.1 seconds)
     positions: shot.positions,
   };
 };

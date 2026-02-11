@@ -37,7 +37,7 @@ export const AutoTab: FC<TabProps> = ({
               const prevEvents = prevForm.auto.shootEvents;
               const positions =
                 recordedPositionsRef.current.length > EMPTY_ARRAY_LENGTH
-                  ? recordedPositionsRef.current
+                  ? [...recordedPositionsRef.current]
                   : [mapPosition ?? { ...defaultPoint }];
 
               prevEvents.push({

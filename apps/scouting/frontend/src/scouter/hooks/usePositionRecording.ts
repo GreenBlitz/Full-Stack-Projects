@@ -3,7 +3,7 @@ import { useRef, useEffect, useCallback } from "react";
 import type { Point } from "@repo/scouting_types";
 import { defaultPoint } from "../components/ScoreMap";
 
-const POSITION_RECORDING_INTERVAL_MS = 100;
+const POSITION_RECORDING_INTERVAL_MS = 1000;
 
 export const usePositionRecording = (
   currentPosition: Point | undefined,

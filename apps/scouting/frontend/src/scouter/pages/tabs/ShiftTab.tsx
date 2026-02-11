@@ -5,13 +5,7 @@ import { ScoreMap, defaultPoint } from "../../components/ScoreMap";
 import type { Alliance, Point, ShiftType } from "@repo/scouting_types";
 import { MovementForm } from "../../components/MovementForm";
 import Stopwatch from "../../components/stopwatch";
-<<<<<<< HEAD
 import { usePositionRecording } from "../../hooks/usePositionRecording";
-
-type ShiftType = "regular" | "transition" | "endgame";
-=======
->>>>>>> master
-
 interface ShiftTabProps extends TabProps {
   tabIndex: number;
   shiftType: ShiftType;
@@ -42,7 +36,7 @@ export const ShiftTab: FC<ShiftTabProps> = ({
 
       const positions =
         recordedPositionsRef.current.length > EMPTY_ARRAY_LENGTH
-          ? recordedPositionsRef.current
+          ? [...recordedPositionsRef.current]
           : [mapPosition ?? { ...defaultPoint }];
 
       prevEvents.push({
