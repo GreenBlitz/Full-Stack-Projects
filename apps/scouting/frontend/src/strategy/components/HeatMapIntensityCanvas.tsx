@@ -52,7 +52,7 @@ const createOffscreenContext = (
 
 const drawIntensityField = (
   context: CanvasRenderingContext2D,
-  points: { x: number; y: number }[],
+  points: Point[],
   radius: number,
 ): void => {
   clearCanvas(context, context.canvas.width, context.canvas.height);

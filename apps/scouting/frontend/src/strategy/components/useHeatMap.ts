@@ -6,7 +6,7 @@ import { HEAT_STYLE, HEAT_VALUES, LAYOUT, mapHeatPoints } from "./HeatMapUtils";
 export interface UseHeatMapResult {
   heatmapLayerRef: RefObject<HTMLDivElement | null>;
   imgRef: RefObject<HTMLImageElement | null>;
-  fallbackPoints: { x: number; y: number }[];
+  fallbackPoints: Point[];
   handleImageLoad: () => void;
   radius: number;
   overlaySize: { width: number; height: number };
@@ -20,7 +20,7 @@ export const useHeatMap = (
   const heatmapLayerRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   const resizeFrameRef = useRef<number | null>(null);
-  const [fallbackPoints, setFallbackPoints] = useState<{ x: number; y: number }[]>([]);
+  const [fallbackPoints, setFallbackPoints] = useState<Point[]>([]);
   const [overlaySize, setOverlaySize] = useState<{ width: number; height: number }>({
     width: LAYOUT.zeroSize,
     height: LAYOUT.zeroSize,

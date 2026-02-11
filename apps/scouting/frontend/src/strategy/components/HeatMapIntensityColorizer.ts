@@ -9,6 +9,8 @@ const CHANNEL_GREEN = 1;
 const CHANNEL_BLUE = 2;
 const CHANNEL_ALPHA = 3;
 const RAMP_INDEX_STEP = 1;
+const defaultColor = { stop: NORMALIZED_MIN, color: 
+  { red: BYTE_ZERO, green: BYTE_ZERO, blue: BYTE_ZERO } };
 interface ColorStop {
   stop: number;
   color: ColorRGB;
@@ -49,26 +51,26 @@ const getRampColor = (value: number): ColorRGB => {
     ),
   );
   const lastIndex = COLOR_RAMP.length - RAMP_INDEX_STEP;
-  const [first = { stop: NORMALIZED_MIN, color: { red: BYTE_ZERO, green: BYTE_ZERO, blue: BYTE_ZERO } }] =
+  const [first = defaultColor] =
     COLOR_RAMP;
   if (normalized <= first.stop) {
     return first.color;
   }
+  // Use the last color in the ramp as fallback (maximum intensity).
   const fallback = COLOR_RAMP[lastIndex]?.color ?? first.color;
   const match = { value: fallback };
-  const found = { value: false };
-  COLOR_RAMP.slice(RAMP_INDEX_STEP).forEach((end, index) => {
-    if (found.value) {
-      return;
-    }
-    const start = COLOR_RAMP[index];
-    if (normalized <= end.stop) {
-      const range = end.stop - start.stop || NORMALIZED_MAX;
-      const time = (normalized - start.stop) / range;
-      match.value = lerpColor(start.color, end.color, time);
-      found.value = true;
-    }
-  });
+  // Find the color stop where the normalized value falls within its range.
+  const currentStopIndex = COLOR_RAMP.findIndex((stop) => normalized <= stop.stop);
+  if (currentStopIndex > NORMALIZED_MIN) {
+    // Get the current and previous stops to interpolate between them.
+    const currentStop = COLOR_RAMP[currentStopIndex];
+    const previousStop = COLOR_RAMP[currentStopIndex - RAMP_INDEX_STEP];
+    // Calculate interpolation factor based on position within the stop range.
+    const range = currentStop.stop - previousStop.stop || NORMALIZED_MAX;
+    const time = (normalized - previousStop.stop) / range;
+    // Interpolate color between previous and current stops.
+    match.value = lerpColor(previousStop.color, currentStop.color, time);
+  }
   return match.value;
 };
 

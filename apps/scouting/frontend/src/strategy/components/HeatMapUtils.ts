@@ -16,9 +16,7 @@ export interface HeatmapInstance {
   _renderer?: HeatmapRenderer;
 }
 
-export interface HeatPoint {
-  x: number;
-  y: number;
+export interface HeatPoint extends Point{
   value: number;
 }
 
