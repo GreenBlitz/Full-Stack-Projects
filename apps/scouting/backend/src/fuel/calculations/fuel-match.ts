@@ -9,14 +9,24 @@ const getIncludedShots = (section: number[], shot: ShootEvent) => {
 };
 export const calculateFuelByMatch = (
   shot: ShootEvent,
+  isPass: boolean,
   bps: BPS,
-): FuelObject => {
+): Partial<FuelObject> => {
   const shotBps = bps.events.map((section) => ({
     score: getIncludedShots(section.score, shot),
     shoot: getIncludedShots(section.shoot, shot),
   }));
 
   const shotAmount = shotBps.flatMap((section) => section.shoot).length;
+
+  if (isPass) {
+    return {
+      shot: shotAmount,
+      passed: shotAmount,
+      positions: [shot.startPosition],
+    };
+  }
+
   const scoredAmount = shotBps.flatMap((section) => section.score).length;
 
   return {

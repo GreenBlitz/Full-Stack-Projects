@@ -1,5 +1,5 @@
 // בס"ד
-import type { BPS, FuelObject, Match, ShootEvent } from "@repo/scouting_types";
+import type { BPS, FuelObject, ShootEvent } from "@repo/scouting_types";
 import {
   calculateAverage,
   calculateSum,
@@ -111,19 +111,25 @@ const calculateFullSectionsBallAmount = (
 
 export const calculateFuelByAveraging = (
   shot: ShootEvent,
-  match: Match,
+  isPass: boolean,
   sections: BPS["events"],
-): FuelObject => {
+): Partial<FuelObject> => {
   const shotStats: ShotStats = {
     duration: shot.interval.end - shot.interval.start,
     distance: distanceFromHub(convertPixelToCentimeters(shot.startPosition)),
   };
-
   const shotAmount = calculateFullSectionsBallAmount(
     sections.map((section) => section.shoot),
     shotStats,
   );
 
+  if (isPass) {
+    return {
+      shot: shotAmount,
+      passed: shotAmount,
+      positions: [shot.startPosition],
+    };
+  }
   const scoredAccuracy = interpolateQuadratic(
     shotStats.distance,
     calculateAccuracies(sections, shotStats.duration).map(

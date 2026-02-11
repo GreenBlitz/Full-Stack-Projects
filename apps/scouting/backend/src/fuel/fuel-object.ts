@@ -1,21 +1,31 @@
 // בס"ד
 import type {
   BPS,
-  GameObject,
+  FuelObject,
   Match,
   Point,
   ShootEvent,
 } from "@repo/scouting_types";
 import { calculateFuelByAveraging } from "./calculations/fuel-averaging";
 import { calculateFuelByMatch } from "./calculations/fuel-match";
+import { ALLIANCE_ZONE_WIDTH_PIXELS } from "@repo/rebuilt_map";
 
-export type FuelEvents = "scored" | "shot" | "missed";
-export type FuelObject = GameObject<
-  FuelEvents,
-  {
-    positions: Point[];
-  }
->;
+
+const isShotPass = (positionPixels: Point) =>
+  positionPixels.x > ALLIANCE_ZONE_WIDTH_PIXELS;
+
+const emptyFuelObject: FuelObject = {
+  shot: 0,
+  passed: 0,
+  scored: 0,
+  missed: 0,
+  positions: [],
+};
+
+const putDefaultsInFuel = (fuel: Partial<FuelObject>) => ({
+  ...emptyFuelObject,
+  ...fuel,
+});
 
 export const createFuelObject = (
   shot: ShootEvent,
@@ -27,13 +37,14 @@ export const createFuelObject = (
       value.match.number === match.number && value.match.type === match.type,
   );
 
-  if (sameMatch) {
-    return calculateFuelByMatch(shot, sameMatch);
-  }
+  const isPass = isShotPass(shot.startPosition);
 
-  return calculateFuelByAveraging(
-    shot,
-    match,
-    bpses.flatMap((bps) => bps.events),
-  );
+  const partialFuel = sameMatch
+    ? calculateFuelByMatch(shot, isPass, sameMatch)
+    : calculateFuelByAveraging(
+        shot,
+        isPass,
+        bpses.flatMap((bps) => bps.events),
+      );
+  return putDefaultsInFuel(partialFuel);
 };

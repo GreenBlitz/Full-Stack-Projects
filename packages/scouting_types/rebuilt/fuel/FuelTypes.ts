@@ -10,13 +10,12 @@ export interface GeneralFuelData {
 
 export type GameTime = keyof GeneralFuelData;
 
-
 export interface BPS {
   events: { shoot: number[]; score: number[] ,positions: Point[]}[];
   match: Match;
 }
 
-type FuelEvents = "scored" | "shot" | "missed";
+export type FuelEvents = "scored" | "shot" | "missed" | "passed";
 export type FuelObject = GameObject<
   FuelEvents,
   {
@@ -40,6 +39,4 @@ export interface GameObjectWithPoints<T extends string> {
   calculateRP: (gameObject: GameObject<T, unknown>) => number;
 }
 
-
-
-export type TeamNumberAndFuelData = Record<number, GeneralFuelData>
+export type TeamNumberAndFuelData = Record<number, GeneralFuelData>;

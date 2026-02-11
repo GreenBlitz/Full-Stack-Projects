@@ -17,7 +17,7 @@ export const teamsProps = t.type({
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers
 export const ACCURACY_DISTANCES = [100, 200, 2000] as const;
 
-type MatchedEntry<Entry> = { match: Match } & Entry;
+export type MatchedEntry<Entry> = { match: Match } & Entry;
 export interface SectionTeamData {
   fuel: MatchedEntry<FuelObject>[];
   accuracy: Record<(typeof ACCURACY_DISTANCES)[number], FuelObject>;
@@ -39,3 +39,5 @@ export interface TeamData {
   fullGame: SectionTeamData;
   metrics: { epa: number; bps: number };
 }
+
+export type GamePhase = "tele" | "auto" | "fullGame";
