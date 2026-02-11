@@ -4,6 +4,7 @@ import {
   calculateAverage,
   calculateSum,
   firstElement,
+  isEmpty,
   lastElement,
 } from "@repo/array-functions";
 import { convertPixelToCentimeters, distanceFromHub } from "@repo/rebuilt_map";
@@ -79,13 +80,18 @@ const calculateAccuracies = (sections: BPS["events"], shotDuration: number) => {
     positions: section.positions,
   }));
 
-  const accuracies = durationedSections.map((section) => ({
+  const filteredSections = durationedSections.filter(
+    (section) => !isEmpty(section.shoot),
+  );
+
+  const accuracies = filteredSections.map((section) => ({
     distance: calculateAverage(section.positions, (point) =>
       distanceFromHub(convertPixelToCentimeters(point)),
     ),
     accuracy: section.score.length / section.shoot.length,
   }));
   const sortedAccuracies = accuracies.sort((a, b) => a.distance - b.distance);
+
   return sortedAccuracies;
 };
 
@@ -99,15 +105,16 @@ const correctSectionToTimeFromEnd = (sections: number[]) => {
     .map((timestamp) => endTimestamp - timestamp);
 };
 
+const formatSections = (sections: BPS["events"]) =>
+  sections
+    .map((section) => ({
+      ...section,
+      score: correctSectionToTimeFromEnd(section.score),
+      shoot: correctSectionToTimeFromEnd(section.shoot),
+    }))
+    .sort((a, b) => compareSections(a.shoot, b.shoot));
+
 const LAST_BALL = 1;
-const calculateFullSectionsBallAmount = (
-  sections: number[][],
-  shot: ShotStats,
-) =>
-  calculateBallAmount(
-    sections.map(correctSectionToTimeFromEnd).sort(compareSections),
-    shot,
-  ) + LAST_BALL;
 
 export const calculateFuelByAveraging = (
   shot: ShootEvent,
@@ -118,10 +125,12 @@ export const calculateFuelByAveraging = (
     duration: shot.interval.end - shot.interval.start,
     distance: distanceFromHub(convertPixelToCentimeters(shot.startPosition)),
   };
-  const shotAmount = calculateFullSectionsBallAmount(
-    sections.map((section) => section.shoot),
-    shotStats,
-  );
+
+  const shotAmount =
+    calculateBallAmount(
+      formatSections(sections).map((section) => section.shoot),
+      shotStats,
+    ) + LAST_BALL;
 
   if (isPass) {
     return {
@@ -132,7 +141,7 @@ export const calculateFuelByAveraging = (
   }
   const scoredAccuracy = interpolateQuadratic(
     shotStats.distance,
-    calculateAccuracies(sections, shotStats.duration).map(
+    calculateAccuracies(formatSections(sections), shotStats.duration).map(
       ({ distance, accuracy }) => ({ x: distance, y: accuracy }),
     ),
   );

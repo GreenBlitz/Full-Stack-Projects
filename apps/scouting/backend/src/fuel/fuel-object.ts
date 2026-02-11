@@ -10,7 +10,6 @@ import { calculateFuelByAveraging } from "./calculations/fuel-averaging";
 import { calculateFuelByMatch } from "./calculations/fuel-match";
 import { ALLIANCE_ZONE_WIDTH_PIXELS } from "@repo/rebuilt_map";
 
-
 const isShotPass = (positionPixels: Point) =>
   positionPixels.x > ALLIANCE_ZONE_WIDTH_PIXELS;
 

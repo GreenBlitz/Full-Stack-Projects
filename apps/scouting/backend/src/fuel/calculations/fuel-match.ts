@@ -29,6 +29,7 @@ export const calculateFuelByMatch = (
 
   const scoredAmount = shotBps.flatMap((section) => section.score).length;
 
+
   return {
     shot: shotAmount,
     scored: scoredAmount,
