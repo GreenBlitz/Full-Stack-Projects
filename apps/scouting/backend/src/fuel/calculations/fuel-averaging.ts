@@ -1,7 +1,13 @@
 // בס"ד
 import type { BPS, FuelObject, Match, ShootEvent } from "@repo/scouting_types";
-import { calculateSum, firstElement, lastElement } from "@repo/array-functions";
+import {
+  calculateAverage,
+  calculateSum,
+  firstElement,
+  lastElement,
+} from "@repo/array-functions";
 import { convertPixelToCentimeters, distanceFromHub } from "@repo/rebuilt_map";
+import { interpolateQuadratic } from "./interpolation";
 
 interface ShotStats {
   duration: number;
@@ -67,11 +73,20 @@ const calculateBallAmount = (
 };
 
 const calculateAccuracies = (sections: BPS["events"], shotDuration: number) => {
-  
+  const durationedSections = sections.map((section) => ({
+    shoot: section.shoot.filter((timestamp) => timestamp <= shotDuration),
+    score: section.score.filter((timestamp) => timestamp <= shotDuration),
+    positions: section.positions,
+  }));
 
-  const accuracies = sections.map(
-    (section) => section.score.length / section.shoot.length,
-  );
+  const accuracies = durationedSections.map((section) => ({
+    distance: calculateAverage(section.positions, (point) =>
+      distanceFromHub(convertPixelToCentimeters(point)),
+    ),
+    accuracy: section.score.length / section.shoot.length,
+  }));
+  const sortedAccuracies = accuracies.sort((a, b) => a.distance - b.distance);
+  return sortedAccuracies;
 };
 
 const compareSections = (a: number[], b: number[]) =>
@@ -99,9 +114,8 @@ export const calculateFuelByAveraging = (
   match: Match,
   sections: BPS["events"],
 ): FuelObject => {
-  const shotLength = shot.interval.end - shot.interval.start;
   const shotStats: ShotStats = {
-    duration: shotLength,
+    duration: shot.interval.end - shot.interval.start,
     distance: distanceFromHub(convertPixelToCentimeters(shot.startPosition)),
   };
 
@@ -110,7 +124,14 @@ export const calculateFuelByAveraging = (
     shotStats,
   );
 
-  const scoredAmount = 0;
+  const scoredAccuracy = interpolateQuadratic(
+    shotStats.distance,
+    calculateAccuracies(sections, shotStats.duration).map(
+      ({ distance, accuracy }) => ({ x: distance, y: accuracy }),
+    ),
+  );
+
+  const scoredAmount = shotAmount * scoredAccuracy;
 
   return {
     scored: scoredAmount,

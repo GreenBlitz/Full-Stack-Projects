@@ -125,6 +125,7 @@ const getBPSes = (): BPS[] => [
         score: [1000, 2000, 3000],
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         shoot: [1000, 1400, 2000, 3000],
+        positions: [{ x: 300, y: 200 }],
       },
     ],
     match: { type: "qualification", number: 8 },
