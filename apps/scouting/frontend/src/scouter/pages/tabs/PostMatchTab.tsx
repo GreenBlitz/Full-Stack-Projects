@@ -17,7 +17,7 @@ export const PostMatchTab: FC<TabProps> = ({ setForm, currentForm }) => {
     "scouted_forms",
     [],
   );
-  const [isPopUpOpen, setPopUpVisible] = useState(false);
+  const [isPopUpVisible, setPopUpVisible] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
@@ -88,7 +88,7 @@ export const PostMatchTab: FC<TabProps> = ({ setForm, currentForm }) => {
         </button>
       </div>
 
-      {isPopUpOpen && (
+      {isPopUpVisible && (
         <ConfirmDeletePopup
           onDelete={() => {
             setForm(createNewScoutingForm);

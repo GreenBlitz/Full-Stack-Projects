@@ -1,5 +1,5 @@
 // בס"ד
-import type{  FC } from "react";
+import type { FC } from "react";
 import { AlertTriangle, X } from "lucide-react";
 
 interface ConfirmDeletePopupProps {
@@ -10,8 +10,8 @@ interface ConfirmDeletePopupProps {
 
 export const ConfirmDeletePopup: FC<ConfirmDeletePopupProps> = ({
   onDelete,
-  itemName = "this form",
   close,
+  itemName = "this form",
 }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
