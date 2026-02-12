@@ -14,10 +14,11 @@ import {
 } from "fp-ts/lib/TaskEither";
 import { mongofyQuery } from "../middleware/query";
 import { StatusCodes } from "http-status-codes";
-import { firstElement, isEmpty } from "@repo/array-functions";
+import { calculateSum, firstElement, isEmpty } from "@repo/array-functions";
 import { calcAverageGeneralFuelData } from "./general-router";
 import { generalCalculateFuel } from "../fuel/fuel-general";
 import { getBPSes } from "./teams-router";
+import { averageFuel } from "../fuel/distance-split";
 
 export const compareRouter = Router();
 
@@ -42,9 +43,11 @@ const calculateAverageScoredFuel = (
 };
 
 const findMaxClimbLevel = (forms: ScoutingForm[]) => {
-  const fullGameClimbedLevels = forms
-    .map((form) => form.tele.climb.level)
-    .concat(forms.map((form) => form.auto.climb.level));
+  const fullGameClimbedLevels = [
+    ...forms.map((form) => form.tele.climb.level),
+    ...forms.map((form) => form.auto.climb.level),
+  ];
+
   return fullGameClimbedLevels.includes("L3")
     ? "L3"
     : fullGameClimbedLevels.includes("L2")
@@ -58,27 +61,21 @@ const findTimesClimbedToMax = (
   forms: ScoutingForm[],
   maxLevel: TeleClimbLevel,
 ) => {
-  return forms.reduce(
-    (counter, form) =>
-      form.tele.climb.level === maxLevel ? counter + INCREMENT : counter,
-    INITIAL_COUNTER_VALUE,
+  return calculateSum(forms, (form) =>
+    form.tele.climb.level === maxLevel ? INCREMENT : INITIAL_COUNTER_VALUE,
   );
 };
 
 const findTimesClimbedInAuto = (forms: ScoutingForm[]) => {
-  return forms.reduce(
-    (counter, form) =>
-      form.auto.climb.level === "L1" ? counter + INCREMENT : counter,
-    INITIAL_COUNTER_VALUE,
+  return calculateSum(forms, (form) =>
+    form.auto.climb.level === "L1" ? INCREMENT : INITIAL_COUNTER_VALUE,
   );
 };
 
 const timesClimedToLevel = (
   level: TeleClimbLevel,
   climbedLevels: TeleClimbLevel[],
-) => {
-  return climbedLevels.filter((currentLevel) => currentLevel === level).length;
-};
+) => climbedLevels.filter((currentLevel) => currentLevel === level).length;
 
 const findTimesClimbedToLevels = (forms: ScoutingForm[]) => {
   const climbedLevels = forms.map((form) => form.tele.climb.level);
@@ -89,30 +86,6 @@ const findTimesClimbedToLevels = (forms: ScoutingForm[]) => {
   };
 };
 
-compareRouter.get("/teams", async (req, res) => {
-  await pipe(
-    getFormsCollection(),
-    flatMap((collection) =>
-      tryCatch(
-        () =>
-          collection
-            .find(mongofyQuery({ "match.type": "qualification" }))
-            .toArray(),
-        (error) => ({
-          status: StatusCodes.INTERNAL_SERVER_ERROR,
-          reason: `DB Error: ${error}`,
-        }),
-      ),
-    ),
-    map((forms) => forms.map((form) => form.teamNumber)),
-    fold(
-      (error) => () =>
-        Promise.resolve(res.status(error.status).send(error.reason)),
-      (teamNumbers) => () =>
-        Promise.resolve(res.status(StatusCodes.OK).json({ teamNumbers })),
-    ),
-  )();
-});
 
 compareRouter.get("/", async (req, res) => {
   await pipe(
@@ -142,15 +115,19 @@ compareRouter.get("/", async (req, res) => {
     }),
     map((teamForms) => ({
       teamNumber: firstElement(teamForms).teamNumber,
-      averageFuelInGame: calculateAverageScoredFuel(teamForms, "fullGame"),
-      averageFuelInAuto: calculateAverageScoredFuel(teamForms, "auto"),
-      maxClimbLevel: findMaxClimbLevel(teamForms),
-      timesClimbedToMax: findTimesClimbedToMax(
-        teamForms,
-        findMaxClimbLevel(teamForms),
-      ),
-      timesClimbedInAuto: findTimesClimbedInAuto(teamForms),
-      timesClimbedToLevels: findTimesClimbedToLevels(teamForms),
+      averageFuel: {
+        averageFuelInGame: calculateAverageScoredFuel(teamForms, "fullGame"),
+        averageFuelInAuto: calculateAverageScoredFuel(teamForms, "auto"),
+      },
+      climb: {
+        maxClimbLevel: findMaxClimbLevel(teamForms),
+        timesClimbedToMax: findTimesClimbedToMax(
+          teamForms,
+          findMaxClimbLevel(teamForms),
+        ),
+        timesClimbedInAuto: findTimesClimbedInAuto(teamForms),
+        timesClimbedToLevels: findTimesClimbedToLevels(teamForms),
+      },
     })),
 
     fold(

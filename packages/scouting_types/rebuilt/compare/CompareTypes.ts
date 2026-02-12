@@ -8,14 +8,22 @@ export interface TimesClimedToLevels {
   L3: number;
 }
 
-export interface TeamCompareData {
-  teamNumber: number;
-  averageFuelInGame: number;
-  averageFuelInAuto: number;
+export interface CompareClimb {
   maxClimbLevel: TeleClimbLevel;
   timesClimbedToMax: number;
   timesClimbedInAuto: number;
   timesClimbedToLevels: TimesClimedToLevels;
+}
+
+export interface CompareAverageFuel {
+  averageFuelInGame: number;
+  averageFuelInAuto: number;
+}
+
+export interface TeamCompareData {
+  teamNumber: number;
+  averageFuel: CompareAverageFuel;
+  climb: CompareClimb;
 }
 
 export interface CompareData {

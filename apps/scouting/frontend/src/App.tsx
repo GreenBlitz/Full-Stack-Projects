@@ -3,8 +3,8 @@ import type { FC } from "react";
 import { ScoutMatch } from "./scouter/pages/ScoutMatch";
 import { Route, Routes } from "react-router-dom";
 import { ScoutedMatches } from "./scouter/pages/ScoutedMatches";
-import { CompareTwo } from "./scouter/components/CompareTwo";
-import { GeneralDataTable } from "./scouter/components/GeneralDataTable";
+import { CompareTwo } from "./strategy/CompareTwo";
+import { GeneralDataTable } from "./strategy/GeneralDataTable";
 
 const App: FC = () => {
   return (

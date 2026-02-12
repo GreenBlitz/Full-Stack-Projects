@@ -4,6 +4,7 @@ import { firstElement, secondElement } from "@repo/array-functions";
 import type { CompareData, TeamCompareData } from "@repo/scouting_types";
 import type React from "react";
 import { useEffect, useState } from "react";
+import { fetchTeamNumbers } from "./fetches";
 
 const compareUrl = "/api/v1/compare/";
 
@@ -29,27 +30,6 @@ const fetchTeamCompareData = async (teamNumber: number) => {
 
     const data = await response.json();
     return data.teamCompareData as TeamCompareData;
-  } catch (err) {
-    console.error("Fetch failed:", err);
-    throw err;
-  }
-};
-
-const fetchTeamNumbers = async () => {
-  const url = `${compareUrl}teams`;
-
-  try {
-    const response = await fetch(url, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Server Error: ${errorText}`);
-    }
-    const data = await response.json();
-    return data.teamNumbers.sort() as number[];
   } catch (err) {
     console.error("Fetch failed:", err);
     throw err;
@@ -206,59 +186,59 @@ export const CompareTwo: React.FC = () => {
 
                 <StatBox
                   label="Average Fuel (Full Game)"
-                  value={team.averageFuelInGame}
+                  value={team.averageFuel.averageFuelInGame}
                   color={getStatColor(
-                    team.averageFuelInGame,
-                    other.averageFuelInGame,
+                    team.averageFuel.averageFuelInGame,
+                    other.averageFuel.averageFuelInGame,
                   )}
                 />
 
                 <StatBox
                   label="Average Fuel (Auto)"
-                  value={team.averageFuelInAuto}
+                  value={team.averageFuel.averageFuelInAuto}
                   color={getStatColor(
-                    team.averageFuelInAuto,
-                    other.averageFuelInAuto,
+                    team.averageFuel.averageFuelInAuto,
+                    other.averageFuel.averageFuelInAuto,
                   )}
                 />
 
                 <div
-                  className={`p-6 border-b border-white/5 flex flex-col items-center transition-all duration-300 ${getStatColor(levelToScore(team.maxClimbLevel), levelToScore(other.maxClimbLevel))}`}
+                  className={`p-6 border-b border-white/5 flex flex-col items-center transition-all duration-300 ${getStatColor(levelToScore(team.climb.maxClimbLevel), levelToScore(other.climb.maxClimbLevel))}`}
                 >
                   <span className="text-[10px] uppercase tracking-widest font-bold mb-1 opacity-60">
                     Max Climb Level
                   </span>
                   <span className="text-4xl font-black">
-                    {team.maxClimbLevel}
+                    {team.climb.maxClimbLevel}
                   </span>
                   <span className="text-[11px] font-bold opacity-50 mt-1 uppercase tracking-tighter">
-                    Reached {team.timesClimbedToMax} times
+                    Reached {team.climb.timesClimbedToMax} times
                   </span>
 
                   <div className="flex gap-2 mt-5 p-3 bg-black/40 rounded-2xl w-full justify-center border border-white/5">
                     <LevelMiniStat
                       label="L1"
-                      count={team.timesClimbedToLevels.L1}
+                      count={team.climb.timesClimbedToLevels.L1}
                     />
                     <div className="w-px h-8 bg-white/5 self-center" />
                     <LevelMiniStat
                       label="L2"
-                      count={team.timesClimbedToLevels.L2}
+                      count={team.climb.timesClimbedToLevels.L2}
                     />
                     <div className="w-px h-8 bg-white/5 self-center" />
                     <LevelMiniStat
                       label="L3"
-                      count={team.timesClimbedToLevels.L3}
+                      count={team.climb.timesClimbedToLevels.L3}
                     />
                   </div>
                 </div>
 
                 <StatBox
                   label="Auto Climbs"
-                  value={team.timesClimbedInAuto}
+                  value={team.climb.timesClimbedInAuto}
                   color={getStatColor(
-                    team.timesClimbedInAuto,
-                    other.timesClimbedInAuto,
+                    team.climb.timesClimbedInAuto,
+                    other.climb.timesClimbedInAuto,
                   )}
                 />
               </div>
