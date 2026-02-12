@@ -99,6 +99,9 @@ export const ScoutedMatches: FC = () => {
               close={() => {
                 setDeletingMatch(undefined);
               }}
+              itemName={`${scoutedMatches[
+                deletingMatchIndex
+              ].match.type.toLocaleUpperCase()} ${scoutedMatches[deletingMatchIndex].match.number.toString()}`}
             />
           )}
           {scoutedMatches.map((match, index) => (
