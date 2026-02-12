@@ -11,7 +11,7 @@ interface TeamSelectProps {
 const EMPTY_TEAM_INPUT = 0;
 
 export const TeamSelect: FC<TeamSelectProps> = ({
-  teamNumber = undefined,
+  teamNumber,
   setTeamNumber,
 }) => (
   <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md mx-auto p-4 bg-slate-900/40 backdrop-blur-sm rounded-2xl border border-white/10 shadow-2xl">
