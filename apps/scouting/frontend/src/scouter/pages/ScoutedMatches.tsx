@@ -83,8 +83,6 @@ export const ScoutedMatches: FC = () => {
     );
   }
 
-  
-
   return (
     <div className="flex flex-row">
       {isEmpty(scoutedMatches) ? (
@@ -93,6 +91,16 @@ export const ScoutedMatches: FC = () => {
         </div>
       ) : (
         <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4 w-full h-screen">
+          {deletingMatchIndex !== undefined && (
+            <ConfirmDeletePopup
+              onDelete={() => {
+                removeMatch(deletingMatchIndex);
+              }}
+              close={() => {
+                setDeletingMatch(undefined);
+              }}
+            />
+          )}
           {scoutedMatches.map((match, index) => (
             <div
               key={index}
