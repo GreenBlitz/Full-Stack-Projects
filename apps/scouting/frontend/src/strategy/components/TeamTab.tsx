@@ -71,10 +71,10 @@ export const TeamTab: FC = () => {
 
   return (
     <div className="flex flex-col text-black items-center bg-slate-950">
-      <div className="bg-rose-500" />
-      <div className="bg-yellow-500" />
-      <div className="bg-emerald-500" />
-      <TeamSelect teamNumber={teamNumber ?? undefined} setTeamNumber={setTeamNumber} />
+      <TeamSelect
+        teamNumber={teamNumber ?? undefined}
+        setTeamNumber={setTeamNumber}
+      />
       <PhaseToggle activeMode={phase} setActiveMode={setPhase} />
 
       {data && (
