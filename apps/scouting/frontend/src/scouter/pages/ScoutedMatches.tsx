@@ -10,8 +10,9 @@ import { IoIosRemoveCircle } from "react-icons/io";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { isEmpty } from "@repo/array-functions";
 import { useNavigate } from "react-router-dom";
+import { ConfirmDeletePopup } from "../components/ConfirmDeletePopup";
 
-const ICON_SIZE = 20;
+const ICON_SIZE_PIXELS = 20;
 
 // level of extra data used for error correction
 // medium uses around 15% of data
@@ -25,6 +26,7 @@ export const ScoutedMatches: FC = () => {
   );
   const [selectedMatch, setSelectedMatch] = useState<ScoutingForm>();
   const [isLoading, setIsLoading] = useState(false);
+  const [deletedMatchIndex, setDeletedMatch] = useState<number>();
   const navigate = useNavigate();
 
   const removeMatch = (index: number) => {
@@ -89,6 +91,19 @@ export const ScoutedMatches: FC = () => {
         </div>
       ) : (
         <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4 w-full h-screen">
+          {deletedMatchIndex !== undefined && (
+            <ConfirmDeletePopup
+              onDelete={() => {
+                removeMatch(deletedMatchIndex);
+              }}
+              close={() => {
+                setDeletedMatch(undefined);
+              }}
+              itemName={`${scoutedMatches[
+                deletedMatchIndex
+              ].match.type.toLocaleUpperCase()} ${scoutedMatches[deletedMatchIndex].match.number.toString()}`}
+            />
+          )}
           {scoutedMatches.map((match, index) => (
             <div
               key={index}
@@ -107,11 +122,11 @@ export const ScoutedMatches: FC = () => {
                 <div className="flex flex-row">
                   <div
                     onClick={() => {
-                      removeMatch(index);
+                      setDeletedMatch(index);
                     }}
                     className="h-min my-auto mx-2 bg-red-800 p-2 rounded-2xl"
                   >
-                    <IoIosRemoveCircle size={ICON_SIZE} />
+                    <IoIosRemoveCircle size={ICON_SIZE_PIXELS} />
                   </div>
                   <div
                     onClick={() => {
@@ -119,7 +134,7 @@ export const ScoutedMatches: FC = () => {
                     }}
                     className="h-min my-auto mx-2 bg-green-600 p-2 rounded-2xl"
                   >
-                    <MdFileUpload size={ICON_SIZE} />
+                    <MdFileUpload size={ICON_SIZE_PIXELS} />
                   </div>
                   <div
                     onClick={() => {
@@ -127,7 +142,7 @@ export const ScoutedMatches: FC = () => {
                     }}
                     className="bg-slate-600 p-2 rounded-2xl mx-2"
                   >
-                    <LuQrCode size={ICON_SIZE} />
+                    <LuQrCode size={ICON_SIZE_PIXELS} />
                   </div>
                 </div>
               </div>
