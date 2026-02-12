@@ -25,10 +25,7 @@ const LAST_SECTION_LENGTH = 1;
  * @param sections consists of sections that contains a list of timestamps in ms
  * @returns mean ball amount
  */
-const calculateBallAmount = (
-  sections: number[][],
-  shot: ShotStats,
-): number => {
+const calculateBallAmount = (sections: number[][], shot: ShotStats): number => {
   // Base Case 1
   if (shot.duration <= EMPTY_INTERVAL_DURATION) {
     return NO_FUEL_COLLECTED;
@@ -50,8 +47,7 @@ const calculateBallAmount = (
   );
   const firstIntervalSections = adjustedSections.map((section) =>
     section.filter(
-      (timing) =>
-        timing <= FIRST_INTERVAL_BOUNDARY && timing <= shot.duration,
+      (timing) => timing <= FIRST_INTERVAL_BOUNDARY && timing <= shot.duration,
     ),
   );
 
@@ -90,13 +86,13 @@ const calculateAccuracies = (sections: BPS["events"], shotDuration: number) => {
     ),
     accuracy: section.score.length / section.shoot.length,
   }));
-  const sortedAccuracies = accuracies.sort((a, b) => a.distance - b.distance);
+  const sortedAccuracies = accuracies.sort((accuracy1, accuracy2) => accuracy1.distance - accuracy2.distance);
 
   return sortedAccuracies;
 };
 
-const compareSections = (a: number[], b: number[]) =>
-  lastElement(a) - lastElement(b);
+const compareSections = (section1: number[], section2: number[]) =>
+  lastElement(section1) - lastElement(section2);
 
 const correctSectionToTimeFromEnd = (sections: number[]) => {
   const endTimestamp = lastElement(sections);
@@ -112,7 +108,9 @@ const formatSections = (sections: BPS["events"]) =>
       score: correctSectionToTimeFromEnd(section.score),
       shoot: correctSectionToTimeFromEnd(section.shoot),
     }))
-    .sort((a, b) => compareSections(a.shoot, b.shoot));
+    .sort((formattedSection1, formattedSection2) =>
+      compareSections(formattedSection1.shoot, formattedSection2.shoot),
+    );
 
 const LAST_BALL = 1;
 

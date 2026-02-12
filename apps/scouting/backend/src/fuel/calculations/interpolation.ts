@@ -12,15 +12,19 @@ const interpolateTwoPointQuadratic = (x: number, p1: Point, p2: Point) => {
 
 const ONE_ITEM = 1;
 const DEFAULT_EMPTY_VALUE = 0;
-export const interpolateQuadratic = (x: number, points: Point[], emptyValue = DEFAULT_EMPTY_VALUE): number => {
+const LENGTH_THAT_DOESNT_INCLUDE_TWO_ITEMS = 2;
+export const interpolateQuadratic = (
+  x: number,
+  points: Point[],
+  emptyValue = DEFAULT_EMPTY_VALUE,
+): number => {
   if (isEmpty(points)) {
     return emptyValue;
   }
+
   const [first, second] = points;
 
-  // array destructuring can make the second undefined, but ESLint doesnt know that
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  if (first.x >= x || second === undefined) {
+  if (first.x >= x || points.length === LENGTH_THAT_DOESNT_INCLUDE_TWO_ITEMS) {
     return first.y;
   }
   if (x < second.x) {
