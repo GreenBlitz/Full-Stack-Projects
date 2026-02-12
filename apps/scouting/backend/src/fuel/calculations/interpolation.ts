@@ -12,7 +12,7 @@ const interpolateTwoPointQuadratic = (x: number, p1: Point, p2: Point) => {
 
 const ONE_ITEM = 1;
 const DEFAULT_EMPTY_VALUE = 0;
-const LENGTH_THAT_DOESNT_INCLUDE_TWO_ITEMS = 2;
+const LENGTH_THAT_DOESNT_INCLUDE_TWO_ITEMS = 1;
 export const interpolateQuadratic = (
   x: number,
   points: Point[],
