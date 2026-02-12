@@ -5,6 +5,9 @@ import { pipe } from "fp-ts/lib/function";
 import { createTypeCheckingEndpointFlow } from "../middleware/verification";
 import {
   type Climb,
+  convertGeneralToAllianceData,
+  defaultAllianceData,
+  type Forecast,
   forecastProps,
   type ScoutingForm,
 } from "@repo/scouting_types";
@@ -47,8 +50,6 @@ const calculateAverageClimbsScore = (forms: ScoutingForm[]) => ({
     false,
   ),
 });
-
-const PASS_POINT_VALUE = 0.6;
 
 forecastRouter.get("/", async (req, res) => {
   await pipe(
@@ -111,31 +112,19 @@ forecastRouter.get("/", async (req, res) => {
     ),
     map((alliancesTeamedData) =>
       mapObject(alliancesTeamedData, (allianceTeamedData) =>
-        allianceTeamedData.reduce(
+        allianceTeamedData.map(convertGeneralToAllianceData).reduce(
           (acc, curr) => ({
             climb: {
               auto: acc.climb.auto + curr.climb.auto,
               tele: acc.climb.tele + curr.climb.tele,
             },
             fuel: {
-              auto:
-                acc.fuel.auto +
-                curr.fuel.auto.scored +
-                PASS_POINT_VALUE * curr.fuel.auto.passed,
-              tele:
-                acc.fuel.tele +
-                curr.fuel.tele.scored +
-                PASS_POINT_VALUE * curr.fuel.tele.passed,
-              fullGame:
-                acc.fuel.fullGame +
-                curr.fuel.fullGame.scored +
-                PASS_POINT_VALUE * curr.fuel.fullGame.passed,
+              auto: acc.fuel.auto + curr.fuel.auto,
+              tele: acc.fuel.tele + curr.fuel.tele,
+              fullGame: acc.fuel.fullGame + curr.fuel.fullGame,
             },
           }),
-          {
-            climb: { auto: 0, tele: 0 },
-            fuel: { auto: 0, tele: 0, fullGame: 0 },
-          },
+          defaultAllianceData,
         ),
       ),
     ),
@@ -143,7 +132,9 @@ forecastRouter.get("/", async (req, res) => {
       (error) => () =>
         Promise.resolve(res.status(error.status).send(error.reason)),
       (allianceData) => () =>
-        Promise.resolve(res.status(StatusCodes.OK).json({ allianceData })),
+        Promise.resolve(
+          res.status(StatusCodes.OK).json({ allianceData } satisfies Forecast),
+        ),
     ),
   )();
 });
