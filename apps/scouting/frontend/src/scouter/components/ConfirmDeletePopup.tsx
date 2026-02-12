@@ -1,5 +1,5 @@
 // בס"ד
-import type { FC } from "react";
+import type{  FC } from "react";
 import { AlertTriangle, X } from "lucide-react";
 
 interface ConfirmDeletePopupProps {

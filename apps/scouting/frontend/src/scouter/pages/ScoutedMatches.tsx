@@ -10,6 +10,7 @@ import { IoIosRemoveCircle } from "react-icons/io";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { isEmpty } from "@repo/array-functions";
 import { useNavigate } from "react-router-dom";
+import { ConfirmDeletePopup } from "../components/ConfirmDeletePopup";
 
 const ICON_SIZE = 20;
 
@@ -25,6 +26,7 @@ export const ScoutedMatches: FC = () => {
   );
   const [selectedMatch, setSelectedMatch] = useState<ScoutingForm>();
   const [isLoading, setIsLoading] = useState(false);
+  const [deletingMatchIndex, setDeletingMatch] = useState<number>();
   const navigate = useNavigate();
 
   const removeMatch = (index: number) => {
@@ -81,6 +83,8 @@ export const ScoutedMatches: FC = () => {
     );
   }
 
+  
+
   return (
     <div className="flex flex-row">
       {isEmpty(scoutedMatches) ? (
@@ -107,7 +111,7 @@ export const ScoutedMatches: FC = () => {
                 <div className="flex flex-row">
                   <div
                     onClick={() => {
-                      removeMatch(index);
+                      setDeletingMatch(index);
                     }}
                     className="h-min my-auto mx-2 bg-red-800 p-2 rounded-2xl"
                   >
