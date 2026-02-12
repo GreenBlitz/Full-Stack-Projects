@@ -33,7 +33,7 @@ export const ConfirmDeletePopup: FC<ConfirmDeletePopupProps> = ({
 
         <div className="flex flex-col items-center text-center">
           {/* Warning Icon */}
-          <div className="w-16 h-16 bg-rose-500/20 rounded-2xl flex items-center justify-center mb-4 rotate-3">
+          <div className="w-16 h-16 bg-rose-500/20 rounded-2xl flex items-center justify-center mb-4">
             <AlertTriangle className="text-rose-500" size={32} />
           </div>
 
