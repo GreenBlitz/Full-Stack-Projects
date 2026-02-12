@@ -2,7 +2,10 @@
 
 import { Router } from "express";
 import { pipe } from "fp-ts/lib/function";
-import { createBodyVerificationPipe } from "../middleware/verification";
+import {
+  createBodyVerificationPipe,
+  createTypeCheckingEndpointFlow,
+} from "../middleware/verification";
 import {
   type Climb,
   forecastProps,
@@ -17,6 +20,7 @@ import { calculateSum, mapObject } from "@repo/array-functions";
 import { generalCalculateFuel } from "../fuel/fuel-general";
 import { getAllBPS } from "./teams-router";
 import { calcAverageGeneralFuelData } from "./general-router";
+import { castItem } from "@repo/type-utils";
 
 export const forecastRouter = Router();
 
@@ -45,28 +49,34 @@ const calculateAverageClimbsScore = (forms: ScoutingForm[]) => ({
     false,
   ),
 });
-forecastRouter.post("/", async (req, res) => {
+
+forecastRouter.get("/", async (req, res) => {
   await pipe(
-    right(req),
-    createBodyVerificationPipe(forecastProps),
+    req.query,
+    castItem,
+    right,
+    createTypeCheckingEndpointFlow(forecastProps, (error) => ({
+      status: StatusCodes.BAD_REQUEST,
+      reason: `Query Does Not match Specified Type: ${error}`,
+    })),
     fromEither,
-    flatMap((body) =>
+    flatMap((query) =>
       pipe(
         getFormsCollection(),
-        map((collection) => ({ collection, body })),
+        map((collection) => ({ collection, query })),
       ),
     ),
-    flatMap(({ collection, body }) =>
+    flatMap(({ collection, query }) =>
       tryCatch(
         async () => ({
           redAlliance: await collection
             .find({
-              teamNumber: { $in: body.redAlliance },
+              teamNumber: { $in: query.redAlliance },
             })
             .toArray(),
           blueAlliance: await collection
             .find({
-              teamNumber: { $in: body.blueAlliance },
+              teamNumber: { $in: query.blueAlliance },
             })
             .toArray(),
         }),
