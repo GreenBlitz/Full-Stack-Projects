@@ -17,6 +17,7 @@ import { PhaseToggle } from "./PhaseToggle";
 import { MetricsChart } from "./MetricsChart";
 import { BarChart } from "../BarChart";
 import { calculateMedianClimbs, getClimbDataset } from "../ClimbProcessing";
+import { useLocalStorage } from "@repo/local_storage_hook";
 
 const METER_CENTIMETERS = 100;
 const TWO_METER_CENTIMETERS = 200;
@@ -55,7 +56,10 @@ const graphSection =
 export const TeamTab: FC = () => {
   const [phase, setPhase] = useState<GamePhase>("tele");
   const [teamData, setTeamData] = useState<TeamData>();
-  const [teamNumber, setTeamNumber] = useState<number>();
+  const [teamNumber, setTeamNumber] = useLocalStorage<number | null>(
+    "team/teamNumber",
+    null,
+  );
   const data = useMemo(() => teamData?.[phase], [teamData, phase]);
 
   useEffect(() => {
@@ -70,7 +74,7 @@ export const TeamTab: FC = () => {
       <div className="bg-rose-500" />
       <div className="bg-yellow-500" />
       <div className="bg-emerald-500" />
-      <TeamSelect teamNumber={teamNumber} setTeamNumber={setTeamNumber} />
+      <TeamSelect teamNumber={teamNumber ?? undefined} setTeamNumber={setTeamNumber} />
       <PhaseToggle activeMode={phase} setActiveMode={setPhase} />
 
       {data && (
