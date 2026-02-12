@@ -16,7 +16,7 @@ import { getFormsCollection } from "./forms-router";
 import { flatMap, fold, fromEither, map, tryCatch } from "fp-ts/lib/TaskEither";
 import { StatusCodes } from "http-status-codes";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
-import { calculateSum, mapObject } from "@repo/array-functions";
+import { calculateAverage, mapObject } from "@repo/array-functions";
 import { generalCalculateFuel } from "../fuel/fuel-general";
 import { getAllBPS } from "./teams-router";
 import { calcAverageGeneralFuelData } from "./general-router";
@@ -30,7 +30,7 @@ const TELE_CLIMB_MULTIPLIER = 1;
 const AUTO_CLIMB_MULTIPLIER = 1.5;
 
 const calculateAverageClimbScore = (climbs: ClimbLevel[], isAuto: boolean) =>
-  calculateSum(
+  calculateAverage(
     climbs,
     (climb) =>
       CLIMB_SCORE_VALUES[climb] *
