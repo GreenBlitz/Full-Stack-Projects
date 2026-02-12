@@ -9,6 +9,7 @@ import { StatusCodes } from "http-status-codes";
 import { createBodyVerificationPipe } from "../middleware/verification";
 import { right } from "fp-ts/lib/Either";
 import { mongofyQuery } from "../middleware/query";
+import * as t from "io-ts";
 
 export const formsRouter = Router();
 
@@ -30,18 +31,24 @@ formsRouter.get("/", async (req, res) => {
   )();
 });
 
-formsRouter.post("/single", async (req, res) => {
+const combinedCodec = t.union([scoutingFormCodec, t.array(scoutingFormCodec)]);
+
+formsRouter.post("/", async (req, res) => {
   await pipe(
     getFormsCollection(),
     flatMap((collection) =>
       pipe(
         right(req),
-        createBodyVerificationPipe(scoutingFormCodec),
+        createBodyVerificationPipe(combinedCodec),
         fromEither,
-        map((form) => ({ collection, form })),
+        map((combinedBody) => ({ collection, combinedBody })),
       ),
     ),
-    map(({ collection, form }) => collection.insertOne(form)),
+    map(({ collection, combinedBody }) =>
+      Array.isArray(combinedBody)
+        ? collection.insertMany(combinedBody)
+        : collection.insertOne(combinedBody),
+    ),
     fold(
       (error) => () =>
         Promise.resolve(res.status(error.status).send(error.reason)),
