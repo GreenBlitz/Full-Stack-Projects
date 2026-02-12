@@ -2,9 +2,7 @@
 
 import { Router } from "express";
 import { pipe } from "fp-ts/lib/function";
-import {
-  createTypeCheckingEndpointFlow,
-} from "../middleware/verification";
+import { createTypeCheckingEndpointFlow } from "../middleware/verification";
 import {
   type Climb,
   forecastProps,
@@ -38,6 +36,7 @@ const calculateAverageClimbScore = (
       CLIMB_SCORE_VALUES[climb] *
       (isAuto ? AUTO_CLIMB_MULTIPLIER : TELE_CLIMB_MULTIPLIER),
   );
+
 const calculateAverageClimbsScore = (forms: ScoutingForm[]) => ({
   auto: calculateAverageClimbScore(
     forms.map((form) => form.auto.climb.level),
@@ -48,6 +47,8 @@ const calculateAverageClimbsScore = (forms: ScoutingForm[]) => ({
     false,
   ),
 });
+
+const PASS_POINT_VALUE = 0.6;
 
 forecastRouter.get("/", async (req, res) => {
   await pipe(
@@ -117,9 +118,18 @@ forecastRouter.get("/", async (req, res) => {
               tele: acc.climb.tele + curr.climb.tele,
             },
             fuel: {
-              auto: acc.fuel.auto + curr.fuel.auto.scored,
-              tele: acc.fuel.tele + curr.fuel.tele.scored,
-              fullGame: acc.fuel.fullGame + curr.fuel.fullGame.scored,
+              auto:
+                acc.fuel.auto +
+                curr.fuel.auto.scored +
+                PASS_POINT_VALUE * curr.fuel.auto.passed,
+              tele:
+                acc.fuel.tele +
+                curr.fuel.tele.scored +
+                PASS_POINT_VALUE * curr.fuel.tele.passed,
+              fullGame:
+                acc.fuel.fullGame +
+                curr.fuel.fullGame.scored +
+                PASS_POINT_VALUE * curr.fuel.fullGame.passed,
             },
           }),
           {
