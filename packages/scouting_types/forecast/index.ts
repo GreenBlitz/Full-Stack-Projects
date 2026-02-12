@@ -7,9 +7,19 @@ export const forecastProps = t.type({
   blueAlliance: t.tuple([t.number, t.number, t.number]),
 });
 
+interface ClimbAllianceData {
+  auto: number;
+  tele: number;
+}
+interface FuelAllianceData {
+  auto: number;
+  tele: number;
+  fullGame: number;
+}
+
 export interface AllianceData {
-  climb: { auto: number; tele: number };
-  fuel: { auto: number; tele: number; fullGame: number };
+  climb: ClimbAllianceData;
+  fuel: FuelAllianceData;
 }
 export const defaultAllianceData: AllianceData = {
   climb: { auto: 0, tele: 0 },
@@ -26,7 +36,7 @@ export const convertGeneralToAllianceData = ({
   climb,
   fuel,
 }: {
-  climb: AllianceData["climb"];
+  climb: ClimbAllianceData;
   fuel: GeneralFuelData;
 }): AllianceData => ({
   climb,

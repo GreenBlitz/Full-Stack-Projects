@@ -4,7 +4,7 @@ import { Router } from "express";
 import { pipe } from "fp-ts/lib/function";
 import { createTypeCheckingEndpointFlow } from "../middleware/verification";
 import {
-  type Climb,
+  type ClimbLevel,
   convertGeneralToAllianceData,
   defaultAllianceData,
   type Forecast,
@@ -29,10 +29,7 @@ const CLIMB_SCORE_VALUES = { L0: 0, L1: 10, L2: 20, L3: 30 };
 const TELE_CLIMB_MULTIPLIER = 1;
 const AUTO_CLIMB_MULTIPLIER = 1.5;
 
-const calculateAverageClimbScore = (
-  climbs: Climb["level"][],
-  isAuto: boolean,
-) =>
+const calculateAverageClimbScore = (climbs: ClimbLevel[], isAuto: boolean) =>
   calculateSum(
     climbs,
     (climb) =>
