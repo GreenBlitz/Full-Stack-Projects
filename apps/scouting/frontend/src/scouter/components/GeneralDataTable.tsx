@@ -116,24 +116,6 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
 
   return (
     <div className="flex flex-col gap-6 p-4 bg-slate-950 min-h-screen">
-      <div className="flex gap-1.5 justify-center bg-slate-900/50 p-1.5 rounded-2xl border border-white/5 self-center">
-        {(["auto", "tele", "fullGame"] as GameTime[]).map((time) => (
-          <button
-            key={time}
-            onClick={() => {
-              setGameTime(time);
-            }}
-            className={`px-5 py-2 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all border ${
-              gameTime === time
-                ? "bg-emerald-500 text-slate-950 border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]"
-                : "bg-transparent text-slate-500 border-transparent hover:text-slate-300"
-            }`}
-          >
-            {time}
-          </button>
-        ))}
-      </div>
-
       <div className="overflow-hidden rounded-2xl border border-white/10 bg-slate-900/40 backdrop-blur-sm shadow-2xl">
         <table className="w-full text-left text-sm border-collapse">
           <thead className="bg-slate-800/50 border-b border-white/10">
@@ -188,6 +170,23 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
             })}
           </tbody>
         </table>
+      </div>
+      <div className="flex gap-1.5 justify-center bg-slate-900/50 p-1.5 rounded-2xl border border-white/5 self-center">
+        {(["auto", "tele", "fullGame"] as GameTime[]).map((time) => (
+          <button
+            key={time}
+            onClick={() => {
+              setGameTime(time);
+            }}
+            className={`px-5 py-2 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all border ${
+              gameTime === time
+                ? "bg-emerald-500 text-slate-950 border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]"
+                : "bg-transparent text-slate-500 border-transparent hover:text-slate-300"
+            }`}
+          >
+            {time}
+          </button>
+        ))}
       </div>
     </div>
   );
