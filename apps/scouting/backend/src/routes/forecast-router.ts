@@ -3,7 +3,6 @@
 import { Router } from "express";
 import { pipe } from "fp-ts/lib/function";
 import {
-  createBodyVerificationPipe,
   createTypeCheckingEndpointFlow,
 } from "../middleware/verification";
 import {

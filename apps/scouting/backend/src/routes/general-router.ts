@@ -23,7 +23,7 @@ interface AccumulatedFuelData {
 
 const ONE_ITEM_ARRAY = 1;
 
-export const calcAverageGeneralFuelData = (fuelData: GeneralFuelData[]) => {
+export const calcAverageGeneralFuelData = (fuelData: GeneralFuelData[]): GeneralFuelData => {
   if (fuelData.length === ONE_ITEM_ARRAY || isEmpty(fuelData)) {
     return firstElement(fuelData);
   }
