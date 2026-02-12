@@ -75,7 +75,6 @@ const Stopwatch: React.FC<StopwatchProps> = ({
 
     startTimeRef.current = Date.now() - elapsedTime;
     setIsRunning(true);
-    // Call onStart callback if provided to notify parent component that shooting started
     onStart?.();
   };
 
@@ -93,7 +92,6 @@ const Stopwatch: React.FC<StopwatchProps> = ({
 
     setIsRunning(false);
     reset();
-    // Call onStop callback if provided to notify parent component that shooting stopped
     onStop?.();
   };
 

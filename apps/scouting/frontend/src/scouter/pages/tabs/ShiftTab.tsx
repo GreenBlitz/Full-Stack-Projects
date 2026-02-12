@@ -6,12 +6,12 @@ import type { Alliance, Point, ShiftType } from "@repo/scouting_types";
 import { MovementForm } from "../../components/MovementForm";
 import Stopwatch from "../../components/stopwatch";
 import { usePositionRecording } from "../../hooks/usePositionRecording";
+import { isEmpty } from "@repo/array-functions";
+
 interface ShiftTabProps extends TabProps {
   tabIndex: number;
   shiftType: ShiftType;
 }
-
-const EMPTY_ARRAY_LENGTH = 0;
 
 export const ShiftTab: FC<ShiftTabProps> = ({
   setForm,
@@ -34,10 +34,9 @@ export const ShiftTab: FC<ShiftTabProps> = ({
             ? prevForm.tele.transitionShift.shootEvents
             : prevForm.tele.endgameShift.shootEvents;
 
-      const positions =
-        recordedPositionsRef.current.length > EMPTY_ARRAY_LENGTH
-          ? [...recordedPositionsRef.current]
-          : [mapPosition ?? { ...defaultPoint }];
+      const positions = isEmpty(recordedPositionsRef.current)
+        ? [mapPosition ?? { ...defaultPoint }]
+        : [...recordedPositionsRef.current];
 
       prevEvents.push({
         interval: cycle,

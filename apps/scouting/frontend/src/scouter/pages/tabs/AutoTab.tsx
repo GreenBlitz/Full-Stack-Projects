@@ -7,8 +7,7 @@ import { MovementForm } from "../../components/MovementForm";
 import type { TabProps } from "../ScoutMatch";
 import { defaultPoint } from "../../components/ScoreMap";
 import { usePositionRecording } from "../../hooks/usePositionRecording";
-
-const EMPTY_ARRAY_LENGTH = 0;
+import { isEmpty } from "@repo/array-functions";
 
 export const AutoTab: FC<TabProps> = ({
   setForm,
@@ -35,10 +34,9 @@ export const AutoTab: FC<TabProps> = ({
           addCycleTimeSeconds={(cycle) => {
             setForm((prevForm) => {
               const prevEvents = prevForm.auto.shootEvents;
-              const positions =
-                recordedPositionsRef.current.length > EMPTY_ARRAY_LENGTH
-                  ? [...recordedPositionsRef.current]
-                  : [mapPosition ?? { ...defaultPoint }];
+              const positions = isEmpty(recordedPositionsRef.current)
+                ? [mapPosition ?? { ...defaultPoint }]
+                : [...recordedPositionsRef.current];
 
               prevEvents.push({
                 interval: cycle,

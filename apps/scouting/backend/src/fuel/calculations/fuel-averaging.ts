@@ -9,19 +9,14 @@ const NO_FUEL_COLLECTED = 0;
 const FIRST_SECTION_AMOUNT = 1;
 const LAST_SECTION_LENGTH = 1;
 
-/**
- * @param sections consists of sections that contains a list of timestamps in ms
- * @returns mean ball amount
- */
+/** Recursively calculates mean ball amount from timestamp sections. */
 const calculateBallAmount = (
   sections: number[][],
   shotLength: number,
 ): number => {
-  // Base Case 1
   if (shotLength <= EMPTY_INTERVAL_DURATION) {
     return NO_FUEL_COLLECTED;
   }
-  // Base Case 2: Happens if no section is long enough for the shot length
   if (sections.length === LAST_SECTION_LENGTH) {
     const onlySection = firstElement(sections);
     const ballAmount = onlySection.length;
@@ -67,13 +62,7 @@ const correctSectionToTimeFromEnd = (sections: number[]) => {
     .map((timestamp) => endTimestamp - timestamp);
 };
 
-/**
- * Calculates fuel statistics for a shooting event by averaging across multiple matches
- * @param shot - The shooting event containing interval and positions array
- * @param match - The match information
- * @param sections - Array of BPS event sections from multiple matches
- * @returns FuelObject with averaged shot count, scored count, missed count, and positions array
- */
+/** Calculates fuel statistics by averaging across multiple matches. */
 export const calculateFuelByAveraging = (
   shot: ShootEvent,
   isPass: boolean,

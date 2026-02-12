@@ -3,10 +3,11 @@ import { useRef, useEffect, useCallback } from "react";
 import type { Point } from "@repo/scouting_types";
 import { defaultPoint } from "../components/ScoreMap";
 
-const POSITION_RECORDING_INTERVAL_MS = 1000;
+const DEFAULT_RECORDING_INTERVAL_MS = 1000;
 
 export const usePositionRecording = (
   currentPosition: Point | undefined,
+  recordingIntervalMs: number = DEFAULT_RECORDING_INTERVAL_MS,
 ): {
   recordedPositionsRef: { current: Point[] };
   start: () => void;
@@ -28,25 +29,22 @@ export const usePositionRecording = (
     const initialPosition = currentPositionRef.current ?? { ...defaultPoint };
     recordedPositionsRef.current.push(initialPosition);
 
-    // Records position every 0.1 seconds during shooting interval
     positionIntervalRef.current = window.setInterval(() => {
       const currentPos = currentPositionRef.current ?? { ...defaultPoint };
       recordedPositionsRef.current.push(currentPos);
-    }, POSITION_RECORDING_INTERVAL_MS);
-  }, []);
+    }, recordingIntervalMs);
+  }, [recordingIntervalMs]);
 
   const stop = useCallback(() => {
-    if (positionIntervalRef.current !== null) {
-      clearInterval(positionIntervalRef.current);
-      positionIntervalRef.current = null;
-    }
+    if (positionIntervalRef.current === null) return;
+    clearInterval(positionIntervalRef.current);
+    positionIntervalRef.current = null;
   }, []);
 
   useEffect(() => {
     return () => {
-      if (positionIntervalRef.current !== null) {
-        clearInterval(positionIntervalRef.current);
-      }
+      if (positionIntervalRef.current === null) return;
+      clearInterval(positionIntervalRef.current);
     };
   }, []);
 
