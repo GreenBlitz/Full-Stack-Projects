@@ -44,6 +44,7 @@ type Interval = t.TypeOf<typeof intervalCodec>;
 export type SingleLevelTime = Partial<Record<ActiveClimbLevel, Interval>>;
 
 export type Climb = ScoutingForm["auto" | "tele"]["climb"];
+export type ClimbLevel = Climb["level"];
 
 export type TeleClimb = t.TypeOf<typeof climbCodec>;
 export type TeleClimbSide = TeleClimb["climbSide"];
