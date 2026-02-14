@@ -15,6 +15,8 @@ interface StatRowProps {
   blue: number;
   subtext: string;
 }
+const PERCENT_BASE = 100;
+
 const StatRow: FC<StatRowProps> = ({ label, icon, red, blue, subtext }) => {
   const isRedLeading = red > blue;
   return (
@@ -45,11 +47,11 @@ const StatRow: FC<StatRowProps> = ({ label, icon, red, blue, subtext }) => {
       {/* Background visual bar */}
       <div
         className="absolute bottom-0 left-0 h-1 bg-red-500 transition-all duration-500"
-        style={{ width: `${(red / (red + blue)) * 100}%` }}
+        style={{ width: `${(red / (red + blue)) * PERCENT_BASE}%` }}
       />
       <div
         className="absolute bottom-0 right-0 h-1 bg-blue-500 transition-all duration-500"
-        style={{ width: `${(blue / (red + blue)) * 100}%` }}
+        style={{ width: `${(blue / (red + blue)) * PERCENT_BASE}%` }}
       />
     </div>
   );
@@ -57,8 +59,8 @@ const StatRow: FC<StatRowProps> = ({ label, icon, red, blue, subtext }) => {
 
 interface MiniStatProps {
   label: string;
-  value: number;
-  align: "left" | "right";
+  value: string | number;
+  align?: "left" | "right";
 }
 
 const MiniStat: FC<MiniStatProps> = ({ label, value, align = "left" }) => (
@@ -85,10 +87,11 @@ const querifyAlliances = (alliances: Alliances) => {
 
 export const MatchForecast: FC = () => {
   const [forecast, setForecast] = useState<Forecast>();
-  const [alliances, setAlliances] = useState<Alliances>({
-    redAlliance: [4590, 1690, 1577],
-    blueAlliance: [2230, 2231, 4586],
-  });
+  const [alliances, setAlliances] = useState<Alliances>();
+  //   {
+  //   redAlliance: [4590, 1690, 1577],
+  //   blueAlliance: [2230, 2231, 4586],
+  // }
 
   const updateForecast = async () => {
     if (!alliances) {
