@@ -15,21 +15,40 @@ interface MatchQualWithTeamNumberProps {
 
 const matchQualWithTeamNumber = (
   matchQualWithTeamNumberProps: MatchQualWithTeamNumberProps,
-) => {
+): number => {
   const DEFAULT_TEAM_NUMBER = 4590;
   const CALIBERATION_CONSTANT = 1;
   const CLOSE_INDEX = 0;
   const MIDDLE_INDEX = 1;
   const FAR_INDEX = 2;
-  const allMatches = await fetchAllAwaitingMatches();
-  if (
-    !allMatches?.[matchQualWithTeamNumberProps.qual - CALIBERATION_CONSTANT]
-  ) {
+  type Match = {
+    blueAlliance: number[];
+    redAlliance: number[];
+  };
+
+  const allMatches: Match[] = [
+    {
+      blueAlliance: [1690, 1577, 2230],
+      redAlliance: [3339, 5951, 7067],
+    },
+    {
+      blueAlliance: [4416, 5654, 5987],
+      redAlliance: [1690, 1577, 2230],
+    },
+    {
+      blueAlliance: [7067, 3339, 5951],
+      redAlliance: [4416, 5654, 5987],
+    },
+  ];
+
+  const index = matchQualWithTeamNumberProps.qual - CALIBERATION_CONSTANT;
+
+  if (!allMatches[index]) {
     console.error("Match data is unavailable");
     return DEFAULT_TEAM_NUMBER;
   }
-  const match =
-    allMatches[matchQualWithTeamNumberProps.qual - CALIBERATION_CONSTANT];
+
+  const match = allMatches[index];
 
   const alliance: Alliance = matchQualWithTeamNumberProps.alliance;
 
@@ -52,6 +71,11 @@ const matchQualWithTeamNumber = (
 };
 
 const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
+  const matchQualWithTeamNumberProps: MatchQualWithTeamNumberProps = {
+    qual: 2,
+    alliance: "blue",
+    initialLocation: "close"
+  }
   return (
     <div className="flex flex-col items-center justify-center w-full h-full gap-3  mx-auto">
       <div className="w-[480px] border-2 border-green-500 rounded-lg p-5 flex flex-col gap-3 py-0 h-15">
@@ -124,7 +148,7 @@ const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
             className="inputStyle w-[340px] h-full"
             min={0}
             max={TEAM_NUMBER_MAX}
-            value={form.teamNumber}
+            value={matchQualWithTeamNumber(matchQualWithTeamNumberProps)}
             onChange={(event) => {
               setForm((prev) => ({
                 ...prev,
