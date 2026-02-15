@@ -24,7 +24,7 @@ const ensureDataDir = (): TaskEither<EndpointError, void> =>
     (error) => ({
       status: StatusCodes.INTERNAL_SERVER_ERROR,
       reason: `Error creating data directory: ${error}`,
-    })
+    }),
   );
 
 export const readGames = (): TaskEither<EndpointError, GameData[]> =>
@@ -46,7 +46,7 @@ export const readGames = (): TaskEither<EndpointError, GameData[]> =>
           status: StatusCodes.INTERNAL_SERVER_ERROR,
           reason: `Error reading games file: ${error}`,
         };
-      }
+      },
     ),
     orElse((error) => {
       if (error.reason === "ENOENT") {
@@ -58,11 +58,13 @@ export const readGames = (): TaskEither<EndpointError, GameData[]> =>
       createTypeCheckingEndpointFlow(gamesArrayCodec, (errors) => ({
         status: StatusCodes.INTERNAL_SERVER_ERROR,
         reason: `Invalid games data format. error: ${errors}`,
-      }))
-    )
+      })),
+    ),
   );
 
-export const writeGames = (games: GameData[]): TaskEither<EndpointError, void> =>
+export const writeGames = (
+  games: GameData[],
+): TaskEither<EndpointError, void> =>
   pipe(
     ensureDataDir(),
     flatMap(() =>
@@ -71,12 +73,12 @@ export const writeGames = (games: GameData[]): TaskEither<EndpointError, void> =
           fs.writeFile(
             GAMES_FILE,
             JSON.stringify(games, null, JSON_INDENTATION),
-            "utf-8"
+            "utf-8",
           ),
         (error) => ({
           status: StatusCodes.INTERNAL_SERVER_ERROR,
           reason: `Error writing games file: ${error}`,
-        })
-      )
-    )
+        }),
+      ),
+    ),
   );
