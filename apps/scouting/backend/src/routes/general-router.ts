@@ -7,10 +7,11 @@ import { flatMap, fold, map, tryCatch } from "fp-ts/lib/TaskEither";
 import { mongofyQuery } from "../middleware/query";
 import { generalCalculateFuel } from "../fuel/fuel-general";
 import { StatusCodes } from "http-status-codes";
-import type { BPS, FuelObject, GeneralFuelData } from "@repo/scouting_types";
+
+import type { FuelObject, GeneralFuelData } from "@repo/scouting_types";
 import { averageFuel } from "../fuel/distance-split";
 import { firstElement, isEmpty } from "@repo/array-functions";
-import { getBPSes } from "./teams-router";
+import { getAllBPS } from "./teams-router";
 
 export const generalRouter = Router();
 
@@ -22,7 +23,7 @@ interface AccumulatedFuelData {
 
 const ONE_ITEM_ARRAY = 1;
 
-export const calcAverageGeneralFuelData = (fuelData: GeneralFuelData[]) => {
+export const calcAverageGeneralFuelData = (fuelData: GeneralFuelData[]): GeneralFuelData => {
   if (fuelData.length === ONE_ITEM_ARRAY || isEmpty(fuelData)) {
     return firstElement(fuelData);
   }
@@ -65,7 +66,7 @@ generalRouter.get("/", async (req, res) => {
     map((forms) =>
       forms.map((form) => ({
         teamNumber: form.teamNumber,
-        generalFuelData: generalCalculateFuel(form, getBPSes()),
+        generalFuelData: generalCalculateFuel(form, getAllBPS()),
       })),
     ),
 

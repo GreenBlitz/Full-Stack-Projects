@@ -1,16 +1,23 @@
 // בס"ד
-import type { FC } from "react";
+import { useState, type FC } from "react";
 import type { TabProps } from "../ScoutMatch";
 import type { ScoutingForm } from "@repo/scouting_types";
 import { useLocalStorage } from "@repo/local_storage_hook";
 import { createNewScoutingForm } from "../ScoutMatch";
 import { useNavigate } from "react-router-dom";
+import { ConfirmDeletePopup } from "../../components/ConfirmDeletePopup";
+
+const BUTTON_STYLES = `px-8 py-3 text-base font-bold text-black 
+            transition-all duration-300 
+            active:scale-95 border rounded-xl
+            bg-linear-to-r`;
 
 export const PostMatchTab: FC<TabProps> = ({ setForm, currentForm }) => {
   const [scoutingForms, setScoutingForms] = useLocalStorage<ScoutingForm[]>(
     "scouted_forms",
     [],
   );
+  const [isPopUpVisible, setPopUpVisible] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
@@ -52,23 +59,46 @@ export const PostMatchTab: FC<TabProps> = ({ setForm, currentForm }) => {
         </div>
       </div>
 
-      <div className="mt-4 flex justify-center shrink-0">
+      <div className="mt-4 flex flex-row gap-4 justify-center shrink-0">
         <button
           onClick={() => {
             void handleSubmit();
           }}
-          className="px-8 py-3 text-base font-bold text-black 
-                   bg-linear-to-r from-green-500 to-green-600 
-                   rounded-xl hover:from-green-600 hover:to-green-700 
+          className={`${BUTTON_STYLES}
+                    from-green-500 to-green-600 
+                    hover:from-green-600 hover:to-green-700 
                    shadow-[0_0_15px_rgba(34,197,94,0.4)] 
                    hover:shadow-[0_0_25px_rgba(34,197,94,0.6)]
-                   transition-all duration-300 
-                   border border-green-700
-                   active:scale-95"
+                    border-green-700`}
         >
           Submit
         </button>
+        <button
+          onClick={() => {
+            setPopUpVisible(true);
+          }}
+          className={`${BUTTON_STYLES}
+           from-red-500 to-red-600
+            shadow-[0_0_15px_rgba(244,63,94,0.4)]
+            hover:shadow-[0_0_25px_rgba(244,63,94,0.6)]
+            hover:from-red-600 hover:to-red-700 border-red-700
+            `}
+        >
+          Delete
+        </button>
       </div>
+
+      {isPopUpVisible && (
+        <ConfirmDeletePopup
+          onDelete={() => {
+            setForm(createNewScoutingForm);
+            void navigate("/");
+          }}
+          close={() => {
+            setPopUpVisible(false);
+          }}
+        />
+      )}
     </div>
   );
 };

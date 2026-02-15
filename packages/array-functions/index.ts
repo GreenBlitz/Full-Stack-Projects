@@ -12,6 +12,16 @@ export const calculateAverage = <T>(
   transformation: (value: T) => number,
 ): number => calculateSum(arr, transformation) / arr.length;
 
+const MEDIAN_LOCATION = 2;
+export const calculateMedian = <T>(
+  arr: T[],
+  transformation: (value: T) => number,
+): T =>
+  arr
+    .map((item) => ({ item, value: transformation(item) }))
+    .sort((a, b) => a.value - b.value)[Math.floor(arr.length / MEDIAN_LOCATION)]
+    .item;
+
 export const getMax = <T>(arr: T[], transformation: (value: T) => number): T =>
   arr
     .map((item) => ({ value: transformation(item), item }))

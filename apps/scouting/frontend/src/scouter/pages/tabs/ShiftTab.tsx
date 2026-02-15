@@ -12,7 +12,6 @@ interface ShiftTabProps extends TabProps {
   shiftType: ShiftType;
 }
 
-
 export const ShiftTab: FC<ShiftTabProps> = ({
   setForm,
   tabIndex,
@@ -68,8 +67,9 @@ export const ShiftTab: FC<ShiftTabProps> = ({
           }}
           currentMovement={currentForm.tele.movement}
         />
+
         <button
-          className={`bg-${mapZone}-800 h-8 sm:h-10 w-32 text-[10px] sm:text-xs px-2`}
+          className={`bg-${mapZone}-500 h-8 sm:h-10 w-32 text-[10px] sm:text-xs px-2`}
           onClick={() => {
             setMapZone((prev) => (prev === "red" ? "blue" : "red"));
           }}

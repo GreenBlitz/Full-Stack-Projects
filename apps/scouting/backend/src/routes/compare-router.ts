@@ -17,8 +17,6 @@ import { StatusCodes } from "http-status-codes";
 import { calculateSum, firstElement, isEmpty } from "@repo/array-functions";
 import { calcAverageGeneralFuelData } from "./general-router";
 import { generalCalculateFuel } from "../fuel/fuel-general";
-import { getBPSes } from "./teams-router";
-import { averageFuel } from "../fuel/distance-split";
 
 export const compareRouter = Router();
 
