@@ -74,6 +74,7 @@ formsRouter.get("/teams", async (req, res) => {
       ),
     ),
     map((forms) => forms.map((form) => form.teamNumber)),
+    map((numbers) => [...new Set(numbers)]),
     fold(
       (error) => () =>
         Promise.resolve(res.status(error.status).send(error.reason)),
