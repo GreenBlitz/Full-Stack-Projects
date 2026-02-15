@@ -74,7 +74,7 @@ const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
   const matchQualWithTeamNumberProps: MatchQualWithTeamNumberProps = {
     qual: 2,
     alliance: "blue",
-    initialLocation: "close"
+    initialLocation: "middle"
   }
   return (
     <div className="flex flex-col items-center justify-center w-full h-full gap-3  mx-auto">
