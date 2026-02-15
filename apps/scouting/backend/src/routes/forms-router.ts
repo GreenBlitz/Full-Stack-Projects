@@ -3,7 +3,7 @@
 import { Router } from "express";
 import { flow, pipe } from "fp-ts/lib/function";
 import { getDb } from "../middleware/db";
-import { flatMap, fold, fromEither, map } from "fp-ts/lib/TaskEither";
+import { flatMap, fold, fromEither, map, tryCatch } from "fp-ts/lib/TaskEither";
 import { scoutingFormCodec, type ScoutingForm } from "@repo/scouting_types";
 import { StatusCodes } from "http-status-codes";
 import { createBodyVerificationPipe } from "../middleware/verification";
@@ -54,6 +54,32 @@ formsRouter.post("/", async (req, res) => {
         Promise.resolve(res.status(error.status).send(error.reason)),
       (result) => async () =>
         res.status(StatusCodes.OK).json({ result: await result }),
+    ),
+  )();
+});
+
+formsRouter.get("/teams", async (req, res) => {
+  await pipe(
+    getFormsCollection(),
+    flatMap((collection) =>
+      tryCatch(
+        () =>
+          collection
+            .find(mongofyQuery({ "match.type": "qualification" }))
+            .toArray(),
+        (error) => ({
+          status: StatusCodes.INTERNAL_SERVER_ERROR,
+          reason: `DB Error: ${error}`,
+        }),
+      ),
+    ),
+    map((forms) => forms.map((form) => form.teamNumber)),
+    map((numbers) => [...new Set(numbers)]),
+    fold(
+      (error) => () =>
+        Promise.resolve(res.status(error.status).send(error.reason)),
+      (teamNumbers) => () =>
+        Promise.resolve(res.status(StatusCodes.OK).json({ teamNumbers })),
     ),
   )();
 });
