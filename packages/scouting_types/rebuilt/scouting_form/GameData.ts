@@ -7,11 +7,32 @@ const matchType = t.keyof({
   playoff: null,
 });
 
+export const competition = t.keyof({
+  TESTING: null,
+  ISDE1: null,
+  ISDE2: null,
+  ISDE3: null,
+  ISDE4: null,
+  ISCMP: null,
+  ARCHIMEDES: null,
+  CMPTX: null,
+  CURIE: null,
+  DALY: null,
+  GALILEO: null,
+  HOPPER: null,
+  JOHNSON: null,
+  MILSTEIN: null,
+  NEWTON: null,
+});
+
 export const gameDataCodec = t.type({
   matchNumber: t.number,
   matchType,
   startTime: t.string,
+  competition,
 });
+
+export const competitions = Object.keys(competition.keys);
 
 export const gamesArrayCodec = t.array(gameDataCodec);
 
