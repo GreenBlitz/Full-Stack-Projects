@@ -1,6 +1,10 @@
 //בס"ד
 
-import type { ScoutingForm, TeleClimbLevel } from "@repo/scouting_types";
+import type {
+  ScoutingForm,
+  TeleClimbLevel,
+  TimesClimedToLevels,
+} from "@repo/scouting_types";
 import { Router } from "express";
 import { getFormsCollection } from "./forms-router";
 import { pipe } from "fp-ts/lib/function";
@@ -84,11 +88,12 @@ const timesClimedToLevel = (
 
 const findTimesClimbedToLevels = (forms: ScoutingForm[]) => {
   const climbedLevels = forms.map((form) => form.tele.climb.level);
-  return {
+  const timeToLevels: TimesClimedToLevels = {
     L1: timesClimedToLevel("L1", climbedLevels),
     L2: timesClimedToLevel("L2", climbedLevels),
     L3: timesClimedToLevel("L3", climbedLevels),
   };
+  return timeToLevels;
 };
 
 compareRouter.get("/", async (req, res) => {
