@@ -17,6 +17,7 @@ import { StatusCodes } from "http-status-codes";
 import { calculateSum, firstElement, isEmpty } from "@repo/array-functions";
 import { calcAverageGeneralFuelData } from "./general-router";
 import { generalCalculateFuel } from "../fuel/fuel-general";
+import { getAllBPS } from "./teams-router";
 
 export const compareRouter = Router();
 
@@ -31,7 +32,7 @@ const calculateAverageScoredFuel = (
   gamePeriod: GamePeriod,
 ) => {
   const generalFuelData = forms.map((form) =>
-    generalCalculateFuel(form, getBPSes()),
+    generalCalculateFuel(form, getAllBPS()),
   );
   const averagedFuelData = calcAverageGeneralFuelData(generalFuelData);
   console.log(
