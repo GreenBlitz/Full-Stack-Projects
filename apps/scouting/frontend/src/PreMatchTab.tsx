@@ -18,6 +18,9 @@ const matchQualWithTeamNumber = (
 ) => {
   const DEFAULT_TEAM_NUMBER = 4590;
   const CALIBERATION_CONSTANT = 1;
+  const CLOSE_INDEX = 0;
+  const MIDDLE_INDEX = 1;
+  const FAR_INDEX = 2;
   const allMatches = await fetchAllAwaitingMatches();
   if (
     !allMatches?.[matchQualWithTeamNumberProps.qual - CALIBERATION_CONSTANT]
@@ -32,11 +35,17 @@ const matchQualWithTeamNumber = (
 
   switch (matchQualWithTeamNumberProps.initialLocation) {
     case "close":
-      return alliance === "blue" ? match.blueAlliance[0] : match.redAlliance[0];
+      return alliance === "blue"
+        ? match.blueAlliance[CLOSE_INDEX]
+        : match.redAlliance[CLOSE_INDEX];
     case "middle":
-      return alliance === "blue" ? match.blueAlliance[1] : match.redAlliance[1];
+      return alliance === "blue"
+        ? match.blueAlliance[MIDDLE_INDEX]
+        : match.redAlliance[MIDDLE_INDEX];
     case "far":
-      return alliance === "blue" ? match.blueAlliance[2] : match.redAlliance[2];
+      return alliance === "blue"
+        ? match.blueAlliance[FAR_INDEX]
+        : match.redAlliance[FAR_INDEX];
     default:
       return DEFAULT_TEAM_NUMBER;
   }
