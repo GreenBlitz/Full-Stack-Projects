@@ -1,14 +1,17 @@
 //בס"ד
 
-import { firstElement, secondElement } from "@repo/array-functions";
-import type { CompareData, TeamCompareData } from "@repo/scouting_types";
+import type {
+  CompareData,
+  TeamCompareData,
+  TeleClimbLevel,
+} from "@repo/scouting_types";
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FC } from "react";
 import { fetchTeamNumbers } from "./fetches";
 
 const compareUrl = "/api/v1/compare/";
 
-const MAX_SELECTED_TEAMS = 2;
+const NEEDED_SELECTED_TEAMS = 2;
 const DEFAULT_LEVEL = 0;
 const FIRST_INDEX = 0;
 const MIN_AMOUNT_CLIMB = 0;
@@ -29,6 +32,7 @@ const fetchTeamCompareData = async (teamNumber: number) => {
     }
 
     const data = await response.json();
+    console.log(data.teamCompareData.averageFuelInGame);
     return data.teamCompareData as TeamCompareData;
   } catch (err) {
     console.error("Fetch failed:", err);
@@ -36,15 +40,18 @@ const fetchTeamCompareData = async (teamNumber: number) => {
   }
 };
 
-const StatBox = ({
-  label,
-  value,
-  color,
-}: {
+interface StatBoxProps {
   label: string;
   value: number | string;
   color: string;
-}) => (
+}
+
+interface LevelMiniStatProps {
+  label: string;
+  count: number;
+}
+
+const StatBox: React.FC<StatBoxProps> = ({ label, value, color }) => (
   <div
     className={`p-6 border-b border-white/5 flex flex-col items-center transition-all duration-300 ${color}`}
   >
@@ -55,7 +62,7 @@ const StatBox = ({
   </div>
 );
 
-const LevelMiniStat = ({ label, count }: { label: string; count: number }) => (
+const LevelMiniStat: FC<LevelMiniStatProps> = ({ label, count }) => (
   <div className="flex flex-col items-center px-3">
     <span className="text-[10px] font-black text-slate-500 mb-0.5">
       {label}
@@ -84,20 +91,21 @@ export const CompareTwo: React.FC = () => {
     setSelectedTeams((prev) =>
       prev.includes(selectedTeamNumber)
         ? prev.filter((teamNumber) => teamNumber !== selectedTeamNumber)
-        : prev.length < MAX_SELECTED_TEAMS
+        : prev.length < NEEDED_SELECTED_TEAMS
           ? [...prev, selectedTeamNumber]
           : prev,
     );
   };
 
   const handleCompare = async () => {
-    if (selectedTeams.length !== MAX_SELECTED_TEAMS) return;
+    if (selectedTeams.length !== NEEDED_SELECTED_TEAMS) return;
     setIsLoading(true);
     try {
-      const [firstTeam, secondTeam] = await Promise.all([
-        fetchTeamCompareData(firstElement(selectedTeams)),
-        fetchTeamCompareData(secondElement(selectedTeams)),
-      ]);
+      const promises = selectedTeams.map((teamNumber) =>
+        fetchTeamCompareData(teamNumber),
+      );
+
+      const [firstTeam, secondTeam] = await Promise.all(promises);
 
       setComparisonData({ teamOne: firstTeam, teamTwo: secondTeam });
     } catch (err) {
@@ -121,7 +129,7 @@ export const CompareTwo: React.FC = () => {
       : "bg-rose-500/5 text-rose-500/60 border-rose-500/10";
   };
 
-  const levelToScore = (level: string) => {
+  const levelToScore = (level: TeleClimbLevel) => {
     const map: Record<string, number> = { L0: 0, L1: 1, L2: 2, L3: 3 };
     return map[level] || DEFAULT_LEVEL;
   };
@@ -156,7 +164,7 @@ export const CompareTwo: React.FC = () => {
           onClick={() => {
             void handleCompare();
           }}
-          disabled={selectedTeams.length !== MAX_SELECTED_TEAMS || isLoading}
+          disabled={selectedTeams.length !== NEEDED_SELECTED_TEAMS || isLoading}
           className="px-12 py-3 bg-emerald-500 text-slate-950 text-xs font-black uppercase tracking-widest rounded-xl disabled:opacity-20 hover:bg-emerald-400 transition-all active:scale-95 shadow-lg shadow-emerald-900/20"
         >
           {isLoading ? "Loading..." : "Compare"}

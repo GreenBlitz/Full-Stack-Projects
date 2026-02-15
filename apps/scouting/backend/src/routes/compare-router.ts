@@ -22,9 +22,9 @@ import { averageFuel } from "../fuel/distance-split";
 
 export const compareRouter = Router();
 
-type GamePeriod = "auto" | "fullGame";
+type GamePeriod = "auto" | "fullGame" | "teleop";
 
-const DIGITS_AFTER_DOT = 2;
+const DIGITS_AFTER_DECIMAL_DOT = 2;
 const INITIAL_COUNTER_VALUE = 0;
 const INCREMENT = 1;
 
@@ -36,9 +36,15 @@ const calculateAverageScoredFuel = (
     generalCalculateFuel(form, getBPSes()),
   );
   const averagedFuelData = calcAverageGeneralFuelData(generalFuelData);
+  console.log(
+    `auto fuel: ${averagedFuelData.auto.scored.toFixed(DIGITS_AFTER_DECIMAL_DOT)}`,
+  );
+  console.log(
+    `fullGame fuel: ${averagedFuelData.fullGame.scored.toFixed(DIGITS_AFTER_DECIMAL_DOT)}`,
+  );
 
   return parseFloat(
-    averagedFuelData[gamePeriod].scored.toFixed(DIGITS_AFTER_DOT),
+    averagedFuelData[gamePeriod].scored.toFixed(DIGITS_AFTER_DECIMAL_DOT),
   );
 };
 
@@ -85,7 +91,6 @@ const findTimesClimbedToLevels = (forms: ScoutingForm[]) => {
     L3: timesClimedToLevel("L3", climbedLevels),
   };
 };
-
 
 compareRouter.get("/", async (req, res) => {
   await pipe(
