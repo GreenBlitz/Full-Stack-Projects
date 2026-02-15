@@ -32,7 +32,7 @@ export const gameDataCodec = t.type({
   competition,
 });
 
-export const competitionKeys = Object.keys(competition.keys);
+export const competitions = Object.keys(competition.keys);
 
 export const gamesArrayCodec = t.array(gameDataCodec);
 
