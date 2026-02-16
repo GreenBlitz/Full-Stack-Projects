@@ -129,20 +129,3 @@ tbaRouter.post("/matches", async (req, res) => {
     ),
   )();
 });
-
-tbaRouter.get("/matches", async (req, res) => {
-  await pipe(
-    right(req),
-    createBodyVerificationPipe(matchesProps),
-    fromEither,
-    getMatches,
-    fold(
-      (error) => () =>
-        new Promise((resolve) => {
-          resolve(res.status(error.status).send(error.reason));
-        }),
-      (matches) => () =>
-        Promise.resolve(res.status(StatusCodes.OK).json({ matches })),
-    ),
-  )();
-});

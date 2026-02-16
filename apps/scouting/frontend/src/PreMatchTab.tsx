@@ -46,64 +46,25 @@ interface MatchQualWithTeamNumberProps {
   initialLocation: initialLocation;
 }
 
+type Match = { blueAlliance: number[]; redAlliance: number[] };
+
 const matchQualWithTeamNumber = (
-  matchQualWithTeamNumberProps: MatchQualWithTeamNumberProps,
+  props: MatchQualWithTeamNumberProps,
+  allMatches: Match[],
 ): number => {
   const DEFAULT_TEAM_NUMBER = 4590;
   const CALIBERATION_CONSTANT = 1;
-  const CLOSE_INDEX = 0;
-  const MIDDLE_INDEX = 1;
-  const FAR_INDEX = 2;
-  type Match = {
-    blueAlliance: number[];
-    redAlliance: number[];
-  };
 
-  const allMatches: Match[] = [
-    {
-      blueAlliance: [1690, 1577, 2230],
-      redAlliance: [3339, 5951, 7067],
-    },
-    {
-      blueAlliance: [4416, 5654, 5987],
-      redAlliance: [1690, 1577, 2230],
-    },
-    {
-      blueAlliance: [7067, 3339, 5951],
-      redAlliance: [4416, 5654, 5987],
-    },
-  ];
+  const match = allMatches[props.qual - CALIBERATION_CONSTANT];
+  if (!match) return DEFAULT_TEAM_NUMBER;
 
-    const allMatches1 = fetchGameMatches("2025isde1", 50)
+  const allianceArr = props.alliance === "blue" ? match.blueAlliance : match.redAlliance;
 
+  const index =
+    props.initialLocation === "close" ? 0 :
+    props.initialLocation === "middle" ? 1 : 2;
 
-  const index = matchQualWithTeamNumberProps.qual - CALIBERATION_CONSTANT;
-
-  if (!allMatches[index]) {
-    console.error("Match data is unavailable");
-    return DEFAULT_TEAM_NUMBER;
-  }
-
-  const match = allMatches[index];
-
-  const alliance: Alliance = matchQualWithTeamNumberProps.alliance;
-
-  switch (matchQualWithTeamNumberProps.initialLocation) {
-    case "close":
-      return alliance === "blue"
-        ? match.blueAlliance[CLOSE_INDEX]
-        : match.redAlliance[CLOSE_INDEX];
-    case "middle":
-      return alliance === "blue"
-        ? match.blueAlliance[MIDDLE_INDEX]
-        : match.redAlliance[MIDDLE_INDEX];
-    case "far":
-      return alliance === "blue"
-        ? match.blueAlliance[FAR_INDEX]
-        : match.redAlliance[FAR_INDEX];
-    default:
-      return DEFAULT_TEAM_NUMBER;
-  }
+  return allianceArr[index] ?? DEFAULT_TEAM_NUMBER;
 };
 
 const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
