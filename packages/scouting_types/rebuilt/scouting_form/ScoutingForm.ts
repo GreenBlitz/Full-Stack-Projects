@@ -1,7 +1,7 @@
 // בס"ד
 import * as t from "io-ts";
 import { autoCodec, defaultAuto, defaultTele, teleCodec } from "./Segments";
-import { competition } from "./GameData";
+import { competitionCodec } from "./GameData";
 
 export const CURRENT_COMPETITION = "TESTING";
 
@@ -13,7 +13,7 @@ const matchType = t.keyof({
 
 export const scoutingFormCodec = t.type({
   scouterName: t.string,
-  competition: competition,
+  competition: competitionCodec,
   match: t.type({
     number: t.number,
     type: matchType,
