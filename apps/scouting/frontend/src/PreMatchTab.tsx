@@ -14,7 +14,7 @@ type FRC_ISDE_2025_EventKey =
 
 const compareUrl = "/api/v1/matches";
 
-type MatchesResponse<TMatch = unknown> = {
+type MatchesResponse<unknown> = {
   matches: TMatch[];
 };
 
@@ -145,7 +145,7 @@ const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
             className="inputStyle w-[340px] h-full"
             min={0}
             max={TEAM_NUMBER_MAX}
-            value={matchQualWithTeamNumber(matchQualWithTeamNumberProps)}
+            value={matchQualWithTeamNumber({qual: 23, alliance: "blue", initialLocation: "close"},fetchGameMatches("2025iscmp",40))}
             onChange={(event) => {
               setForm((prev) => ({
                 ...prev,
