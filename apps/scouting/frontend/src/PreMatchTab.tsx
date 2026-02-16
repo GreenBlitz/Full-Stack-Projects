@@ -5,12 +5,17 @@ import type { Alliance } from "@repo/scouting_types";
 const MATCH_NUMBER_MAX = 127;
 const TEAM_NUMBER_MAX = 16383;
 
-
-const compareUrl = "/api/v1/matches/";
-const fetchGameMatches = async (gameId: string) => {
-  const params = new URLSearchParams({ g: gameId });
+type FRC_ISDE_2025_EventKey =
+  | "2025isde1"
+  | "2025isde2"
+  | "2025isde3"
+  | "2025isde4"
+  | "2025iscmp";
+  
+const compareUrl = "/api/v1/";
+const fetchGameMatches = async (gameId: FRC_ISDE_2025_EventKey) => {
+  const params = new URLSearchParams({ gameId: gameId });
   const url = `${compareUrl}?${params.toString()}`;
-
   try {
     const response = await fetch(url, {
       method: "GET",
@@ -23,8 +28,8 @@ const fetchGameMatches = async (gameId: string) => {
     }
 
     const data = await response.json();
-    console.log(data.teamCompareData.averageFuelInGame);
-    return data.teamCompareData as TeamCompareData;
+    console.log(data.matches);
+    return data.teamCompareData
   } catch (err) {
     console.error("Fetch failed:", err);
     throw err;
@@ -67,7 +72,7 @@ const matchQualWithTeamNumber = (
     },
   ];
 
-    const allMatches: Match[] = getMatch
+    const allMatches1 = fetchGameMatches("2025isde1")
 
 
   const index = matchQualWithTeamNumberProps.qual - CALIBERATION_CONSTANT;
