@@ -7,7 +7,11 @@ export type ScoutedCompetitions = {
   matchCount: number;
 };
 
+export type ScoutedCompetitionsRecord = Record<Competition, number>;
+
 export interface Scouter {
   name: string;
   scoutedCompetitions: ScoutedCompetitions[];
 }
+
+export type ScouterRecord = Record<string, ScoutedCompetitionsRecord>;
