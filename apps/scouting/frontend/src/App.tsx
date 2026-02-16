@@ -6,6 +6,8 @@ import { ScoutedMatches } from "./scouter/pages/ScoutedMatches";
 import { TeamTab } from "./strategy/components/TeamTab";
 import { GeneralDataTable } from "./strategy/GeneralDataTable";
 import { CompareTwo } from "./strategy/CompareTwo";
+import { Leaderboard } from "./strategy/Leaderboard";
+import { CURRENT_COMPETITION } from "../../../../packages/scouting_types/rebuilt";
 
 const App: FC = () => {
   return (
@@ -15,6 +17,10 @@ const App: FC = () => {
       <Route path="/general" element={<GeneralDataTable filters={{}} />} />
       <Route path="*" element={<ScoutedMatches />} />
       <Route path="/compare" element={<CompareTwo />} />
+      <Route
+        path="/leaderboard"
+        element={<Leaderboard competition={CURRENT_COMPETITION} />}
+      />
     </Routes>
   );
 };
