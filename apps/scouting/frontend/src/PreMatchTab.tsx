@@ -11,30 +11,32 @@ type FRC_ISDE_2025_EventKey =
   | "2025isde3"
   | "2025isde4"
   | "2025iscmp";
-  
-const compareUrl = "/api/v1/";
-const fetchGameMatches = async (gameId: FRC_ISDE_2025_EventKey) => {
-  const params = new URLSearchParams({ gameId: gameId });
-  const url = `${compareUrl}?${params.toString()}`;
-  try {
-    const response = await fetch(url, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Server Error: ${errorText}`);
-    }
+const compareUrl = "/api/v1/matches";
 
-    const data = await response.json();
-    console.log(data.matches);
-    return data.teamCompareData
-  } catch (err) {
-    console.error("Fetch failed:", err);
-    throw err;
-  }
+type MatchesResponse<TMatch = unknown> = {
+  matches: TMatch[];
 };
+
+export const fetchGameMatches = async <TMatch = unknown>(
+  event: FRC_ISDE_2025_EventKey,
+  maxMatch: number,
+): Promise<TMatch[]> => {
+  const response = await fetch(compareUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ event, maxMatch }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Server Error: ${errorText}`);
+  }
+
+  const data = (await response.json()) as MatchesResponse<TMatch>;
+  return data.matches;
+};
+
 
 type initialLocation = "close" | "middle" | "far";
 
@@ -72,7 +74,7 @@ const matchQualWithTeamNumber = (
     },
   ];
 
-    const allMatches1 = fetchGameMatches("2025isde1")
+    const allMatches1 = fetchGameMatches("2025isde1", 50)
 
 
   const index = matchQualWithTeamNumberProps.qual - CALIBERATION_CONSTANT;
