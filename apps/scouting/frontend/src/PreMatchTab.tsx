@@ -5,6 +5,32 @@ import type { Alliance } from "@repo/scouting_types";
 const MATCH_NUMBER_MAX = 127;
 const TEAM_NUMBER_MAX = 16383;
 
+
+const compareUrl = "/api/v1/matches/";
+const fetchGameMatches = async (gameId: string) => {
+  const params = new URLSearchParams({ g: gameId });
+  const url = `${compareUrl}?${params.toString()}`;
+
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Server Error: ${errorText}`);
+    }
+
+    const data = await response.json();
+    console.log(data.teamCompareData.averageFuelInGame);
+    return data.teamCompareData as TeamCompareData;
+  } catch (err) {
+    console.error("Fetch failed:", err);
+    throw err;
+  }
+};
+
 type initialLocation = "close" | "middle" | "far";
 
 interface MatchQualWithTeamNumberProps {
@@ -40,6 +66,9 @@ const matchQualWithTeamNumber = (
       redAlliance: [4416, 5654, 5987],
     },
   ];
+
+    const allMatches: Match[] = getMatch
+
 
   const index = matchQualWithTeamNumberProps.qual - CALIBERATION_CONSTANT;
 
