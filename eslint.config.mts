@@ -63,13 +63,21 @@ export default defineConfig([
       "@typescript-eslint/method-signature-style": ["error", "property"],
       "@typescript-eslint/naming-convention": [
         "error",
-        { selector: "variableLike", format: ["camelCase", "UPPER_CASE"] },
-        { selector: "parameter", format: ["camelCase"] },
+        {
+          selector: "variableLike",
+          format: ["camelCase", "UPPER_CASE"],
+          leadingUnderscore: "allow",
+        },
+        {
+          selector: "parameter",
+          format: ["camelCase"],
+        },
         {
           selector: "variable",
           types: ["boolean"],
           format: ["PascalCase"], // basically camel case since the prefix isnt considered
           prefix: ["is", "should", "has", "can", "includes"],
+          leadingUnderscore: "allow",
         },
         { selector: "typeParameter", format: ["PascalCase"] },
         { selector: "interface", format: ["PascalCase"] },
@@ -77,6 +85,7 @@ export default defineConfig([
           selector: "variable",
           types: ["function"],
           format: ["camelCase", "PascalCase"],
+          leadingUnderscore: "allow",
         },
       ],
       "no-array-constructor": "off",
@@ -156,7 +165,14 @@ export default defineConfig([
       "no-unused-expressions": "off",
       "@typescript-eslint/no-unused-expressions": "warn",
       "no-unused-vars": "off",
-      "@typescript-eslint/no-unused-vars": "warn",
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
       "no-use-before-define": "off",
       "@typescript-eslint/no-use-before-define": "error",
       "no-useless-constructor": "off",

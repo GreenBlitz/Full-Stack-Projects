@@ -13,7 +13,7 @@ const BUTTON_STYLES = `px-8 py-3 text-base font-bold text-black
             bg-linear-to-r`;
 
 export const PostMatchTab: FC<TabProps> = ({ setForm, currentForm }) => {
-  const [scoutingForms, setScoutingForms] = useLocalStorage<ScoutingForm[]>(
+  const [_scoutingForms, setScoutingForms] = useLocalStorage<ScoutingForm[]>(
     "scouted_forms",
     [],
   );
