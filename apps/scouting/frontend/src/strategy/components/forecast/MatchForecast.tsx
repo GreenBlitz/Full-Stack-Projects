@@ -1,74 +1,13 @@
 // בס"ד
 import { useEffect, useState, type FC } from "react";
 import type { Forecast } from "@repo/scouting_types";
+import { CenterStat } from "./CenterStat";
+import { StatRow } from "./StatRow";
 
 interface Alliances {
   redAlliance: [number, number, number];
   blueAlliance: [number, number, number];
 }
-
-interface StatRowProps {
-  red: number;
-  blue: number;
-}
-
-const StatRow: FC<StatRowProps> = ({ red, blue }) => {
-  const isRedLeading = red > blue;
-  return (
-    <div className="bg-slate-900/60 backdrop-blur-md border border-white/10 rounded-3xl p-6 relative overflow-hidden">
-      <div className="flex justify-between items-center relative z-10">
-        <div
-          className={`font-black text-red-500 ${isRedLeading ? "text-3xl" : "text-2xl"}`}
-        >
-          {red}
-        </div>
-        <div
-          className={`font-black text-3xl ${isRedLeading ? "text-red-500" : "text-blue-500"}`}
-        >
-          {`${isRedLeading ? "Red" : "Blue"} Wins`}
-        </div>
-        <div
-          className={`font-black text-blue-500 ${!isRedLeading ? "text-3xl" : "text-2xl"}`}
-        >
-          {blue}
-        </div>
-      </div>
-      {/* Background visual bar */}
-    </div>
-  );
-};
-interface CenterStatProps {
-  label: string;
-  red: number;
-  blue: number;
-}
-
-const DECIMAL_DIGIT_AMOUNT = 0;
-
-const CenterStat: FC<CenterStatProps> = ({ label, red, blue }) => (
-  <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
-    {/* Red Value */}
-    <div className="text-right">
-      <span className="text-lg font-bold text-red-400 tabular-nums">
-        {red.toFixed(DECIMAL_DIGIT_AMOUNT)}
-      </span>
-    </div>
-
-    {/* Center Label Pill */}
-    <div className="w-24 py-1 bg-slate-900/60 border border-white/5 rounded-lg text-center shadow-inner">
-      <span className="font-bold text-slate-300/90 tracking-tight">
-        {label}
-      </span>
-    </div>
-
-    {/* Blue Value */}
-    <div className="text-left">
-      <span className="text-lg font-bold text-blue-400 tabular-nums">
-        {blue.toFixed(DECIMAL_DIGIT_AMOUNT)}
-      </span>
-    </div>
-  </div>
-);
 
 const querifyAlliances = (alliances: Alliances) => {
   const params = new URLSearchParams();
@@ -81,14 +20,9 @@ const querifyAlliances = (alliances: Alliances) => {
   return params;
 };
 
-// const testMatch: Alliances | undefined = {
-//   redAlliance: [4590, 1690, 1577],
-//   blueAlliance: [2230, 2231, 4586],
-// };
-
 export const MatchForecast: FC = () => {
   const [forecast, setForecast] = useState<Forecast>();
-  const [alliances, setAlliances] = useState<Alliances | undefined>();
+  const [alliances, _setAlliances] = useState<Alliances | undefined>();
 
   const updateForecast = async () => {
     if (!alliances) {
@@ -200,5 +134,3 @@ export const MatchForecast: FC = () => {
     </div>
   );
 };
-
-/* --- Sub-Components for Cleanliness --- */

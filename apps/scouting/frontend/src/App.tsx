@@ -4,7 +4,7 @@ import { ScoutMatch } from "./scouter/pages/ScoutMatch";
 import { Route, Routes } from "react-router-dom";
 import { ScoutedMatches } from "./scouter/pages/ScoutedMatches";
 import { TeamTab } from "./strategy/components/TeamTab";
-import { MatchForecast } from "./strategy/components/MatchForecast";
+import { MatchForecast } from "./strategy/components/forecast/MatchForecast";
 import { GeneralDataTable } from "./strategy/GeneralDataTable";
 import { CompareTwo } from "./strategy/CompareTwo";
 
