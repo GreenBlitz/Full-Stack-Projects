@@ -12,7 +12,7 @@ type FRC_ISDE_2025_EventKey =
   | "2025isde4"
   | "2025iscmp";
 
-const compareUrl = "/api/v1/matches";
+const compareUrl = "/api/v1/tba/matches";
 
 type MatchesResponse<TMatch> = {
   matches: TMatch[];
