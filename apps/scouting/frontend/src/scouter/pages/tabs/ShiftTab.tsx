@@ -26,11 +26,13 @@ export const ShiftTab: FC<ShiftTabProps> = ({
   const handleSetForm = (cycle: { start: number; end: number }) => {
     setForm((prevForm) => {
       const prevEvents =
-        shiftType === "teleop"
-          ? prevForm.tele.shifts[tabIndex].shootEvents
-          : shiftType === "transition"
-            ? prevForm.tele.transitionShift.shootEvents
-            : prevForm.tele.endgameShift.shootEvents;
+        shiftType === "auto"
+          ? prevForm.auto.shootEvents
+          : shiftType === "teleop"
+            ? prevForm.tele.shifts[tabIndex].shootEvents
+            : shiftType === "transition"
+              ? prevForm.tele.transitionShift.shootEvents
+              : prevForm.tele.endgameShift.shootEvents;
       prevEvents.push({
         interval: cycle,
         startPosition: mapPosition ?? { ...defaultPoint },
@@ -38,6 +40,8 @@ export const ShiftTab: FC<ShiftTabProps> = ({
       return prevForm;
     });
   };
+
+  const gamePhase = shiftType === "auto" ? "auto" : "tele";
 
   return (
     <div className="flex flex-row h-full w-full gap-3">
@@ -62,10 +66,13 @@ export const ShiftTab: FC<ShiftTabProps> = ({
           setMovement={(value) => {
             setForm((prevForm) => ({
               ...prevForm,
-              tele: { ...prevForm.tele, movement: value },
+              [gamePhase]: {
+                ...prevForm[gamePhase],
+                movement: value,
+              },
             }));
           }}
-          currentMovement={currentForm.tele.movement}
+          currentMovement={currentForm[gamePhase].movement}
         />
 
         <button
