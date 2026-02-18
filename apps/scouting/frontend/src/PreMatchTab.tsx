@@ -1,8 +1,99 @@
 //בס"ד
 import type { FC } from "react";
 import type { TabProps } from "./scouter/pages/ScoutMatch";
+import type { Alliance } from "@repo/scouting_types";
 const MATCH_NUMBER_MAX = 127;
 const TEAM_NUMBER_MAX = 16383;
+
+type FRC_ISDE_2025_EventKey =
+  | "2025isde1"
+  | "2025isde2"
+  | "2025isde3"
+  | "2025isde4"
+  | "2025iscmp";
+
+
+const compareUrl = "/api/v1/tba/matches";
+
+type MatchesResponse<TMatch> = {
+  matches: TMatch[];
+};
+
+export const fetchGameMatches = async <TMatch = unknown>(
+  event: FRC_ISDE_2025_EventKey,
+  maxMatch: number,
+): Promise<TMatch[]> => {
+  const response = await fetch("/api/v1/tba/matches", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ event, maxMatch }),
+  });
+
+  const text = await response.text();
+  if (!response.ok) {
+    throw new Error(`Server Error (${response.status}): ${text}`);
+  }
+
+  const data = JSON.parse(text) as MatchesResponse<TMatch>;
+  return data.matches;
+};
+
+
+type initialLocation = "close" | "middle" | "far";
+
+interface MatchQualWithTeamNumberProps {
+  qual: number;
+  alliance: Alliance;
+  initialLocation: initialLocation;
+}
+
+type Match = { blueAlliance: number[]; redAlliance: number[] };
+
+type TBAMatchLike = {
+  comp_level: string;
+  match_number: number;
+  alliances: {
+    blue: { team_keys: string[] };
+    red: { team_keys: string[] };
+  };
+};
+
+const toTeamNum = (k: string) => Number(k.replace("frc", ""));
+
+const toQualMatches = (matches: TBAMatchLike[]): Match[] =>
+  matches
+    .filter((m) => m.comp_level === "qm")
+    .sort((a, b) => a.match_number - b.match_number)
+    .map((m) => ({
+      blueAlliance: m.alliances.blue.team_keys.map(toTeamNum),
+      redAlliance: m.alliances.red.team_keys.map(toTeamNum),
+    }));
+
+
+const matchQualWithTeamNumber = (
+  props: MatchQualWithTeamNumberProps,
+  allMatches: Match[],
+): number => {
+  const DEFAULT_TEAM_NUMBER = 4590;
+  const CALIBERATION_CONSTANT = 1;
+
+  const match = allMatches[props.qual - CALIBERATION_CONSTANT];
+  if (!match) return DEFAULT_TEAM_NUMBER;
+
+  const allianceArr = props.alliance === "blue" ? match.blueAlliance : match.redAlliance;
+
+  const index =
+    props.initialLocation === "close" ? 0 :
+    props.initialLocation === "middle" ? 1 : 2;
+
+  return allianceArr[index] ?? DEFAULT_TEAM_NUMBER;
+};
+
+
+const tbaMatches = await fetchGameMatches<TBAMatchLike>("2025isde1", 120);
+const allMatches = toQualMatches(tbaMatches);
+const team = matchQualWithTeamNumber({qual: 23, alliance: "blue", initialLocation: "close"}, allMatches);
+
 const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
   return (
     <div className="flex flex-col items-center justify-center w-full h-full gap-3  mx-auto">
