@@ -14,9 +14,10 @@ type FRC_ISDE_2025_EventKey =
 
 const compareUrl = "/api/v1/matches";
 
-type MatchesResponse<unknown> = {
+type MatchesResponse<TMatch> = {
   matches: TMatch[];
 };
+
 
 export const fetchGameMatches = async <TMatch = unknown>(
   event: FRC_ISDE_2025_EventKey,
