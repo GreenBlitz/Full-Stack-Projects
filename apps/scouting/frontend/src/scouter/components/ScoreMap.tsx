@@ -8,6 +8,7 @@ import {
   useState,
   type TouchEvent,
   type Touch,
+  useEffect,
 } from "react";
 import type { Alliance, Point } from "@repo/scouting_types";
 import {
@@ -108,9 +109,6 @@ export const ScoreMap: FC<ScoreMapProps> = ({
   const imageRef = useRef<HTMLImageElement | null>(null);
   const [mapPoint, setMapPoint] = useState(currentPoint);
   const handleMapClick = (event: TouchEvent<HTMLImageElement>) => {
-    if (!isHolding) {
-      return;
-    }
     const containerElement = containerRef.current;
     const imageElement = imageRef.current;
     if (!(containerElement && imageElement)) {
@@ -147,9 +145,14 @@ export const ScoreMap: FC<ScoreMapProps> = ({
       <img
         ref={imageRef}
         src={mapZone === "red" ? redField : blueField}
-        onTouchMove={handleMapClick}
-        onTouchStart={() => {
+        onTouchMove={(event) => {
+          if (isHolding) {
+            handleMapClick(event);
+          }
+        }}
+        onTouchStart={(event) => {
           setHolding(true);
+          handleMapClick(event);
         }}
         onTouchEnd={() => {
           setHolding(false);
