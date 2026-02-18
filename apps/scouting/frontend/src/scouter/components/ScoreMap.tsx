@@ -8,7 +8,6 @@ import {
   useState,
   type TouchEvent,
   type Touch,
-  useEffect,
 } from "react";
 import type { Alliance, Point } from "@repo/scouting_types";
 import {
