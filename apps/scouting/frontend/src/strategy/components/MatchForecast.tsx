@@ -81,15 +81,14 @@ const querifyAlliances = (alliances: Alliances) => {
   return params;
 };
 
-const testMatch: Alliances | undefined = undefined;
-// {
+// const testMatch: Alliances | undefined = {
 //   redAlliance: [4590, 1690, 1577],
 //   blueAlliance: [2230, 2231, 4586],
 // };
 
 export const MatchForecast: FC = () => {
   const [forecast, setForecast] = useState<Forecast>();
-  const [alliances, setAlliances] = useState<Alliances | undefined>(testMatch);
+  const [alliances, setAlliances] = useState<Alliances | undefined>();
 
   const updateForecast = async () => {
     if (!alliances) {
