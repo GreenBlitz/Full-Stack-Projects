@@ -10,7 +10,7 @@ import { StatusCodes } from "http-status-codes";
 
 import type { FuelObject, GeneralFuelData } from "@repo/scouting_types";
 import { averageFuel } from "../fuel/distance-split";
-import { firstElement, isEmpty } from "@repo/array-functions";
+import { firstElement, isEmpty, mapObject } from "@repo/array-functions";
 import { getAllBPS } from "./teams-router";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
 
@@ -70,36 +70,12 @@ generalRouter.get("/", async (req, res) => {
     map(groupBy((form) => form.teamNumber.toString())),
 
     map((teamedForms) =>
-      Object.entries(teamedForms).map(([team, forms]) => ({
-        teamNumber: parseInt(team),
-        generalFuelData: calcAverageGeneralFuelData(
+      mapObject(teamedForms, (forms) =>
+        calcAverageGeneralFuelData(
           forms.map((form) => generalCalculateFuel(form, getAllBPS())),
         ),
-      })),
-    ),
-
-    map((generalFuelsData) =>
-      generalFuelsData.reduce<Record<number, GeneralFuelData[]>>(
-        (accumulatorRecord, fuelData) => ({
-          ...accumulatorRecord,
-          [fuelData.teamNumber]: [
-            ...(accumulatorRecord[fuelData.teamNumber] ?? []),
-            fuelData.generalFuelData,
-          ],
-        }),
-        {},
       ),
     ),
-
-    map((teamAndAllFuelData) => {
-      const teamAndAvaragedFuelData: Record<number, GeneralFuelData> = {};
-      Object.entries(teamAndAllFuelData).forEach(([teamNumber, fuelArray]) => {
-        teamAndAvaragedFuelData[teamNumber] =
-          calcAverageGeneralFuelData(fuelArray);
-      });
-
-      return teamAndAvaragedFuelData;
-    }),
 
     fold(
       (error) => () =>
