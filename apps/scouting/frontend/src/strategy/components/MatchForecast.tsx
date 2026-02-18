@@ -1,7 +1,6 @@
 // בס"ד
-import { useEffect, useState, type FC, type JSX } from "react";
+import { useEffect, useState, type FC } from "react";
 import type { Forecast } from "@repo/scouting_types";
-import { Fuel, Zap } from "lucide-react";
 
 interface Alliances {
   redAlliance: [number, number, number];
@@ -9,68 +8,65 @@ interface Alliances {
 }
 
 interface StatRowProps {
-  label: string;
-  icon: JSX.Element;
   red: number;
   blue: number;
-  subtext: string;
 }
-const PERCENT_BASE = 100;
 
-const StatRow: FC<StatRowProps> = ({ label, icon, red, blue, subtext }) => {
+const StatRow: FC<StatRowProps> = ({ red, blue }) => {
   const isRedLeading = red > blue;
   return (
-    <div className="bg-slate-900/40 backdrop-blur-md border border-white/10 rounded-3xl p-6 relative overflow-hidden">
+    <div className="bg-slate-900/60 backdrop-blur-md border border-white/10 rounded-3xl p-6 relative overflow-hidden">
       <div className="flex justify-between items-center relative z-10">
         <div
-          className={`font-black ${isRedLeading ? "text-red-500 text-3xl" : "text-slate-300 text-2xl"}`}
+          className={`font-black text-red-500 ${isRedLeading ? "text-3xl" : "text-2xl"}`}
         >
           {red}
         </div>
-        <div className="flex flex-col items-center">
-          <div className="text-slate-500 flex items-center gap-2 mb-1">
-            {icon}{" "}
-            <span className="text-xs font-bold uppercase tracking-tighter">
-              {label}
-            </span>
-          </div>
-          <div className="text-[10px] text-slate-600 font-medium uppercase italic">
-            {subtext}
-          </div>
+        <div
+          className={`font-black text-3xl ${isRedLeading ? "text-red-500" : "text-blue-500"}`}
+        >
+          {`${isRedLeading ? "Red" : "Blue"} Wins`}
         </div>
         <div
-          className={`font-black ${!isRedLeading ? "text-blue-500 text-3xl" : "text-slate-300 text-2xl"}`}
+          className={`font-black text-blue-500 ${!isRedLeading ? "text-3xl" : "text-2xl"}`}
         >
           {blue}
         </div>
       </div>
       {/* Background visual bar */}
-      <div
-        className="absolute bottom-0 left-0 h-1 bg-red-500 transition-all duration-500"
-        style={{ width: `${(red / (red + blue)) * PERCENT_BASE}%` }}
-      />
-      <div
-        className="absolute bottom-0 right-0 h-1 bg-blue-500 transition-all duration-500"
-        style={{ width: `${(blue / (red + blue)) * PERCENT_BASE}%` }}
-      />
     </div>
   );
 };
-
-interface MiniStatProps {
+interface CenterStatProps {
   label: string;
-  value: string | number;
-  align?: "left" | "right";
+  red: number;
+  blue: number;
 }
 
-const MiniStat: FC<MiniStatProps> = ({ label, value, align = "left" }) => (
-  <div
-    className={`flex flex-col ${align === "right" ? "items-end" : "items-start"}`}
-  >
-    <span className="text-[10px] text-slate-500 uppercase font-bold">
-      {label}
-    </span>
-    <span className="text-lg font-bold text-slate-200">{value}</span>
+const DECIMAL_DIGIT_AMOUNT = 0;
+
+const CenterStat: FC<CenterStatProps> = ({ label, red, blue }) => (
+  <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+    {/* Red Value */}
+    <div className="text-right">
+      <span className="text-lg font-bold text-red-400 tabular-nums">
+        {red.toFixed(DECIMAL_DIGIT_AMOUNT)}
+      </span>
+    </div>
+
+    {/* Center Label Pill */}
+    <div className="w-24 py-1 bg-slate-900/60 border border-white/5 rounded-lg text-center shadow-inner">
+      <span className="font-bold text-slate-300/90 tracking-tight">
+        {label}
+      </span>
+    </div>
+
+    {/* Blue Value */}
+    <div className="text-left">
+      <span className="text-lg font-bold text-blue-400 tabular-nums">
+        {blue.toFixed(DECIMAL_DIGIT_AMOUNT)}
+      </span>
+    </div>
   </div>
 );
 
@@ -85,13 +81,15 @@ const querifyAlliances = (alliances: Alliances) => {
   return params;
 };
 
+const testMatch: Alliances | undefined = undefined;
+// {
+//   redAlliance: [4590, 1690, 1577],
+//   blueAlliance: [2230, 2231, 4586],
+// };
+
 export const MatchForecast: FC = () => {
   const [forecast, setForecast] = useState<Forecast>();
-  const [alliances, setAlliances] = useState<Alliances>();
-  //   {
-  //   redAlliance: [4590, 1690, 1577],
-  //   blueAlliance: [2230, 2231, 4586],
-  // }
+  const [alliances, setAlliances] = useState<Alliances | undefined>(testMatch);
 
   const updateForecast = async () => {
     if (!alliances) {
@@ -115,12 +113,15 @@ export const MatchForecast: FC = () => {
     void updateForecast();
   }, [alliances]);
 
+  const redData = forecast?.allianceData.redAlliance;
+  const blueData = forecast?.allianceData.blueAlliance;
+
   return (
     <div className="w-full max-w-4xl mx-auto space-y-4 p-4">
       <div className="flex justify-between items-center px-6 py-4 bg-slate-900/60 backdrop-blur-md border border-white/10 rounded-3xl shadow-xl">
         <div className="text-center">
           <span className="text-red-500 font-black text-2xl tracking-tighter uppercase">
-            Red Alliance
+            {alliances?.redAlliance.join(", ")}
           </span>
         </div>
         <div className="flex flex-col items-center">
@@ -131,65 +132,67 @@ export const MatchForecast: FC = () => {
         </div>
         <div className="text-center">
           <span className="text-blue-500 font-black text-2xl tracking-tighter uppercase">
-            Blue Alliance
+            {alliances?.blueAlliance.join(", ")}
           </span>
         </div>
       </div>
 
       {/* Stats Grid */}
-      {forecast && (
+      {redData && blueData && (
         <div className="grid grid-cols-1 gap-4">
           {/* Fuel Section */}
-          <StatRow
-            label="Fuel Scoring"
-            icon={<Fuel size={18} />}
-            red={forecast.allianceData.redAlliance.fuel.fullGame}
-            blue={forecast.allianceData.blueAlliance.fuel.fullGame}
-            subtext="Full Game Total"
-          />
+          <StatRow red={redData.fuel.fullGame} blue={blueData.fuel.fullGame} />
 
           {/* Detailed Breakdown */}
-          <div className="grid grid-cols-2 gap-4">
-            {/* Red Detailed Card */}
-            <div className="bg-red-500/5 border border-red-500/20 rounded-3xl p-5 space-y-4">
-              <h4 className="text-red-400 text-xs font-bold uppercase tracking-widest flex items-center gap-2">
-                <Zap size={14} /> Red Breakdown
+          <div className="bg-slate-900/60 border border-white/10 rounded-3xl p-6 space-y-4">
+            <div className="flex items-center justify-center gap-4 mb-2">
+              <div className="h-px flex-1 bg-linear-to-r from-transparent to-red-500/40" />
+              <h4 className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em]">
+                Details
               </h4>
-              <MiniStat
-                label="Auto Fuel"
-                value={forecast.allianceData.redAlliance.fuel.auto}
-              />
-              <MiniStat
-                label="Tele Fuel"
-                value={forecast.allianceData.redAlliance.fuel.tele}
-              />
-              <div className="h-px bg-red-500/20 my-2" />
-              <MiniStat
-                label="Climb (Auto/Tele)"
-                value={`${forecast.allianceData.redAlliance.climb.auto} / ${forecast.allianceData.redAlliance.climb.tele}`}
-              />
+              <div className="h-px flex-1 bg-linear-to-l from-transparent to-blue-500/40" />
             </div>
 
-            {/* Blue Detailed Card */}
-            <div className="bg-blue-500/5 border border-blue-500/20 rounded-3xl p-5 space-y-4">
-              <h4 className="text-blue-400 text-xs font-bold uppercase tracking-widest flex items-center gap-2 text-right justify-end">
-                Blue Breakdown <Zap size={14} />
-              </h4>
-              <MiniStat
-                label="Auto Fuel"
-                value={forecast.allianceData.blueAlliance.fuel.auto}
-                align="right"
+            <div className="space-y-4">
+              <div className="flex items-center gap-4 py-2">
+                <div className="h-px flex-1 bg-slate-800" />
+                <div
+                  className={`px-4 py-1 rounded-full border font-black uppercase tracking-[0.15em]`}
+                >
+                  Auto
+                </div>
+                <div className="h-px flex-1 bg-slate-800" />
+              </div>
+              <CenterStat
+                label="Fuel"
+                red={redData.fuel.auto}
+                blue={blueData.fuel.auto}
               />
-              <MiniStat
-                label="Tele Fuel"
-                value={forecast.allianceData.blueAlliance.fuel.tele}
-                align="right"
+              <CenterStat
+                label="Climb"
+                red={redData.climb.auto}
+                blue={blueData.climb.auto}
               />
-              <div className="h-px bg-blue-500/20 my-2" />
-              <MiniStat
-                label="Climb (Auto/Tele)"
-                value={`${forecast.allianceData.blueAlliance.climb.auto} / ${forecast.allianceData.blueAlliance.climb.tele}`}
-                align="right"
+
+              <div className="flex items-center gap-4 py-2">
+                <div className="h-px flex-1 bg-slate-800" />
+                <div
+                  className={`px-4 py-1 rounded-full border font-black uppercase tracking-[0.15em]`}
+                >
+                  Tele
+                </div>
+                <div className="h-px flex-1 bg-slate-800" />
+              </div>
+
+              <CenterStat
+                label="Fuel"
+                red={redData.fuel.tele}
+                blue={blueData.fuel.tele}
+              />
+              <CenterStat
+                label="Climb"
+                red={redData.climb.tele}
+                blue={blueData.climb.tele}
               />
             </div>
           </div>
