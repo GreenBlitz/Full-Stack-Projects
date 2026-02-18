@@ -10,8 +10,14 @@ export interface GeneralFuelData {
 
 export type GameTime = keyof GeneralFuelData;
 
+export interface BPSEvent {
+  shoot: number[];
+  score: number[];
+  positions: Point[];
+}
+
 export interface BPS {
-  events: { shoot: number[]; score: number[] }[];
+  events: BPSEvent[];
   match: Match;
 }
 
