@@ -12,6 +12,7 @@ import type { FuelObject, GeneralFuelData } from "@repo/scouting_types";
 import { averageFuel } from "../fuel/distance-split";
 import { firstElement, isEmpty } from "@repo/array-functions";
 import { getAllBPS } from "./teams-router";
+import { groupBy } from "fp-ts/lib/NonEmptyArray";
 
 export const generalRouter = Router();
 
@@ -23,7 +24,9 @@ interface AccumulatedFuelData {
 
 const ONE_ITEM_ARRAY = 1;
 
-export const calcAverageGeneralFuelData = (fuelData: GeneralFuelData[]): GeneralFuelData => {
+export const calcAverageGeneralFuelData = (
+  fuelData: GeneralFuelData[],
+): GeneralFuelData => {
   if (fuelData.length === ONE_ITEM_ARRAY || isEmpty(fuelData)) {
     return firstElement(fuelData);
   }
@@ -63,10 +66,15 @@ generalRouter.get("/", async (req, res) => {
         }),
       ),
     ),
-    map((forms) =>
-      forms.map((form) => ({
-        teamNumber: form.teamNumber,
-        generalFuelData: generalCalculateFuel(form, getAllBPS()),
+
+    map(groupBy((form) => form.teamNumber.toString())),
+
+    map((teamedForms) =>
+      Object.entries(teamedForms).map(([team, forms]) => ({
+        teamNumber: parseInt(team),
+        generalFuelData: calcAverageGeneralFuelData(
+          forms.map((form) => generalCalculateFuel(form, getAllBPS())),
+        ),
       })),
     ),
 
