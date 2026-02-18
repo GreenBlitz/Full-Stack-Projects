@@ -49,6 +49,27 @@ interface MatchQualWithTeamNumberProps {
 
 type Match = { blueAlliance: number[]; redAlliance: number[] };
 
+type TBAMatchLike = {
+  comp_level: string;
+  match_number: number;
+  alliances: {
+    blue: { team_keys: string[] };
+    red: { team_keys: string[] };
+  };
+};
+
+const toTeamNum = (k: string) => Number(k.replace("frc", ""));
+
+const toQualMatches = (matches: TBAMatchLike[]): Match[] =>
+  matches
+    .filter((m) => m.comp_level === "qm")
+    .sort((a, b) => a.match_number - b.match_number)
+    .map((m) => ({
+      blueAlliance: m.alliances.blue.team_keys.map(toTeamNum),
+      redAlliance: m.alliances.red.team_keys.map(toTeamNum),
+    }));
+
+
 const matchQualWithTeamNumber = (
   props: MatchQualWithTeamNumberProps,
   allMatches: Match[],
@@ -67,6 +88,11 @@ const matchQualWithTeamNumber = (
 
   return allianceArr[index] ?? DEFAULT_TEAM_NUMBER;
 };
+
+const tbaMatches = await fetchGameMatches<TBAMatchLike>("2025isde1", 120);
+const allMatches = toQualMatches(tbaMatches);
+const team = matchQualWithTeamNumber({qual: 23, alliance: "blue", initialLocation: "close"}, allMatches);
+
 
 const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
   const matchQualWithTeamNumberProps: MatchQualWithTeamNumberProps = {
@@ -146,7 +172,7 @@ const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
             className="inputStyle w-[340px] h-full"
             min={0}
             max={TEAM_NUMBER_MAX}
-            value={matchQualWithTeamNumber({qual: 23, alliance: "blue", initialLocation: "close"},fetchGameMatches("2025iscmp",40))}
+            value={team}
             onChange={(event) => {
               setForm((prev) => ({
                 ...prev,
