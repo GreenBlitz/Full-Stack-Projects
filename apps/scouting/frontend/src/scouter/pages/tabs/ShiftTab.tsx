@@ -39,16 +39,20 @@ export const ShiftTab: FC<ShiftTabProps> = ({
     });
   };
 
+  const scoreMap = (
+    <div className="flex-1 min-w-0 h-full">
+      <ScoreMap
+        setPosition={setMapPosition}
+        currentPoint={mapPosition}
+        alliance={alliance}
+        mapZone={mapZone}
+      />
+    </div>
+  );
+
   return (
     <div className="flex flex-row h-full w-full gap-3">
-      <div className="flex-1 min-w-0 h-full">
-        <ScoreMap
-          setPosition={setMapPosition}
-          currentPoint={mapPosition}
-          alliance={alliance}
-          mapZone={mapZone}
-        />
-      </div>
+      {alliance === "red" && scoreMap}
       <div className="flex flex-col items-center gap-0.5 sm:gap-1 shrink-0 w-32 sm:w-36 min-h-0 py-0.5 sm:py-1">
         <Stopwatch
           addCycleTimeSeconds={(cycle) => {
@@ -77,6 +81,7 @@ export const ShiftTab: FC<ShiftTabProps> = ({
           Field Side
         </button>
       </div>
+      {alliance === "blue" && scoreMap}
     </div>
   );
 };
