@@ -130,7 +130,7 @@ export const TeamTab: FC = () => {
           <BarChart
             dataSetsProps={[
               {
-                name: "Median Climb",
+                name: "Median Climb Time",
                 points: calculateMedianClimbs(data, phase),
                 color: "green",
               },
