@@ -1,7 +1,8 @@
 // בס"ד
 import { FRC_TEAMS } from "@repo/frc";
 import type { FC } from "react";
-import { Users, Hash } from "lucide-react";
+import { LuUsers } from "react-icons/lu";
+import { LuHash } from "react-icons/lu";
 
 interface TeamSelectProps {
   teamNumber?: number;
@@ -17,7 +18,7 @@ export const TeamSelect: FC<TeamSelectProps> = ({
   <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md mx-auto p-4 bg-slate-900/40 backdrop-blur-sm rounded-2xl border border-white/10 shadow-2xl">
     <div className="relative flex-1">
       <div className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-500/50">
-        <Hash size={16} />
+        <LuHash size={16} />
       </div>
       <input
         onChange={(event) => {
@@ -32,7 +33,7 @@ export const TeamSelect: FC<TeamSelectProps> = ({
 
     <div className="relative flex-2">
       <div className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-500/50 pointer-events-none">
-        <Users size={16} />
+        <LuUsers size={16} />
       </div>
       <select
         className="w-full pl-10 pr-4 py-3 bg-slate-950/50 border border-white/5 rounded-xl text-slate-200 appearance-none focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500/50 transition-all cursor-pointer font-bold text-sm"
