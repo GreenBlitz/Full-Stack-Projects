@@ -178,6 +178,7 @@ export const ScoutMatch: FC = () => {
     createNewScoutingForm(),
   );
   const [activeTabIndex, setActiveTab] = useState(STARTING_TAB_INDEX);
+  const [alliance, _setAlliance] = useState<Alliance>("blue");
   const originTime = useMemo(() => Date.now(), []);
   const CurrentTab = useMemo(
     () => TABS[activeTabIndex].Component,
@@ -193,7 +194,12 @@ export const ScoutMatch: FC = () => {
        from-black via-gray-900 to-black border-2 border-green-500
        rounded-2xl shadow-[0_0_30px_rgba(34,197,94,0.3)] overflow-hidden h-[90vh] relative"
       >
-        <SideBar setActiveTab={setActiveTab} activeTabIndex={activeTabIndex} />
+        {alliance === "blue" && (
+          <SideBar
+            setActiveTab={setActiveTab}
+            activeTabIndex={activeTabIndex}
+          />
+        )}
         <div className="flex-1 flex flex-col overflow-hidden p-2 relative z-10">
           <div
             className="flex-1 min-h-0 text-green-100 overflow-hidden pr-2
@@ -203,11 +209,17 @@ export const ScoutMatch: FC = () => {
             <CurrentTab
               setForm={setScoutingForm}
               currentForm={scoutingForm}
-              alliance="red"
+              alliance={alliance}
               originTime={originTime}
             />
           </div>
         </div>
+        {alliance === "red" && (
+          <SideBar
+            setActiveTab={setActiveTab}
+            activeTabIndex={activeTabIndex}
+          />
+        )}
       </div>
     </div>
   );
