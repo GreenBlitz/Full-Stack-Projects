@@ -24,8 +24,9 @@ const TWO_METER_CENTIMETERS = 200;
 const MORE_DISTANCE = 2000;
 
 const NO_DATA_ON_TEAM_STATUS = 502;
-async function fetchTeamData(team: number) {
-  const response = await fetch(`/api/v1/team?teams=${team}`);
+async function fetchTeamData(team: number, recency?: number) {
+  const recencyQuery = recency ? `recency=${recency}` : "";
+  const response = await fetch(`/api/v1/team?teams=${team}${recencyQuery}`);
 
   if (response.status === NO_DATA_ON_TEAM_STATUS) {
     alert(`No Data on ${team}`);
@@ -60,13 +61,19 @@ export const TeamTab: FC = () => {
     "team/teamNumber",
     null,
   );
+  const [recency, setRecency] = useLocalStorage<number | null>(
+    "team/recency",
+    null,
+  );
   const data = useMemo(() => teamData?.[phase], [teamData, phase]);
 
   useEffect(() => {
     if (!teamNumber || !FRC_TEAM_NUMBERS.includes(teamNumber)) {
       return;
     }
-    fetchTeamData(teamNumber).then(setTeamData).catch(alert);
+    fetchTeamData(teamNumber, recency ?? undefined)
+      .then(setTeamData)
+      .catch(alert);
   }, [teamNumber]);
 
   return (
@@ -74,6 +81,7 @@ export const TeamTab: FC = () => {
       <TeamSelect
         teamNumber={teamNumber ?? undefined}
         setTeamNumber={setTeamNumber}
+        setRecency={setRecency}
       />
       <PhaseToggle activeMode={phase} setActiveMode={setPhase} />
 

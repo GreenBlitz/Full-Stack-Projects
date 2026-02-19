@@ -6,6 +6,7 @@ import { Users, Hash } from "lucide-react";
 interface TeamSelectProps {
   teamNumber?: number;
   setTeamNumber: (team: number) => void;
+  setRecency: (recency: number) => void;
 }
 
 const EMPTY_TEAM_INPUT = 0;
@@ -13,6 +14,7 @@ const EMPTY_TEAM_INPUT = 0;
 export const TeamSelect: FC<TeamSelectProps> = ({
   teamNumber,
   setTeamNumber,
+  setRecency,
 }) => (
   <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md mx-auto p-4 bg-slate-900/40 backdrop-blur-sm rounded-2xl border border-white/10 shadow-2xl">
     <div className="relative flex-1">
