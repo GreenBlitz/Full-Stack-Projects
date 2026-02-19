@@ -4,4 +4,5 @@ COPY ./start.ts /app/start.ts
 COPY ./dist /app/dist
 EXPOSE 443
 RUN ["npm","install","express"]
+RUN ["npm","install","http-proxy-middleware"]
 CMD ["npm","exec","--","tsx","start.ts"]

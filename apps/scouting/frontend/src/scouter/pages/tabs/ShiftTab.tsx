@@ -3,7 +3,12 @@
 import { useState, type FC } from "react";
 import type { TabProps } from "../ScoutMatch";
 import { ScoreMap, defaultPoint } from "../../components/ScoreMap";
-import type { Alliance, Point, ShiftType } from "@repo/scouting_types";
+import type {
+  Alliance,
+  Point,
+  ScoutingForm,
+  ShiftType,
+} from "@repo/scouting_types";
 import { MovementForm } from "../../components/MovementForm";
 import Stopwatch from "../../components/stopwatch";
 
@@ -23,14 +28,22 @@ export const ShiftTab: FC<ShiftTabProps> = ({
   const [mapPosition, setMapPosition] = useState<Point>();
   const [mapZone, setMapZone] = useState<Alliance>(alliance);
 
+  const getEvents = (form: ScoutingForm) => {
+    if (shiftType === "auto") {
+      return form.auto.shootEvents;
+    }
+    if (shiftType === "transition") {
+      return form.tele.transitionShift.shootEvents;
+    }
+    if (shiftType === "endgame") {
+      return form.tele.endgameShift.shootEvents;
+    }
+    return form.tele.shifts[tabIndex].shootEvents;
+  };
+
   const handleSetForm = (cycle: { start: number; end: number }) => {
     setForm((prevForm) => {
-      const prevEvents =
-        shiftType === "teleop"
-          ? prevForm.tele.shifts[tabIndex].shootEvents
-          : shiftType === "transition"
-            ? prevForm.tele.transitionShift.shootEvents
-            : prevForm.tele.endgameShift.shootEvents;
+      const prevEvents = getEvents(prevForm);
       prevEvents.push({
         interval: cycle,
         startPosition: mapPosition ?? { ...defaultPoint },
@@ -39,6 +52,7 @@ export const ShiftTab: FC<ShiftTabProps> = ({
     });
   };
 
+  const gamePhase = shiftType === "auto" ? "auto" : "tele";
   const scoreMap = (
     <div className="flex-1 min-w-0 h-full">
       <ScoreMap
@@ -66,10 +80,13 @@ export const ShiftTab: FC<ShiftTabProps> = ({
           setMovement={(value) => {
             setForm((prevForm) => ({
               ...prevForm,
-              tele: { ...prevForm.tele, movement: value },
+              [gamePhase]: {
+                ...prevForm[gamePhase],
+                movement: value,
+              },
             }));
           }}
-          currentMovement={currentForm.tele.movement}
+          currentMovement={currentForm[gamePhase].movement}
         />
 
         <button
