@@ -1,8 +1,19 @@
 // בס"ד
 import express from "express";
+import { createProxyMiddleware } from "http-proxy-middleware";
 import path from "path";
 
 const app = express();
+
+const BACKEND_URL = process.env.BACKEND_PROXY_URL || "http://localhost:4590";
+
+app.use(
+  "/api/v1",
+  createProxyMiddleware({
+    target: BACKEND_URL,
+    changeOrigin: true,
+  }),
+);
 
 const defaultPort = 80;
 const securePort = 443;

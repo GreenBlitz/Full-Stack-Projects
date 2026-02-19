@@ -8,5 +8,7 @@ services:
     env_file:
       - ../../../.public.env
       - ../../../.secret.env
+    environment:
+      - BACKEND_PROXY_URL=http://backend:4590
     ports:
       - "${FRONTEND_PORT}:443" # Maps host:${FRONTEND_PORT} to container:443
