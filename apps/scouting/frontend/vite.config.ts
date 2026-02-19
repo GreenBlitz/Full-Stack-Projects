@@ -7,11 +7,13 @@ const SECS_PER_MIN = 60;
 const MINS_PER_HOUR = 60;
 const HOURS_PER_DAY = 24;
 const MAX_ENTRIES = 50;
-const PORT = process.env.NODE_ENV === "DEV" ? 80 : 443;
+
+const DEFAULT_PORT = 80;
+const port = parseInt(process.env.FRONTEND_PORT ?? DEFAULT_PORT.toString());
 
 export default defineConfig({
   server: {
-    port: PORT,
+    port: port,
     proxy: {
       "/api/v1": {
         target: "http://localhost:4590",
