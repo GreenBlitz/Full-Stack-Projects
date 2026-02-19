@@ -5,7 +5,7 @@ import path from "path";
 
 const app = express();
 
-const BACKEND_URL = process.env.BACKEND_PROXY_URL || "http://localhost:4590";
+const BACKEND_URL = process.env.BACKEND_PROXY_URL ?? "http://localhost:4590";
 
 app.use(
   "/api/v1",
