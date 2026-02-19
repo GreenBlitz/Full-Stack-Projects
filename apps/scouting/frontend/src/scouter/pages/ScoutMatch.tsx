@@ -172,8 +172,9 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
     </div>
   );
 };
-export const createNewScoutingForm = (): ScoutingForm =>
-  JSON.parse(JSON.stringify(defaultScoutForm));
+export const createNewScoutingForm = (
+  savedInfo?: Partial<ScoutingForm>,
+): ScoutingForm => structuredClone({ ...defaultScoutForm, ...savedInfo });
 export const ScoutMatch: FC = () => {
   const [scoutingForm, setScoutingForm] = useLocalStorage(
     "form",

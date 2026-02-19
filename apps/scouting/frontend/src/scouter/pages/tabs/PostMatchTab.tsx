@@ -21,7 +21,7 @@ export const PostMatchTab: FC<TabProps> = ({ setForm, currentForm }) => {
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
-    setForm(createNewScoutingForm());
+    setForm(createNewScoutingForm({ scouterName: currentForm.scouterName }));
     setScoutingForms((prev) => [...prev, currentForm]);
     await navigate("/");
   };
@@ -91,7 +91,9 @@ export const PostMatchTab: FC<TabProps> = ({ setForm, currentForm }) => {
       {isPopUpVisible && (
         <ConfirmDeletePopup
           onDelete={() => {
-            setForm(createNewScoutingForm);
+            setForm(
+              createNewScoutingForm({ scouterName: currentForm.scouterName }),
+            );
             void navigate("/");
           }}
           close={() => {

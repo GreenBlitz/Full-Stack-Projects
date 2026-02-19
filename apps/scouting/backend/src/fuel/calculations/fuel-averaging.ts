@@ -1,32 +1,41 @@
 // בס"ד
-import type { FuelObject, ShootEvent } from "@repo/scouting_types";
-import type { BPS } from "../fuel-object";
-import { calculateSum, firstElement, lastElement } from "@repo/array-functions";
+import type { BPS, BPSEvent, FuelObject, ShootEvent } from "@repo/scouting_types";
+import {
+  calculateAverage,
+  calculateSum,
+  firstElement,
+  isEmpty,
+  lastElement,
+} from "@repo/array-functions";
+import { convertPixelToCentimeters, distanceFromHub } from "@repo/rebuilt_map";
+import { interpolateQuadratic } from "./interpolation";
+
+interface ShotStats {
+  durationMilliseconds: number;
+  hubDistanceCentimeters: number;
+}
 
 const EMPTY_INTERVAL_DURATION = 0;
 const FIRST_INTERVAL_BOUNDARY = 0;
 const NO_FUEL_COLLECTED = 0;
 const FIRST_SECTION_AMOUNT = 1;
-const LAST_SECTION_LENGTH = 1;
+const ONE_SECTION_ONLY_LENGTH = 1;
 
 /**
  * @param sections consists of sections that contains a list of timestamps in ms
  * @returns mean ball amount
  */
-const calculateBallAmount = (
-  sections: number[][],
-  shotLength: number,
-): number => {
+const calculateBallAmount = (sections: number[][], shot: ShotStats): number => {
   // Base Case 1
-  if (shotLength <= EMPTY_INTERVAL_DURATION) {
+  if (shot.durationMilliseconds <= EMPTY_INTERVAL_DURATION) {
     return NO_FUEL_COLLECTED;
   }
   // Base Case 2: Happens if no section is long enough for the shot length
-  if (sections.length === LAST_SECTION_LENGTH) {
+  if (sections.length === ONE_SECTION_ONLY_LENGTH) {
     const onlySection = firstElement(sections);
     const ballAmount = onlySection.length;
     const sectionDuration = lastElement(onlySection);
-    return (ballAmount / sectionDuration) * shotLength;
+    return (ballAmount / sectionDuration) * shot.durationMilliseconds;
   }
 
   // finds the average for the first interval, removes it and then recurses
@@ -36,9 +45,12 @@ const calculateBallAmount = (
   const adjustedSections = sections.map((section) =>
     section.map((timing) => timing - firstIntervalDuration),
   );
+
   const firstIntervalSections = adjustedSections.map((section) =>
     section.filter(
-      (timing) => timing <= FIRST_INTERVAL_BOUNDARY && timing <= shotLength,
+      (timing) =>
+        timing <= FIRST_INTERVAL_BOUNDARY &&
+        timing <= shot.durationMilliseconds,
     ),
   );
 
@@ -51,35 +63,76 @@ const calculateBallAmount = (
     .map((section) =>
       section.filter((timing) => timing > FIRST_INTERVAL_BOUNDARY),
     );
+
   return (
     avgBallsFirstInterval +
-    calculateBallAmount(nonFirstSections, shotLength - firstIntervalDuration)
+    calculateBallAmount(nonFirstSections, {
+      durationMilliseconds: shot.durationMilliseconds - firstIntervalDuration,
+      hubDistanceCentimeters: shot.hubDistanceCentimeters,
+    })
   );
 };
 
-const compareSections = (a: number[], b: number[]) =>
-  lastElement(a) - lastElement(b);
+const calculateAccuracies = (sections: BPS["events"], shotDuration: number) => {
+  const durationedSections = sections.map((section) => ({
+    shoot: section.shoot.filter((timestamp) => timestamp <= shotDuration),
+    score: section.score.filter((timestamp) => timestamp <= shotDuration),
+    positions: section.positions,
+  }));
+
+  const filteredSections = durationedSections.filter(
+    (section) => !isEmpty(section.shoot),
+  );
+
+  const accuracies = filteredSections.map((section) => ({
+    distance: calculateAverage(section.positions, (point) =>
+      distanceFromHub(convertPixelToCentimeters(point)),
+    ),
+    accuracy: section.score.length / section.shoot.length,
+  }));
+  const sortedAccuracies = accuracies.sort(
+    (accuracy1, accuracy2) => accuracy1.distance - accuracy2.distance,
+  );
+
+  return sortedAccuracies;
+};
+
+const compareSections = (section1: number[], section2: number[]) =>
+  lastElement(section1) - lastElement(section2);
 
 const correctSectionToTimeFromEnd = (sections: number[]) => {
   const endTimestamp = lastElement(sections);
-  return sections
-    .filter((timestamp) => timestamp < endTimestamp)
-    .map((timestamp) => endTimestamp - timestamp);
+  return sections.map((timestamp) => endTimestamp - timestamp).reverse();
 };
+
+const formatSections = (sections: BPS["events"]) =>
+  sections
+    .map((section) => ({
+      ...section,
+      score: correctSectionToTimeFromEnd(section.score),
+      shoot: correctSectionToTimeFromEnd(section.shoot),
+    }))
+    .sort((formattedSection1, formattedSection2) =>
+      compareSections(formattedSection1.shoot, formattedSection2.shoot),
+    );
 
 export const calculateFuelByAveraging = (
   shot: ShootEvent,
   isPass: boolean,
-  sections: BPS["events"],
+  sections: BPSEvent[],
 ): Partial<FuelObject> => {
-  const shotLength = shot.interval.end - shot.interval.start;
+  const shotStats: ShotStats = {
+    durationMilliseconds: shot.interval.end - shot.interval.start,
+    hubDistanceCentimeters: distanceFromHub(
+      convertPixelToCentimeters(shot.startPosition),
+    ),
+  };
+
+  const formattedSections = formatSections(sections);
 
   const shotAmount = calculateBallAmount(
-    sections
-      .map((section) => section.shoot)
-      .map(correctSectionToTimeFromEnd)
-      .sort(compareSections),
-    shotLength,
+    formattedSections.map((section) => section.shoot),
+    shotStats,
   );
 
   if (isPass) {
@@ -89,13 +142,14 @@ export const calculateFuelByAveraging = (
       positions: [shot.startPosition],
     };
   }
-  const scoredAmount = calculateBallAmount(
-    sections
-      .map((section) => section.score)
-      .map(correctSectionToTimeFromEnd)
-      .sort(compareSections),
-    shotLength,
+  const scoredAccuracy = interpolateQuadratic(
+    shotStats.hubDistanceCentimeters,
+    calculateAccuracies(formattedSections, shotStats.durationMilliseconds).map(
+      ({ distance, accuracy }) => ({ x: distance, y: accuracy }),
+    ),
   );
+
+  const scoredAmount = shotAmount * scoredAccuracy;
 
   return {
     scored: scoredAmount,
