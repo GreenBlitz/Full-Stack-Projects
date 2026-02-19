@@ -87,7 +87,7 @@ export const Leaderboard: React.FC<ScouterLeaderboardProps> = ({
     <div className="bg-slate-900 border border-emerald-500/20 rounded-xl overflow-hidden shadow-2xl">
       <div className="bg-emerald-500/10 p-4 border-b border-emerald-500/20">
         <h2 className="text-emerald-400 font-black tracking-tighter text-xl uppercase">
-          {data.competition} Leaderboard
+          scouter Leaderboard
         </h2>
       </div>
 
@@ -115,7 +115,7 @@ export const Leaderboard: React.FC<ScouterLeaderboardProps> = ({
                     <span
                       className={`
                         flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold transition-all
-                        ${isGold ? "bg-emerald-500 text-slate-950 shadow-[0_0_10px_#10b981]" : ""}
+                        ${isGold ? "bg-yellow-400 text-slate-950 shadow-[0_0_10px_#facc15]" : ""}
                         ${isSilver ? "bg-slate-300 text-slate-900 shadow-[0_0_8px_#cbd5e1]" : ""}
                         ${isBronze ? "bg-amber-600 text-slate-950 shadow-[0_0_8px_#d97706]" : ""}
                         ${!isGold && !isSilver && !isBronze ? "bg-slate-800 text-slate-400" : ""}

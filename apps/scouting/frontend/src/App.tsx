@@ -6,7 +6,7 @@ import { ScoutedMatches } from "./scouter/pages/ScoutedMatches";
 import { TeamTab } from "./strategy/components/TeamTab";
 import { GeneralDataTable } from "./strategy/GeneralDataTable";
 import { CompareTwo } from "./strategy/CompareTwo";
-import { Leaderboard } from "./strategy/Leaderboard";
+import { Leaderboard } from "./scouter/pages/Leaderboard";
 import { CURRENT_COMPETITION } from "../../../../packages/scouting_types/rebuilt";
 
 const App: FC = () => {
