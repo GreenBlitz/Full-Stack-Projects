@@ -6,14 +6,20 @@ import path from "path";
 const app = express();
 
 const BACKEND_URL = process.env.BACKEND_PROXY_URL ?? "http://localhost:4590";
+const BACKEND_URI_PREFIX = "/api/v1";
 
 app.use(
-  "/api/v1",
+  BACKEND_URI_PREFIX,
   createProxyMiddleware({
     target: BACKEND_URL,
     changeOrigin: true,
+    pathRewrite: {
+      "^": BACKEND_URI_PREFIX,
+    },
   }),
 );
+
+console.log("Backend URL: ", BACKEND_URL);
 
 const defaultPort = 80;
 const securePort = 443;
