@@ -9,6 +9,8 @@ const leaderboardUrl = "/api/v1/leaderboard/";
 
 export const scouterColor: Record<string, string> = {
   Levi: "text-purple-400",
+  karni: "text-green-800",
+  Roni: "text-pink-300",
 };
 
 const fetchCompetitionData = async (competition: Competition) => {
