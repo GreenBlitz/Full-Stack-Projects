@@ -7,7 +7,7 @@
         "kind": "build",
         "isDefault": true
       },
-      "type": "shell",  
+      "type": "shell",
       "command": "turbo run build --filter=${input:project}-frontend --filter=${input:project}-backend"
     },
     {
