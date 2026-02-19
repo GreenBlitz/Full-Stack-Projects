@@ -7,6 +7,10 @@ import { isEmpty } from "@repo/array-functions";
 
 const leaderboardUrl = "/api/v1/leaderboard/";
 
+export const scouterColor: Record<string, string> = {
+  Levi: "text-purple-400",
+};
+
 const fetchCompetitionData = async (competition: Competition) => {
   const params = new URLSearchParams({ competition: competition });
   const url = `${leaderboardUrl}?${params.toString()}`;
@@ -102,6 +106,8 @@ export const Leaderboard: React.FC<ScouterLeaderboardProps> = ({
           </thead>
           <tbody>
             {sortedScouters.map((scouter, index) => {
+              const customColor =
+                scouterColor[scouter.name] || "text-slate-200";
               const isGold = index === FIRST_PLACE_INDEX;
               const isSilver = index === SECOND_PLACE_INDEX;
               const isBronze = index === THIRD_PLACE_INDEX;
@@ -126,7 +132,9 @@ export const Leaderboard: React.FC<ScouterLeaderboardProps> = ({
                   </td>
 
                   <td className="px-4 py-3">
-                    <span className="font-bold text-slate-200 group-hover:text-emerald-400 transition-colors">
+                    <span
+                      className={`font-bold transition-colors ${customColor}`}
+                    >
                       {scouter.name}
                     </span>
                   </td>
