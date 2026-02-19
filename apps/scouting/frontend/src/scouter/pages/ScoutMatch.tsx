@@ -17,7 +17,6 @@ import { ShiftTab } from "./tabs/ShiftTab";
 import { useLocalStorage } from "@repo/local_storage_hook";
 import { PostMatchTab } from "./tabs/PostMatchTab";
 import { useNavigate } from "react-router-dom";
-import { AutoTab } from "./tabs/AutoTab";
 import { ClimbTab } from "./tabs/ClimbTab";
 import { PreMatchTab } from "../../PreMatchTab";
 export interface TabProps {
@@ -35,7 +34,10 @@ const TABS: Tab[] = [
     name: "Pre",
     Component: PreMatchTab,
   },
-  { name: "Auto", Component: AutoTab },
+  {
+    name: "Auto",
+    Component: (props) => <ShiftTab shiftType="auto" tabIndex={0} {...props} />,
+  },
   {
     name: "Climb",
     Component: (props) => <ClimbTab isAuto={true} {...props} />,
