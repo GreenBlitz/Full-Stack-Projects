@@ -1,3 +1,4 @@
+name: gbscout
 services:
   frontend:
     build:
