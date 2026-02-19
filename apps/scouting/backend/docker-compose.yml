@@ -23,9 +23,9 @@ services:
     networks:
       - scouting-shared
     volumes:
-      - scouting-data:/data/db # This persists data on the hard drive
-    # ports:
-    #   - "27017:27017" # Uncomment this only if you want to use MongoDB Compass locally
+      - scouting-data:/data/db
+    ports:
+      - "27017:27017"
 
 networks:
   scouting-shared:
