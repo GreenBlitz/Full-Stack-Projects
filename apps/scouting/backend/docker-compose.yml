@@ -11,8 +11,26 @@ services:
       - ../../../.secret.env
     ports:
       - "${BACKEND_PORT}:4590" # Maps host:${BACKEND_PORT} to container:4590
+    depends_on:
+      - mongodb
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017
+
+
+  mongodb:
+    image: mongo:latest
+    restart: unless-stopped
+    networks:
+      - scouting-shared
+    volumes:
+      - scouting-data:/data/db # This persists data on the hard drive
+    # ports:
+    #   - "27017:27017" # Uncomment this only if you want to use MongoDB Compass locally
 
 networks:
   scouting-shared:
     name: scouting-network
     driver: bridge
+
+volumes:
+  scouting-data:
