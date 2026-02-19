@@ -25,7 +25,7 @@ const MORE_DISTANCE = 2000;
 
 const NO_DATA_ON_TEAM_STATUS = 502;
 async function fetchTeamData(team: number, recency?: number) {
-  const recencyQuery = recency ? `recency=${recency}` : "";
+  const recencyQuery = recency ? `&recency=${recency}` : "";
   const response = await fetch(`/api/v1/team?teams=${team}${recencyQuery}`);
 
   if (response.status === NO_DATA_ON_TEAM_STATUS) {
@@ -74,12 +74,13 @@ export const TeamTab: FC = () => {
     fetchTeamData(teamNumber, recency ?? undefined)
       .then(setTeamData)
       .catch(alert);
-  }, [teamNumber]);
+  }, [teamNumber, recency]);
 
   return (
     <div className="flex flex-col text-black items-center bg-slate-950">
       <TeamSelect
         teamNumber={teamNumber ?? undefined}
+        recency={recency ?? undefined}
         setTeamNumber={setTeamNumber}
         setRecency={setRecency}
       />

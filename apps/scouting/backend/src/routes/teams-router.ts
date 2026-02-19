@@ -203,7 +203,11 @@ teamsRouter.get("/", async (req, res) => {
       mapObject(teamedForms, (forms) =>
         forms
           .sort(compareForms)
-          .slice(recency ? forms.length - recency : NO_RECENCY_STARTING_INDEX),
+          .slice(
+            recency && recency < forms.length
+              ? forms.length - recency
+              : NO_RECENCY_STARTING_INDEX,
+          ),
       ),
     ),
     map((teams) => ({ teams, bpses: getAllBPS() })),

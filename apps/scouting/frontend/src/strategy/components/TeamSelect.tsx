@@ -2,11 +2,13 @@
 import { FRC_TEAMS } from "@repo/frc";
 import type { FC } from "react";
 import { Users, Hash } from "lucide-react";
+import { FaRegClock } from "react-icons/fa";
 
 interface TeamSelectProps {
   teamNumber?: number;
-  setTeamNumber: (team: number) => void;
-  setRecency: (recency: number) => void;
+  recency?: number;
+  setTeamNumber: (team: number | null) => void;
+  setRecency: (recency: number | null) => void;
 }
 
 const EMPTY_TEAM_INPUT = 0;
@@ -15,6 +17,7 @@ export const TeamSelect: FC<TeamSelectProps> = ({
   teamNumber,
   setTeamNumber,
   setRecency,
+  recency,
 }) => (
   <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md mx-auto p-4 bg-slate-900/40 backdrop-blur-sm rounded-2xl border border-white/10 shadow-2xl">
     <div className="relative flex-1">
@@ -23,7 +26,11 @@ export const TeamSelect: FC<TeamSelectProps> = ({
       </div>
       <input
         onChange={(event) => {
-          setTeamNumber(Number(event.currentTarget.value));
+          setTeamNumber(
+            event.currentTarget.value
+              ? Number(event.currentTarget.value)
+              : null,
+          );
         }}
         value={teamNumber === EMPTY_TEAM_INPUT ? undefined : teamNumber}
         type="number"
@@ -41,9 +48,14 @@ export const TeamSelect: FC<TeamSelectProps> = ({
         onChange={(event) => {
           setTeamNumber(Number(event.currentTarget.value));
         }}
-        value={teamNumber}
+        value={teamNumber ?? "none"}
       >
-        <option disabled selected className="bg-slate-900 text-slate-500">
+        <option
+          disabled
+          value="none"
+          selected
+          className="bg-slate-900 text-slate-500"
+        >
           Select Team
         </option>
         {FRC_TEAMS.map((team) => (
@@ -70,6 +82,24 @@ export const TeamSelect: FC<TeamSelectProps> = ({
           <path d="M1 1L5 5L9 1" />
         </svg>
       </div>
+    </div>
+    <div className="relative flex-1">
+      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-500/50">
+        <FaRegClock size={16} />
+      </div>
+      <input
+        onChange={(event) => {
+          setRecency(
+            event.currentTarget.value
+              ? Number(event.currentTarget.value)
+              : null,
+          );
+        }}
+        value={recency === EMPTY_TEAM_INPUT ? undefined : recency}
+        type="number"
+        placeholder="Recency #"
+        className="w-full pl-10 pr-4 py-3 bg-slate-950/50 border border-white/5 rounded-xl text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500/50 transition-all font-mono"
+      />
     </div>
   </div>
 );
