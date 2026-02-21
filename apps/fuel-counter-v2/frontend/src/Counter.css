@@ -1,0 +1,6 @@
+.counterDiv {
+  width: 100vw;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
