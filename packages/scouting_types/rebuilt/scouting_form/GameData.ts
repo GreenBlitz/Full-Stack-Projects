@@ -7,7 +7,7 @@ const matchType = t.keyof({
   playoff: null,
 });
 
-export const competition = t.keyof({
+export const competitionCodec = t.keyof({
   TESTING: null,
   ISDE1: null,
   ISDE2: null,
@@ -29,11 +29,13 @@ export const gameDataCodec = t.type({
   matchNumber: t.number,
   matchType,
   startTime: t.string,
-  competition,
+  competition: competitionCodec,
 });
 
-export const competitions = Object.keys(competition.keys);
+export const competitions = Object.keys(competitionCodec.keys);
 
 export const gamesArrayCodec = t.array(gameDataCodec);
+
+export type Competition = t.TypeOf<typeof competitionCodec>;
 
 export type GameData = t.TypeOf<typeof gameDataCodec>;
