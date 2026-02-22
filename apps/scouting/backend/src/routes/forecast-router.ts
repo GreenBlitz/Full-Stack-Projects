@@ -37,7 +37,7 @@ const calculateAverageClimbScore = (climbs: ClimbLevel[], isAuto: boolean) =>
       (isAuto ? AUTO_CLIMB_MULTIPLIER : TELE_CLIMB_MULTIPLIER),
   );
 
-const calculateAverageClimbsScore = (forms: ScoutingForm[]) => ({
+export const calculateAverageClimbsScore = (forms: ScoutingForm[]) => ({
   auto: calculateAverageClimbScore(
     forms.map((form) => form.auto.climb.level),
     true,

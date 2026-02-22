@@ -1,11 +1,25 @@
 //בס"ד
 
-import type { Match, Point } from "../scouting_form";
+import type { ClimbAllianceData } from "../../forecast";
+import type { ClimbLevel, Match, Point } from "../scouting_form";
 
 export interface GeneralFuelData {
   fullGame: FuelObject;
   auto: FuelObject;
   tele: FuelObject;
+}
+
+export interface GeneralClimbData {
+  fullGame: number;
+  auto: number;
+  tele: number;
+}
+
+export interface GeneralData {
+  teamNumber: number;
+  fuelData: GeneralFuelData;
+  highestClimbLevel: ClimbLevel;
+  avarageClimbPoints: GeneralClimbData;
 }
 
 export type GameTime = keyof GeneralFuelData;
@@ -22,6 +36,7 @@ export interface BPS {
 }
 
 export type FuelEvents = "scored" | "shot" | "missed" | "passed";
+
 export type FuelObject = GameObject<
   FuelEvents,
   {
