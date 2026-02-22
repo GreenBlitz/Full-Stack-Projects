@@ -197,7 +197,7 @@ export const getAllBPSes = (forms: ScoutingForm[]) =>
         forms: right(forms),
         bpses: pipe(
           getTeamBPS(parseInt(teamStringedNumber)),
-          orElse<EndpointError, BPS[], EndpointError>(() => right([] as BPS[])),
+          orElse<EndpointError, BPS[], EndpointError>(() => right([])),
         ),
       }),
     ),
