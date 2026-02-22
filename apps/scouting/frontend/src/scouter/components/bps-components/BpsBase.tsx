@@ -1,13 +1,14 @@
 //בס"ד
 import { useRef } from 'react'
-import './BpsBase.css'
 import './Video.css'
 import video from "./timerVideo.mp4"
 import Video from './Video'
 import Counter from './Counter'
+import { convertToSecs } from './Video'
 
 function app() {
-  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const timestamps = ["00:05", "37:00", "00:20"];
   
   return (
     <>
@@ -15,7 +16,7 @@ function app() {
         <Video 
           videoSrc={video} 
           videoRef={videoRef} 
-          // timestamps={["00:05", "01:37:00", "00:20"]}
+          timestamps={timestamps.sort((a, b) => convertToSecs(a) - convertToSecs(b))}
         />
       </div>
       <div>

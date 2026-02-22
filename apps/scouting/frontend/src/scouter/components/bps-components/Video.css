@@ -1,5 +1,5 @@
 /* --------- PHONES --------- */
-@media (max-width: 600px) {
+@media (max-width: 2000px) {
   .video {
     width: 100%;
     height: auto;
@@ -11,7 +11,7 @@
 }
 
 /* -------- LAPTOPS -------- */
-@media (min-width: 601px) {
+@media (min-width: 2001px) {
   .video {
     width: 640px;
     height: 400px;
@@ -23,6 +23,11 @@
 }
 
 /* -------- DEFAULT -------- */
+
+.videoContainer {
+  display: inline-block;
+  text-align: center;
+}
 
 .timestampContainer {
   display: block;

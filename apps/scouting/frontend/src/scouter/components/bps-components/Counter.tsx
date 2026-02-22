@@ -1,9 +1,6 @@
 //בס"ד
 import React from "react";
 import Burst from "./Burst";
-import "./Video.css";
-import "./Counter.css";
-import "./BpsBase.css";
 
 interface CounterProps {
   videoRef?: React.RefObject<HTMLVideoElement | null>;
@@ -18,8 +15,8 @@ export interface BurstData {
 }
 
 const Counter: React.FC<CounterProps> = ({ videoRef }) => {
-  const zero = 0;
-  const one = 1;
+  const COUNTER_STARTING_VALUE = 0;
+  const increment = 1;
 
   const [burstsArray, setBurstsArray] = React.useState<BurstData[]>([
     {
@@ -32,7 +29,7 @@ const Counter: React.FC<CounterProps> = ({ videoRef }) => {
   ]);
 
   const [currentBurstIndex, setCurrentBurstIndex] =
-    React.useState<number>(zero);
+    React.useState<number>(COUNTER_STARTING_VALUE);
 
   const updateCurrentBurst = (updatedBurst: BurstData) => {
     const copy = [...burstsArray];
@@ -54,20 +51,20 @@ const Counter: React.FC<CounterProps> = ({ videoRef }) => {
   };
 
   const goBack = () => {
-    if (currentBurstIndex > zero) {
-      setCurrentBurstIndex(currentBurstIndex - one);
+    if (currentBurstIndex > COUNTER_STARTING_VALUE) {
+      setCurrentBurstIndex(currentBurstIndex - increment);
     }
   };
 
   const goForward = () => {
-    if (currentBurstIndex < burstsArray.length - one) {
-      setCurrentBurstIndex(currentBurstIndex + one);
+    if (currentBurstIndex < burstsArray.length - increment) {
+      setCurrentBurstIndex(currentBurstIndex + increment);
     }
   };
 
   return (
     <>
-      <div id="counterDiv">
+      <div>
         <Burst
           videoRef={videoRef}
           data={burstsArray[currentBurstIndex]}

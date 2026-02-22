@@ -1,8 +1,8 @@
 //בס"ד
 import { useState } from "react";
 import "./Video.css";
-import "./BpsBase.css"
 import type React from "react";
+import { isEmpty, lastElement } from "@repo/array-functions";
 
 interface VideoProps {
   videoSrc: string;
@@ -15,27 +15,38 @@ interface Timestamp {
   timeInSecs: number;
 }
 
+  export const convertToSecs = (time: string): number => {
+    const oneMin = 60;
+    const parts = time.split(":").map(Number);
+
+    if (parts.length === 2) {
+      const [minutes, seconds] = parts;
+      return minutes * oneMin + seconds;
+    }
+
+    return 0;
+  };
+
 const Video: React.FC<VideoProps> = ({
   videoSrc,
   timestamps = [],
   videoRef,
 }) => {
-  const zero = 0;
+  const VIDEO_START = 0;
   const quarter = 0.25;
   const half = 0.5;
-  const one = 1;
-  const two = 2;
-  const three = 3;
-  const five = 5;
-  const onehundred = 100;
+  const initialSpeed = 1;
+  const minsAndSecs = 2;
+  const fiveSeconds = 5;
+  const fullVideo = 100;
   const [isPlaying, setIsPlaying] = useState(true);
-  const [speed, setSpeed] = useState(one);
-  const [progress, setProgress] = useState(zero);
+  const [speed, setSpeed] = useState(initialSpeed);
+  const [progress, setProgress] = useState(VIDEO_START);
 
   const updateProgress = () => {
     if (videoRef?.current) {
       const percent =
-        (videoRef.current.currentTime / videoRef.current.duration) * onehundred;
+        (videoRef.current.currentTime / videoRef.current.duration) * fullVideo;
       setProgress(percent);
     }
   };
@@ -70,23 +81,7 @@ const Video: React.FC<VideoProps> = ({
     }
   };
 
-  const convertToSecs = (time: string): number => {
-    const sixty = 60;
-    const n3600 = 3600;
-    const parts = time.split(":").map(Number);
 
-    if (parts.length === two) {
-      const [minutes, seconds] = parts;
-      return minutes * sixty + seconds;
-    }
-
-    if (parts.length === three) {
-      const [hours, minutes, seconds] = parts;
-      return hours * n3600 + minutes * sixty + seconds;
-    }
-
-    return zero;
-  };
 
   const prevTimestamp = (): string | null => {
     if (!videoRef?.current) return null;
@@ -94,50 +89,38 @@ const Video: React.FC<VideoProps> = ({
     const { currentTime } = videoRef.current;
     let lastTimestamp: string | null = null;
 
-    for (const time of timestamps) {
-      if (convertToSecs(time) <= currentTime - one) {
-        lastTimestamp = time;
-      } else {
-        break;
-      }
-    }
+    const tolerance = 1;
+    const filteredTimestamps = timestamps.filter((time) => convertToSecs(time) <= currentTime - tolerance);
 
-    return lastTimestamp;
+    return lastElement(filteredTimestamps);
   };
-
-  timestamps.sort((a, b) => convertToSecs(a) - convertToSecs(b));
-
-  const doubleTimestamps = [] as Timestamp[];
-  timestamps.map((time) => {
-    doubleTimestamps.push({ time: time, timeInSecs: convertToSecs(time) });
-  });
 
   return (
     <>
       {/* Timestamp Buttons */}
-      {timestamps.length > zero && (
+      {!isEmpty(timestamps) && (
         <div className="timestampContainer">
           <button
-            className="timestampButton leftButton"
+            className="settingsButton leftButton"
             onClick={() => {
               jumpToTime(convertToSecs(prevTimestamp() ?? "00:00"));
             }}
           >
             {"<<<"}
           </button>
-          {doubleTimestamps.map((bothTimes, index) => (
+          {timestamps.map((timestamp, index) => (
             <button
               key={index}
-              className="timestampButton centerButton"
+              className="settingsButton centerButton"
               onClick={() => {
-                jumpToTime(doubleTimestamps[index].timeInSecs);
+                jumpToTime(convertToSecs(timestamp));
               }}
             >
-              {bothTimes.time}
+              {timestamp}
             </button>
           ))}
           <button
-            className="timestampButton rightButton"
+            className="settingsButton rightButton"
             onClick={() => {
               const prev = prevTimestamp();
               if (prev) {
@@ -145,7 +128,7 @@ const Video: React.FC<VideoProps> = ({
               } else if (videoRef?.current) {
                 jumpToTime(videoRef.current.duration);
               } else {
-                jumpToTime(zero);
+                jumpToTime(VIDEO_START);
               }
             }}
           >
@@ -173,14 +156,15 @@ const Video: React.FC<VideoProps> = ({
         <div className="speedSettings">
           <button onClick={togglePlay}>{isPlaying ? "⏸️" : "▶️"}</button>
 
+
           <label className="buttonLabel">
             <input
               type="radio"
               name="speed"
               value="1"
-              checked={speed === one}
+              checked={speed === initialSpeed}
               onChange={() => {
-                handleSpeedChange(one);
+                handleSpeedChange(initialSpeed);
               }}
             />
             <span className="settingsButton leftButton">1×</span>
@@ -220,7 +204,7 @@ const Video: React.FC<VideoProps> = ({
               name="jumpBack"
               value="<< 5"
               onClick={() => {
-                jumpTime(-five);
+                jumpTime(-fiveSeconds);
               }}
             />
             <span className="settingsButton leftButton">{"<< 5"}</span>
@@ -232,7 +216,7 @@ const Video: React.FC<VideoProps> = ({
               name="jumpBack"
               value="5 >>"
               onClick={() => {
-                jumpTime(five);
+                jumpTime(fiveSeconds);
               }}
             />
             <span className="settingsButton rightButton">{"5 >>"}</span>
