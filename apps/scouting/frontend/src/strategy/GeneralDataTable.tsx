@@ -24,13 +24,7 @@ interface TableRow {
   generalFuelData: GeneralFuelData;
 }
 
-export type Column =
-  | "scored"
-  | "shot"
-  | "missed"
-  | "passed"
-  | "climb"
-  | "max climb";
+export type Column = FuelEvents | "climb" | "max climb";
 
 type DataValue = ClimbLevel | number | undefined;
 

@@ -9,6 +9,8 @@ import { generalCalculateFuel } from "../fuel/fuel-general";
 import { StatusCodes } from "http-status-codes";
 import { flow } from "fp-ts/lib/function";
 import * as Array from "fp-ts/lib/Array";
+import * as NonEmptyArray from "fp-ts/lib/NonEmptyArray";
+import * as Record from "fp-ts/lib/Record";
 
 import type {
   FuelObject,
@@ -22,6 +24,7 @@ import { firstElement, isEmpty } from "@repo/array-functions";
 import { getAllBPS } from "./teams-router";
 import { findMaxClimbLevel } from "./compare-router";
 import { calculateAverageClimbsScore } from "./forecast-router";
+import { nonEmptyArray } from "fp-ts";
 
 export const generalRouter = Router();
 
@@ -69,27 +72,52 @@ const formsToFuelData = flow(
     generalFuelData: generalCalculateFuel(form, getAllBPS()),
   })),
 
-  Array.reduce<
-    { teamNumber: number; generalFuelData: GeneralFuelData },
-    Record<number, GeneralFuelData[]>
-  >({}, (accumulatorRecord, fuelData) => ({
-    ...accumulatorRecord,
-    [fuelData.teamNumber]: [
-      ...(accumulatorRecord[fuelData.teamNumber] ?? []),
-      fuelData.generalFuelData,
-    ],
-  })),
+  NonEmptyArray.groupBy((fuelData) => fuelData.teamNumber.toString()),
 
-  (teamAndAllFuelData) => {
-    const teamAndAvaragedFuelData: Record<number, GeneralFuelData> = {};
-    Object.entries(teamAndAllFuelData).forEach(([teamNumber, fuelArray]) => {
-      teamAndAvaragedFuelData[teamNumber] =
-        calcAverageGeneralFuelData(fuelArray);
-    });
-
-    return teamAndAvaragedFuelData;
-  },
+  Record.map(
+    (
+      fuelArray: NonEmptyArray.NonEmptyArray<{
+        generalFuelData: GeneralFuelData;
+      }>,
+    ) =>
+      calcAverageGeneralFuelData(
+        pipe(
+          fuelArray,
+          NonEmptyArray.map((fuelData) => fuelData.generalFuelData),
+        ),
+      ),
+  ),
 );
+
+const formsToGeneralData = (forms: ScoutingForm[]) => {
+  const calculatedFuel: TeamNumberAndFuelData = formsToFuelData(forms);
+
+  const allGeneralData: GeneralData[] = Object.entries(calculatedFuel).map(
+    (teamNumberAndFuelData) => {
+      const [teamNumber, fuelData] = teamNumberAndFuelData;
+      const teamForms = forms.filter(
+        (form) => form.teamNumber.toString() === teamNumber,
+      );
+
+      const generalData: GeneralData = {
+        teamNumber: Number(teamNumber),
+        fuelData: fuelData,
+        highestClimbLevel: findMaxClimbLevel(teamForms),
+        avarageClimbPoints: {
+          fullGame:
+            calculateAverageClimbsScore(teamForms).auto +
+            calculateAverageClimbsScore(teamForms).tele,
+          auto: calculateAverageClimbsScore(teamForms).auto,
+          tele: calculateAverageClimbsScore(teamForms).tele,
+        },
+      };
+
+      return generalData;
+    },
+  );
+
+  return allGeneralData;
+};
 
 generalRouter.get("/", async (req, res) => {
   await pipe(
@@ -104,35 +132,7 @@ generalRouter.get("/", async (req, res) => {
       ),
     ),
 
-    map((forms) => {
-      const calculatedFuel: TeamNumberAndFuelData = formsToFuelData(forms);
-
-      const allGeneralData: GeneralData[] = Object.entries(calculatedFuel).map(
-        (teamNumberAndFuelData) => {
-          const [teamNumber, fuelData] = teamNumberAndFuelData;
-          const teamForms = forms.filter(
-            (form) => form.teamNumber.toString() === teamNumber,
-          );
-
-          const generalData: GeneralData = {
-            teamNumber: Number(teamNumber),
-            fuelData: fuelData,
-            highestClimbLevel: findMaxClimbLevel(teamForms),
-            avarageClimbPoints: {
-              fullGame:
-                calculateAverageClimbsScore(teamForms).auto +
-                calculateAverageClimbsScore(teamForms).tele,
-                auto:  calculateAverageClimbsScore(teamForms).auto, 
-                tele:  calculateAverageClimbsScore(teamForms).tele
-            },
-          };
-
-          return generalData;
-        },
-      );
-
-      return allGeneralData;
-    }),
+    map((forms) => formsToGeneralData(forms)),
 
     fold(
       (error) => () =>
