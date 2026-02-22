@@ -1,16 +1,24 @@
 // בס"ד
 import { Router } from "express";
 import { join } from "path";
-import { tryCatch } from "fp-ts/lib/TaskEither";
+import { fold, fromEither, tryCatch } from "fp-ts/lib/TaskEither";
 import { promises as fs } from "fs";
 import { StatusCodes } from "http-status-codes";
 import { pipe } from "fp-ts/lib/function";
 import { flatMap, orElse, right, left } from "fp-ts/lib/TaskEither";
-import { createTypeCheckingEndpointFlow } from "../middleware/verification";
+import {
+  createBodyVerificationPipe,
+  createTypeCheckingEndpointFlow,
+} from "../middleware/verification";
 import type { EndpointError } from "../middleware/verification";
 import type { TaskEither } from "fp-ts/lib/TaskEither";
+import { right as rightEither } from "fp-ts/lib/Either";
 import { map } from "fp-ts/lib/Task";
-import { gamesArrayCodec, type GameData } from "@repo/scouting_types";
+import {
+  gameDataCodec,
+  gamesArrayCodec,
+  type GameData,
+} from "@repo/scouting_types";
 
 export const gameRouter = Router();
 
@@ -34,26 +42,15 @@ export const readGames = (): TaskEither<EndpointError, GameData[]> =>
         const data = await fs.readFile(GAMES_FILE, "utf-8");
         return JSON.parse(data) as unknown;
       },
-      (error) => {
-        const err = error as { code?: string };
-        if (err.code === "ENOENT") {
-          return {
-            status: StatusCodes.INTERNAL_SERVER_ERROR,
-            reason: "ENOENT",
-          };
-        }
-        return {
-          status: StatusCodes.INTERNAL_SERVER_ERROR,
-          reason: `Error reading games file: ${error}`,
-        };
-      },
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason:
+          error?.["code"] === "ENOENT"
+            ? "ENOENT"
+            : `Error reading games file: ${error}`,
+      }),
     ),
-    orElse((error) => {
-      if (error.reason === "ENOENT") {
-        return right([] as unknown);
-      }
-      return left(error);
-    }),
+    orElse((error) => (error.reason === "ENOENT" ? right([]) : left(error))),
     map(
       createTypeCheckingEndpointFlow(gamesArrayCodec, (errors) => ({
         status: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -82,3 +79,32 @@ export const writeGames = (
       ),
     ),
   );
+
+gameRouter.get("/", async (req, res) => {
+  await pipe(
+    readGames(),
+    fold(
+      (error) => () =>
+        Promise.resolve(res.status(error.status).send(error.reason)),
+      (games) => () =>
+        Promise.resolve(res.status(StatusCodes.OK).json({ games })),
+    ),
+  )();
+});
+
+gameRouter.post("/", async (req, res) => {
+  await pipe(
+    rightEither(req),
+    createBodyVerificationPipe(gameDataCodec),
+    fromEither,
+    flatMap((game) => writeGames([game])),
+    fold(
+      (error) => () =>
+        Promise.resolve(res.status(error.status).send(error.reason)),
+      () => () =>
+        Promise.resolve(
+          res.status(StatusCodes.OK).json({ message: "Wrote Succefully" }),
+        ),
+    ),
+  )();
+});
