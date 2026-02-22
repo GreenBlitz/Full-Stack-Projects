@@ -1,0 +1,96 @@
+/* --------- PHONES --------- */
+@media (max-width: 600px) {
+  .video {
+    width: 100%;
+    height: auto;
+  }
+
+  .settingsContainer {
+    width: 100%;
+  }
+}
+
+/* -------- LAPTOPS -------- */
+@media (min-width: 601px) {
+  .video {
+    width: 640px;
+    height: 400px;
+  }
+
+  .settingsContainer {
+    width: 640px;
+  }
+}
+
+/* -------- DEFAULT -------- */
+
+.timestampContainer {
+  display: block;
+  margin-bottom: 20px;
+}
+
+.timestampButton {
+  font-size: 10px;
+}
+
+.progressBar {
+  background-color: green;
+  height: 2px;
+}
+
+.settingsContainer {
+  display: inline-block;
+  text-align: center;
+  margin-top: 3px;
+}
+
+.speedSettings {
+  display: inline-block;
+  float: left;
+  text-align: left;
+}
+
+.buttonLabel {
+  display: inline-block;
+}
+
+.buttonLabel input {
+  display: none;
+}
+
+.timeJumpSettings {
+  display: inline-block;
+  float: right;
+  text-align: left; 
+}
+
+.settingsButton {
+  width: 40px;
+  height: 40px;
+  background: #1a1a1a;
+  color: white;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.leftButton {
+  margin: 0px 2px 0px 10px;
+  border-radius: 8px 0px 0px 8px;
+}
+
+.centerButton {
+  border-radius: 0px;
+  margin: 0px 2px 0px 0px;
+}
+
+.rightButton {
+  margin: 10px 0px 0px 0px;
+  border-radius: 0px 8px 8px 0px;
+}
+
+.buttonLabel input:checked + .settingsButton {
+  background: #00c853;
+}
