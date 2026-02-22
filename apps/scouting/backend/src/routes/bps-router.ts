@@ -2,6 +2,7 @@
 import { Router } from "express";
 import { getDb } from "../middleware/db";
 import {
+  BPS,
   BPSBlueprint,
   bpsCodec,
   Interval,
@@ -20,17 +21,23 @@ import {
   fold,
   fromEither,
   map,
+  orElse,
   right,
+  TaskEither,
   tryCatch,
 } from "fp-ts/lib/TaskEither";
 import { getFormsCollection } from "./forms-router";
 import { StatusCodes } from "http-status-codes";
-import { firstElement, lastElement } from "@repo/array-functions";
+import { firstElement, lastElement, mapObject } from "@repo/array-functions";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
-import { createBodyVerificationPipe } from "../middleware/verification";
+import {
+  createBodyVerificationPipe,
+  EndpointError,
+} from "../middleware/verification";
 import { right as rightEither } from "fp-ts/lib/Either";
 import { mapWithIndex, sequence, traverse } from "fp-ts/lib/Record";
 import { sequenceS } from "fp-ts/lib/Apply";
+import { reduce } from "fp-ts/lib/ReadonlyArray";
 
 export const bpsRouter = Router();
 
@@ -181,14 +188,21 @@ export const getTeamBPS = (team: number) =>
     map((teamBPS) => teamBPS.bpses),
   );
 
-export const getAllBpses = (forms: ScoutingForm[]) =>
+export const getAllBPSes = (forms: ScoutingForm[]) =>
   pipe(
-    forms
-      .map((form) => form.teamNumber)
-      .filter((teamNumber, index, arr) => arr.indexOf(teamNumber) === index)
-      .map((teamNumber) => [teamNumber, teamNumber]),
-    Object.fromEntries,
-    traverse(ApplicativePar)(getTeamBPS),
+    forms,
+    groupBy((form) => form.teamNumber.toString()),
+    mapWithIndex((teamStringedNumber, forms) =>
+      sequenceS(ApplyPar)({
+        forms: right(forms),
+        bpses: pipe(
+          getTeamBPS(parseInt(teamStringedNumber)),
+          orElse<EndpointError, BPS[], EndpointError>(() => right([] as BPS[])),
+        ),
+      }),
+    ),
+    sequence(ApplicativePar),
+    map((teams) => mapObject(teams, (team) => team.bpses)),
   );
 
 export const getTeamBPSes = (teams: Record<string, ScoutingForm[]>) =>

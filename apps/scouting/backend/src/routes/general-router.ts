@@ -19,7 +19,7 @@ import { StatusCodes } from "http-status-codes";
 import type { BPS, FuelObject, GeneralFuelData } from "@repo/scouting_types";
 import { averageFuel } from "../fuel/distance-split";
 import { firstElement, isEmpty } from "@repo/array-functions";
-import { getAllBpses } from "./bps-router";
+import { getAllBPSes } from "./bps-router";
 
 export const generalRouter = Router();
 
@@ -74,12 +74,17 @@ generalRouter.get("/", async (req, res) => {
       ),
     ),
     bindTo("forms"),
-    bind("teamBpses", ({ forms }) => getAllBpses(forms)),
+    bind("teamBpses", ({ forms }) => getAllBPSes(forms)),
     map(({ forms, teamBpses }) =>
-      forms.map((form) => ({
-        teamNumber: form.teamNumber,
-        generalFuelData: generalCalculateFuel(form, teamBpses[form.teamNumber]),
-      })),
+      forms
+        .filter((form) => !isEmpty(teamBpses[form.teamNumber]))
+        .map((form) => ({
+          teamNumber: form.teamNumber,
+          generalFuelData: generalCalculateFuel(
+            form,
+            teamBpses[form.teamNumber],
+          ),
+        })),
     ),
 
     map((generalFuelsData) =>
