@@ -23,10 +23,11 @@ const METER_CENTIMETERS = 100;
 const TWO_METER_CENTIMETERS = 200;
 const MORE_DISTANCE = 2000;
 
+const TEAM_DATA_URL = "/api/v1/team";
 const NO_DATA_ON_TEAM_STATUS = 502;
 async function fetchTeamData(team: number, recency?: number) {
   const recencyQuery = recency ? `&recency=${recency}` : "";
-  const response = await fetch(`/api/v1/team?teams=${team}${recencyQuery}`);
+  const response = await fetch(`${TEAM_DATA_URL}?teams=${team}${recencyQuery}`);
 
   if (response.status === NO_DATA_ON_TEAM_STATUS) {
     alert(`No Data on ${team}`);
