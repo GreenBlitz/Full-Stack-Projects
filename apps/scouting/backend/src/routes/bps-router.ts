@@ -10,7 +10,14 @@ import {
   TeamBPS,
 } from "@repo/scouting_types";
 import { flow, pipe } from "fp-ts/lib/function";
-import { flatMap, fold, fromEither, map, tryCatch } from "fp-ts/lib/TaskEither";
+import {
+  filterOrElse,
+  flatMap,
+  fold,
+  fromEither,
+  map,
+  tryCatch,
+} from "fp-ts/lib/TaskEither";
 import { getFormsCollection } from "./forms-router";
 import { StatusCodes } from "http-status-codes";
 import { firstElement, lastElement } from "@repo/array-functions";
@@ -152,3 +159,24 @@ bpsRouter.post("/", async (req, res) => {
     ),
   )();
 });
+
+export const getAllBPS = (team: number) =>
+  pipe(
+    getBPSCollection(),
+    flatMap((collection) =>
+      tryCatch(
+        async () => await collection.findOne({ team }),
+        (error) => ({
+          status: StatusCodes.INTERNAL_SERVER_ERROR,
+          reason: `Unable To get BPSes ${error}`,
+        }),
+      ),
+    ),
+    filterOrElse(
+      (item) => item !== null,
+      () => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: "No BPS for this team",
+      }),
+    ),
+  );
