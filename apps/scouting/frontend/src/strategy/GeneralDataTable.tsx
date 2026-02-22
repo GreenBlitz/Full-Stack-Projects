@@ -8,8 +8,10 @@ import {
   type SortingState,
 } from "@tanstack/react-table";
 import type {
+  ClimbLevel,
   FuelEvents,
   GameTime,
+  GeneralData,
   GeneralFuelData,
   TeamNumberAndFuelData,
 } from "@repo/scouting_types";
@@ -22,7 +24,27 @@ interface TableRow {
   generalFuelData: GeneralFuelData;
 }
 
-const fetchFuelData = async (filters = {}) => {
+export type Column =
+  | "scored"
+  | "shot"
+  | "missed"
+  | "passed"
+  | "climb"
+  | "max climb";
+
+type DataValue = ClimbLevel | number | undefined;
+
+type DataAccessor = (row: GeneralData, gameTime: GameTime) => DataValue;
+const columnToKey: Record<Column, DataAccessor> = {
+  scored: (row, gameTime) => row.fuelData[gameTime].scored,
+  shot: (row, gameTime) => row.fuelData[gameTime].shot,
+  missed: (row, gameTime) => row.fuelData[gameTime].missed,
+  passed: (row, gameTime) => row.fuelData[gameTime].passed,
+  climb: (row, gameTime) => row.avarageClimbPoints[gameTime],
+  "max climb": (row) => row.highestClimbLevel,
+};
+
+const fetchGeneralData = async (filters = {}) => {
   const params = new URLSearchParams(filters);
   const url = `/api/v1/general/?${params.toString()}`;
 
@@ -38,7 +60,7 @@ const fetchFuelData = async (filters = {}) => {
     }
 
     const data = await response.json();
-    return data.calculatedFuel as TeamNumberAndFuelData;
+    return data.generalData as GeneralData[];
   } catch (err) {
     console.error("Fetch failed:", err);
     throw err;
@@ -54,38 +76,38 @@ const DIGITS_AFTER_DOT = 1;
 export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
   filters,
 }) => {
-  const [teamNumberAndFuelData, setTeamNumberAndFuelData] =
-    useState<TeamNumberAndFuelData>({});
+  const [allGeneralData, setAllGeneralData] = useState<GeneralData[]>([]);
   const [gameTime, setGameTime] = useState<GameTime>("tele");
   const [sorting, setSorting] = useState<SortingState>([]);
 
   useEffect(() => {
-    fetchFuelData(filters).then(setTeamNumberAndFuelData).catch(console.error);
+    fetchGeneralData(filters).then(setAllGeneralData).catch(console.error);
   }, [filters]);
 
   const tableData = useMemo(
     () =>
-      Object.entries(teamNumberAndFuelData).map(
-        ([teamNumber, generalFuelData]) => ({
-          teamNumber: Number(teamNumber),
-          generalFuelData,
-          _uiKey: gameTime,
-        }),
-      ),
-    [teamNumberAndFuelData, gameTime],
+      allGeneralData.map((generalData) => ({
+        ...generalData,
+        _uiKey: gameTime,
+      })),
+    [allGeneralData, gameTime],
   );
 
-  const columnHelper = createColumnHelper<TableRow>();
+  const columnHelper = createColumnHelper<GeneralData>();
 
-  const createColumn = (headerAndId: FuelEvents, style: string) =>
-    columnHelper.accessor((row) => row.generalFuelData[gameTime][headerAndId], {
+  const createColumn = (headerAndId: Column, style: string) =>
+    columnHelper.accessor((row) => columnToKey[headerAndId](row, gameTime), {
       id: headerAndId,
       header: headerAndId,
-      cell: (info) => (
-        <span className={style}>
-          {info.getValue().toFixed(DIGITS_AFTER_DOT)}
-        </span>
-      ),
+      sortingFn: "alphanumeric",
+      cell: (info) => {
+        const value = info.getValue();
+
+        const displayValue =
+          typeof value === "number" ? value.toFixed(DIGITS_AFTER_DOT) : value;
+
+        return <span className={style}>{displayValue}</span>;
+      },
     });
 
   const columns = useMemo(
@@ -100,9 +122,10 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
       createColumn("scored", "text-emerald-400 font-bold"),
       createColumn("missed", "text-rose-500/90 font-medium"),
       createColumn("passed", "text-orange-400 font-medium"),
-      createColumn("shot", "text-slate-300 font-medium"),
+      createColumn("climb", "text-purple-400 font-bold"),
+      createColumn("max climb", "text-slate-400 uppercase text-[10px]"),
     ],
-    [gameTime],
+    [gameTime, sorting],
   );
 
   const table = useReactTable({
@@ -117,6 +140,23 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
   return (
     <div className="flex flex-col gap-6 p-4 bg-slate-950 min-h-screen">
       <div className="overflow-hidden rounded-2xl border border-white/10 bg-slate-900/40 backdrop-blur-sm shadow-2xl">
+        <div className="flex gap-1.5 justify-center bg-slate-900/50 p-1.5 rounded-2xl border border-white/5 self-center">
+          {(["auto", "tele", "fullGame"] as GameTime[]).map((time) => (
+            <button
+              key={time}
+              onClick={() => {
+                setGameTime(time);
+              }}
+              className={`px-5 py-2 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all border ${
+                gameTime === time
+                  ? "bg-emerald-500 text-slate-950 border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]"
+                  : "bg-transparent text-slate-500 border-transparent hover:text-slate-300"
+              }`}
+            >
+              {time}
+            </button>
+          ))}
+        </div>
         <table className="w-full text-left text-sm border-collapse">
           <thead className="bg-slate-800/50 border-b border-white/10">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -170,23 +210,6 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
             })}
           </tbody>
         </table>
-      </div>
-      <div className="flex gap-1.5 justify-center bg-slate-900/50 p-1.5 rounded-2xl border border-white/5 self-center">
-        {(["auto", "tele", "fullGame"] as GameTime[]).map((time) => (
-          <button
-            key={time}
-            onClick={() => {
-              setGameTime(time);
-            }}
-            className={`px-5 py-2 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all border ${
-              gameTime === time
-                ? "bg-emerald-500 text-slate-950 border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]"
-                : "bg-transparent text-slate-500 border-transparent hover:text-slate-300"
-            }`}
-          >
-            {time}
-          </button>
-        ))}
       </div>
     </div>
   );

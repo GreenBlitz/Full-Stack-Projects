@@ -51,7 +51,7 @@ const calculateAverageScoredFuel = (
   );
 };
 
-const findMaxClimbLevel = (forms: ScoutingForm[]) => {
+export const findMaxClimbLevel = (forms: ScoutingForm[]) => {
   const fullGameClimbedLevels = [
     ...forms.map((form) => form.tele.climb.level),
     ...forms.map((form) => form.auto.climb.level),
