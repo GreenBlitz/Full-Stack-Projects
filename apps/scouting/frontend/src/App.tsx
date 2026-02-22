@@ -7,6 +7,8 @@ import { TeamTab } from "./strategy/components/TeamTab";
 import { MatchForecast } from "./strategy/components/forecast/MatchForecast";
 import { GeneralDataTable } from "./strategy/GeneralDataTable";
 import { CompareTwo } from "./strategy/CompareTwo";
+import { Leaderboard } from "./scouter/pages/Leaderboard";
+import { CURRENT_COMPETITION } from "@repo/scouting_types";
 
 const App: FC = () => {
   return (
@@ -17,6 +19,10 @@ const App: FC = () => {
       <Route path="/general" element={<GeneralDataTable filters={{}} />} />
       <Route path="/forecast" element={<MatchForecast />} />
       <Route path="/compare" element={<CompareTwo />} />
+      <Route
+        path="/leaderboard"
+        element={<Leaderboard competition={CURRENT_COMPETITION} />}
+      />
     </Routes>
   );
 };
