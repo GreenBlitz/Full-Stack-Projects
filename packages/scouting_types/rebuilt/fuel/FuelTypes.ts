@@ -21,6 +21,11 @@ export interface BPS {
   match: Match;
 }
 
+export interface TeamedBPS {
+  bps: BPS[];
+  team: number;
+}
+
 export type FuelEvents = "scored" | "shot" | "missed" | "passed";
 export type FuelObject = GameObject<
   FuelEvents,
