@@ -32,7 +32,6 @@ const fetchTeamCompareData = async (teamNumber: number) => {
     }
 
     const data = await response.json();
-    console.log(data.teamCompareData.averageFuelInGame);
     return data.teamCompareData as TeamCompareData;
   } catch (err) {
     console.error("Fetch failed:", err);

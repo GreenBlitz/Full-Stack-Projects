@@ -8,6 +8,8 @@ import { MatchForecast } from "./strategy/components/forecast/MatchForecast";
 import { GeneralDataTable } from "./strategy/GeneralDataTable";
 import { CompareTwo } from "./strategy/CompareTwo";
 import BpsBase from "./scouter/components/bps-components/BpsBase";
+import { Leaderboard } from "./scouter/pages/Leaderboard";
+import { CURRENT_COMPETITION } from "@repo/scouting_types";
 
 const App: FC = () => {
   return (
@@ -19,6 +21,10 @@ const App: FC = () => {
       <Route path="/forecast" element={<MatchForecast />} />
       <Route path="/compare" element={<CompareTwo />} />
       <Route path="/bps" element={<BpsBase />} />
+      <Route
+        path="/leaderboard"
+        element={<Leaderboard competition={CURRENT_COMPETITION} />}
+      />
     </Routes>
   );
 };

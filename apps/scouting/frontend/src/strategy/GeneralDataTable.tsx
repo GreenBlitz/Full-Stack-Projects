@@ -15,7 +15,8 @@ import type {
 } from "@repo/scouting_types";
 import type React from "react";
 import { useState, useEffect, useMemo } from "react";
-import { ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { HiOutlineChevronUpDown } from "react-icons/hi2";
 
 interface TableRow {
   teamNumber: number;
@@ -134,11 +135,11 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
                       )}
                       <span className="text-emerald-500/50">
                         {header.column.getIsSorted() === "asc" ? (
-                          <ChevronUp size={12} strokeWidth={3} />
+                          <FaChevronUp size={12} strokeWidth={3} />
                         ) : header.column.getIsSorted() === "desc" ? (
-                          <ChevronDown size={12} strokeWidth={3} />
+                          <FaChevronDown size={12} strokeWidth={3} />
                         ) : (
-                          <ChevronsUpDown size={12} strokeWidth={2} />
+                          <HiOutlineChevronUpDown size={12} strokeWidth={2} />
                         )}
                       </span>
                     </div>
