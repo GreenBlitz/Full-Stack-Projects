@@ -11,6 +11,7 @@ import {
 } from "@repo/scouting_types";
 import { flow, pipe } from "fp-ts/lib/function";
 import {
+  ApplicativePar,
   bind,
   bindTo,
   filterOrElse,
@@ -18,6 +19,7 @@ import {
   fold,
   fromEither,
   map,
+  right,
   tryCatch,
 } from "fp-ts/lib/TaskEither";
 import { getFormsCollection } from "./forms-router";
@@ -26,6 +28,7 @@ import { firstElement, lastElement } from "@repo/array-functions";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
 import { createBodyVerificationPipe } from "../middleware/verification";
 import { right as rightEither } from "fp-ts/lib/Either";
+import { traverse } from "fp-ts/lib/Record";
 
 export const bpsRouter = Router();
 
@@ -52,7 +55,7 @@ bpsRouter.get("/matches", async (req, res) => {
   await pipe(
     getFormsCollection(),
     bindTo("formsCollection"),
-    bind("bpsCollection",getBPSCollection),
+    bind("bpsCollection", getBPSCollection),
     flatMap(({ formsCollection, bpsCollection }) =>
       tryCatch(
         async () => ({
@@ -174,4 +177,14 @@ export const getTeamBPS = (team: number) =>
       }),
     ),
     map((teamBPS) => teamBPS.bpses),
+  );
+
+export const getAllBpses = (forms: ScoutingForm[]) =>
+  pipe(
+    forms
+      .map((form) => form.teamNumber)
+      .filter((teamNumber, index, arr) => arr.indexOf(teamNumber) === index)
+      .map((teamNumber) => [teamNumber, teamNumber]),
+    Object.fromEntries,
+    traverse(ApplicativePar)(getTeamBPS),
   );

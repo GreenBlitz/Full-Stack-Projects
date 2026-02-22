@@ -3,14 +3,23 @@
 import { Router } from "express";
 import { getFormsCollection } from "./forms-router";
 import { pipe } from "fp-ts/lib/function";
-import { flatMap, fold, map, tryCatch } from "fp-ts/lib/TaskEither";
+import {
+  bind,
+  bindTo,
+  flatMap,
+  fold,
+  map,
+  right,
+  tryCatch,
+} from "fp-ts/lib/TaskEither";
 import { mongofyQuery } from "../middleware/query";
 import { generalCalculateFuel } from "../fuel/fuel-general";
 import { StatusCodes } from "http-status-codes";
 
-import type { FuelObject, GeneralFuelData } from "@repo/scouting_types";
+import type { BPS, FuelObject, GeneralFuelData } from "@repo/scouting_types";
 import { averageFuel } from "../fuel/distance-split";
 import { firstElement, isEmpty } from "@repo/array-functions";
+import { getAllBpses } from "./bps-router";
 
 export const generalRouter = Router();
 
@@ -22,7 +31,9 @@ interface AccumulatedFuelData {
 
 const ONE_ITEM_ARRAY = 1;
 
-export const calcAverageGeneralFuelData = (fuelData: GeneralFuelData[]): GeneralFuelData => {
+export const calcAverageGeneralFuelData = (
+  fuelData: GeneralFuelData[],
+): GeneralFuelData => {
   if (fuelData.length === ONE_ITEM_ARRAY || isEmpty(fuelData)) {
     return firstElement(fuelData);
   }
@@ -62,10 +73,12 @@ generalRouter.get("/", async (req, res) => {
         }),
       ),
     ),
-    map((forms) =>
+    bindTo("forms"),
+    bind("teamBpses", ({ forms }) => getAllBpses(forms)),
+    map(({ forms, teamBpses }) =>
       forms.map((form) => ({
         teamNumber: form.teamNumber,
-        generalFuelData: generalCalculateFuel(form, getAllBPS()),
+        generalFuelData: generalCalculateFuel(form, teamBpses[form.teamNumber]),
       })),
     ),
 

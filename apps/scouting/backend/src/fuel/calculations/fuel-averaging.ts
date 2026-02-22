@@ -1,5 +1,10 @@
 // בס"ד
-import type { BPS, BPSEvent, FuelObject, ShootEvent } from "@repo/scouting_types";
+import type {
+  BPS,
+  BPSEvent,
+  FuelObject,
+  ShootEvent,
+} from "@repo/scouting_types";
 import {
   calculateAverage,
   calculateSum,
