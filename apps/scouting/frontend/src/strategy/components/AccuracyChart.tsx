@@ -1,6 +1,8 @@
 // בס"ד
 import type { FC } from "react";
-import { Target, Crosshair, Locate } from "lucide-react";
+import { FiTarget, FiCrosshair } from "react-icons/fi";
+import { IoLocate } from "react-icons/io5";
+
 import { firstElement } from "@repo/array-functions";
 
 interface AccuracyChartProps {
@@ -29,17 +31,17 @@ export const AccuracyChart: FC<AccuracyChartProps> = ({ metrics }) => {
     {
       label: "Meter",
       value: metrics.meter,
-      icon: <Target size={ICON_SIZE} />,
+      icon: <FiTarget size={ICON_SIZE} />,
     },
     {
       label: "2 Meters",
       value: metrics.twoMeter,
-      icon: <Crosshair size={ICON_SIZE} />,
+      icon: <FiCrosshair size={ICON_SIZE} />,
     },
     {
       label: "More",
       value: metrics.more,
-      icon: <Locate size={ICON_SIZE} />,
+      icon: <IoLocate size={ICON_SIZE} />,
     },
   ];
 
@@ -50,7 +52,6 @@ export const AccuracyChart: FC<AccuracyChartProps> = ({ metrics }) => {
           key={card.label}
           className="relative overflow-hidden bg-slate-900/40 backdrop-blur-md border border-white/5 p-3 rounded-2xl flex flex-col items-center gap-1 shadow-xl"
         >
-
           <div
             className={`absolute -bottom-4 -right-4 w-12 h-12 blur-2xl opacity-20 rounded-full ${firstElement(getProgressColor(card.value).split(" ")).replace("text", "bg")}`}
           />
