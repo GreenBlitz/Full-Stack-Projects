@@ -12,8 +12,6 @@ import {
   right as taskRight,
   map,
   tryCatch,
-  bindTo,
-  bind,
   ApplyPar,
   right,
   ApplicativePar,

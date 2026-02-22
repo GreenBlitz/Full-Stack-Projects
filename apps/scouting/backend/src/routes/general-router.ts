@@ -11,7 +11,6 @@ import { StatusCodes } from "http-status-codes";
 import type { FuelObject, GeneralFuelData } from "@repo/scouting_types";
 import { averageFuel } from "../fuel/distance-split";
 import { firstElement, isEmpty } from "@repo/array-functions";
-import { getAllBPS } from "./teams-router";
 
 export const generalRouter = Router();
 

@@ -18,7 +18,6 @@ import { StatusCodes } from "http-status-codes";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
 import { calculateAverage, mapObject } from "@repo/array-functions";
 import { generalCalculateFuel } from "../fuel/fuel-general";
-import { getAllBPS } from "./teams-router";
 import { calcAverageGeneralFuelData } from "./general-router";
 import { castItem } from "@repo/type-utils";
 
