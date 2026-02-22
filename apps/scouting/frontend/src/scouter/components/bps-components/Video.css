@@ -69,7 +69,7 @@
   height: 40px;
   background: #1a1a1a;
   color: white;
-  display: grid;
+  display: inline-grid;
   place-items: center;
   cursor: pointer;
   font-size: 12px;

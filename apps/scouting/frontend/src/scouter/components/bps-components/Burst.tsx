@@ -2,6 +2,7 @@
 import type React from "react";
 import type { BurstData } from "./Counter";
 import "./Burst.css";
+import "./BpsBase.css";
 
 interface BurstProps {
   videoRef?: React.RefObject<HTMLVideoElement | null>;
@@ -37,7 +38,6 @@ const Burst: React.FC<BurstProps> = ({ videoRef, data, onChange }) => {
   };
 
   return (
-    // <div>
     <>
       <div className="burstDiv">
         {/* THROWN */}
@@ -64,7 +64,6 @@ const Burst: React.FC<BurstProps> = ({ videoRef, data, onChange }) => {
         </div>
       </div>
     </>
-    // {/* </div> */}
   );
 };
 

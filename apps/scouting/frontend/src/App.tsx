@@ -7,6 +7,7 @@ import { TeamTab } from "./strategy/components/TeamTab";
 import { MatchForecast } from "./strategy/components/forecast/MatchForecast";
 import { GeneralDataTable } from "./strategy/GeneralDataTable";
 import { CompareTwo } from "./strategy/CompareTwo";
+import BpsBase from "./scouter/components/bps-components/BpsBase";
 
 const App: FC = () => {
   return (
@@ -17,6 +18,7 @@ const App: FC = () => {
       <Route path="/general" element={<GeneralDataTable filters={{}} />} />
       <Route path="/forecast" element={<MatchForecast />} />
       <Route path="/compare" element={<CompareTwo />} />
+      <Route path="/bps" element={<BpsBase />} />
     </Routes>
   );
 };

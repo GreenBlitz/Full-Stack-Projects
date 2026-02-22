@@ -1,6 +1,7 @@
 //בס"ד
 import { useState } from "react";
 import "./Video.css";
+import "./BpsBase.css"
 import type React from "react";
 
 interface VideoProps {

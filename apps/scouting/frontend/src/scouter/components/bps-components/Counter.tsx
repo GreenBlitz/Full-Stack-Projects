@@ -3,6 +3,7 @@ import React from "react";
 import Burst from "./Burst";
 import "./Video.css";
 import "./Counter.css";
+import "./BpsBase.css";
 
 interface CounterProps {
   videoRef?: React.RefObject<HTMLVideoElement | null>;
@@ -73,13 +74,13 @@ const Counter: React.FC<CounterProps> = ({ videoRef }) => {
           onChange={updateCurrentBurst}
         />
         <div>
-          <button className="leftButton" onClick={goBack}>
+          <button className="leftButton settingsButton" onClick={goBack}>
             {"<<<"}
           </button>
-          <button className="centerButton" onClick={addNewBurst}>
+          <button className="centerButton settingsButton" onClick={addNewBurst}>
             +
           </button>
-          <button className="rightButton" onClick={goForward}>
+          <button className="rightButton settingsButton" onClick={goForward}>
             {">>>"}
           </button>
         </div>

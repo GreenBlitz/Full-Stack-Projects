@@ -19,4 +19,7 @@
 .burstButton {
   width: 90px;
   height: 90px;
+  background-color: black;
+  color: white;
+  margin: 5px;
 }
