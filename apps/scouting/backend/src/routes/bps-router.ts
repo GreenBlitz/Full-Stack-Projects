@@ -1,11 +1,19 @@
 // בס"ד
 import { Router } from "express";
 import { getDb } from "../middleware/db";
-import { Match, ScoutingForm, TeamedBPS } from "@repo/scouting_types";
+import {
+  BPSBlueprint,
+  Interval,
+  Match,
+  ScoutingForm,
+  TeamedBPS,
+} from "@repo/scouting_types";
 import { flow, pipe } from "fp-ts/lib/function";
-import { flatMap, map, tryCatch } from "fp-ts/lib/TaskEither";
+import { flatMap, fold, map, tryCatch } from "fp-ts/lib/TaskEither";
 import { getFormsCollection } from "./forms-router";
 import { StatusCodes } from "http-status-codes";
+import { firstElement, lastElement } from "@repo/array-functions";
+import { groupBy } from "fp-ts/lib/NonEmptyArray";
 
 export const bpsRouter = Router();
 
@@ -17,11 +25,15 @@ const getBPSCollection = flow(
 const isMatchSame = (match1: Match, match2: Match) =>
   match1.number === match2.number && match1.type === match2.type;
 
+const doIntervalsOverlap = (interval1: Interval, interval2: Interval) =>
+  (interval1.start >= interval2.start && interval1.start <= interval2.end) ||
+  (interval2.start >= interval1.start && interval2.start <= interval1.end);
+
 const getAllFormEvents = (form: ScoutingForm) => [
-  form.auto.shootEvents,
-  form.tele.transitionShift.shootEvents,
-  ...form.tele.shifts.map((shift) => shift.shootEvents),
-  form.tele.endgameShift,
+  ...form.auto.shootEvents,
+  ...form.tele.transitionShift.shootEvents,
+  ...form.tele.shifts.flatMap((shift) => shift.shootEvents),
+  ...form.tele.endgameShift.shootEvents,
 ];
 
 bpsRouter.get("/matches", async (req, res) => {
@@ -53,6 +65,41 @@ bpsRouter.get("/matches", async (req, res) => {
       })),
       bpses,
     })),
-    map(({ games, bpses }) => ),
+    map(({ games, bpses }) =>
+      games.map((game) => {
+        const teamedBPS = bpses.find((bps) => bps.team === game.team);
+        if (!teamedBPS) {
+          return game;
+        }
+
+        const bpsGame = teamedBPS.bps.find((bpsScout) =>
+          isMatchSame(bpsScout.match, game.match),
+        );
+        if (!bpsGame) {
+          return game;
+        }
+
+        const newEvents = game.events.filter(
+          (event) =>
+            !bpsGame.events.some((bpsEvent) =>
+              doIntervalsOverlap(event.interval, {
+                start: firstElement(bpsEvent.shoot),
+                end: lastElement(bpsEvent.shoot),
+              }),
+            ),
+        );
+
+        return { ...game, events: newEvents };
+      }),
+    ),
+    map(groupBy((game) => game.team.toString())),
+    fold(
+      (error) => () =>
+        Promise.resolve(res.status(error.status).send(error.reason)),
+      (teamGames) => () =>
+        Promise.resolve(
+          res.status(StatusCodes.OK).json({ teamGames } satisfies BPSBlueprint),
+        ),
+    ),
   );
 });

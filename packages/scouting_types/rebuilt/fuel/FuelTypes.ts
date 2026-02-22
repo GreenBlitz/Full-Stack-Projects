@@ -1,6 +1,6 @@
 //בס"ד
 
-import type { Match, Point } from "../scouting_form";
+import type { Match, Point, ShootEvent } from "../scouting_form";
 
 export interface GeneralFuelData {
   fullGame: FuelObject;
@@ -24,6 +24,13 @@ export interface BPS {
 export interface TeamedBPS {
   bps: BPS[];
   team: number;
+}
+
+export interface BPSBlueprint {
+  teamGames: Record<
+    string,
+    { team: number; match: Match; events: ShootEvent[] }[]
+  >;
 }
 
 export type FuelEvents = "scored" | "shot" | "missed" | "passed";
