@@ -1,10 +1,10 @@
 // בס"ד
 import { Router } from "express";
 import { join } from "path";
-import { fold, fromEither, tryCatch } from "fp-ts/lib/TaskEither";
+import { fold, fromEither, map, tryCatch } from "fp-ts/lib/TaskEither";
 import { promises as fs } from "fs";
 import { StatusCodes } from "http-status-codes";
-import { pipe } from "fp-ts/lib/function";
+import { flow, pipe } from "fp-ts/lib/function";
 import { flatMap, orElse, right, left } from "fp-ts/lib/TaskEither";
 import {
   createBodyVerificationPipe,
@@ -13,45 +13,34 @@ import {
 import type { EndpointError } from "../middleware/verification";
 import type { TaskEither } from "fp-ts/lib/TaskEither";
 import { right as rightEither } from "fp-ts/lib/Either";
-import { map } from "fp-ts/lib/Task";
+import { map as mapTask } from "fp-ts/lib/Task";
 import {
   gameDataCodec,
   gamesArrayCodec,
   type GameData,
 } from "@repo/scouting_types";
+import { getDb } from "../middleware/db";
 
 export const gameRouter = Router();
 
-const DATA_DIR = join(process.cwd(), "data");
-const GAMES_FILE = join(DATA_DIR, "games.json");
-const JSON_INDENTATION = 2;
-
-const ensureDataDir = (): TaskEither<EndpointError, void> =>
-  tryCatch(
-    () => fs.mkdir(DATA_DIR, { recursive: true }).then(() => undefined),
-    (error) => ({
-      status: StatusCodes.INTERNAL_SERVER_ERROR,
-      reason: `Error creating data directory: ${error}`,
-    }),
-  );
+const getGamesCollection = flow(
+  getDb,
+  map((db) => db.collection<GameData>("forms")),
+);
 
 export const readGames = (): TaskEither<EndpointError, GameData[]> =>
   pipe(
-    tryCatch(
-      async () => {
-        const data = await fs.readFile(GAMES_FILE, "utf-8");
-        return JSON.parse(data) as unknown;
-      },
-      (error) => ({
-        status: StatusCodes.INTERNAL_SERVER_ERROR,
-        reason:
-          error?.["code"] === "ENOENT"
-            ? "ENOENT"
-            : `Error reading games file: ${error}`,
-      }),
+    getGamesCollection(),
+    flatMap((collection) =>
+      tryCatch(
+        async () => await collection.find({}).toArray(),
+        (error) => ({
+          status: StatusCodes.INTERNAL_SERVER_ERROR,
+          reason: `Error reading games file: ${error}`,
+        }),
+      ),
     ),
-    orElse((error) => (error.reason === "ENOENT" ? right([]) : left(error))),
-    map(
+    mapTask(
       createTypeCheckingEndpointFlow(gamesArrayCodec, (errors) => ({
         status: StatusCodes.INTERNAL_SERVER_ERROR,
         reason: `Invalid games data format. error: ${errors}`,
@@ -59,19 +48,12 @@ export const readGames = (): TaskEither<EndpointError, GameData[]> =>
     ),
   );
 
-export const writeGames = (
-  games: GameData[],
-): TaskEither<EndpointError, void> =>
+export const writeGames = (games: GameData[]) =>
   pipe(
-    ensureDataDir(),
-    flatMap(() =>
+    getGamesCollection(),
+    flatMap((collection) =>
       tryCatch(
-        () =>
-          fs.writeFile(
-            GAMES_FILE,
-            JSON.stringify(games, null, JSON_INDENTATION),
-            "utf-8",
-          ),
+        async () => await collection.insertMany(games),
         (error) => ({
           status: StatusCodes.INTERNAL_SERVER_ERROR,
           reason: `Error writing games file: ${error}`,
