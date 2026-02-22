@@ -12,6 +12,7 @@ import {
 import { flow, pipe } from "fp-ts/lib/function";
 import {
   ApplicativePar,
+  ApplyPar,
   bind,
   bindTo,
   filterOrElse,
@@ -28,7 +29,8 @@ import { firstElement, lastElement } from "@repo/array-functions";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
 import { createBodyVerificationPipe } from "../middleware/verification";
 import { right as rightEither } from "fp-ts/lib/Either";
-import { traverse } from "fp-ts/lib/Record";
+import { mapWithIndex, sequence, traverse } from "fp-ts/lib/Record";
+import { sequenceS } from "fp-ts/lib/Apply";
 
 export const bpsRouter = Router();
 
@@ -187,4 +189,16 @@ export const getAllBpses = (forms: ScoutingForm[]) =>
       .map((teamNumber) => [teamNumber, teamNumber]),
     Object.fromEntries,
     traverse(ApplicativePar)(getTeamBPS),
+  );
+
+export const getTeamBPSes = (teams: Record<string, ScoutingForm[]>) =>
+  pipe(
+    teams,
+    mapWithIndex((teamStringedNumber, forms) =>
+      sequenceS(ApplyPar)({
+        forms: right(forms),
+        bpses: getTeamBPS(parseInt(teamStringedNumber)),
+      }),
+    ),
+    sequence(ApplicativePar),
   );

@@ -33,9 +33,7 @@ import { calculateSum, isEmpty, mapObject } from "@repo/array-functions";
 import { createFuelObject } from "../fuel/fuel-object";
 import { splitByDistances } from "../fuel/distance-split";
 import { calculateFuelStatisticsOfShift } from "../fuel/fuel-general";
-import { getTeamBPS } from "./bps-router";
-import { mapWithIndex, sequence } from "fp-ts/lib/Record";
-import { sequenceS } from "fp-ts/lib/Apply";
+import { getTeamBPSes } from "./bps-router";
 
 export const teamsRouter = Router();
 
@@ -161,18 +159,7 @@ teamsRouter.get("/", async (req, res) => {
         : taskRight(item),
     ),
     map(groupBy((form) => form.teamNumber.toString())),
-    flatMap((teams) =>
-      pipe(
-        teams,
-        mapWithIndex((teamStringedNumber, forms) =>
-          sequenceS(ApplyPar)({
-            forms: right(forms),
-            bpses: getTeamBPS(parseInt(teamStringedNumber)),
-          }),
-        ),
-        sequence(ApplicativePar),
-      ),
-    ),
+    flatMap(getTeamBPSes),
     map((teams) =>
       mapObject(teams, (team) => processTeam(team.bpses, team.forms)),
     ),

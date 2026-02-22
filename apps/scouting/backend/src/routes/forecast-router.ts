@@ -13,13 +13,22 @@ import {
 } from "@repo/scouting_types";
 import { right } from "fp-ts/lib/Either";
 import { getFormsCollection } from "./forms-router";
-import { flatMap, fold, fromEither, map, tryCatch } from "fp-ts/lib/TaskEither";
+import {
+  ApplicativePar,
+  flatMap,
+  fold,
+  fromEither,
+  map,
+  tryCatch,
+} from "fp-ts/lib/TaskEither";
 import { StatusCodes } from "http-status-codes";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
 import { calculateAverage, mapObject } from "@repo/array-functions";
 import { generalCalculateFuel } from "../fuel/fuel-general";
 import { calcAverageGeneralFuelData } from "./general-router";
 import { castItem } from "@repo/type-utils";
+import { getTeamBPS } from "./bps-router";
+import { traverseWithIndex } from "fp-ts/lib/Record";
 
 export const forecastRouter = Router();
 
@@ -92,16 +101,14 @@ forecastRouter.get("/", async (req, res) => {
     map((alliancesForms) =>
       mapObject(alliancesForms, Object.values<ScoutingForm[]>),
     ),
-    map((alliancesTeamedForms) => ({
-      alliancesTeamedForms,
-      bps: getAllBPS(),
-    })),
-    map(({ alliancesTeamedForms, bps }) =>
-      mapObject(alliancesTeamedForms, (allianceTeamedForms) =>
+
+    flatMap(addBPSes),
+    map((alliancesTeamedForms) =>
+      mapObject(alliancesTeamedForms, ({ allianceTeamedForms, bpses }) =>
         allianceTeamedForms.map((teamForms) => ({
           climb: calculateAverageClimbsScore(teamForms),
           fuel: calcAverageGeneralFuelData(
-            teamForms.map((form) => generalCalculateFuel(form, bps)),
+            teamForms.map((form) => generalCalculateFuel(form, bpses)),
           ),
         })),
       ),
@@ -134,3 +141,23 @@ forecastRouter.get("/", async (req, res) => {
     ),
   )();
 });
+
+interface AlliancesTeamedForms {
+  redAlliance: ScoutingForm[][];
+  blueAlliance: ScoutingForm[][];
+}
+
+const addBPSes = (alliancesTeamedForms: AlliancesTeamedForms) =>
+  pipe(
+    alliancesTeamedForms,
+    traverseWithIndex(ApplicativePar)(
+      (teamStringedNumber, allianceTeamedForms) =>
+        pipe(
+          getTeamBPS(parseInt(teamStringedNumber)),
+          map((bpses) => ({
+            allianceTeamedForms,
+            bpses,
+          })),
+        ),
+    ),
+  );
