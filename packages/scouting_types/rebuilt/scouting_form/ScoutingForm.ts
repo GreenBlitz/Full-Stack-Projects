@@ -11,13 +11,15 @@ const matchType = t.keyof({
   playoff: null,
 });
 
+export const matchCodec = t.type({
+  number: t.number,
+  type: matchType,
+});
+
 export const scoutingFormCodec = t.type({
   scouterName: t.string,
   competition: competition,
-  match: t.type({
-    number: t.number,
-    type: matchType,
-  }),
+  match: matchCodec,
   teamNumber: t.number,
   auto: autoCodec,
   tele: teleCodec,
@@ -38,4 +40,4 @@ export const defaultScoutForm: ScoutingForm = {
 };
 
 export type ScoutingForm = t.TypeOf<typeof scoutingFormCodec>;
-export type Match = ScoutingForm["match"];
+export type Match = t.TypeOf<typeof matchCodec>;

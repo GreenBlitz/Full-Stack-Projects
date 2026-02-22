@@ -3,23 +3,26 @@ import { Router } from "express";
 import { getDb } from "../middleware/db";
 import {
   BPSBlueprint,
+  bpsCodec,
   Interval,
   Match,
   ScoutingForm,
-  TeamedBPS,
+  TeamBPS,
 } from "@repo/scouting_types";
 import { flow, pipe } from "fp-ts/lib/function";
-import { flatMap, fold, map, tryCatch } from "fp-ts/lib/TaskEither";
+import { flatMap, fold, fromEither, map, tryCatch } from "fp-ts/lib/TaskEither";
 import { getFormsCollection } from "./forms-router";
 import { StatusCodes } from "http-status-codes";
 import { firstElement, lastElement } from "@repo/array-functions";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
+import { createBodyVerificationPipe } from "../middleware/verification";
+import { right as rightEither } from "fp-ts/lib/Either";
 
 export const bpsRouter = Router();
 
 const getBPSCollection = flow(
   getDb,
-  map((db) => db.collection<TeamedBPS>("bps")),
+  map((db) => db.collection<TeamBPS>("bps")),
 );
 
 const isMatchSame = (match1: Match, match2: Match) =>
@@ -72,7 +75,7 @@ bpsRouter.get("/matches", async (req, res) => {
           return game;
         }
 
-        const bpsGame = teamedBPS.bps.find((bpsScout) =>
+        const bpsGame = teamedBPS.bpses.find((bpsScout) =>
           isMatchSame(bpsScout.match, game.match),
         );
         if (!bpsGame) {
@@ -101,5 +104,51 @@ bpsRouter.get("/matches", async (req, res) => {
           res.status(StatusCodes.OK).json({ teamGames } satisfies BPSBlueprint),
         ),
     ),
-  );
+  )();
+});
+
+bpsRouter.post("/", async (req, res) => {
+  await pipe(
+    rightEither(req),
+    createBodyVerificationPipe(bpsCodec),
+    fromEither,
+    flatMap((bps) =>
+      pipe(
+        getBPSCollection(),
+        map((bpsCollection) => ({ bpsCollection, bps })),
+      ),
+    ),
+    flatMap(({ bpsCollection, bps }) =>
+      tryCatch(
+        async () => {
+          const teamEntry = await bpsCollection.findOne({ team: bps.team });
+          if (!teamEntry) {
+            return await bpsCollection.insertOne({
+              bpses: [bps],
+              team: bps.team,
+            });
+          }
+
+          const newTeamEntry = {
+            team: teamEntry.team,
+            bpses: [...teamEntry.bpses, bps],
+          };
+          return await bpsCollection.replaceOne(
+            { _id: teamEntry._id },
+            newTeamEntry,
+          );
+        },
+        (error) => ({
+          status: StatusCodes.INTERNAL_SERVER_ERROR,
+          reason: `Error Replacing Team Value: ${error}`,
+        }),
+      ),
+    ),
+    fold(
+      (error) => () =>
+        Promise.resolve(res.status(error.status).send(error.reason)),
+      (result) => () =>
+        Promise.resolve(res.status(StatusCodes.OK).json({ result })),
+    ),
+  )();
 });

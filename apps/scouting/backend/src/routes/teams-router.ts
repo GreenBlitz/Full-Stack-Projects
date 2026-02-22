@@ -129,6 +129,7 @@ export const getAllBPS = (): BPS[] => [
       },
     ],
     match: { type: "qualification", number: 10 },
+    team: 4590,
   },
 ];
 

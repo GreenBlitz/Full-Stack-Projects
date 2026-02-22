@@ -10,29 +10,6 @@ export interface GeneralFuelData {
 
 export type GameTime = keyof GeneralFuelData;
 
-export interface BPSEvent {
-  shoot: number[];
-  score: number[];
-  positions: Point[];
-}
-
-export interface BPS {
-  events: BPSEvent[];
-  match: Match;
-}
-
-export interface TeamedBPS {
-  bps: BPS[];
-  team: number;
-}
-
-export interface BPSBlueprint {
-  teamGames: Record<
-    string,
-    { team: number; match: Match; events: ShootEvent[] }[]
-  >;
-}
-
 export type FuelEvents = "scored" | "shot" | "missed" | "passed";
 export type FuelObject = GameObject<
   FuelEvents,
