@@ -7,7 +7,7 @@ export interface Scouter {
   scoutedMatches: number;
 }
 
-export interface CompetitionScouters {
+export interface CompetitionLeaderboard {
   competition: Competition;
   Scouters: Scouter[];
 }

@@ -14,6 +14,8 @@ import { ConfirmDeletePopup } from "../components/ConfirmDeletePopup";
 
 const ICON_SIZE_PIXELS = 20;
 
+// level of extra data used for error correction
+// medium uses around 15% of data
 const ERROR_CORRECTION_LEVEL: "L" | "M" | "Q" | "H" = "M";
 
 const decoder = new TextDecoder("utf-8");

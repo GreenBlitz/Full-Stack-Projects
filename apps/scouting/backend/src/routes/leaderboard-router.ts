@@ -9,12 +9,13 @@ import {
   fold,
   right,
   left,
+  filterOrElse,
 } from "fp-ts/lib/TaskEither";
 import { mongofyQuery } from "../middleware/query";
 import { StatusCodes } from "http-status-codes";
 import { pipe } from "fp-ts/lib/function";
 import type {
-  CompetitionScouters,
+  CompetitionLeaderboard,
   Scouter,
   ScoutingForm,
 } from "@repo/scouting_types";
@@ -25,9 +26,9 @@ const NOT_FOUND_INDEX = -1;
 
 export const leaderboardRouter = Router();
 
-const createCompetition = (
+const createLeaderboard = (
   forms: ScoutingForm[],
-): CompetitionScouters | null => {
+): CompetitionLeaderboard | null => {
   if (isEmpty(forms)) return null;
 
   const competitionName = firstElement(forms).competition;
@@ -69,22 +70,21 @@ leaderboardRouter.get("/", (req, res) =>
         }),
       ),
     ),
-    flatMap((forms) => {
-      if (isEmpty(forms)) return right(forms);
 
-      const firstComp = firstElement(forms).competition;
-      const isSameComp = forms.every((f) => f.competition === firstComp);
+    filterOrElse(
+      (forms: ScoutingForm[]) => {
+        if (isEmpty(forms)) return true;
+        const firstComp = firstElement(forms).competition;
+        return forms.every((form) => form.competition === firstComp);
+      },
+      () => ({
+        status: StatusCodes.BAD_REQUEST,
+        reason:
+          "Leaderboard Validation Error: Forms contain data from multiple different competitions.",
+      }),
+    ),
 
-      return isSameComp
-        ? right(forms)
-        : left({
-            status: StatusCodes.BAD_REQUEST,
-            reason:
-              "Leaderboard Validation Error: Forms contain data from multiple different competitions.",
-          });
-    }),
-
-    map((forms) => createCompetition(forms)),
+    map((forms) => createLeaderboard(forms)),
     fold(
       (error) => () =>
         Promise.resolve(res.status(error.status).send(error.reason)),

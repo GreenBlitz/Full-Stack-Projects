@@ -2,14 +2,14 @@
 
 import type React from "react";
 import { useMemo, useState, useEffect } from "react";
-import type { Competition, CompetitionScouters } from "@repo/scouting_types";
+import type { Competition, CompetitionLeaderboard } from "@repo/scouting_types";
 import { isEmpty } from "@repo/array-functions";
 
 const leaderboardUrl = "/api/v1/leaderboard/";
 
 export const scouterColor: Record<string, string> = {
   Levi: "text-purple-400",
-  karni: "text-green-800",
+  Karni: "text-green-800",
   Roni: "text-pink-300",
 };
 
@@ -17,25 +17,19 @@ const fetchCompetitionData = async (competition: Competition) => {
   const params = new URLSearchParams({ competition: competition });
   const url = `${leaderboardUrl}?${params.toString()}`;
 
-  try {
-    const response = await fetch(url, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    });
+  const response = await fetch(url, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Server Error: ${errorText}`);
-    }
-
-    const data = await response.json();
-    return data.competitionScouters as CompetitionScouters;
-  } catch (err) {
-    console.error("Fetch failed:", err);
-    throw err;
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Server Error: ${errorText}`);
   }
-};
 
+  const data = await response.json();
+  return data.competitionScouters as CompetitionLeaderboard;
+};
 interface ScouterLeaderboardProps {
   competition: Competition;
 }
@@ -43,7 +37,7 @@ interface ScouterLeaderboardProps {
 export const Leaderboard: React.FC<ScouterLeaderboardProps> = ({
   competition,
 }) => {
-  const [data, setData] = useState<CompetitionScouters | null>(null);
+  const [data, setData] = useState<CompetitionLeaderboard | null>(null);
   const [isLoading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
