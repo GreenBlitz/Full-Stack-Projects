@@ -7,10 +7,12 @@ import { serialize } from "@repo/serde";
 import { LuQrCode } from "react-icons/lu";
 import { MdFileUpload } from "react-icons/md";
 import { IoIosRemoveCircle } from "react-icons/io";
+import { CiEdit } from "react-icons/ci";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { isEmpty } from "@repo/array-functions";
 import { useNavigate } from "react-router-dom";
 import { ConfirmDeletePopup } from "../components/ConfirmDeletePopup";
+import { createNewScoutingForm } from "./ScoutMatch";
 
 const ICON_SIZE_PIXELS = 20;
 
@@ -24,6 +26,8 @@ export const ScoutedMatches: FC = () => {
     "scouted_forms",
     [],
   );
+  const [_currentlyScoutingMatch, setCurrentlyScoutingMatch] =
+    useLocalStorage<ScoutingForm>("form", createNewScoutingForm());
   const [selectedMatch, setSelectedMatch] = useState<ScoutingForm>();
   const [isLoading, setIsLoading] = useState(false);
   const [deletedMatchIndex, setDeletedMatch] = useState<number>();
@@ -143,6 +147,16 @@ export const ScoutedMatches: FC = () => {
                     className="bg-slate-600 p-2 rounded-2xl mx-2"
                   >
                     <LuQrCode size={ICON_SIZE_PIXELS} />
+                  </div>
+                  <div
+                    onClick={() => {
+                      setCurrentlyScoutingMatch(match);
+                      removeMatch(index);
+                      void navigate("/scout");
+                    }}
+                    className="bg-orange-500 p-2 rounded-2xl mx-2"
+                  >
+                    <CiEdit size={ICON_SIZE_PIXELS} />
                   </div>
                 </div>
               </div>
