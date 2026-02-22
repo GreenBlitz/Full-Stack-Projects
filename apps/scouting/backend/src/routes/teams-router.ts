@@ -1,7 +1,7 @@
 // בס"ד
 
 import { Router } from "express";
-import { right } from "fp-ts/lib/Either";
+import { right as rightEither } from "fp-ts/lib/Either";
 import { pipe } from "fp-ts/lib/function";
 import { createTypeCheckingEndpointFlow } from "../middleware/verification";
 import {
@@ -12,6 +12,11 @@ import {
   right as taskRight,
   map,
   tryCatch,
+  bindTo,
+  bind,
+  ApplyPar,
+  right,
+  ApplicativePar,
 } from "fp-ts/lib/TaskEither";
 import { getFormsCollection } from "./forms-router";
 import { StatusCodes } from "http-status-codes";
@@ -30,6 +35,9 @@ import { calculateSum, isEmpty, mapObject } from "@repo/array-functions";
 import { createFuelObject } from "../fuel/fuel-object";
 import { splitByDistances } from "../fuel/distance-split";
 import { calculateFuelStatisticsOfShift } from "../fuel/fuel-general";
+import { getTeamBPS } from "./bps-router";
+import { mapWithIndex, sequence } from "fp-ts/lib/Record";
+import { sequenceS } from "fp-ts/lib/Apply";
 
 export const teamsRouter = Router();
 
@@ -117,22 +125,6 @@ const processTeam = (bpses: BPS[], forms: ScoutingForm[]): TeamData => {
   return { tele, auto, fullGame, metrics: { epa: 0, bps: 0 } };
 };
 
-export const getAllBPS = (): BPS[] => [
-  {
-    events: [
-      {
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-        score: [1000, 2000, 3000],
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-        shoot: [1000, 1400, 2000, 3000],
-        positions: [{ x: 300, y: 200 }],
-      },
-    ],
-    match: { type: "qualification", number: 10 },
-    team: 4590,
-  },
-];
-
 teamsRouter.get("/", async (req, res) => {
   await pipe(
     getFormsCollection(),
@@ -140,7 +132,7 @@ teamsRouter.get("/", async (req, res) => {
       pipe(
         req.query,
         castItem,
-        right,
+        rightEither,
         createTypeCheckingEndpointFlow(teamsProps, (error) => ({
           status: StatusCodes.BAD_REQUEST,
           reason: `Incorrect Query Parameters: ${error}`,
@@ -171,8 +163,21 @@ teamsRouter.get("/", async (req, res) => {
         : taskRight(item),
     ),
     map(groupBy((form) => form.teamNumber.toString())),
-    map((teams) => ({ teams, bpses: getAllBPS() })),
-    map(({ teams, bpses }) => mapObject(teams, processTeam.bind(null, bpses))),
+    flatMap((teams) =>
+      pipe(
+        teams,
+        mapWithIndex((teamStringedNumber, forms) =>
+          sequenceS(ApplyPar)({
+            forms: right(forms),
+            bpses: getTeamBPS(parseInt(teamStringedNumber)),
+          }),
+        ),
+        sequence(ApplicativePar),
+      ),
+    ),
+    map((teams) =>
+      mapObject(teams, (team) => processTeam(team.bpses, team.forms)),
+    ),
     fold(
       (error) => () =>
         Promise.resolve(res.status(error.status).send(error.reason)),

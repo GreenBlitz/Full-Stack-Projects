@@ -11,6 +11,8 @@ import {
 } from "@repo/scouting_types";
 import { flow, pipe } from "fp-ts/lib/function";
 import {
+  bind,
+  bindTo,
   filterOrElse,
   flatMap,
   fold,
@@ -49,12 +51,8 @@ const getAllFormEvents = (form: ScoutingForm) => [
 bpsRouter.get("/matches", async (req, res) => {
   await pipe(
     getFormsCollection(),
-    flatMap((formsCollection) =>
-      pipe(
-        getBPSCollection(),
-        map((bpsCollection) => ({ formsCollection, bpsCollection })),
-      ),
-    ),
+    bindTo("formsCollection"),
+    bind("bpsCollection",getBPSCollection),
     flatMap(({ formsCollection, bpsCollection }) =>
       tryCatch(
         async () => ({
@@ -119,12 +117,8 @@ bpsRouter.post("/", async (req, res) => {
     rightEither(req),
     createBodyVerificationPipe(bpsCodec),
     fromEither,
-    flatMap((bps) =>
-      pipe(
-        getBPSCollection(),
-        map((bpsCollection) => ({ bpsCollection, bps })),
-      ),
-    ),
+    bindTo("bps"),
+    bind("bpsCollection", getBPSCollection),
     flatMap(({ bpsCollection, bps }) =>
       tryCatch(
         async () => {
@@ -160,7 +154,7 @@ bpsRouter.post("/", async (req, res) => {
   )();
 });
 
-export const getAllBPS = (team: number) =>
+export const getTeamBPS = (team: number) =>
   pipe(
     getBPSCollection(),
     flatMap((collection) =>
@@ -179,4 +173,5 @@ export const getAllBPS = (team: number) =>
         reason: "No BPS for this team",
       }),
     ),
+    map((teamBPS) => teamBPS.bpses),
   );
