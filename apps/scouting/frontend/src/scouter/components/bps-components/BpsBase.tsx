@@ -11,7 +11,7 @@ function app() {
   const timestamps = ["00:05", "37:00", "00:20"];
   
   return (
-    <>
+    <div className="max-w-[1280px] mx-auto p-8 text-center">
       <div className="videoContainer">
         <Video 
           videoSrc={video} 
@@ -22,7 +22,7 @@ function app() {
       <div>
         <Counter videoRef={videoRef} />
       </div>
-    </>
+    </div>
   )
 }
 

@@ -8,7 +8,11 @@ interface BurstProps {
   onChange: (data: BurstData) => void;
 }
 
-const COUNTER_INCREMENT = (videoRef: React.RefObject<HTMLVideoElement | null> | undefined, data: BurstData, onChange: (data: BurstData) => void) => {
+
+
+
+const incrementCounter = (videoRef: React.RefObject<HTMLVideoElement | null> | undefined, data: BurstData, onChange: (data: BurstData) => void) => {
+  const COUNTER_INCREMENT = 1;
   if (!videoRef?.current) return;
   if (videoRef.current === undefined) return;
 
@@ -16,12 +20,13 @@ const COUNTER_INCREMENT = (videoRef: React.RefObject<HTMLVideoElement | null> | 
 
   onChange({
     ...data,
-    thrown: data.thrown + 1,
+    thrown: data.thrown + COUNTER_INCREMENT,
     thrownArray: [...data.thrownArray, currentTime],
   });
 };
 
 const handleScored = (videoRef: React.RefObject<HTMLVideoElement | null> | undefined, data: BurstData, onChange: (data: BurstData) => void) => {
+  const COUNTER_INCREMENT = 1;
   if (!videoRef?.current) return;
   if (videoRef.current === undefined) return;
 
@@ -29,13 +34,13 @@ const handleScored = (videoRef: React.RefObject<HTMLVideoElement | null> | undef
 
   onChange({
     ...data,
-    scored: data.scored + 1,
+    scored: data.scored + COUNTER_INCREMENT,
     scoredArray: [...data.scoredArray, currentTime],
   });
 };
 
 const Burst: React.FC<BurstProps> = ({ videoRef, data, onChange }) => {
-
+  const COUNTER_INCREMENT = 1;
   return (
     <div
       className="
@@ -68,7 +73,7 @@ const Burst: React.FC<BurstProps> = ({ videoRef, data, onChange }) => {
             text-white
             m-1.25
           "
-          onClick={() => COUNTER_INCREMENT(videoRef, data, onChange)}
+          onClick={() => incrementCounter (videoRef, data, onChange)}
         >
           +1
         </button>
