@@ -10,6 +10,7 @@ import type {
   TeleClimbSide,
   TeleClimbTime,
   ScoutingForm,
+  Alliance,
 } from "@repo/scouting_types";
 import { ClimbSideButton } from "./ClimbSideButton";
 
@@ -18,6 +19,7 @@ interface InputClimbProps {
   updateClimbForm: (updates: Climb) => void;
   originTime: number;
   currentForm: ScoutingForm;
+  alliance: Alliance;
 }
 
 export const ClimbInput: React.FC<InputClimbProps> = ({
@@ -25,6 +27,7 @@ export const ClimbInput: React.FC<InputClimbProps> = ({
   updateClimbForm,
   originTime,
   currentForm,
+  alliance,
 }) => {
   const [climbLevel, setClimbLevel] = useState<TeleClimbLevel>("L0");
   const [climbSide, setClimbSide] = useState<TeleClimbSide>({
@@ -77,15 +80,18 @@ export const ClimbInput: React.FC<InputClimbProps> = ({
 
     updateClimbForm(update);
   };
+  const sideButton = (
+    <ClimbSideButton
+      climbSide={climbSide}
+      setClimbSide={setClimbSide}
+      submitClimbSides={handleSideUpdate}
+      isAuto={isAuto}
+    />
+  );
   return (
     <div className="flex flex-col items-center justify-center w-full h-full">
       <div className="flex flex-row items-start gap-16 bg-slate-900/60 p-12 rounded-[3rem] border border-white/10 shadow-2xl backdrop-blur-xl">
-        <ClimbSideButton
-          climbSide={climbSide}
-          setClimbSide={setClimbSide}
-          submitClimbSides={handleSideUpdate}
-          isAuto={isAuto}
-        />
+        {alliance === "blue" && sideButton}
         <ClimbLevelSlider
           isAuto={isAuto}
           onClimbLevelChange={setClimbLevel}
@@ -95,6 +101,7 @@ export const ClimbInput: React.FC<InputClimbProps> = ({
           submitClimbLevelAndTime={handleLevelAndTimeUpdate}
           climbLevel={climbLevel}
         />
+        {alliance === "red" && sideButton}
       </div>
     </div>
   );

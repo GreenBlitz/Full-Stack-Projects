@@ -39,6 +39,11 @@ export const ShiftTab: FC<ShiftTabProps> = ({
         setForm={setForm}
         currentForm={currentForm}
         originTime={originTime}
+        onBack={() => {
+          setIsClimbing(false);
+        }}
+        name={shiftType}
+        alliance={alliance}
       />
     );
   }
