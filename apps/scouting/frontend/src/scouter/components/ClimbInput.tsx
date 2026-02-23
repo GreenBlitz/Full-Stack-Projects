@@ -89,7 +89,9 @@ export const ClimbInput: React.FC<InputClimbProps> = ({
     />
   );
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full">
+    <div
+      className={`flex flex-col items-center justify-center m${alliance === "blue" ? "r" : "l"}-auto h-full`}
+    >
       <div className="flex flex-row items-start gap-16 bg-slate-900/60 p-12 rounded-[3rem] border border-white/10 shadow-2xl backdrop-blur-xl">
         {alliance === "blue" && sideButton}
         <ClimbLevelSlider

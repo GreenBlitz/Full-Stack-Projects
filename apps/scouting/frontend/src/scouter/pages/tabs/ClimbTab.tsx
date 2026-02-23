@@ -40,7 +40,7 @@ export const ClimbTab: FC<ClimbTabProps> = ({
 
   const backButton = (
     <button
-      className={`h-full w-20 bg-${alliance}-500 uppercase`}
+      className={`h-full w-20 m${alliance === "blue" ? "r" : "l"}-4 bg-${alliance}-500 uppercase`}
       onClick={onBack}
     >
       {name}

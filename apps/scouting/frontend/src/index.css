@@ -126,5 +126,6 @@ button:focus-visible {
 }
 
 @source inline("{hover:,}bg-{red,rose,yellow,emerald,blue}-{50,{100..900..100},950}");
+@source inline("m{r,l}-{1,{2..92..2},96,auto}");
 
 @import "tailwindcss";
