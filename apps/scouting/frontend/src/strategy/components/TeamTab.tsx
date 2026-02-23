@@ -18,6 +18,8 @@ import { MetricsChart } from "./MetricsChart";
 import { BarChart } from "../BarChart";
 import { calculateMedianClimbs, getClimbDataset } from "../ClimbProcessing";
 import { useLocalStorage } from "@repo/local_storage_hook";
+import { HeatMap } from "./HeatMap";
+import { redField } from "@repo/rebuilt_map";
 
 const METER_CENTIMETERS = 100;
 const TWO_METER_CENTIMETERS = 200;
@@ -96,6 +98,22 @@ export const TeamTab: FC = () => {
           }}
         />
       )}
+
+      {data && (
+        <div className={`${graphSection} text-center`}>
+          <span className="font-black tracking-wider uppercase text-slate-400 text-2xl">
+            shoot positions
+          </span>
+          <div className="w-full h-48">
+            <HeatMap
+              positions={data.fuel.flatMap((fuel) => fuel.positions)}
+              path={redField}
+              aspectRatio={0} //bro this does nothing
+            />
+          </div>
+        </div>
+      )}
+
       {data && (
         <div className={graphSection}>
           <LineChart
