@@ -1,6 +1,6 @@
 //בס"ד
 import type { FC } from "react";
-import type { TabProps } from "./scouter/pages/ScoutMatch";
+import type { TabProps } from "../ScoutMatch";
 const MATCH_NUMBER_MAX = 127;
 const TEAM_NUMBER_MAX = 16383;
 const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
@@ -13,12 +13,12 @@ const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
             type="text"
             className="inputStyle w-85 h-full"
             value={form.scouterName}
-            onChange={(event) =>
-              {setForm((prev) => ({
+            onChange={(event) => {
+              setForm((prev) => ({
                 ...prev,
                 scouterName: event.target.value,
-              }))}
-            }
+              }));
+            }}
           />
         </div>
       </div>
@@ -31,15 +31,15 @@ const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
             min={0}
             max={MATCH_NUMBER_MAX}
             value={form.match.number}
-            onChange={(event) =>
-              {setForm((prev) => ({
+            onChange={(event) => {
+              setForm((prev) => ({
                 ...prev,
                 match: {
                   ...prev.match,
                   number: Number(event.target.value),
                 },
-              }))}
-            }
+              }));
+            }}
           />
         </div>
       </div>
@@ -52,11 +52,11 @@ const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
             min={0}
             max={TEAM_NUMBER_MAX}
             value={form.teamNumber}
-            onChange={(event) =>
-              {setForm((prev) => ({
+            onChange={(event) => {
+              setForm((prev) => ({
                 ...prev,
                 teamNumber: Number(event.target.value),
-              }))
+              }));
             }}
           />
         </div>
@@ -67,8 +67,8 @@ const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
           <select
             className="inputStyle w-90.75 h-full"
             value={form.match.type}
-            onChange={(event) =>
-              {setForm((prev) => ({
+            onChange={(event) => {
+              setForm((prev) => ({
                 ...prev,
                 match: {
                   ...prev.match,
@@ -77,7 +77,7 @@ const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
                     | "qualification"
                     | "playoff",
                 },
-              }))
+              }));
             }}
           >
             <option value="practice">Practice</option>

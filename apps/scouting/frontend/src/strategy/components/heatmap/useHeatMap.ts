@@ -1,7 +1,7 @@
 // בס"ד
 import { useRef, useEffect, useCallback, useState, type RefObject } from "react";
 import type { Point } from "@repo/scouting_types";
-import { HEAT_STYLE, HEAT_VALUES, LAYOUT, mapHeatPoints } from "./HeatMapUtils";
+import { HEAT_STYLE, HEAT_VALUES, LAYOUT, mapHeatPoints } from "./heatmap/HeatMapUtils";
 
 export interface UseHeatMapResult {
   heatmapLayerRef: RefObject<HTMLDivElement | null>;

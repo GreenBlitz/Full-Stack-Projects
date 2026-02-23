@@ -18,7 +18,7 @@ import { useLocalStorage } from "@repo/local_storage_hook";
 import { PostMatchTab } from "./tabs/PostMatchTab";
 import { useNavigate } from "react-router-dom";
 import { ClimbTab } from "./tabs/ClimbTab";
-import { PreMatchTab } from "../../PreMatchTab";
+import { PreMatchTab } from "./tabs/PreMatchTab";
 export interface TabProps {
   setForm: Dispatch<SetStateAction<ScoutingForm>>;
   currentForm: ScoutingForm;
