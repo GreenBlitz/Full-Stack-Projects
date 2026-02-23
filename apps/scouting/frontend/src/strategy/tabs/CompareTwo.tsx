@@ -7,7 +7,7 @@ import type {
 } from "@repo/scouting_types";
 import type React from "react";
 import { useEffect, useState, type FC } from "react";
-import { fetchTeamNumbers } from "./fetches";
+import { fetchTeamNumbers } from "../fetches";
 
 const compareUrl = "/api/v1/compare/";
 

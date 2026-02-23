@@ -1,7 +1,7 @@
 // בס"ד
 import { Router } from "express";
 import { StatusCodes } from "http-status-codes";
-import { tbaRouter } from "./tba";
+import { tbaRouter } from "./tba-router";
 import { gameRouter } from "./game-router";
 import { formsRouter } from "./forms-router";
 import { forecastRouter } from "./forecast-router";
