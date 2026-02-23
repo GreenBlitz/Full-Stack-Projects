@@ -39,12 +39,19 @@ export const fetchGameMatches = async <TMatch = unknown>(
 };
 
 
-type initialLocation = "close" | "middle" | "far";
+const initialLocation = {
+  CLOSE :"close",
+  MIDDLE : "middle",
+  FAR: "far"
+
+}
+
+type initialLocationType = typeof initialLocation[keyof typeof initialLocation];
 
 interface MatchQualWithTeamNumberProps {
   qual: number;
   alliance: Alliance;
-  initialLocation: initialLocation;
+  initialLocation: initialLocationType;
 }
 
 type Match = { blueAlliance: number[]; redAlliance: number[] };
@@ -90,8 +97,10 @@ const matchQualWithTeamNumber = (
 };
 
 
-const tbaMatches = await fetchGameMatches<TBAMatchLike>("2025isde1", 40);
+const tbaMatches = await fetchGameMatches<TBAMatchLike>("2025iscmp", 20);
+console.log(tbaMatches)
 const allMatches = toQualMatches(tbaMatches);
+console.log(allMatches)
 const team = matchQualWithTeamNumber({qual: 23, alliance: "blue", initialLocation: "close"}, allMatches);
 
 const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {

@@ -32,20 +32,23 @@ import type { Type } from "io-ts";
 import { getDb } from "../middleware/db";
 import { getMax } from "@repo/array-functions";
 import { fold as booleanFold } from "fp-ts/boolean";
+import { X } from "lucide-react";
 
 export const tbaRouter = Router();
 
-const TBA_KEY = process.env.TBA_API_KEY ?? "yourtbakey";
+// const TBA_KEY = process.env.TBA_API_KEY ?? "yourtbakey";
+const TBA_KEY =
+  "DRoJnMBCb5aNElE4KDPRjOHOZklV2yAPwzi9tU9WMPe8WdLk4Xwe4iaHXb1JjEl5";
 const TBA_URL = "https://www.thebluealliance.com/api/v3";
 
 const tbaMatches = t.array(tbaMatch(scoreBreakdown2026, t.type({})));
 type TBAMatches = t.TypeOf<typeof tbaMatches>;
 
-const print = <T>(ttt:T) =>{
-  console.log("ttt")
-  console.log(ttt)
-  return ttt
-} 
+const print = <T>(ttt: T) => {
+  console.log("ttt");
+  console.log(ttt);
+  return ttt;
+};
 
 const getCollection = flow(
   getDb,
@@ -87,10 +90,13 @@ const insertMatches = (matches: TBAMatches) =>
 const getStoredMatches = flow(
   getCollection,
   flatMap((collection) =>
-    tryCatch(()=>collection.find().toArray(), (error) => ({
-      reason: `Error getting from collection ${String(error)}`,
-      status: StatusCodes.BAD_REQUEST,
-    })),
+    tryCatch(
+      () => collection.find().toArray(),
+      (error) => ({
+        reason: `Error getting from collection ${String(error)}`,
+        status: StatusCodes.BAD_REQUEST,
+      }),
+    ),
   ),
 );
 
@@ -108,18 +114,22 @@ const getMatches = flow(
   ),
   flatMap(({ currentMatches, body }) => {
     const maxStored = getMaxMatchNumber(currentMatches);
-
+    console.log(body);
     return pipe(
       maxStored < body.maxMatch,
+
       booleanFold(
-        () =>
-          pipe(
+        () => {
+          const x = fetchTba(`/event/${body.event}/matches`, tbaMatches);
+          console.log(`this is the response${x}`);
+          return pipe(
             fetchTba(`/event/${body.event}/matches`, tbaMatches),
             chainFirstTaskK(
               (fetchedMatches) => async () =>
                 Promise.resolve(insertMatches(fetchedMatches)),
             ),
-          ),
+          );
+        },
         () => fromEither(right(currentMatches)),
       ),
     );
