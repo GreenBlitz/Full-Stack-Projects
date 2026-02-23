@@ -18,6 +18,7 @@ import { MetricsChart } from "../../components/MetricsChart";
 import { BarChart } from "../../components/BarChart";
 import { calculateMedianClimbs, getClimbDataset } from "../../ClimbProcessing";
 import { useLocalStorage } from "@repo/local_storage_hook";
+import { fetchTeamNumbers } from "../../fetches";
 
 const METER_CENTIMETERS = 100;
 const TWO_METER_CENTIMETERS = 200;
@@ -66,6 +67,8 @@ export const TeamTab: FC = () => {
     "team/recency",
     null,
   );
+  const [scoutedTeams, setScoutedTeams] = useState<number[]>();
+
   const data = useMemo(() => teamData?.[phase], [teamData, phase]);
 
   useEffect(() => {
@@ -77,6 +80,10 @@ export const TeamTab: FC = () => {
       .catch(alert);
   }, [teamNumber, recency]);
 
+  useEffect(() => {
+    fetchTeamNumbers().then(setScoutedTeams).catch(console.error);
+  }, []);
+
   return (
     <div className="flex flex-col text-black items-center bg-slate-950">
       <TeamSelect
@@ -84,6 +91,7 @@ export const TeamTab: FC = () => {
         recency={recency ?? undefined}
         setTeamNumber={setTeamNumber}
         setRecency={setRecency}
+        scoutedTeams={scoutedTeams ?? []}
       />
       <PhaseToggle activeMode={phase} setActiveMode={setPhase} />
 

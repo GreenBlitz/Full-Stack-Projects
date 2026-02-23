@@ -55,3 +55,20 @@ export const mapObject = <K extends string, A, B>(
 
   return Object.fromEntries(entries) as unknown as Record<K, B>;
 };
+
+interface Partition<T> {
+  true: T[];
+  false: T[];
+}
+export const partition = <T>(
+  array: T[],
+  predicate: (item: T) => boolean,
+): Partition<T> => {
+  return array.reduce(
+    (acc, item) => {
+      acc[predicate(item) ? "true" : "false"].push(item);
+      return acc;
+    },
+    { true: [], false: [] } as Partition<T>,
+  );
+};
