@@ -20,8 +20,8 @@ import { calculateMedianClimbs, getClimbDataset } from "../../ClimbProcessing";
 import { useLocalStorage } from "@repo/local_storage_hook";
 import { fetchTeamNumbers } from "../../fetches";
 
-const METER_CENTIMETERS = 100;
-const TWO_METER_CENTIMETERS = 200;
+const METER_AND_HALF_CENTIMETERS = 150;
+const THREE_METER_CENTIMETERS = 300;
 const MORE_DISTANCE = 2000;
 
 const TEAM_DATA_URL = "/api/v1/team";
@@ -98,8 +98,12 @@ export const TeamTab: FC = () => {
       {data && (
         <AccuracyChart
           metrics={{
-            meter: calculateAccuracy(data.accuracy[METER_CENTIMETERS]),
-            twoMeter: calculateAccuracy(data.accuracy[TWO_METER_CENTIMETERS]),
+            meterAndHalf: calculateAccuracy(
+              data.accuracy[METER_AND_HALF_CENTIMETERS],
+            ),
+            threeMeter: calculateAccuracy(
+              data.accuracy[THREE_METER_CENTIMETERS],
+            ),
             more: calculateAccuracy(data.accuracy[MORE_DISTANCE]),
           }}
         />

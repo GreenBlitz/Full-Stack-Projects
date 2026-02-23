@@ -7,8 +7,8 @@ import { firstElement } from "@repo/array-functions";
 
 interface AccuracyChartProps {
   metrics: {
-    meter: number;
-    twoMeter: number;
+    meterAndHalf: number;
+    threeMeter: number;
     more: number;
   };
 }
@@ -29,13 +29,13 @@ export const AccuracyChart: FC<AccuracyChartProps> = ({ metrics }) => {
 
   const cards = [
     {
-      label: "Meter",
-      value: metrics.meter,
+      label: "1.5 Meters",
+      value: metrics.meterAndHalf,
       icon: <FiTarget size={ICON_SIZE} />,
     },
     {
-      label: "2 Meters",
-      value: metrics.twoMeter,
+      label: "3 Meters",
+      value: metrics.threeMeter,
       icon: <FiCrosshair size={ICON_SIZE} />,
     },
     {
