@@ -10,21 +10,25 @@ import { CompareTwo } from "./strategy/tabs/CompareTwo";
 import BpsBase from "./scouter/components/bps-components/BpsBase";
 import { Leaderboard } from "./scouter/pages/Leaderboard";
 import { CURRENT_COMPETITION } from "@repo/scouting_types";
+import { StrategyNavBar } from "./strategy/components/StrategyNavBar";
 
 const App: FC = () => {
   return (
     <Routes>
       <Route path="*" element={<ScoutedMatches />} />
       <Route path="/scout" element={<ScoutMatch />} />
-      <Route path="/team" element={<TeamTab />} />
-      <Route path="/general" element={<GeneralDataTable filters={{}} />} />
-      <Route path="/forecast" element={<MatchForecast />} />
-      <Route path="/compare" element={<CompareTwo />} />
-      <Route path="/bps" element={<BpsBase />} />
       <Route
         path="/leaderboard"
         element={<Leaderboard competition={CURRENT_COMPETITION} />}
       />
+      <Route path="bps" element={<BpsBase />} />
+
+      <Route path="/strategy" element={<StrategyNavBar />}>
+        <Route path="team" element={<TeamTab />} />
+        <Route path="general" element={<GeneralDataTable filters={{}} />} />
+        <Route path="forecast" element={<MatchForecast />} />
+        <Route path="compare" element={<CompareTwo />} />
+      </Route>
     </Routes>
   );
 };
