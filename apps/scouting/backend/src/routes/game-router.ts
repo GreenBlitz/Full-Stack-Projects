@@ -32,13 +32,10 @@ export const readGames = (): TaskEither<EndpointError, GameData[]> =>
   pipe(
     getGamesCollection(),
     flatMap((collection) =>
-      tryCatch(
-        async () => await collection.find({}).toArray(),
-        (error) => ({
-          status: StatusCodes.INTERNAL_SERVER_ERROR,
-          reason: `Error reading games file: ${error}`,
-        }),
-      ),
+      tryCatch(collection.find({}).toArray, (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `Error reading games file: ${error}`,
+      })),
     ),
     mapTask(
       createTypeCheckingEndpointFlow(gamesArrayCodec, (errors) => ({
@@ -53,7 +50,7 @@ export const writeGames = (games: GameData[]) =>
     getGamesCollection(),
     flatMap((collection) =>
       tryCatch(
-        async () => await collection.insertMany(games),
+        () => collection.insertMany(games),
         (error) => ({
           status: StatusCodes.INTERNAL_SERVER_ERROR,
           reason: `Error writing games file: ${error}`,
