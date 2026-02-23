@@ -66,7 +66,7 @@ export const partition = <T>(
 ): Partition<T> => {
   return array.reduce(
     (acc, item) => {
-      acc[predicate(item) ? "true" : "false"].push(item);
+      acc[`${predicate(item)}`].push(item);
       return acc;
     },
     { true: [], false: [] } as Partition<T>,
