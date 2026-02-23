@@ -25,18 +25,25 @@ export const gameRouter = Router();
 
 const getGamesCollection = flow(
   getDb,
-  map((db) => db.collection<GameData>("forms")),
+  map((db) => db.collection<GameData>("games")),
 );
 
 export const readGames = (): TaskEither<EndpointError, GameData[]> =>
   pipe(
     getGamesCollection(),
     flatMap((collection) =>
-      tryCatch(collection.find({}).toArray, (error) => ({
-        status: StatusCodes.INTERNAL_SERVER_ERROR,
-        reason: `Error reading games file: ${error}`,
-      })),
+      tryCatch(
+        () => collection.find({}).toArray(),
+        (error) => ({
+          status: StatusCodes.INTERNAL_SERVER_ERROR,
+          reason: `Error reading games file: ${error}`,
+        }),
+      ),
     ),
+    map((item) => {
+      console.log(item);
+      return item;
+    }),
     mapTask(
       createTypeCheckingEndpointFlow(gamesArrayCodec, (errors) => ({
         status: StatusCodes.INTERNAL_SERVER_ERROR,
