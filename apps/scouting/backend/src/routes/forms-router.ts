@@ -11,12 +11,14 @@ import {
   fold,
   fromEither,
   map,
+  right,
+  tap,
   tryCatch,
 } from "fp-ts/lib/TaskEither";
 import { scoutingFormCodec, type ScoutingForm } from "@repo/scouting_types";
 import { StatusCodes } from "http-status-codes";
 import { createBodyVerificationPipe } from "../middleware/verification";
-import { right } from "fp-ts/lib/Either";
+import { right as rightEither } from "fp-ts/lib/Either";
 import { mongofyQuery } from "../middleware/query";
 import * as t from "io-ts";
 
@@ -44,7 +46,7 @@ const combinedCodec = t.union([scoutingFormCodec, t.array(scoutingFormCodec)]);
 
 formsRouter.post("/", async (req, res) => {
   await pipe(
-    right(req),
+    rightEither(req),
     createBodyVerificationPipe(combinedCodec),
     fromEither,
     map((combinedBody) =>
@@ -52,7 +54,18 @@ formsRouter.post("/", async (req, res) => {
     ),
     bindTo("forms"),
     bind("collection", getFormsCollection),
-
+    //remove any forms currently in that share a team number and scouter name from forms
+    tap(({ collection, forms }) =>
+      right(
+        collection.deleteMany({
+          $or: forms.map((form) => ({
+            scouterName: form.scouterName,
+            "match.number": form.match.number,
+            "match.type": form.match.type,
+          })),
+        }),
+      ),
+    ),
     map(({ collection, forms }) => collection.insertMany(forms)),
     fold(
       (error) => () =>
