@@ -1,11 +1,13 @@
 //בס"ד
 
-import type { FC } from "react";
-import type { TabProps } from "../ScoutMatch";
+import type { Dispatch, FC, SetStateAction } from "react";
 import { ClimbInput } from "../../components/ClimbInput";
-import type { Climb } from "@repo/scouting_types";
+import type { Climb, ScoutingForm } from "@repo/scouting_types";
 
-export interface ClimbTabProps extends TabProps{
+export interface ClimbTabProps {
+  setForm: Dispatch<SetStateAction<ScoutingForm>>;
+  originTime: number;
+  currentForm: ScoutingForm;
   isAuto: boolean;
 }
 

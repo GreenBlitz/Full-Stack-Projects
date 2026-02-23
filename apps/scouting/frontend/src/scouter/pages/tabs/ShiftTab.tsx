@@ -1,6 +1,6 @@
 // בס"ד
 
-import { useState, type FC } from "react";
+import { useState, type FC, type SetStateAction } from "react";
 import type { TabProps } from "../ScoutMatch";
 import { ScoreMap, defaultPoint } from "../../components/ScoreMap";
 import type {
@@ -11,6 +11,7 @@ import type {
 } from "@repo/scouting_types";
 import { MovementForm } from "../../components/MovementForm";
 import Stopwatch from "../../components/stopwatch";
+import { ClimbTab } from "./ClimbTab";
 
 interface ShiftTabProps extends TabProps {
   tabIndex: number;
@@ -27,6 +28,20 @@ export const ShiftTab: FC<ShiftTabProps> = ({
 }) => {
   const [mapPosition, setMapPosition] = useState<Point>();
   const [mapZone, setMapZone] = useState<Alliance>(alliance);
+  const [isClimbing, setIsClimbing] = useState(false);
+
+  const gamePhase = shiftType === "auto" ? "auto" : "tele";
+
+  if (isClimbing) {
+    return (
+      <ClimbTab
+        isAuto={shiftType === "auto"}
+        setForm={setForm}
+        currentForm={currentForm}
+        originTime={originTime}
+      />
+    );
+  }
 
   const getEvents = (form: ScoutingForm) => {
     if (shiftType === "auto") {
@@ -52,7 +67,6 @@ export const ShiftTab: FC<ShiftTabProps> = ({
     });
   };
 
-  const gamePhase = shiftType === "auto" ? "auto" : "tele";
   const scoreMap = (
     <div className="flex-1 min-w-0 h-full">
       <ScoreMap
@@ -89,14 +103,27 @@ export const ShiftTab: FC<ShiftTabProps> = ({
           currentMovement={currentForm[gamePhase].movement}
         />
 
-        <button
-          className={`bg-${mapZone}-500 h-8 sm:h-10 w-32 text-[10px] sm:text-xs px-2`}
-          onClick={() => {
-            setMapZone((prev) => (prev === "red" ? "blue" : "red"));
-          }}
-        >
-          Field Side
-        </button>
+        {gamePhase === "tele" && (
+          <button
+            className={`bg-${mapZone}-500 h-8 sm:h-10 w-32 text-[10px] sm:text-xs px-2`}
+            onClick={() => {
+              setMapZone((prev) => (prev === "red" ? "blue" : "red"));
+            }}
+          >
+            Field Side
+          </button>
+        )}
+
+        {(shiftType === "auto" || shiftType === "endgame") && (
+          <button
+            className={`bg-amber-600 h-8 sm:h-10 w-32 text-[10px] sm:text-xs px-2`}
+            onClick={() => {
+              setIsClimbing(true);
+            }}
+          >
+            Climb
+          </button>
+        )}
       </div>
       {alliance === "blue" && scoreMap}
     </div>

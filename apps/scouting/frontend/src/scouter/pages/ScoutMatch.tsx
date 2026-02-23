@@ -39,10 +39,6 @@ const TABS: Tab[] = [
     Component: (props) => <ShiftTab shiftType="auto" tabIndex={0} {...props} />,
   },
   {
-    name: "Climb",
-    Component: (props) => <ClimbTab isAuto={true} {...props} />,
-  },
-  {
     name: "Transition",
     Component: (props) => (
       <ShiftTab shiftType={"transition"} tabIndex={0} {...props} />
@@ -77,10 +73,6 @@ const TABS: Tab[] = [
     Component: (props) => (
       <ShiftTab shiftType={"endgame"} tabIndex={0} {...props} />
     ),
-  },
-  {
-    name: "Climb",
-    Component: (props) => <ClimbTab isAuto={false} {...props} />,
   },
   {
     name: "Post",
