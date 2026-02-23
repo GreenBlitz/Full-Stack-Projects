@@ -1,8 +1,11 @@
 // בס"ד
+import { calcAverageGeneralFuelData } from "../routes/general-router";
+import { getAllBPS } from "../routes/teams-router";
 import { createFuelObject } from "./fuel-object";
 import type {
   BPS,
   FuelObject,
+  GamePeriod,
   GeneralFuelData,
   ScoutingForm,
   ShiftsArray,
@@ -52,4 +55,25 @@ export const generalCalculateFuel = (
     auto: autoFuel,
     tele: teleFuel,
   };
+};
+
+const DIGITS_AFTER_DECIMAL_DOT = 2;
+export const calculateAverageScoredFuel = (
+  forms: ScoutingForm[],
+  gamePeriod: GamePeriod,
+) => {
+  const generalFuelData = forms.map((form) =>
+    generalCalculateFuel(form, getAllBPS()),
+  );
+  const averagedFuelData = calcAverageGeneralFuelData(generalFuelData);
+  console.log(
+    `auto fuel: ${averagedFuelData.auto.scored.toFixed(DIGITS_AFTER_DECIMAL_DOT)}`,
+  );
+  console.log(
+    `fullGame fuel: ${averagedFuelData.fullGame.scored.toFixed(DIGITS_AFTER_DECIMAL_DOT)}`,
+  );
+
+  return parseFloat(
+    averagedFuelData[gamePeriod].scored.toFixed(DIGITS_AFTER_DECIMAL_DOT),
+  );
 };

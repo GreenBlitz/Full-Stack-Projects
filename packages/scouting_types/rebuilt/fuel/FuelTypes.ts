@@ -44,6 +44,8 @@ export type FuelObject = GameObject<
   }
 >;
 
+export type GamePeriod = "auto" | "fullGame" | "teleop";
+
 export type GameObject<T extends string, AdditionalInfo> = Record<T, number> &
   AdditionalInfo;
 

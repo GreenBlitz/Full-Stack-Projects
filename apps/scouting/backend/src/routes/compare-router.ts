@@ -1,10 +1,5 @@
 //בס"ד
 
-import type {
-  ScoutingForm,
-  TeleClimbLevel,
-  TimesClimedToLevels,
-} from "@repo/scouting_types";
 import { Router } from "express";
 import { getFormsCollection } from "./forms-router";
 import { pipe } from "fp-ts/lib/function";
@@ -18,39 +13,16 @@ import {
 } from "fp-ts/lib/TaskEither";
 import { mongofyQuery } from "../middleware/query";
 import { StatusCodes } from "http-status-codes";
-import { calculateSum, firstElement, isEmpty } from "@repo/array-functions";
-import { calcAverageGeneralFuelData } from "./general-router";
-import { generalCalculateFuel } from "../fuel/fuel-general";
-import { getAllBPS } from "./teams-router";
-import { findMaxClimbLevel } from "../climb/calculations";
+import { firstElement, isEmpty } from "@repo/array-functions";
+import { calculateAverageScoredFuel } from "../fuel/fuel-general";
+import {
+  findMaxClimbLevel,
+  findTimesClimbedInAuto,
+  findTimesClimbedToLevel,
+  findTimesClimbedToLevels,
+} from "../climb/calculations";
 
 export const compareRouter = Router();
-
-type GamePeriod = "auto" | "fullGame" | "teleop";
-
-const DIGITS_AFTER_DECIMAL_DOT = 2;
-
-
-const calculateAverageScoredFuel = (
-  forms: ScoutingForm[],
-  gamePeriod: GamePeriod,
-) => {
-  const generalFuelData = forms.map((form) =>
-    generalCalculateFuel(form, getAllBPS()),
-  );
-  const averagedFuelData = calcAverageGeneralFuelData(generalFuelData);
-  console.log(
-    `auto fuel: ${averagedFuelData.auto.scored.toFixed(DIGITS_AFTER_DECIMAL_DOT)}`,
-  );
-  console.log(
-    `fullGame fuel: ${averagedFuelData.fullGame.scored.toFixed(DIGITS_AFTER_DECIMAL_DOT)}`,
-  );
-
-  return parseFloat(
-    averagedFuelData[gamePeriod].scored.toFixed(DIGITS_AFTER_DECIMAL_DOT),
-  );
-};
-
 
 compareRouter.get("/", async (req, res) => {
   await pipe(
