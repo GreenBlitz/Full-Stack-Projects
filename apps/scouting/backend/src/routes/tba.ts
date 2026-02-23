@@ -115,13 +115,12 @@ const getMatches = flow(
   flatMap(({ currentMatches, body }) => {
     const maxStored = getMaxMatchNumber(currentMatches);
     console.log(body);
+
     return pipe(
       maxStored < body.maxMatch,
 
       booleanFold(
         () => {
-          const x = fetchTba(`/event/${body.event}/matches`, tbaMatches);
-          console.log(`this is the response${x}`);
           return pipe(
             fetchTba(`/event/${body.event}/matches`, tbaMatches),
             chainFirstTaskK(
@@ -153,3 +152,12 @@ tbaRouter.post("/matches", async (req, res) => {
     ),
   )();
 });
+
+const x = async () => {
+  const y = await axios.get(TBA_URL + "/event/2025iscmp/matches", {
+    headers: { "X-TBA-Auth-Key": TBA_KEY },
+  });
+  return y.data;
+};
+
+console.log(x().then());
