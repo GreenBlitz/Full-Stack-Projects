@@ -90,7 +90,7 @@ const matchQualWithTeamNumber = (
 };
 
 
-const tbaMatches = await fetchGameMatches<TBAMatchLike>("2025isde1", 120);
+const tbaMatches = await fetchGameMatches<TBAMatchLike>("2025isde1", 40);
 const allMatches = toQualMatches(tbaMatches);
 const team = matchQualWithTeamNumber({qual: 23, alliance: "blue", initialLocation: "close"}, allMatches);
 

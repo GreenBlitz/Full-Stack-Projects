@@ -94,6 +94,11 @@ const getStoredMatches = flow(
   ),
 );
 
+const getMaxMatchNumber = (matches: TBAMatches) =>
+  matches.length === 0
+    ? 0
+    : getMax(matches, (m) => m.match_number).match_number;
+
 const getMatches = flow(
   flatMap((body: TBAMatchesProps) =>
     pipe(
@@ -101,10 +106,11 @@ const getMatches = flow(
       map((currentMatches) => ({ currentMatches, body })),
     ),
   ),
-  flatMap(({ currentMatches, body }) =>
-    pipe(
-      getMax(currentMatches, (match) => match.match_number).match_number <
-        body.maxMatch,
+  flatMap(({ currentMatches, body }) => {
+    const maxStored = getMaxMatchNumber(currentMatches);
+
+    return pipe(
+      maxStored < body.maxMatch,
       booleanFold(
         () =>
           pipe(
@@ -116,8 +122,8 @@ const getMatches = flow(
           ),
         () => fromEither(right(currentMatches)),
       ),
-    ),
-  ),
+    );
+  }),
 );
 
 tbaRouter.post("/matches", async (req, res) => {
