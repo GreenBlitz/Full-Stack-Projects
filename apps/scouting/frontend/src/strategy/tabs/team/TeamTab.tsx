@@ -18,6 +18,7 @@ import { MetricsChart } from "../../components/MetricsChart";
 import { BarChart } from "../../components/BarChart";
 import { calculateMedianClimbs, getClimbDataset } from "../../ClimbProcessing";
 import { useLocalStorage } from "@repo/local_storage_hook";
+import { fetchTeamNumbers } from "../../fetches";
 
 const METER_CENTIMETERS = 100;
 const TWO_METER_CENTIMETERS = 200;
@@ -62,28 +63,35 @@ export const TeamTab: FC = () => {
     "team/teamNumber",
     null,
   );
-  const [recency, setRecency] = useLocalStorage<number | null>(
+  const [gameRecency, setGameRecency] = useLocalStorage<number | null>(
     "team/recency",
     null,
   );
+  const [scoutedTeams, setScoutedTeams] = useState<number[]>();
+
   const data = useMemo(() => teamData?.[phase], [teamData, phase]);
 
   useEffect(() => {
     if (!teamNumber || !FRC_TEAM_NUMBERS.includes(teamNumber)) {
       return;
     }
-    fetchTeamData(teamNumber, recency ?? undefined)
+    fetchTeamData(teamNumber, gameRecency ?? undefined)
       .then(setTeamData)
       .catch(alert);
-  }, [teamNumber, recency]);
+  }, [teamNumber, gameRecency]);
+
+  useEffect(() => {
+    fetchTeamNumbers().then(setScoutedTeams).catch(console.error);
+  }, []);
 
   return (
     <div className="flex flex-col text-black items-center bg-slate-950">
       <TeamSelect
         teamNumber={teamNumber ?? undefined}
-        recency={recency ?? undefined}
+        gameRecency={gameRecency ?? undefined}
         setTeamNumber={setTeamNumber}
-        setRecency={setRecency}
+        setRecency={setGameRecency}
+        scoutedTeams={scoutedTeams ?? []}
       />
       <PhaseToggle activeMode={phase} setActiveMode={setPhase} />
 
