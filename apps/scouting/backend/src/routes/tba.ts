@@ -13,7 +13,7 @@ import {
   tbaMatch,
   type TBAMatchesProps,
 } from "@repo/scouting_types";
-import { right } from "fp-ts/lib/Either";
+import { right, map as mapEither } from "fp-ts/lib/Either";
 import { StatusCodes } from "http-status-codes";
 import {
   flatMap,
@@ -23,6 +23,7 @@ import {
   tryCatch,
   map,
   chainFirstTaskK,
+  mapLeft,
 } from "fp-ts/lib/TaskEither";
 import { flow, pipe } from "fp-ts/lib/function";
 import { map as taskMap } from "fp-ts/lib/Task";
@@ -39,6 +40,12 @@ const TBA_URL = "https://www.thebluealliance.com/api/v3";
 
 const tbaMatches = t.array(tbaMatch(scoreBreakdown2026, t.type({})));
 type TBAMatches = t.TypeOf<typeof tbaMatches>;
+
+const print = <T>(ttt:T) =>{
+  console.log("ttt")
+  console.log(ttt)
+  return ttt
+} 
 
 const getCollection = flow(
   getDb,
@@ -80,7 +87,7 @@ const insertMatches = (matches: TBAMatches) =>
 const getStoredMatches = flow(
   getCollection,
   flatMap((collection) =>
-    tryCatch(collection.find().toArray, (error) => ({
+    tryCatch(()=>collection.find().toArray(), (error) => ({
       reason: `Error getting from collection ${String(error)}`,
       status: StatusCodes.BAD_REQUEST,
     })),
@@ -119,6 +126,7 @@ tbaRouter.post("/matches", async (req, res) => {
     createBodyVerificationPipe(matchesProps),
     fromEither,
     getMatches,
+    mapLeft(print),
     fold(
       (error) => () =>
         new Promise((resolve) => {
