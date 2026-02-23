@@ -8,19 +8,19 @@ import { LuHash } from "react-icons/lu";
 
 interface TeamSelectProps {
   teamNumber?: number;
-  recency?: number;
+  gameRecency?: number;
   setTeamNumber: (team: number | null) => void;
   setRecency: (recency: number | null) => void;
   scoutedTeams: number[];
 }
 
-const EMPTY_TEAM_INPUT = 0;
+const EMPTY_INPUT = 0;
 
 export const TeamSelect: FC<TeamSelectProps> = ({
   teamNumber,
   setTeamNumber,
   setRecency,
-  recency,
+  gameRecency,
   scoutedTeams,
 }) => {
   const { true: actualScoutedTeams, false: otherTeams } = useMemo(
@@ -42,7 +42,7 @@ export const TeamSelect: FC<TeamSelectProps> = ({
                 : null,
             );
           }}
-          value={teamNumber === EMPTY_TEAM_INPUT ? undefined : teamNumber}
+          value={teamNumber === EMPTY_INPUT ? undefined : teamNumber}
           type="number"
           placeholder="Team #"
           className="w-full pl-8 py-3 bg-slate-950/50 border border-white/5 rounded-xl text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500/50 transition-all font-mono"
@@ -114,9 +114,8 @@ export const TeamSelect: FC<TeamSelectProps> = ({
                 : null,
             );
           }}
-          value={recency === EMPTY_TEAM_INPUT ? undefined : recency}
+          value={gameRecency === EMPTY_INPUT ? undefined : gameRecency}
           type="number"
-          placeholder="Recency #"
           className="w-20 pl-10 pr-2 py-3 bg-slate-950/50 border border-white/5 rounded-xl text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500/50 transition-all font-mono"
         />
       </div>

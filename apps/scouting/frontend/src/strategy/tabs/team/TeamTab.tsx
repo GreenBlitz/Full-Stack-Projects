@@ -63,7 +63,7 @@ export const TeamTab: FC = () => {
     "team/teamNumber",
     null,
   );
-  const [recency, setRecency] = useLocalStorage<number | null>(
+  const [gameRecency, setGameRecency] = useLocalStorage<number | null>(
     "team/recency",
     null,
   );
@@ -75,10 +75,10 @@ export const TeamTab: FC = () => {
     if (!teamNumber || !FRC_TEAM_NUMBERS.includes(teamNumber)) {
       return;
     }
-    fetchTeamData(teamNumber, recency ?? undefined)
+    fetchTeamData(teamNumber, gameRecency ?? undefined)
       .then(setTeamData)
       .catch(alert);
-  }, [teamNumber, recency]);
+  }, [teamNumber, gameRecency]);
 
   useEffect(() => {
     fetchTeamNumbers().then(setScoutedTeams).catch(console.error);
@@ -88,9 +88,9 @@ export const TeamTab: FC = () => {
     <div className="flex flex-col text-black items-center bg-slate-950">
       <TeamSelect
         teamNumber={teamNumber ?? undefined}
-        recency={recency ?? undefined}
+        gameRecency={gameRecency ?? undefined}
         setTeamNumber={setTeamNumber}
-        setRecency={setRecency}
+        setRecency={setGameRecency}
         scoutedTeams={scoutedTeams ?? []}
       />
       <PhaseToggle activeMode={phase} setActiveMode={setPhase} />
