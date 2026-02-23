@@ -21,6 +21,7 @@ import { createBodyVerificationPipe } from "../middleware/verification";
 import { right as rightEither } from "fp-ts/lib/Either";
 import { mongofyQuery } from "../middleware/query";
 import * as t from "io-ts";
+import { isEmpty } from "@repo/array-functions";
 
 export const formsRouter = Router();
 
@@ -52,9 +53,15 @@ formsRouter.post("/", async (req, res) => {
     map((combinedBody) =>
       Array.isArray(combinedBody) ? combinedBody : [combinedBody],
     ),
+    filterOrElse(
+      (forms) => !isEmpty(forms),
+      () => ({
+        status: StatusCodes.BAD_REQUEST,
+        reason: `Inserted Empty Form Array`,
+      }),
+    ),
     bindTo("forms"),
     bind("collection", getFormsCollection),
-    //remove any forms currently in that share a team number and scouter name from forms
     tap(({ collection, forms }) =>
       right(
         collection.deleteMany({
