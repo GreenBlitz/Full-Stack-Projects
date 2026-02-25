@@ -117,8 +117,7 @@ const getMatches = flow(
     console.log(body);
 
     return pipe(
-      maxStored < body.maxMatch,
-
+      maxStored >= body.maxMatch,
       booleanFold(
         () => {
           return pipe(

@@ -96,7 +96,7 @@ const matchQualWithTeamNumber = (
   return allianceArr[index] ?? DEFAULT_TEAM_NUMBER;
 };
 
-
+console.log("sending", { event: 20, isFinite: Number.isFinite(20), type: typeof 20 });
 const tbaMatches = await fetchGameMatches<TBAMatchLike>("2025iscmp", 20);
 console.log(tbaMatches)
 const allMatches = toQualMatches(tbaMatches);
