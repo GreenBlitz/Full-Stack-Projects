@@ -10,7 +10,8 @@ type FRC_ISDE_2025_EventKey =
   | "2025isde2"
   | "2025isde3"
   | "2025isde4"
-  | "2025iscmp";
+  | "2025iscmp"
+  |"2026week0";
 
 
 const compareUrl = "/api/v1/tba/matches";
@@ -97,7 +98,7 @@ const matchQualWithTeamNumber = (
 };
 
 console.log("sending", { event: 20, isFinite: Number.isFinite(20), type: typeof 20 });
-const tbaMatches = await fetchGameMatches<TBAMatchLike>("2025iscmp", 20);
+const tbaMatches = await fetchGameMatches<TBAMatchLike>("2026week0", 20);
 console.log(tbaMatches)
 const allMatches = toQualMatches(tbaMatches);
 console.log(allMatches)

@@ -178,10 +178,3 @@ tbaRouter.post("/matches", async (req, res) => {
 /**
  * Optional: dev helper (don’t leave this in prod)
  */
-const x = async () => {
-  const y = await axios.get(TBA_URL + "/event/2025iscmp/matches", {
-    headers: { "X-TBA-Auth-Key": TBA_KEY },
-  });
-  return y.data;
-};
-console.log(x().then(() => "dev test done"));
