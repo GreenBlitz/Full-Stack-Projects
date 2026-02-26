@@ -109,12 +109,6 @@ export const calculateAverageScoredFuel = (
     generalCalculateFuel(form, getAllBPS()),
   );
   const averagedFuelData = calcAverageGeneralFuelData(generalFuelData);
-  console.log(
-    `auto fuel: ${averagedFuelData.auto.scored.toFixed(DIGITS_AFTER_DECIMAL_DOT)}`,
-  );
-  console.log(
-    `fullGame fuel: ${averagedFuelData.fullGame.scored.toFixed(DIGITS_AFTER_DECIMAL_DOT)}`,
-  );
 
   return parseFloat(
     averagedFuelData[gamePeriod].scored.toFixed(DIGITS_AFTER_DECIMAL_DOT),
