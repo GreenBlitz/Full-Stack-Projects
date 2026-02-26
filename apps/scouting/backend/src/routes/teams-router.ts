@@ -30,6 +30,7 @@ import { calculateSum, isEmpty, mapObject } from "@repo/array-functions";
 import { createFuelObject } from "../fuel/fuel-object";
 import { splitByDistances } from "../fuel/distance-split";
 import { calculateFuelStatisticsOfShift } from "../fuel/fuel-general";
+import { calculateAverageBPS } from "../fuel/calculations/fuel-averaging";
 
 export const teamsRouter = Router();
 
@@ -114,7 +115,12 @@ const processTeam = (bpses: BPS[], forms: ScoutingForm[]): TeamData => {
     })),
     bpses,
   );
-  return { tele, auto, fullGame, metrics: { epa: 0, bps: 0 } };
+  return {
+    tele,
+    auto,
+    fullGame,
+    metrics: { epa: 0, bps: calculateAverageBPS(bpses) },
+  };
 };
 
 export const getAllBPS = (): BPS[] => [
