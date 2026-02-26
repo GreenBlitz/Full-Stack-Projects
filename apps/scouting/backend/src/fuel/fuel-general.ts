@@ -1,6 +1,7 @@
 // בס"ד
-import { calcAverageGeneralFuelData } from "../routes/general-router";
+import { firstElement, isEmpty } from "@repo/array-functions";
 import { getAllBPS } from "../routes/teams-router";
+import { averageFuel } from "./distance-split";
 import { createFuelObject } from "./fuel-object";
 import type {
   BPS,
@@ -55,6 +56,43 @@ export const generalCalculateFuel = (
     auto: autoFuel,
     tele: teleFuel,
   };
+};
+
+interface AccumulatedFuelData {
+  fullGame: FuelObject[];
+  auto: FuelObject[];
+  tele: FuelObject[];
+}
+
+const ONE_ITEM_ARRAY = 1;
+export const calcAverageGeneralFuelData = (
+  fuelData: GeneralFuelData[],
+): GeneralFuelData => {
+  if (fuelData.length === ONE_ITEM_ARRAY || isEmpty(fuelData)) {
+    return firstElement(fuelData);
+  }
+
+  const accumulatedFuelData: AccumulatedFuelData =
+    fuelData.reduce<AccumulatedFuelData>(
+      (accumulated, currentFuelData) => ({
+        fullGame: [...accumulated.fullGame, currentFuelData.fullGame],
+        auto: [...accumulated.auto, currentFuelData.auto],
+        tele: [...accumulated.tele, currentFuelData.tele],
+      }),
+      {
+        fullGame: [],
+        auto: [],
+        tele: [],
+      },
+    );
+
+  const averagedFuelData: GeneralFuelData = {
+    fullGame: averageFuel(accumulatedFuelData.fullGame),
+    auto: averageFuel(accumulatedFuelData.auto),
+    tele: averageFuel(accumulatedFuelData.tele),
+  };
+
+  return averagedFuelData;
 };
 
 const DIGITS_AFTER_DECIMAL_DOT = 2;
