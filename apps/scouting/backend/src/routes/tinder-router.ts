@@ -12,21 +12,16 @@ import {
 } from "fp-ts/lib/TaskEither";
 import { mongofyQuery } from "../middleware/query";
 import { StatusCodes } from "http-status-codes";
-import { calculateSum, firstElement, isEmpty } from "@repo/array-functions";
+import { firstElement, isEmpty } from "@repo/array-functions";
 import type { ScoutingForm, TinderStats } from "@repo/scouting_types";
-import { calcAverageGeneralFuelData, formsToFuelData } from "./general-router";
-import { findMaxClimbLevel } from "./compare-router";
+import {
+  calcAverageGeneralFuelData,
+  formsToFuelData,
+} from "../fuel/fuel-general";
+import { findMaxClimbLevel } from "../climb/calculations";
+import { findTimesStuckOnBump } from "../movement/stats";
 
 export const tinderRouter = Router();
-
-const INITIAL_COUNTER_VALUE = 0;
-const INCREMENT = 1;
-
-export const findTimesStuckOnBump = (forms: ScoutingForm[]) => {
-  return calculateSum(forms, (form) =>
-    !form.tele.movement.bumpStuck ? INCREMENT : INITIAL_COUNTER_VALUE,
-  );
-};
 
 const createTinder = (forms: ScoutingForm[]) => {
   const tinderTeamStats: TinderStats = {
