@@ -10,19 +10,20 @@ import { useEffect, useMemo, useState, type FC } from "react";
 import { FRC_TEAM_NUMBERS } from "@repo/frc";
 import { firstElement } from "@repo/array-functions";
 import { TeamSelect } from "./TeamSelect";
-import { MovementChart } from "./MovementChart";
-import { AccuracyChart } from "./AccuracyChart";
-import { LineChart } from "../LineChart";
-import { PhaseToggle } from "./PhaseToggle";
-import { MetricsChart } from "./MetricsChart";
-import { BarChart } from "../BarChart";
-import { calculateMedianClimbs, getClimbDataset } from "../ClimbProcessing";
+import { MovementChart } from "../../components/MovementChart";
+import { AccuracyChart } from "../../components/AccuracyChart";
+import { LineChart } from "../../components/LineChart";
+import { PhaseToggle } from "../../components/PhaseToggle";
+import { MetricsChart } from "../../components/MetricsChart";
+import { BarChart } from "../../components/BarChart";
+import { calculateMedianClimbs, getClimbDataset } from "../../ClimbProcessing";
 import { useLocalStorage } from "@repo/local_storage_hook";
-import { HeatMap } from "./HeatMap";
+import { HeatMap } from "../../components/heatmap/HeatMap";
 import { redField } from "@repo/rebuilt_map";
+import { fetchTeamNumbers } from "../../fetches";
 
-const METER_CENTIMETERS = 100;
-const TWO_METER_CENTIMETERS = 200;
+const METER_AND_HALF_CENTIMETERS = 150;
+const THREE_METER_CENTIMETERS = 300;
 const MORE_DISTANCE = 2000;
 
 const TEAM_DATA_URL = "/api/v1/team";
@@ -64,36 +65,47 @@ export const TeamTab: FC = () => {
     "team/teamNumber",
     null,
   );
-  const [recency, setRecency] = useLocalStorage<number | null>(
+  const [gameRecency, setGameRecency] = useLocalStorage<number | null>(
     "team/recency",
     null,
   );
+  const [scoutedTeams, setScoutedTeams] = useState<number[]>();
+
   const data = useMemo(() => teamData?.[phase], [teamData, phase]);
 
   useEffect(() => {
     if (!teamNumber || !FRC_TEAM_NUMBERS.includes(teamNumber)) {
       return;
     }
-    fetchTeamData(teamNumber, recency ?? undefined)
+    fetchTeamData(teamNumber, gameRecency ?? undefined)
       .then(setTeamData)
       .catch(alert);
-  }, [teamNumber, recency]);
+  }, [teamNumber, gameRecency]);
+
+  useEffect(() => {
+    fetchTeamNumbers().then(setScoutedTeams).catch(console.error);
+  }, []);
 
   return (
     <div className="flex flex-col text-black items-center bg-slate-950">
       <TeamSelect
         teamNumber={teamNumber ?? undefined}
-        recency={recency ?? undefined}
+        gameRecency={gameRecency ?? undefined}
         setTeamNumber={setTeamNumber}
-        setRecency={setRecency}
+        setRecency={setGameRecency}
+        scoutedTeams={scoutedTeams ?? []}
       />
       <PhaseToggle activeMode={phase} setActiveMode={setPhase} />
 
       {data && (
         <AccuracyChart
           metrics={{
-            meter: calculateAccuracy(data.accuracy[METER_CENTIMETERS]),
-            twoMeter: calculateAccuracy(data.accuracy[TWO_METER_CENTIMETERS]),
+            meterAndHalf: calculateAccuracy(
+              data.accuracy[METER_AND_HALF_CENTIMETERS],
+            ),
+            threeMeter: calculateAccuracy(
+              data.accuracy[THREE_METER_CENTIMETERS],
+            ),
             more: calculateAccuracy(data.accuracy[MORE_DISTANCE]),
           }}
         />
