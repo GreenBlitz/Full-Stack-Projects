@@ -69,6 +69,8 @@ formsRouter.post("/", async (req, res) => {
             scouterName: form.scouterName,
             "match.number": form.match.number,
             "match.type": form.match.type,
+            competition: form.competition,
+            teamNumber: form.teamNumber,
           })),
         }),
       ),
