@@ -10,6 +10,7 @@ import {
   right,
   tryCatch,
   fold,
+  filterOrElse,
 } from "fp-ts/lib/TaskEither";
 import { mongofyQuery } from "../middleware/query";
 import { StatusCodes } from "http-status-codes";
@@ -21,6 +22,7 @@ import {
   findTimesClimbedToLevel,
   findTimesClimbedToLevels,
 } from "../climb/calculations";
+import { isSingleTeam } from "../verification/functions";
 
 export const compareRouter = Router();
 
@@ -36,20 +38,11 @@ compareRouter.get("/", async (req, res) => {
         }),
       ),
     ),
-    flatMap((forms) => {
-      if (isEmpty(forms)) return right(forms);
+    filterOrElse(isSingleTeam, () => ({
+      status: StatusCodes.BAD_REQUEST,
+      reason: "Compare: Forms contain data from multiple different teams.",
+    })),
 
-      const firstTeam = firstElement(forms).teamNumber;
-      const isSameTeam = forms.every((f) => f.teamNumber === firstTeam);
-
-      return isSameTeam
-        ? right(forms)
-        : left({
-            status: StatusCodes.BAD_REQUEST,
-            reason:
-              "Compare Two Validation Error: Forms contain data from multiple different teams.",
-          });
-    }),
     map((teamForms) => ({
       teamNumber: firstElement(teamForms).teamNumber,
       averageFuel: {

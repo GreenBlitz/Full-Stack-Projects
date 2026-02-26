@@ -8,12 +8,17 @@ import type {
   FuelObject,
   GamePeriod,
   GeneralFuelData,
+  Match,
   ScoutingForm,
   ShiftsArray,
 } from "@repo/scouting_types";
+import { flow } from "fp-ts/lib/function";
+import * as Array from "fp-ts/lib/Array";
+import * as NonEmptyArray from "fp-ts/lib/NonEmptyArray";
+import * as Record from "fp-ts/lib/Record";
 
 export const calculateFuelStatisticsOfShift = (
-  match: ScoutingForm["match"],
+  match: Match,
   bpsArray: BPS[],
   shifts: ShiftsArray,
 ): FuelObject =>
@@ -115,3 +120,18 @@ export const calculateAverageScoredFuel = (
     averagedFuelData[gamePeriod].scored.toFixed(DIGITS_AFTER_DECIMAL_DOT),
   );
 };
+
+export const formsToFuelData = flow(
+  Array.map((form: ScoutingForm) => ({
+    teamNumber: form.teamNumber,
+    generalFuelData: generalCalculateFuel(form, getAllBPS()),
+  })),
+
+  NonEmptyArray.groupBy((fuelData) => fuelData.teamNumber.toString()),
+
+  Record.map((fuels) =>
+    calcAverageGeneralFuelData(
+      fuels.map((fuelData) => fuelData.generalFuelData),
+    ),
+  ),
+);
