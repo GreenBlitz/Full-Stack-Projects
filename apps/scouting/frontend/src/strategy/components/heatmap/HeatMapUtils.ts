@@ -2,21 +2,17 @@
 import type { Point } from "@repo/scouting_types";
 
 export interface HeatmapRenderer {
-  setDimensions?: (width: number,
-     height: number) => void;
+  setDimensions?: (width: number, height: number) => void;
   canvas?: HTMLCanvasElement;
 }
 
 export interface HeatmapInstance {
-  setData: (payload: { min: number;
-     max: number;
-      data: HeatPoint[]
-     }) => void;
+  setData: (payload: { min: number; max: number; data: HeatPoint[] }) => void;
   repaint: () => void;
   _renderer?: HeatmapRenderer;
 }
 
-export interface HeatPoint extends Point{
+export interface HeatPoint extends Point {
   value: number;
 }
 
@@ -33,7 +29,7 @@ export const HEAT_VALUES = {
   point: 12,
 } as const;
 export const HEAT_STYLE = {
-  radius: 35,
+  radius: 50,
   maxOpacity: 0.8,
   minOpacity: 0.1,
   blur: 0.7,
@@ -46,8 +42,8 @@ export const HEAT_STYLE = {
   },
 } as const;
 
-export const clamp = (v: number ,min: number ,max: number):
-  number => Math.max(min, Math.min(max, v));
+export const clamp = (v: number, min: number, max: number): number =>
+  Math.max(min, Math.min(max, v));
 
 interface MapHeatPointsParams {
   positions: Point[];
@@ -67,11 +63,17 @@ export const mapHeatPoints = ({
   maxX,
   maxY,
   value,
-}: 
-MapHeatPointsParams): 
-HeatPoint[] =>
+}: MapHeatPointsParams): HeatPoint[] =>
   positions.map((position) => ({
-    x: clamp(Math.round(offsetX + position.x * scale), LAYOUT.minCoordinate, maxX),
-    y: clamp(Math.round(offsetY + position.y * scale), LAYOUT.minCoordinate, maxY),
+    x: clamp(
+      Math.round(offsetX + position.x * scale),
+      LAYOUT.minCoordinate,
+      maxX,
+    ),
+    y: clamp(
+      Math.round(offsetY + position.y * scale),
+      LAYOUT.minCoordinate,
+      maxY,
+    ),
     value,
   }));

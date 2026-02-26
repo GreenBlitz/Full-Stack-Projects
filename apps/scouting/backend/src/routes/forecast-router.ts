@@ -16,9 +16,8 @@ import { flatMap, fold, fromEither, map, tryCatch } from "fp-ts/lib/TaskEither";
 import { StatusCodes } from "http-status-codes";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
 import { mapObject } from "@repo/array-functions";
-import { generalCalculateFuel } from "../fuel/fuel-general";
+import { calcAverageGeneralFuelData, generalCalculateFuel } from "../fuel/fuel-general";
 import { getAllBPS } from "./teams-router";
-import { calcAverageGeneralFuelData } from "./general-router";
 import { castItem } from "@repo/type-utils";
 import { calculateAverageClimbsScore } from "../climb/score";
 
