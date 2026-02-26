@@ -10,6 +10,7 @@ import { createBodyVerificationPipe } from "../middleware/verification";
 import { right } from "fp-ts/lib/Either";
 import { mongofyQuery } from "../middleware/query";
 import * as t from "io-ts";
+import { ObjectId } from "mongodb";
 
 export const formsRouter = Router();
 
@@ -48,6 +49,39 @@ formsRouter.post("/", async (req, res) => {
       Array.isArray(combinedBody)
         ? collection.insertMany(combinedBody)
         : collection.insertOne(combinedBody),
+    ),
+    fold(
+      (error) => () =>
+        Promise.resolve(res.status(error.status).send(error.reason)),
+      (result) => async () =>
+        res.status(StatusCodes.OK).json({ result: await result }),
+    ),
+  )();
+});
+
+formsRouter.put("/:id", async (req, res) => {
+  await pipe(
+    getFormsCollection(),
+    flatMap((collection) =>
+      pipe(
+        right(req),
+        createBodyVerificationPipe(scoutingFormCodec),
+        fromEither,
+        map((formData) => ({ collection, formData })),
+      ),
+    ),
+    flatMap(({ collection, formData }) =>
+      tryCatch(
+        () =>
+          collection.updateOne(
+            { _id: new ObjectId(req.params.id) },
+            { $set: formData },
+          ),
+        (error) => ({
+          status: StatusCodes.INTERNAL_SERVER_ERROR,
+          reason: `DB Error: ${error}`,
+        }),
+      ),
     ),
     fold(
       (error) => () =>

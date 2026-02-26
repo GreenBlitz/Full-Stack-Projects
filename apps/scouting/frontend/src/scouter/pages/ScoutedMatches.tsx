@@ -48,7 +48,7 @@ export const ScoutedMatches: FC = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(form),
-      });
+      }); 
       if (response.ok) {
         removeMatch(index);
       }
