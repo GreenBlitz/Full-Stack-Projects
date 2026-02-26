@@ -1,16 +1,48 @@
-// בס"ד
-import { firstElement, isEmpty } from "@repo/array-functions";
-import { getAllBPS } from "../routes/teams-router";
-import { averageFuel } from "./distance-split";
-import { createFuelObject } from "./fuel-object";
-import type {
-  BPS,
-  FuelObject,
-  GamePeriod,
-  GeneralFuelData,
-  ScoutingForm,
-  ShiftsArray,
-} from "@repo/scouting_types";
+//בס"ד
+
+import { ALLIANCE_ZONE_WIDTH_PIXELS } from "@repo/rebuilt_map";
+import type { BPS, FuelObject, GamePeriod, GeneralFuelData, Match, Point, ScoutingForm, ShiftsArray, ShootEvent } from "@repo/scouting_types";
+
+const DIGITS_AFTER_DECIMAL_DOT = 2;
+
+const isShotPass = (positionPixels: Point) =>
+  positionPixels.x > ALLIANCE_ZONE_WIDTH_PIXELS;
+
+const emptyFuelObject: FuelObject = {
+  shot: 0,
+  passed: 0,
+  scored: 0,
+  missed: 0,
+  positions: [],
+};
+
+const putDefaultsInFuel = (fuel: Partial<FuelObject>) => ({
+  ...emptyFuelObject,
+  ...fuel,
+});
+
+export const createFuelObject = (
+  shot: ShootEvent,
+  match: Match,
+  bpses: BPS[],
+): FuelObject => {
+  const sameMatch = bpses.find(
+    (value) =>
+      value.match.number === match.number && value.match.type === match.type,
+  );
+
+  const isPass = isShotPass(shot.startPosition);
+
+  const partialFuel = sameMatch
+    ? calculateFuelByMatch(shot, isPass, sameMatch)
+    : calculateFuelByAveraging(
+        shot,
+        isPass,
+        bpses.flatMap((bps) => bps.events),
+      );
+  return putDefaultsInFuel(partialFuel);
+};
+
 
 export const calculateFuelStatisticsOfShift = (
   match: ScoutingForm["match"],
@@ -30,6 +62,9 @@ export const calculateFuelStatisticsOfShift = (
       }),
       { scored: 0, missed: 0, shot: 0, passed: 0, positions: [] },
     );
+
+
+
 
 export const generalCalculateFuel = (
   scoutingForm: ScoutingForm,
@@ -58,45 +93,8 @@ export const generalCalculateFuel = (
   };
 };
 
-interface AccumulatedFuelData {
-  fullGame: FuelObject[];
-  auto: FuelObject[];
-  tele: FuelObject[];
-}
 
-const ONE_ITEM_ARRAY = 1;
-export const calcAverageGeneralFuelData = (
-  fuelData: GeneralFuelData[],
-): GeneralFuelData => {
-  if (fuelData.length === ONE_ITEM_ARRAY || isEmpty(fuelData)) {
-    return firstElement(fuelData);
-  }
-
-  const accumulatedFuelData: AccumulatedFuelData =
-    fuelData.reduce<AccumulatedFuelData>(
-      (accumulated, currentFuelData) => ({
-        fullGame: [...accumulated.fullGame, currentFuelData.fullGame],
-        auto: [...accumulated.auto, currentFuelData.auto],
-        tele: [...accumulated.tele, currentFuelData.tele],
-      }),
-      {
-        fullGame: [],
-        auto: [],
-        tele: [],
-      },
-    );
-
-  const averagedFuelData: GeneralFuelData = {
-    fullGame: averageFuel(accumulatedFuelData.fullGame),
-    auto: averageFuel(accumulatedFuelData.auto),
-    tele: averageFuel(accumulatedFuelData.tele),
-  };
-
-  return averagedFuelData;
-};
-
-const DIGITS_AFTER_DECIMAL_DOT = 2;
-export const calculateAverageScoredFuel = (
+const calculateAverageScoredFuel = (
   forms: ScoutingForm[],
   gamePeriod: GamePeriod,
 ) => {
@@ -115,3 +113,4 @@ export const calculateAverageScoredFuel = (
     averagedFuelData[gamePeriod].scored.toFixed(DIGITS_AFTER_DECIMAL_DOT),
   );
 };
+
