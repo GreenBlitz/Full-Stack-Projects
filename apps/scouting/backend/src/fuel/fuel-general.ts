@@ -130,13 +130,13 @@ export const formsToFuelData = flow(
 
   Record.map(
     (
-      fuelArray: NonEmptyArray.NonEmptyArray<{
+      fuels: NonEmptyArray.NonEmptyArray<{
         generalFuelData: GeneralFuelData;
       }>,
     ) =>
       calcAverageGeneralFuelData(
         pipe(
-          fuelArray,
+          fuels,
           NonEmptyArray.map((fuelData) => fuelData.generalFuelData),
         ),
       ),

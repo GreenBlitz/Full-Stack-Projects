@@ -20,6 +20,7 @@ import {
 } from "../fuel/fuel-general";
 import { findMaxClimbLevel } from "../climb/calculations";
 import { findTimesStuckOnBump } from "../movement/stats";
+import { isSingleTeam } from "../verification/functions";
 
 export const tinderRouter = Router();
 
@@ -49,20 +50,13 @@ tinderRouter.get("/team", (req, res) =>
       ),
     ),
 
-    filterOrElse(
-      (forms: ScoutingForm[]) => {
-        if (isEmpty(forms)) return true;
-        const firstTeam = firstElement(forms).teamNumber;
-        return forms.every((form) => form.teamNumber === firstTeam);
-      },
-      () => ({
-        status: StatusCodes.BAD_REQUEST,
-        reason:
-          "Tinder Team Error: Forms contain data from multiple different competitions.",
-      }),
-    ),
+    filterOrElse(isSingleTeam, () => ({
+      status: StatusCodes.BAD_REQUEST,
+      reason:
+        "Tinder Team Error: Forms contain data from multiple different teams.",
+    })),
 
-    map((forms) => createTinder(forms)),
+    map(createTinder),
 
     fold(
       (error) => () =>

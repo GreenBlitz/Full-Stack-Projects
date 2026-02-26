@@ -18,6 +18,7 @@ import type {
   ScoutingForm,
 } from "@repo/scouting_types";
 import { firstElement, isEmpty } from "@repo/array-functions";
+import { isSingleCompetition } from "../verification/functions";
 
 const INCREMENT = 1;
 const NOT_FOUND_INDEX = -1;
@@ -69,18 +70,11 @@ leaderboardRouter.get("/", (req, res) =>
       ),
     ),
 
-    filterOrElse(
-      (forms: ScoutingForm[]) => {
-        if (isEmpty(forms)) return true;
-        const firstComp = firstElement(forms).competition;
-        return forms.every((form) => form.competition === firstComp);
-      },
-      () => ({
-        status: StatusCodes.BAD_REQUEST,
-        reason:
-          "Leaderboard Validation Error: Forms contain data from multiple different competitions.",
-      }),
-    ),
+    filterOrElse(isSingleCompetition, () => ({
+      status: StatusCodes.BAD_REQUEST,
+      reason:
+        "Leaderboard Validation Error: Forms contain data from multiple different competitions.",
+    })),
 
     map((forms) => createLeaderboard(forms)),
     fold(
