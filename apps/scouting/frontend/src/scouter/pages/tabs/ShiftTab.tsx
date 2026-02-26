@@ -30,12 +30,13 @@ export const ShiftTab: FC<ShiftTabProps> = ({
   const [mapZone, setMapZone] = useState<Alliance>(alliance);
   const [isClimbing, setIsClimbing] = useState(false);
 
-  const gamePhase = shiftType === "auto" ? "auto" : "tele";
+  const isAuto = shiftType === "auto";
+  const gamePhase = isAuto ? "auto" : "tele";
 
   if (isClimbing) {
     return (
       <ClimbTab
-        isAuto={shiftType === "auto"}
+        isAuto={isAuto}
         setForm={setForm}
         currentForm={currentForm}
         originTime={originTime}
