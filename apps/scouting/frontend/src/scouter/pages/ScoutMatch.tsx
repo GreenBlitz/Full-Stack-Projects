@@ -17,7 +17,6 @@ import { ShiftTab } from "./tabs/ShiftTab";
 import { useLocalStorage } from "@repo/local_storage_hook";
 import { PostMatchTab } from "./tabs/PostMatchTab";
 import { useNavigate } from "react-router-dom";
-import { ClimbTab } from "./tabs/ClimbTab";
 import { PreMatchTab } from "./tabs/PreMatchTab";
 export interface TabProps {
   setForm: Dispatch<SetStateAction<ScoutingForm>>;
@@ -37,10 +36,6 @@ const TABS: Tab[] = [
   {
     name: "Auto",
     Component: (props) => <ShiftTab shiftType="auto" tabIndex={0} {...props} />,
-  },
-  {
-    name: "Climb",
-    Component: (props) => <ClimbTab isAuto={true} {...props} />,
   },
   {
     name: "Transition",
@@ -77,10 +72,6 @@ const TABS: Tab[] = [
     Component: (props) => (
       <ShiftTab shiftType={"endgame"} tabIndex={0} {...props} />
     ),
-  },
-  {
-    name: "Climb",
-    Component: (props) => <ClimbTab isAuto={false} {...props} />,
   },
   {
     name: "Post",
