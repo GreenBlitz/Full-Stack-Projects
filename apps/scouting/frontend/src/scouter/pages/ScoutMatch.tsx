@@ -18,7 +18,7 @@ import { useLocalStorage } from "@repo/local_storage_hook";
 import { PostMatchTab } from "./tabs/PostMatchTab";
 import { useNavigate } from "react-router-dom";
 import { ClimbTab } from "./tabs/ClimbTab";
-import { PreMatchTab } from "../../PreMatchTab";
+import { PreMatchTab } from "./tabs/PreMatchTab";
 export interface TabProps {
   setForm: Dispatch<SetStateAction<ScoutingForm>>;
   currentForm: ScoutingForm;
@@ -181,7 +181,7 @@ export const ScoutMatch: FC = () => {
     createNewScoutingForm(),
   );
   const [activeTabIndex, setActiveTab] = useState(STARTING_TAB_INDEX);
-  const [alliance, _setAlliance] = useState<Alliance>("blue");
+  const [alliance, _setAlliance] = useState<Alliance>("red");
   const originTime = useMemo(() => Date.now(), []);
   const CurrentTab = useMemo(
     () => TABS[activeTabIndex].Component,

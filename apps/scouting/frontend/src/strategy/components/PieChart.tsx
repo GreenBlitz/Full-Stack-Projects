@@ -14,7 +14,7 @@ import {
 } from "chart.js";
 
 import type { ChartData, ChartOptions } from "chart.js";
-import type { PieDataset } from "./Dataset";
+import type { PieDataset } from "../Dataset";
 import type { FC } from "react";
 
 ChartJS.register(

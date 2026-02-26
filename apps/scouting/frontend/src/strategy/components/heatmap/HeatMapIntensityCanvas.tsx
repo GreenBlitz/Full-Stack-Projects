@@ -71,7 +71,13 @@ const drawIntensityField = (
     gradient.addColorStop(OFFSET_AMOUNT, RADIUS_FADE_END);
     context.fillStyle = gradient;
     context.beginPath();
-    context.arc(point.x, point.y, softenedRadius, boundaryBeginning, FULL_CIRCLE_PERIMETER);
+    context.arc(
+      point.x,
+      point.y,
+      softenedRadius,
+      boundaryBeginning,
+      FULL_CIRCLE_PERIMETER,
+    );
     context.fill();
   });
   context.filter = "none";
@@ -102,7 +108,10 @@ export const HeatMapIntensityCanvas: FC<HeatMapIntensityCanvasProps> = ({
       return;
     }
 
-    const offscreenPayload = createOffscreenContext(canvas.width, canvas.height);
+    const offscreenPayload = createOffscreenContext(
+      canvas.width,
+      canvas.height,
+    );
     if (!offscreenPayload) {
       return;
     }
@@ -119,7 +128,5 @@ export const HeatMapIntensityCanvas: FC<HeatMapIntensityCanvasProps> = ({
     context.putImageData(imageData, boundaryBeginning, boundaryBeginning);
   }, [points, radius, width, height]);
 
-  return (
-    <canvas ref={canvasRef} className="block h-full w-full" />
-  );
+  return <canvas ref={canvasRef} className="block h-full w-full" />;
 };

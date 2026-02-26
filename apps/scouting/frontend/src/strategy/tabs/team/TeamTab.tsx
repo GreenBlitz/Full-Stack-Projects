@@ -10,22 +10,27 @@ import { useEffect, useMemo, useState, type FC } from "react";
 import { FRC_TEAM_NUMBERS } from "@repo/frc";
 import { firstElement } from "@repo/array-functions";
 import { TeamSelect } from "./TeamSelect";
-import { MovementChart } from "./MovementChart";
-import { AccuracyChart } from "./AccuracyChart";
-import { LineChart } from "../LineChart";
-import { PhaseToggle } from "./PhaseToggle";
-import { MetricsChart } from "./MetricsChart";
-import { BarChart } from "../BarChart";
-import { calculateMedianClimbs, getClimbDataset } from "../ClimbProcessing";
+import { MovementChart } from "../../components/MovementChart";
+import { AccuracyChart } from "../../components/AccuracyChart";
+import { LineChart } from "../../components/LineChart";
+import { PhaseToggle } from "../../components/PhaseToggle";
+import { MetricsChart } from "../../components/MetricsChart";
+import { BarChart } from "../../components/BarChart";
+import { calculateMedianClimbs, getClimbDataset } from "../../ClimbProcessing";
 import { useLocalStorage } from "@repo/local_storage_hook";
+import { HeatMap } from "../../components/heatmap/HeatMap";
+import { redField } from "@repo/rebuilt_map";
+import { fetchTeamNumbers } from "../../fetches";
 
-const METER_CENTIMETERS = 100;
-const TWO_METER_CENTIMETERS = 200;
+const METER_AND_HALF_CENTIMETERS = 150;
+const THREE_METER_CENTIMETERS = 300;
 const MORE_DISTANCE = 2000;
 
+const TEAM_DATA_URL = "/api/v1/team";
 const NO_DATA_ON_TEAM_STATUS = 502;
-async function fetchTeamData(team: number) {
-  const response = await fetch(`/api/v1/team?teams=${team}`);
+async function fetchTeamData(team: number, recency?: number) {
+  const recencyQuery = recency ? `&recency=${recency}` : "";
+  const response = await fetch(`${TEAM_DATA_URL}?teams=${team}${recencyQuery}`);
 
   if (response.status === NO_DATA_ON_TEAM_STATUS) {
     alert(`No Data on ${team}`);
@@ -60,32 +65,67 @@ export const TeamTab: FC = () => {
     "team/teamNumber",
     null,
   );
+  const [gameRecency, setGameRecency] = useLocalStorage<number | null>(
+    "team/recency",
+    null,
+  );
+  const [scoutedTeams, setScoutedTeams] = useState<number[]>();
+
   const data = useMemo(() => teamData?.[phase], [teamData, phase]);
 
   useEffect(() => {
     if (!teamNumber || !FRC_TEAM_NUMBERS.includes(teamNumber)) {
       return;
     }
-    fetchTeamData(teamNumber).then(setTeamData).catch(alert);
-  }, [teamNumber]);
+    fetchTeamData(teamNumber, gameRecency ?? undefined)
+      .then(setTeamData)
+      .catch(alert);
+  }, [teamNumber, gameRecency]);
+
+  useEffect(() => {
+    fetchTeamNumbers().then(setScoutedTeams).catch(console.error);
+  }, []);
 
   return (
     <div className="flex flex-col text-black items-center bg-slate-950">
       <TeamSelect
         teamNumber={teamNumber ?? undefined}
+        gameRecency={gameRecency ?? undefined}
         setTeamNumber={setTeamNumber}
+        setRecency={setGameRecency}
+        scoutedTeams={scoutedTeams ?? []}
       />
       <PhaseToggle activeMode={phase} setActiveMode={setPhase} />
 
       {data && (
         <AccuracyChart
           metrics={{
-            meter: calculateAccuracy(data.accuracy[METER_CENTIMETERS]),
-            twoMeter: calculateAccuracy(data.accuracy[TWO_METER_CENTIMETERS]),
+            meterAndHalf: calculateAccuracy(
+              data.accuracy[METER_AND_HALF_CENTIMETERS],
+            ),
+            threeMeter: calculateAccuracy(
+              data.accuracy[THREE_METER_CENTIMETERS],
+            ),
             more: calculateAccuracy(data.accuracy[MORE_DISTANCE]),
           }}
         />
       )}
+
+      {data && (
+        <div className={`${graphSection} text-center`}>
+          <span className="font-black tracking-wider uppercase text-slate-400 text-2xl">
+            shoot positions
+          </span>
+          <div className="w-full h-48">
+            <HeatMap
+              positions={data.fuel.flatMap((fuel) => fuel.positions)}
+              path={redField}
+              aspectRatio={0} //bro this does nothing
+            />
+          </div>
+        </div>
+      )}
+
       {data && (
         <div className={graphSection}>
           <LineChart
