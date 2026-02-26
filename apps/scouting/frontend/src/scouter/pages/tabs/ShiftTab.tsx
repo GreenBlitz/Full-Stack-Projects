@@ -11,7 +11,7 @@ import type {
 } from "@repo/scouting_types";
 import { MovementForm } from "../../components/MovementForm";
 import Stopwatch from "../../components/stopwatch";
-import { ClimbTab } from "./ClimbTab";
+import { ClimbSection } from "../../components/ClimbSection";
 
 interface ShiftTabProps extends TabProps {
   tabIndex: number;
@@ -35,7 +35,7 @@ export const ShiftTab: FC<ShiftTabProps> = ({
 
   if (isClimbing) {
     return (
-      <ClimbTab
+      <ClimbSection
         isAuto={isAuto}
         setForm={setForm}
         currentForm={currentForm}

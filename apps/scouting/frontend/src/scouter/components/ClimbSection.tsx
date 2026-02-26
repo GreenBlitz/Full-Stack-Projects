@@ -1,10 +1,10 @@
 //בס"ד
 
 import type { Dispatch, FC, SetStateAction } from "react";
-import { ClimbInput } from "../../components/ClimbInput";
+import { ClimbInput } from "../components/ClimbInput";
 import type { Alliance, Climb, ScoutingForm } from "@repo/scouting_types";
 
-export interface ClimbTabProps {
+export interface ClimbSectionProps {
   setForm: Dispatch<SetStateAction<ScoutingForm>>;
   originTime: number;
   currentForm: ScoutingForm;
@@ -14,7 +14,7 @@ export interface ClimbTabProps {
   alliance: Alliance;
 }
 
-export const ClimbTab: FC<ClimbTabProps> = ({
+export const ClimbSection: FC<ClimbSectionProps> = ({
   setForm,
   originTime,
   currentForm,
