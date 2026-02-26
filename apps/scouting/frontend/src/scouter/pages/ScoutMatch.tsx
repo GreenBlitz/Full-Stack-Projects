@@ -181,7 +181,7 @@ export const ScoutMatch: FC = () => {
     createNewScoutingForm(),
   );
   const [activeTabIndex, setActiveTab] = useState(STARTING_TAB_INDEX);
-  const [alliance, _setAlliance] = useState<Alliance>("blue");
+  const [alliance, _setAlliance] = useState<Alliance>("red");
   const originTime = useMemo(() => Date.now(), []);
   const CurrentTab = useMemo(
     () => TABS[activeTabIndex].Component,

@@ -7,18 +7,21 @@ import { useHeatMap } from "./useHeatMap";
 interface HeatMapProps {
   positions: Point[];
   path: string;
-  aspectRatio: number;//width/height  
+  aspectRatio: number; //width/height
 }
 
 export const HeatMap: FC<HeatMapProps> = (heatmap) => {
-  const { heatmapLayerRef, imgRef, fallbackPoints, handleImageLoad, radius, overlaySize } = useHeatMap(
-    heatmap.positions,
-    heatmap.path,
-    heatmap.aspectRatio,
-  );
+  const {
+    heatmapLayerRef,
+    imgRef,
+    fallbackPoints,
+    handleImageLoad,
+    radius,
+    overlaySize,
+  } = useHeatMap(heatmap.positions, heatmap.path, heatmap.aspectRatio);
 
   return (
-    <div className="relative h-screen w-screen">
+    <div className="relative w-full h-full">
       <img
         ref={imgRef}
         src={heatmap.path}

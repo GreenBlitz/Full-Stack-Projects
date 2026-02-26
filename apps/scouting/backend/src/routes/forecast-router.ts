@@ -4,7 +4,6 @@ import { Router } from "express";
 import { pipe } from "fp-ts/lib/function";
 import { createTypeCheckingEndpointFlow } from "../middleware/verification";
 import {
-  type ClimbLevel,
   convertGeneralToAllianceData,
   defaultAllianceData,
   type Forecast,
@@ -16,37 +15,13 @@ import { getFormsCollection } from "./forms-router";
 import { flatMap, fold, fromEither, map, tryCatch } from "fp-ts/lib/TaskEither";
 import { StatusCodes } from "http-status-codes";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
-import { calculateAverage, mapObject } from "@repo/array-functions";
-import { generalCalculateFuel } from "../fuel/fuel-general";
+import { mapObject } from "@repo/array-functions";
+import { calcAverageGeneralFuelData, generalCalculateFuel } from "../fuel/fuel-general";
 import { getAllBPS } from "./teams-router";
-import { calcAverageGeneralFuelData } from "./general-router";
 import { castItem } from "@repo/type-utils";
+import { calculateAverageClimbsScore } from "../climb/score";
 
 export const forecastRouter = Router();
-
-const CLIMB_SCORE_VALUES = { L0: 0, L1: 10, L2: 20, L3: 30 };
-
-const TELE_CLIMB_MULTIPLIER = 1;
-const AUTO_CLIMB_MULTIPLIER = 1.5;
-
-const calculateAverageClimbScore = (climbs: ClimbLevel[], isAuto: boolean) =>
-  calculateAverage(
-    climbs,
-    (climb) =>
-      CLIMB_SCORE_VALUES[climb] *
-      (isAuto ? AUTO_CLIMB_MULTIPLIER : TELE_CLIMB_MULTIPLIER),
-  );
-
-export const calculateAverageClimbsScore = (forms: ScoutingForm[]) => ({
-  auto: calculateAverageClimbScore(
-    forms.map((form) => form.auto.climb.level),
-    true,
-  ),
-  tele: calculateAverageClimbScore(
-    forms.map((form) => form.tele.climb.level),
-    false,
-  ),
-});
 
 forecastRouter.get("/", async (req, res) => {
   await pipe(
