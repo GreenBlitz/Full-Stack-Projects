@@ -128,17 +128,9 @@ export const formsToFuelData = flow(
 
   NonEmptyArray.groupBy((fuelData) => fuelData.teamNumber.toString()),
 
-  Record.map(
-    (
-      fuels: NonEmptyArray.NonEmptyArray<{
-        generalFuelData: GeneralFuelData;
-      }>,
-    ) =>
-      calcAverageGeneralFuelData(
-        pipe(
-          fuels,
-          NonEmptyArray.map((fuelData) => fuelData.generalFuelData),
-        ),
-      ),
+  Record.map((fuels) =>
+    calcAverageGeneralFuelData(
+      fuels.map((fuelData) => fuelData.generalFuelData),
+    ),
   ),
 );

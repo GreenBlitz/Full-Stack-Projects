@@ -12,7 +12,6 @@ import {
 } from "fp-ts/lib/TaskEither";
 import { mongofyQuery } from "../middleware/query";
 import { StatusCodes } from "http-status-codes";
-import { firstElement, isEmpty } from "@repo/array-functions";
 import type { ScoutingForm, TinderStats } from "@repo/scouting_types";
 import {
   calcAverageGeneralFuelData,
@@ -24,18 +23,17 @@ import { isSingleTeam } from "../verification/functions";
 
 export const tinderRouter = Router();
 
-const createTinder = (forms: ScoutingForm[]) => {
-  const tinderTeamStats: TinderStats = {
-    fuel: calcAverageGeneralFuelData(Object.values(formsToFuelData(forms))),
-    climb: {
-      maxClimbLevel: findMaxClimbLevel(forms),
-    },
-    movement: {
-      stuckOnBump: findTimesStuckOnBump(forms),
-    },
-  };
-  return tinderTeamStats;
-};
+const createTinder: (ScoutingForm) => TinderStats = (
+  forms: ScoutingForm[],
+) => ({
+  fuel: calcAverageGeneralFuelData(Object.values(formsToFuelData(forms))),
+  climb: {
+    maxClimbLevel: findMaxClimbLevel(forms),
+  },
+  movement: {
+    stuckOnBump: findTimesStuckOnBump(forms),
+  },
+});
 
 tinderRouter.get("/team", (req, res) =>
   pipe(
