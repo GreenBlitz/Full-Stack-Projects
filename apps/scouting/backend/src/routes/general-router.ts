@@ -66,7 +66,7 @@ export const calcAverageGeneralFuelData = (
   return averagedFuelData;
 };
 
-const formsToFuelData = flow(
+export const formsToFuelData = flow(
   Array.map((form: ScoutingForm) => ({
     teamNumber: form.teamNumber,
     generalFuelData: generalCalculateFuel(form, getAllBPS()),
