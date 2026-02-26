@@ -8,16 +8,17 @@ import type {
   FuelObject,
   GamePeriod,
   GeneralFuelData,
+  Match,
   ScoutingForm,
   ShiftsArray,
 } from "@repo/scouting_types";
-import { flow, pipe } from "fp-ts/lib/function";
+import { flow } from "fp-ts/lib/function";
 import * as Array from "fp-ts/lib/Array";
 import * as NonEmptyArray from "fp-ts/lib/NonEmptyArray";
 import * as Record from "fp-ts/lib/Record";
 
 export const calculateFuelStatisticsOfShift = (
-  match: ScoutingForm["match"],
+  match: Match,
   bpsArray: BPS[],
   shifts: ShiftsArray,
 ): FuelObject =>
