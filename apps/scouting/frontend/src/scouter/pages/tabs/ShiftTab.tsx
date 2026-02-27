@@ -71,7 +71,6 @@ export const ShiftTab: FC<ShiftTabProps> = ({
           setMovement={(value) => {
             setForm((prevForm) => ({
               ...prevForm,
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
               tele: { ...prevForm.tele, movement: value },
             }));
           }}

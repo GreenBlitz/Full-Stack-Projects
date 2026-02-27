@@ -2,17 +2,17 @@
 import { useRef, useEffect, useCallback } from "react";
 import type { Point } from "@repo/scouting_types";
 import { defaultPoint } from "../components/ScoreMap";
-
+interface PositionRecordingRef {
+  recordedPositionsRef: { current: Point[] };
+  start: () => void;
+  stop: () => void;
+}
 const DEFAULT_RECORDING_INTERVAL_MS = 1000;
 
 export const usePositionRecording = (
   currentPosition: Point | undefined,
   recordingIntervalMs: number = DEFAULT_RECORDING_INTERVAL_MS,
-): {
-  recordedPositionsRef: { current: Point[] };
-  start: () => void;
-  stop: () => void;
-} => {
+): PositionRecordingRef => {
   const recordedPositionsRef = useRef<Point[]>([]);
   const positionIntervalRef = useRef<number | null>(null);
   const currentPositionRef = useRef<Point | undefined>(undefined);

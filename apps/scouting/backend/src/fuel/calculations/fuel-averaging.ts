@@ -9,7 +9,10 @@ const NO_FUEL_COLLECTED = 0;
 const FIRST_SECTION_AMOUNT = 1;
 const LAST_SECTION_LENGTH = 1;
 
-/** Recursively calculates mean ball amount from timestamp sections. */
+/** 
+ * @param sections consists of sections that contains a list of timestamps in ms
+ * @returns mean ball amount
+ * Recursively calculates mean ball amount from timestamp sections. */
 const calculateBallAmount = (
   sections: number[][],
   shotLength: number,
