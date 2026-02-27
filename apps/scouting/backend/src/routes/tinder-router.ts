@@ -22,12 +22,12 @@ import {
 import { findMaxClimbLevel } from "../climb/calculations";
 import { findTimesStuckOnBump } from "../movement/stats";
 import { isSingleTeam } from "../verification/functions";
-import { getTeamBPS } from "./bps-router";
+import { getTeamBPS, getTeamBPSes } from "./bps-router";
 import { firstElement } from "@repo/array-functions";
 
 export const tinderRouter = Router();
 
-const createTinder = (forms: ScoutingForm[], bpses: BPS[]) => ({
+const createTinder = (forms: ScoutingForm[], bpses: Record<string, BPS[]>) => ({
   fuel: calcAverageGeneralFuelData(
     Object.values(formsToFuelData(bpses)(forms)),
   ),
@@ -57,10 +57,16 @@ tinderRouter.get("/team", (req, res) =>
       reason:
         "Tinder Team Error: Forms contain data from multiple different teams.",
     })),
-    bindTo("forms"),
-    bind("bpses", ({ forms }) => getTeamBPS(firstElement(forms).teamNumber)),
+    flatMap((forms) =>
+      getTeamBPSes({ [firstElement(forms).teamNumber]: forms }),
+    ),
 
-    map(({ forms, bpses }) => createTinder(forms, bpses)),
+    map((teams) => {
+      const firstTeam = firstElement(Object.values(teams));
+      createTinder(firstTeam.forms, {
+        [firstElement(firstTeam.forms).teamNumber]: firstTeam.bpses,
+      });
+    }),
 
     fold(
       (error) => () =>

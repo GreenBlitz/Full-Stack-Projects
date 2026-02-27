@@ -103,7 +103,7 @@ const DIGITS_AFTER_DECIMAL_DOT = 2;
 export const calculateAverageScoredFuel = (
   forms: ScoutingForm[],
   gamePeriod: GamePeriod,
-  bpses: BPS[]
+  bpses: BPS[],
 ) => {
   const generalFuelData = forms.map((form) =>
     generalCalculateFuel(form, bpses),
@@ -115,11 +115,11 @@ export const calculateAverageScoredFuel = (
   );
 };
 
-export const formsToFuelData = (bpses: BPS[]) =>
+export const formsToFuelData = (bpses: Record<string, BPS[]>) =>
   flow(
     Array.map((form: ScoutingForm) => ({
       teamNumber: form.teamNumber,
-      generalFuelData: generalCalculateFuel(form, bpses),
+      generalFuelData: generalCalculateFuel(form, bpses[form.teamNumber]),
     })),
 
     NonEmptyArray.groupBy((fuelData) => fuelData.teamNumber.toString()),

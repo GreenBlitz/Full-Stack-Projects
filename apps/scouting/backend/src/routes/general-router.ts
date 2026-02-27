@@ -28,7 +28,7 @@ import { isEmpty } from "@repo/array-functions";
 
 export const generalRouter = Router();
 
-const formsToGeneralData = (forms: ScoutingForm[], bpses: BPS[]) => {
+const formsToGeneralData = (forms: ScoutingForm[], bpses: Record<string,BPS[]>) => {
   const calculatedFuel: TeamNumberAndFuelData = formsToFuelData(bpses)(forms);
 
   const allGeneralData: GeneralData[] = Object.entries(calculatedFuel).map(
@@ -72,17 +72,12 @@ generalRouter.get("/", async (req, res) => {
     ),
     bindTo("forms"),
     bind("teamBpses", ({ forms }) => getAllBPSes(forms)),
-    map(({ forms, teamBpses }) =>
-      forms
-        .filter((form) => !isEmpty(teamBpses[form.teamNumber]))
-        .map((form) => ({
-          teamNumber: form.teamNumber,
-          generalFuelData: generalCalculateFuel(
-            form,
-            teamBpses[form.teamNumber],
-          ),
-        })),
-    ),
+    map(({ forms, teamBpses }) => ({
+      forms: forms.filter((form) => !isEmpty(teamBpses[form.teamNumber])),
+      teamBpses,
+    })),
+
+    map(({ forms, teamBpses }) => formsToGeneralData(forms, teamBpses)),
 
     fold(
       (error) => () =>
