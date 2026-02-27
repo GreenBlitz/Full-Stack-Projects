@@ -5,13 +5,14 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
+import StartMatchLocallyButton from "./scouter/components/StartMatchLocallyButton";
 
 // registerSW({ immediate: true });
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <StartMatchLocallyButton {dia} />
     </BrowserRouter>
   </StrictMode>,
 );
