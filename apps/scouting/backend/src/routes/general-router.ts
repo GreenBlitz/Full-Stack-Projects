@@ -3,23 +3,33 @@
 import { Router } from "express";
 import { getFormsCollection } from "./forms-router";
 import { pipe } from "fp-ts/lib/function";
-import { flatMap, fold, map, tryCatch } from "fp-ts/lib/TaskEither";
+import {
+  flatMap,
+  fold,
+  map,
+  tryCatch,
+  bindTo,
+  bind,
+} from "fp-ts/lib/TaskEither";
 import { mongofyQuery } from "../middleware/query";
 import { StatusCodes } from "http-status-codes";
 
 import type {
+  BPS,
   GeneralData,
   ScoutingForm,
   TeamNumberAndFuelData,
 } from "@repo/scouting_types";
 import { findMaxClimbLevel } from "../climb/calculations";
 import { calculateAverageClimbsScore } from "../climb/score";
-import { formsToFuelData } from "../fuel/fuel-general";
+import { formsToFuelData, generalCalculateFuel } from "../fuel/fuel-general";
+import { getAllBPSes } from "./bps-router";
+import { isEmpty } from "@repo/array-functions";
 
 export const generalRouter = Router();
 
-const formsToGeneralData = (forms: ScoutingForm[]) => {
-  const calculatedFuel: TeamNumberAndFuelData = formsToFuelData(forms);
+const formsToGeneralData = (forms: ScoutingForm[], bpses: Record<string,BPS[]>) => {
+  const calculatedFuel: TeamNumberAndFuelData = formsToFuelData(bpses)(forms);
 
   const allGeneralData: GeneralData[] = Object.entries(calculatedFuel).map(
     (teamNumberAndFuelData) => {
@@ -60,8 +70,14 @@ generalRouter.get("/", async (req, res) => {
         }),
       ),
     ),
+    bindTo("forms"),
+    bind("teamBpses", ({ forms }) => getAllBPSes(forms)),
+    map(({ forms, teamBpses }) => ({
+      forms: forms.filter((form) => !isEmpty(teamBpses[form.teamNumber])),
+      teamBpses,
+    })),
 
-    map((forms) => formsToGeneralData(forms)),
+    map(({ forms, teamBpses }) => formsToGeneralData(forms, teamBpses)),
 
     fold(
       (error) => () =>
@@ -71,4 +87,3 @@ generalRouter.get("/", async (req, res) => {
     ),
   )();
 });
-

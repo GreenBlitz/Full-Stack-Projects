@@ -9,10 +9,12 @@ import {
   filterOrElse,
   map,
   fold,
+  bindTo,
+  bind,
 } from "fp-ts/lib/TaskEither";
 import { mongofyQuery } from "../middleware/query";
 import { StatusCodes } from "http-status-codes";
-import type { ScoutingForm, TinderStats } from "@repo/scouting_types";
+import type { BPS, ScoutingForm, TinderStats } from "@repo/scouting_types";
 import {
   calcAverageGeneralFuelData,
   formsToFuelData,
@@ -20,13 +22,15 @@ import {
 import { findMaxClimbLevel } from "../climb/calculations";
 import { findTimesStuckOnBump } from "../movement/stats";
 import { isSingleTeam } from "../verification/functions";
+import { getTeamBPS, getTeamBPSes } from "./bps-router";
+import { firstElement } from "@repo/array-functions";
 
 export const tinderRouter = Router();
 
-const createTinder: (ScoutingForm) => TinderStats = (
-  forms: ScoutingForm[],
-) => ({
-  fuel: calcAverageGeneralFuelData(Object.values(formsToFuelData(forms))),
+const createTinder = (forms: ScoutingForm[], bpses: Record<string, BPS[]>) => ({
+  fuel: calcAverageGeneralFuelData(
+    Object.values(formsToFuelData(bpses)(forms)),
+  ),
   climb: {
     maxClimbLevel: findMaxClimbLevel(forms),
   },
@@ -53,8 +57,16 @@ tinderRouter.get("/team", (req, res) =>
       reason:
         "Tinder Team Error: Forms contain data from multiple different teams.",
     })),
+    flatMap((forms) =>
+      getTeamBPSes({ [firstElement(forms).teamNumber]: forms }),
+    ),
 
-    map(createTinder),
+    map((teams) => {
+      const firstTeam = firstElement(Object.values(teams));
+      createTinder(firstTeam.forms, {
+        [firstElement(firstTeam.forms).teamNumber]: firstTeam.bpses,
+      });
+    }),
 
     fold(
       (error) => () =>

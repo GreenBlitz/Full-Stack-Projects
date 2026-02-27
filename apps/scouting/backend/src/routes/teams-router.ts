@@ -31,6 +31,7 @@ import { createFuelObject } from "../fuel/fuel-object";
 import { splitByDistances } from "../fuel/distance-split";
 import { calculateFuelStatisticsOfShift } from "../fuel/fuel-general";
 import { calculateAverageBPS } from "../fuel/calculations/fuel-averaging";
+import { getTeamBPSes } from "./bps-router";
 
 export const teamsRouter = Router();
 
@@ -123,21 +124,6 @@ const processTeam = (bpses: BPS[], forms: ScoutingForm[]): TeamData => {
   };
 };
 
-export const getAllBPS = (): BPS[] => [
-  {
-    events: [
-      {
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-        score: [1000, 2000, 3000],
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-        shoot: [1000, 1400, 2000, 3000],
-        positions: [{ x: 300, y: 200 }],
-      },
-    ],
-    match: { type: "qualification", number: 10 },
-  },
-];
-
 const MATCH_TYPES_ORDER: Record<Match["type"], number> = {
   practice: 0,
   qualification: 1,
@@ -216,8 +202,10 @@ teamsRouter.get("/", async (req, res) => {
           ),
       ),
     ),
-    map((teams) => ({ teams, bpses: getAllBPS() })),
-    map(({ teams, bpses }) => mapObject(teams, processTeam.bind(null, bpses))),
+    flatMap(getTeamBPSes),
+    map((teams) =>
+      mapObject(teams, (team) => processTeam(team.bpses, team.forms)),
+    ),
     fold(
       (error) => () =>
         Promise.resolve(res.status(error.status).send(error.reason)),

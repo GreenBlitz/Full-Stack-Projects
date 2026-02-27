@@ -10,6 +10,7 @@ import { generalRouter } from "./general-router";
 import { leaderboardRouter } from "./leaderboard-router";
 import { compareRouter } from "./compare-router";
 import { tinderRouter } from "./tinder-router";
+import { bpsRouter } from "./bps-router";
 
 export const apiRouter = Router();
 
@@ -22,6 +23,7 @@ apiRouter.use("/general", generalRouter);
 apiRouter.use("/leaderboard", leaderboardRouter);
 apiRouter.use("/compare", compareRouter);
 apiRouter.use("/tinder", tinderRouter);
+apiRouter.use("/bps", bpsRouter);
 
 apiRouter.get("/health", (req, res) => {
   res.status(StatusCodes.OK).send({ message: "Healthy!" });

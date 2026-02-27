@@ -1,6 +1,5 @@
 // בס"ד
 import { firstElement, isEmpty } from "@repo/array-functions";
-import { getAllBPS } from "../routes/teams-router";
 import { averageFuel } from "./distance-split";
 import { createFuelObject } from "./fuel-object";
 import type {
@@ -104,9 +103,10 @@ const DIGITS_AFTER_DECIMAL_DOT = 2;
 export const calculateAverageScoredFuel = (
   forms: ScoutingForm[],
   gamePeriod: GamePeriod,
+  bpses: BPS[],
 ) => {
   const generalFuelData = forms.map((form) =>
-    generalCalculateFuel(form, getAllBPS()),
+    generalCalculateFuel(form, bpses),
   );
   const averagedFuelData = calcAverageGeneralFuelData(generalFuelData);
 
@@ -115,17 +115,18 @@ export const calculateAverageScoredFuel = (
   );
 };
 
-export const formsToFuelData = flow(
-  Array.map((form: ScoutingForm) => ({
-    teamNumber: form.teamNumber,
-    generalFuelData: generalCalculateFuel(form, getAllBPS()),
-  })),
+export const formsToFuelData = (bpses: Record<string, BPS[]>) =>
+  flow(
+    Array.map((form: ScoutingForm) => ({
+      teamNumber: form.teamNumber,
+      generalFuelData: generalCalculateFuel(form, bpses[form.teamNumber]),
+    })),
 
-  NonEmptyArray.groupBy((fuelData) => fuelData.teamNumber.toString()),
+    NonEmptyArray.groupBy((fuelData) => fuelData.teamNumber.toString()),
 
-  Record.map((fuels) =>
-    calcAverageGeneralFuelData(
-      fuels.map((fuelData) => fuelData.generalFuelData),
+    Record.map((fuels) =>
+      calcAverageGeneralFuelData(
+        fuels.map((fuelData) => fuelData.generalFuelData),
+      ),
     ),
-  ),
-);
+  );
