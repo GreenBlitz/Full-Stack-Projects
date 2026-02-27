@@ -10,7 +10,7 @@ import type {
   ShiftType,
 } from "@repo/scouting_types";
 import { MovementForm } from "../../components/MovementForm";
-import Stopwatch from "../../components/stopwatch";
+import Stopwatch from "../../components/Stopwatch";
 
 interface ShiftTabProps extends TabProps {
   tabIndex: number;
