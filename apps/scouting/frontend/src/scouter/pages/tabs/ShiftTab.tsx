@@ -1,6 +1,5 @@
 // בס"ד
-
-import { useState, type FC, type SetStateAction } from "react";
+import { useState, type FC } from "react";
 import type { TabProps } from "../ScoutMatch";
 import { ScoreMap, defaultPoint } from "../../components/ScoreMap";
 import type {
@@ -11,6 +10,8 @@ import type {
 } from "@repo/scouting_types";
 import { MovementForm } from "../../components/MovementForm";
 import Stopwatch from "../../components/stopwatch";
+import { usePositionRecording } from "../../hooks/usePositionRecording";
+import { isEmpty } from "@repo/array-functions";
 import { ClimbSection } from "../../components/ClimbSection";
 
 interface ShiftTabProps extends TabProps {
@@ -28,6 +29,7 @@ export const ShiftTab: FC<ShiftTabProps> = ({
 }) => {
   const [mapPosition, setMapPosition] = useState<Point>();
   const [mapZone, setMapZone] = useState<Alliance>(alliance);
+  const { recordedPositionsRef, start, stop } = usePositionRecording(mapPosition);
   const [isClimbing, setIsClimbing] = useState(false);
 
   const isAuto = shiftType === "auto";
@@ -65,10 +67,15 @@ export const ShiftTab: FC<ShiftTabProps> = ({
   const handleSetForm = (cycle: { start: number; end: number }) => {
     setForm((prevForm) => {
       const prevEvents = getEvents(prevForm);
+      const positions = isEmpty(recordedPositionsRef.current)
+        ? [mapPosition ?? { ...defaultPoint }]
+        : [...recordedPositionsRef.current];
       prevEvents.push({
         interval: cycle,
-        startPosition: mapPosition ?? { ...defaultPoint },
+        positions,
       });
+
+      recordedPositionsRef.current = [];
       return prevForm;
     });
   };
@@ -89,12 +96,12 @@ export const ShiftTab: FC<ShiftTabProps> = ({
       {alliance === "red" && scoreMap}
       <div className="flex flex-col items-center gap-0.5 sm:gap-1 shrink-0 w-32 sm:w-36 min-h-0 py-0.5 sm:py-1">
         <Stopwatch
-          addCycleTimeSeconds={(cycle) => {
-            handleSetForm(cycle);
-          }}
+          addCycleTimeSeconds={handleSetForm}
           originTime={originTime}
           disabled={mapPosition === undefined}
           size="compact"
+          onStart={start}
+          onStop={stop}
         />
         <MovementForm
           setMovement={(value) => {

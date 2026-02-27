@@ -27,10 +27,10 @@ const NO_FUEL_COLLECTED = 0;
 const FIRST_SECTION_AMOUNT = 1;
 const ONE_SECTION_ONLY_LENGTH = 1;
 
-/**
+/** 
  * @param sections consists of sections that contains a list of timestamps in ms
  * @returns mean ball amount
- */
+ * Recursively calculates mean ball amount from timestamp sections. */
 const calculateBallAmount = (
   sections: number[][],
   shotDuration: number,
@@ -101,25 +101,6 @@ const calculateAccuracies = (sections: BPS["events"], shotDuration: number) => {
   return sortedAccuracies;
 };
 
-const MILLISECONDS_IN_SECONDS = 1000;
-
-export const calculateAverageBPS = (bpses: BPS[]) => {
-  const formattedSections = formatSections(bpses.flatMap((bps) => bps.events));
-
-  const longestSection = getMax(formattedSections, (section) =>
-    lastElement(section.shoot),
-  );
-
-  const longestSectionDuration = lastElement(longestSection.shoot);
-
-  const shotAmount = calculateBallAmount(
-    formattedSections.map((section) => section.shoot),
-    longestSectionDuration,
-  );
-
-  return (shotAmount * MILLISECONDS_IN_SECONDS) / longestSectionDuration;
-};
-
 const compareSections = (section1: number[], section2: number[]) =>
   lastElement(section1) - lastElement(section2);
 
@@ -139,6 +120,26 @@ const formatSections = (sections: BPS["events"]) =>
       compareSections(formattedSection1.shoot, formattedSection2.shoot),
     );
 
+const MILLISECONDS_IN_SECONDS = 1000;
+
+export const calculateAverageBPS = (bpses: BPS[]) => {
+  const formattedSections = formatSections(bpses.flatMap((bps) => bps.events));
+
+  const longestSection = getMax(formattedSections, (section) =>
+    lastElement(section.shoot),
+  );
+
+  const longestSectionDuration = lastElement(longestSection.shoot);
+
+  const shotAmount = calculateBallAmount(
+    formattedSections.map((section) => section.shoot),
+    longestSectionDuration,
+  );
+
+  return (shotAmount * MILLISECONDS_IN_SECONDS) / longestSectionDuration;
+};
+
+/** Calculates fuel statistics by averaging across multiple matches. */
 export const calculateFuelByAveraging = (
   shot: ShootEvent,
   isPass: boolean,
@@ -147,7 +148,7 @@ export const calculateFuelByAveraging = (
   const shotStats: ShotStats = {
     durationMilliseconds: shot.interval.end - shot.interval.start,
     hubDistanceCentimeters: distanceFromHub(
-      convertPixelToCentimeters(shot.startPosition),
+      convertPixelToCentimeters(firstElement(shot.positions)),
     ),
   };
 
@@ -162,7 +163,7 @@ export const calculateFuelByAveraging = (
     return {
       shot: shotAmount,
       passed: shotAmount,
-      positions: [shot.startPosition],
+      positions: shot.positions,
     };
   }
   const scoredAccuracy = interpolateQuadratic(
@@ -178,6 +179,6 @@ export const calculateFuelByAveraging = (
     scored: scoredAmount,
     shot: shotAmount,
     missed: shotAmount - scoredAmount,
-    positions: [shot.startPosition],
+    positions: shot.positions,
   };
 };
