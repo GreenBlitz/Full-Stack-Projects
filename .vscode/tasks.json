@@ -30,7 +30,7 @@
     {
       "label": "package",
       "type": "shell",
-      "command": "docker compose -f .\\apps\\${input:project}\\${input:workspace}\\docker-compose.yml build"
+      "command": "docker compose -f .\\apps\\${input:project}\\${input:workspace}\\docker-compose.yml --env-file .public.env --env-file .secret.env build"
     },
     {
       "label": "deliver",

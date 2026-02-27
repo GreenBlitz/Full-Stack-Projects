@@ -1,82 +1,96 @@
 // בס"ד
 import { Router } from "express";
 import { join } from "path";
-import { tryCatch } from "fp-ts/lib/TaskEither";
+import { fold, fromEither, map, tryCatch } from "fp-ts/lib/TaskEither";
 import { promises as fs } from "fs";
 import { StatusCodes } from "http-status-codes";
-import { pipe } from "fp-ts/lib/function";
+import { flow, pipe } from "fp-ts/lib/function";
 import { flatMap, orElse, right, left } from "fp-ts/lib/TaskEither";
-import { createTypeCheckingEndpointFlow } from "../middleware/verification";
+import {
+  createBodyVerificationPipe,
+  createTypeCheckingEndpointFlow,
+} from "../middleware/verification";
 import type { EndpointError } from "../middleware/verification";
 import type { TaskEither } from "fp-ts/lib/TaskEither";
-import { map } from "fp-ts/lib/Task";
-import { gamesArrayCodec, type GameData } from "@repo/scouting_types";
+import { right as rightEither } from "fp-ts/lib/Either";
+import { map as mapTask } from "fp-ts/lib/Task";
+import {
+  gameDataCodec,
+  gamesArrayCodec,
+  type GameData,
+} from "@repo/scouting_types";
+import { getDb } from "../middleware/db";
 
 export const gameRouter = Router();
 
-const DATA_DIR = join(process.cwd(), "data");
-const GAMES_FILE = join(DATA_DIR, "games.json");
-const JSON_INDENTATION = 2;
-
-const ensureDataDir = (): TaskEither<EndpointError, void> =>
-  tryCatch(
-    () => fs.mkdir(DATA_DIR, { recursive: true }).then(() => undefined),
-    (error) => ({
-      status: StatusCodes.INTERNAL_SERVER_ERROR,
-      reason: `Error creating data directory: ${error}`,
-    })
-  );
+const getGamesCollection = flow(
+  getDb,
+  map((db) => db.collection<GameData>("games")),
+);
 
 export const readGames = (): TaskEither<EndpointError, GameData[]> =>
   pipe(
-    tryCatch(
-      async () => {
-        const data = await fs.readFile(GAMES_FILE, "utf-8");
-        return JSON.parse(data) as unknown;
-      },
-      (error) => {
-        const err = error as { code?: string };
-        if (err.code === "ENOENT") {
-          return {
-            status: StatusCodes.INTERNAL_SERVER_ERROR,
-            reason: "ENOENT",
-          };
-        }
-        return {
+    getGamesCollection(),
+    flatMap((collection) =>
+      tryCatch(
+        () => collection.find({}).toArray(),
+        (error) => ({
           status: StatusCodes.INTERNAL_SERVER_ERROR,
           reason: `Error reading games file: ${error}`,
-        };
-      }
+        }),
+      ),
     ),
-    orElse((error) => {
-      if (error.reason === "ENOENT") {
-        return right([] as unknown);
-      }
-      return left(error);
+    map((item) => {
+      console.log(item);
+      return item;
     }),
-    map(
+    mapTask(
       createTypeCheckingEndpointFlow(gamesArrayCodec, (errors) => ({
         status: StatusCodes.INTERNAL_SERVER_ERROR,
         reason: `Invalid games data format. error: ${errors}`,
-      }))
-    )
+      })),
+    ),
   );
 
-export const writeGames = (games: GameData[]): TaskEither<EndpointError, void> =>
+export const writeGames = (games: GameData[]) =>
   pipe(
-    ensureDataDir(),
-    flatMap(() =>
+    getGamesCollection(),
+    flatMap((collection) =>
       tryCatch(
-        () =>
-          fs.writeFile(
-            GAMES_FILE,
-            JSON.stringify(games, null, JSON_INDENTATION),
-            "utf-8"
-          ),
+        () => collection.insertMany(games),
         (error) => ({
           status: StatusCodes.INTERNAL_SERVER_ERROR,
           reason: `Error writing games file: ${error}`,
-        })
-      )
-    )
+        }),
+      ),
+    ),
   );
+
+gameRouter.get("/", async (req, res) => {
+  await pipe(
+    readGames(),
+    fold(
+      (error) => () =>
+        Promise.resolve(res.status(error.status).send(error.reason)),
+      (games) => () =>
+        Promise.resolve(res.status(StatusCodes.OK).json({ games })),
+    ),
+  )();
+});
+
+gameRouter.post("/", async (req, res) => {
+  await pipe(
+    rightEither(req),
+    createBodyVerificationPipe(gameDataCodec),
+    fromEither,
+    flatMap((game) => writeGames([game])),
+    fold(
+      (error) => () =>
+        Promise.resolve(res.status(error.status).send(error.reason)),
+      () => () =>
+        Promise.resolve(
+          res.status(StatusCodes.OK).json({ message: "Wrote Succefully" }),
+        ),
+    ),
+  )();
+});

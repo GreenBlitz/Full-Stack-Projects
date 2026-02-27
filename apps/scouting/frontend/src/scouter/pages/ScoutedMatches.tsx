@@ -7,11 +7,14 @@ import { serialize } from "@repo/serde";
 import { LuQrCode } from "react-icons/lu";
 import { MdFileUpload } from "react-icons/md";
 import { IoIosRemoveCircle } from "react-icons/io";
+import { CiEdit } from "react-icons/ci";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { isEmpty } from "@repo/array-functions";
 import { useNavigate } from "react-router-dom";
+import { ConfirmDeletePopup } from "../components/ConfirmDeletePopup";
+import { createNewScoutingForm } from "./ScoutMatch";
 
-const ICON_SIZE = 20;
+const ICON_SIZE_PIXELS = 20;
 
 // level of extra data used for error correction
 // medium uses around 15% of data
@@ -23,8 +26,11 @@ export const ScoutedMatches: FC = () => {
     "scouted_forms",
     [],
   );
+  const [_currentlyScoutingMatch, setCurrentlyScoutingMatch] =
+    useLocalStorage<ScoutingForm>("form", createNewScoutingForm());
   const [selectedMatch, setSelectedMatch] = useState<ScoutingForm>();
   const [isLoading, setIsLoading] = useState(false);
+  const [deletedMatchIndex, setDeletedMatch] = useState<number>();
   const navigate = useNavigate();
 
   const removeMatch = (index: number) => {
@@ -82,13 +88,26 @@ export const ScoutedMatches: FC = () => {
   }
 
   return (
-    <div className="flex flex-row">
+    <div className="flex flex-row min-h-screen relative">
       {isEmpty(scoutedMatches) ? (
         <div className="w-full h-screen flex items-center justify-center">
           <h1 className="text-8xl">No Matches Scouted 😱</h1>
         </div>
       ) : (
-        <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4 w-full h-screen">
+        <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4 w-full h-screen overflow-y-auto">
+          {deletedMatchIndex !== undefined && (
+            <ConfirmDeletePopup
+              onDelete={() => {
+                removeMatch(deletedMatchIndex);
+              }}
+              close={() => {
+                setDeletedMatch(undefined);
+              }}
+              itemName={`${scoutedMatches[
+                deletedMatchIndex
+              ].match.type.toLocaleUpperCase()} ${scoutedMatches[deletedMatchIndex].match.number.toString()}`}
+            />
+          )}
           {scoutedMatches.map((match, index) => (
             <div
               key={index}
@@ -107,11 +126,11 @@ export const ScoutedMatches: FC = () => {
                 <div className="flex flex-row">
                   <div
                     onClick={() => {
-                      removeMatch(index);
+                      setDeletedMatch(index);
                     }}
                     className="h-min my-auto mx-2 bg-red-800 p-2 rounded-2xl"
                   >
-                    <IoIosRemoveCircle size={ICON_SIZE} />
+                    <IoIosRemoveCircle size={ICON_SIZE_PIXELS} />
                   </div>
                   <div
                     onClick={() => {
@@ -119,7 +138,7 @@ export const ScoutedMatches: FC = () => {
                     }}
                     className="h-min my-auto mx-2 bg-green-600 p-2 rounded-2xl"
                   >
-                    <MdFileUpload size={ICON_SIZE} />
+                    <MdFileUpload size={ICON_SIZE_PIXELS} />
                   </div>
                   <div
                     onClick={() => {
@@ -127,7 +146,17 @@ export const ScoutedMatches: FC = () => {
                     }}
                     className="bg-slate-600 p-2 rounded-2xl mx-2"
                   >
-                    <LuQrCode size={ICON_SIZE} />
+                    <LuQrCode size={ICON_SIZE_PIXELS} />
+                  </div>
+                  <div
+                    onClick={() => {
+                      setCurrentlyScoutingMatch(match);
+                      removeMatch(index);
+                      void navigate("/scout");
+                    }}
+                    className="bg-orange-500 p-2 rounded-2xl mx-2"
+                  >
+                    <CiEdit size={ICON_SIZE_PIXELS} />
                   </div>
                 </div>
               </div>
@@ -181,7 +210,8 @@ export const ScoutedMatches: FC = () => {
           )}
         </div>
       )}
-      <div className="w-32 p-4 flex flex-col">
+
+      <div className="w-32 p-4 flex flex-col shrink-0">
         <button
           className="scouter-navigation-button w-full h-12"
           onClick={() => {
@@ -190,13 +220,23 @@ export const ScoutedMatches: FC = () => {
         >
           Scout
         </button>
+
         <button
-          className="bg-linear-to-r from-green-700 to-green-800 shadow-[0_0_15px_rgba(34,250,94,0.4)] w-full h-12 mt-auto"
+          className="bg-linear-to-r from-green-700 to-green-800 shadow-[0_0_15px_rgba(34,250,94,0.4)] w-full h-12 mt-auto mb-4"
           onClick={() => {
             void submitAll();
           }}
         >
           Submit All
+        </button>
+
+        <button
+          className="w-full h-12 bg-linear-to-r from-purple-800 to-purple-900 shadow-[0_0_15px_rgba(168,85,247,0.4)] rounded-lg font-bold text-white text-xs transition-transform active:scale-95"
+          onClick={() => {
+            void navigate("/leaderboard");
+          }}
+        >
+          Leaderboard
         </button>
       </div>
     </div>

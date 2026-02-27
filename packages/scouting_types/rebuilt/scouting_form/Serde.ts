@@ -14,6 +14,7 @@ import type { Interval } from "./Interval";
 import type { Point, ShootEvent } from "./ShootEvent";
 import type { AutoClimb, defaultAuto, defaultTele } from "./Segments";
 import type { TeleClimb } from "./Shift";
+import { competitions } from "./GameData";
 
 const MATCH_NUMBER_BIT_COUNT = 7;
 const TEAM_NUMBER_BIT_COUNT = 14;
@@ -90,6 +91,7 @@ export const serdeAuto = createRecordSerde<typeof defaultAuto>({
 
 const serdeFields = {
   scouterName: serdeString(),
+  competition: serdeEnumedString(competitions),
   match: createRecordSerde<Match>({
     number: serdeUnsignedInt(MATCH_NUMBER_BIT_COUNT),
     type: serdeEnumedString(["playoff", "qualification", "practice"]),

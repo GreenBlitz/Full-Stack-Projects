@@ -1,5 +1,6 @@
 // בס"ד
 import type {
+  BPS,
   FuelObject,
   Match,
   Point,
@@ -9,11 +10,6 @@ import { calculateFuelByAveraging } from "./calculations/fuel-averaging";
 import { calculateFuelByMatch } from "./calculations/fuel-match";
 import { ALLIANCE_ZONE_WIDTH_PIXELS } from "@repo/rebuilt_map";
 import { firstElement } from "@repo/array-functions";
-
-export interface BPS {
-  events: { shoot: number[]; score: number[] }[];
-  match: Match;
-}
 
 const isShotPass = (positions: Point[]) =>
   firstElement(positions).x > ALLIANCE_ZONE_WIDTH_PIXELS;

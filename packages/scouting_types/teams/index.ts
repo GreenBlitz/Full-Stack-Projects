@@ -12,10 +12,11 @@ import type {
 
 export const teamsProps = t.type({
   teams: t.union([t.array(t.number), t.number]),
+  recency: t.union([t.number, t.undefined]),
 });
 
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-export const ACCURACY_DISTANCES = [100, 200, 2000] as const;
+export const ACCURACY_DISTANCES = [150, 300, 2000] as const;
 
 export type MatchedEntry<Entry> = { match: Match } & Entry;
 export interface SectionTeamData {

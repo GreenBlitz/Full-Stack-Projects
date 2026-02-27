@@ -28,8 +28,10 @@ export const getMax = <T>(arr: T[], transformation: (value: T) => number): T =>
     .reduce((max, curr) => (curr.value > max.value ? curr : max)).item;
 
 const FIRST_ELEMENT_ID = 0;
+const SECOND_ELEMENT_ID = 1;
 const LAST_ELEMENT_BACKWARDS_INDEX = 1;
 export const firstElement = <T>(arr: T[]): T => arr[FIRST_ELEMENT_ID];
+export const secondElement = <T>(arr: T[]): T => arr[SECOND_ELEMENT_ID];
 export const lastElement = <T>(arr: T[]): T =>
   arr[arr.length - LAST_ELEMENT_BACKWARDS_INDEX];
 
@@ -52,4 +54,21 @@ export const mapObject = <K extends string, A, B>(
   ]);
 
   return Object.fromEntries(entries) as unknown as Record<K, B>;
+};
+
+interface Partition<T> {
+  true: T[];
+  false: T[];
+}
+export const partition = <T>(
+  array: T[],
+  predicate: (item: T) => boolean,
+): Partition<T> => {
+  return array.reduce(
+    (acc, item) => {
+      acc[`${predicate(item)}`].push(item);
+      return acc;
+    },
+    { true: [], false: [] } as Partition<T>,
+  );
 };

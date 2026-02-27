@@ -1,6 +1,5 @@
 // בס"ד
-import type { FuelObject, ShootEvent } from "@repo/scouting_types";
-import type { BPS } from "../fuel-object";
+import type { BPS, FuelObject, ShootEvent } from "@repo/scouting_types";
 
 /** Filters timestamps that fall within the shooting interval. */
 const getIncludedShots = (section: number[], shot: ShootEvent) => {
@@ -32,6 +31,7 @@ export const calculateFuelByMatch = (
   }
 
   const scoredAmount = shotBps.flatMap((section) => section.score).length;
+
 
   return {
     shot: shotAmount,
