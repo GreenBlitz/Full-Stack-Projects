@@ -13,14 +13,17 @@ app.set("query parser", "extended");
 app.use(express.json());
 app.use("/api/v1", apiRouter);
 
-
 const options = {
   key: fs.readFileSync("./cert-key.key"),
   cert: fs.readFileSync("./certificate.crt"),
 };
-https.createServer(options, app).listen(443, () => {
-  console.log("HTTPS Server running on port 443");
-});
-app.listen(port, () => {
-  console.log(`Production server running at http://localhost:${port}`);
-});
+
+if (options.key.length > 0) {
+  https.createServer(options, app).listen(443, () => {
+    console.log("HTTPS Server running on port 443");
+  });
+} else {
+  app.listen(port, () => {
+    console.log(`Production server running at http://localhost:${port}`);
+  });
+}
