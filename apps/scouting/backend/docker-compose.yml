@@ -16,7 +16,6 @@ services:
     environment:
       - MONGO_URI=mongodb://mongodb:27017
 
-
   mongodb:
     image: mongo:latest
     restart: unless-stopped
@@ -24,6 +23,8 @@ services:
       - scouting-shared
     volumes:
       - scouting-data:/data/db
+      - ./cert-key:./cert-key:ro
+      - ./certificate.crt:./certificate.crt:ro
     ports:
       - "27017:27017"
 
