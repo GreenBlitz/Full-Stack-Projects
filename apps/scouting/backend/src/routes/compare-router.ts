@@ -11,6 +11,8 @@ import {
   tryCatch,
   fold,
   filterOrElse,
+  bindTo,
+  bind,
 } from "fp-ts/lib/TaskEither";
 import { mongofyQuery } from "../middleware/query";
 import { StatusCodes } from "http-status-codes";
@@ -23,6 +25,7 @@ import {
   findTimesClimbedToLevels,
 } from "../climb/calculations";
 import { isSingleTeam } from "../verification/functions";
+import { getTeamBPS } from "./bps-router";
 
 export const compareRouter = Router();
 
@@ -43,20 +46,19 @@ compareRouter.get("/", async (req, res) => {
       reason: "Compare: Forms contain data from multiple different teams.",
     })),
 
-    map((teamForms) => ({
+    bindTo("teamForms"),
+    bind("bpses", ({ teamForms }) =>
+      getTeamBPS(firstElement(teamForms).teamNumber),
+    ),
+    map(({ teamForms, bpses }) => ({
       teamNumber: firstElement(teamForms).teamNumber,
       averageFuel: {
-        averageFuelInGame: calculateAverageScoredFuel(teamForms, "fullGame"),
-        averageFuelInAuto: calculateAverageScoredFuel(teamForms, "auto"),
-      },
-      climb: {
-        maxClimbLevel: findMaxClimbLevel(teamForms),
-        timesClimbedToMax: findTimesClimbedToLevel(
+        averageFuelInGame: calculateAverageScoredFuel(
           teamForms,
-          findMaxClimbLevel(teamForms),
+          "fullGame",
+          bpses,
         ),
-        timesClimbedInAuto: findTimesClimbedInAuto(teamForms),
-        timesClimbedToLevels: findTimesClimbedToLevels(teamForms),
+        averageFuelInAuto: calculateAverageScoredFuel(teamForms, "auto", bpses),
       },
     })),
 

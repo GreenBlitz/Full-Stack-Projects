@@ -31,6 +31,7 @@ import { createFuelObject } from "../fuel/fuel-object";
 import { splitByDistances } from "../fuel/distance-split";
 import { calculateFuelStatisticsOfShift } from "../fuel/fuel-general";
 import { calculateAverageBPS } from "../fuel/calculations/fuel-averaging";
+import { getTeamBPSes } from "./bps-router";
 
 export const teamsRouter = Router();
 
@@ -201,8 +202,10 @@ teamsRouter.get("/", async (req, res) => {
           ),
       ),
     ),
-    map((teams) => ({ teams, bpses: getAllBPS() })),
-    map(({ teams, bpses }) => mapObject(teams, processTeam.bind(null, bpses))),
+    flatMap(getTeamBPSes),
+    map((teams) =>
+      mapObject(teams, (team) => processTeam(team.bpses, team.forms)),
+    ),
     fold(
       (error) => () =>
         Promise.resolve(res.status(error.status).send(error.reason)),
