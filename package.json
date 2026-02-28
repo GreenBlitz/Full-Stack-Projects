@@ -39,6 +39,7 @@
     "packages/*"
   ],
   "dependencies": {
+    "@ericblade/quagga2": "^1.12.1",
     "@radix-ui/react-slider": "^1.3.6",
     "@tailwindcss/vite": "^4.1.17",
     "@zxing/browser": "^0.1.5",

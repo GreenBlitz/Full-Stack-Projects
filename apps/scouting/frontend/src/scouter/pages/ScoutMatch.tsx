@@ -20,6 +20,8 @@ import { useNavigate } from "react-router-dom";
 import { AutoTab } from "./tabs/AutoTab";
 import { ClimbTab } from "./tabs/ClimbTab";
 import { PreMatchTab } from "../../PreMatchTab";
+import {Scanning} from "./barcodeScanner";
+
 export interface TabProps {
   setForm: Dispatch<SetStateAction<ScoutingForm>>;
   currentForm: ScoutingForm;
@@ -109,7 +111,7 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
     <div className="relative flex flex-col pr-1 p-4 max-w-37.5 max-h-screen">
       <div className="w-full">
         <button
-          className="my-auto w-full bg-[#e83e2e] h-8"
+          className="my-auto w-full bg-[#c31505] h-8"
           onClick={() => {
             void navigate("/");
           }}

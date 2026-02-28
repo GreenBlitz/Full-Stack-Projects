@@ -31,7 +31,7 @@ export const PostMatchTab: FC<TabProps> = ({ setForm, currentForm }) => {
         <div className="flex flex-col gap-2 flex-1 min-h-0">
           <label
             htmlFor="match-comments"
-            className="text-lg font-bold text-emerald-400"
+            className="text-lg font-bold text-green-400"
           >
             Match Comments
           </label>
@@ -42,7 +42,7 @@ export const PostMatchTab: FC<TabProps> = ({ setForm, currentForm }) => {
             }}
             placeholder="Add any additional notes or observations about this match..."
             className="w-full flex-1 p-4 text-base border-2 border-green-500/30 rounded-xl 
-                     bg-[#1a1a1a] text-green-100
+                     bg-[#1a1a1a] text-green-600
                      focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500
                      placeholder:text-emerald-500/40
                      resize-none transition-all duration-200
