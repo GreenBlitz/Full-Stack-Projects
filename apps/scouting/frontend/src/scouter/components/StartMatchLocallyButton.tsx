@@ -9,19 +9,39 @@ const INITIAL_TIME_MILLISECONDS = 0;
 const CYCLE_TIME_MILLISECONDS = 10;
 const DECIMAL_PLACES = 2;
 const DECIMAL_PLACES_MILLISECONDS = 3;
+const STORAGE_KEY = "match-timer";
 
 interface StartMatchLocallyButtonProps {
   disabled: boolean;
 }
 
 const StartMatchLocallyButton: React.FC<StartMatchLocallyButtonProps> = ({
-  disabled
+  disabled,
 }) => {
-  const [isRunning, setIsRunning] = useState(false);
-  const [elapsedTime, setElapsedTime] = useState(INITIAL_TIME_MILLISECONDS);
+  const [isRunning, setIsRunning] = useState<boolean>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? JSON.parse(saved).isRunning : false;
+  });
 
-  const startTimeRef = useRef(INITIAL_TIME_MILLISECONDS);
+  const [elapsedTime, setElapsedTime] = useState<number>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? JSON.parse(saved).elapsedTime : INITIAL_TIME_MILLISECONDS;
+  });
 
+  const startTimeRef = useRef<number>(INITIAL_TIME_MILLISECONDS)
+
+  useEffect(() => {
+  const savedRaw = localStorage.getItem(STORAGE_KEY);
+  if (!savedRaw) return;
+
+  try {
+    const saved = JSON.parse(savedRaw) as { startTime?: number };
+    startTimeRef.current = saved.startTime ?? INITIAL_TIME_MILLISECONDS;
+  } catch {
+    // ignore bad data
+  }
+}, []);
+  
   const reset = () => {
     setElapsedTime(INITIAL_TIME_MILLISECONDS);
     setIsRunning(false);
@@ -51,12 +71,22 @@ const StartMatchLocallyButton: React.FC<StartMatchLocallyButtonProps> = ({
   }, [isRunning]);
 
   const start = () => {
-    if (isRunning || disabled) {
-      return;
-    }
-    startTimeRef.current = Date.now() - elapsedTime;
-    setIsRunning(true);
-  };
+  if (isRunning || disabled) return;
+
+  const newStartTime = Date.now() - elapsedTime;
+  startTimeRef.current = newStartTime;
+
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify({
+      isRunning: true,
+      elapsedTime,
+      startTime: newStartTime,
+    }),
+  );
+
+  setIsRunning(true);
+};
 
   const stop = () => {
     if (!isRunning) {
@@ -65,7 +95,7 @@ const StartMatchLocallyButton: React.FC<StartMatchLocallyButtonProps> = ({
     setIsRunning(false);
   };
 
-    const handleClick = () => {
+  const handleClick = () => {
     if (disabled) return;
 
     if (isRunning) {
@@ -75,6 +105,13 @@ const StartMatchLocallyButton: React.FC<StartMatchLocallyButtonProps> = ({
     }
   };
 
+  useEffect(() => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ isRunning, elapsedTime }),
+    );
+  }, [isRunning, elapsedTime]);
+
   const formatTime = () => {
     const seconds = String(calculateSeconds()).padStart(DECIMAL_PLACES, "0");
     const milliseconds = String(calculateMilliSeconds()).padStart(
@@ -83,39 +120,37 @@ const StartMatchLocallyButton: React.FC<StartMatchLocallyButtonProps> = ({
     );
     return `${seconds}:${milliseconds}`;
   };
-return (
-  <div className="flex flex-col items-center gap-2">
+  return (
+    <div className="flex flex-col items-center gap-2">
+      {/* Timer Button */}
+      <button
+        onClick={handleClick}
+        disabled={disabled}
+        className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+          disabled
+            ? "bg-gray-400 cursor-not-allowed"
+            : isRunning
+              ? "bg-blue-700"
+              : "bg-blue-500 hover:bg-blue-600 active:bg-blue-700"
+        } text-black`}
+      >
+        {formatTime()}
+      </button>
 
-    {/* Timer Button */}
-    <button
-      onClick={handleClick}
-      disabled={disabled}
-      className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
-        disabled
-          ? "bg-gray-400 cursor-not-allowed"
-          : isRunning
-          ? "bg-blue-700"
-          : "bg-blue-500 hover:bg-blue-600 active:bg-blue-700"
-      } text-black`}
-    >
-      {formatTime()}
-    </button>
-
-    {/* Reset Button */}
-    <button
-      onClick={reset}
-      disabled={disabled}
-      className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
-        disabled
-          ? "bg-gray-400 cursor-not-allowed"
-          : "bg-blue-500 hover:bg-blue-600 active:bg-blue-700"
-      } text-black`}
-    >
-      Reset
-    </button>
-
-  </div>
-);
+      {/* Reset Button */}
+      <button
+        onClick={reset}
+        disabled={disabled}
+        className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+          disabled
+            ? "bg-gray-400 cursor-not-allowed"
+            : "bg-blue-500 hover:bg-blue-600 active:bg-blue-700"
+        } text-black`}
+      >
+        Reset
+      </button>
+    </div>
+  );
 };
 
 export default StartMatchLocallyButton;
