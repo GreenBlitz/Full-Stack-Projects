@@ -11,7 +11,6 @@ const DECIMAL_PLACES = 2;
 const DECIMAL_PLACES_MILLISECONDS = 3;
 
 interface StartMatchLocallyButtonProps {
-  originTime: number;
   disabled: boolean;
 }
 
@@ -84,33 +83,33 @@ const StartMatchLocallyButton: React.FC<StartMatchLocallyButtonProps> = ({
     );
     return `${seconds}:${milliseconds}`;
   };
-  return (
-  <div className="flex flex-col items-center gap-3">
-        <button
+return (
+  <div className="flex flex-col items-center gap-2">
+
+    {/* Timer Button */}
+    <button
       onClick={handleClick}
       disabled={disabled}
-      className={`
-        select-none rounded-2xl px-6 py-3
-        font-mono font-semibold shadow-lg
-        transition-all duration-150
-        ${disabled
-          ? "bg-slate-800 text-slate-900 cursor-not-allowed"
+      className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+        disabled
+          ? "bg-gray-400 cursor-not-allowed"
           : isRunning
-          ? "bg-emerald-500 text-white scale-95"
-          : "bg-slate-800 text-green-400 hover:bg-slate-700"}
-      `}
+          ? "bg-blue-700"
+          : "bg-blue-500 hover:bg-blue-600 active:bg-blue-700"
+      } text-white`}
     >
       {formatTime()}
     </button>
+
+    {/* Reset Button */}
     <button
       onClick={reset}
-      className="
-        rounded-2xl px-6 py-2
-        font-mono font-semibold
-        bg-slate-700 text-white
-        shadow-md transition-all duration-150
-        hover:bg-slate-600 active:scale-95
-      "
+      disabled={disabled}
+      className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+        disabled
+          ? "bg-gray-400 cursor-not-allowed"
+          : "bg-blue-500 hover:bg-blue-600 active:bg-blue-700"
+      } text-white`}
     >
       Reset
     </button>
