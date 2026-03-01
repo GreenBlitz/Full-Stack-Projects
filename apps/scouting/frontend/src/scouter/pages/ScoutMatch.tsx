@@ -19,6 +19,7 @@ import { PostMatchTab } from "./tabs/PostMatchTab";
 import { useNavigate } from "react-router-dom";
 import { ClimbTab } from "./tabs/ClimbTab";
 import { PreMatchTab } from "./tabs/PreMatchTab";
+import StartMatchLocallyButton from "../components/StartMatchLocallyButton";
 export interface TabProps {
   setForm: Dispatch<SetStateAction<ScoutingForm>>;
   currentForm: ScoutingForm;
@@ -33,6 +34,10 @@ const TABS: Tab[] = [
   {
     name: "Pre",
     Component: PreMatchTab,
+  },
+  {
+    name: "Start Match",
+    Component: () => <StartMatchLocallyButton disabled={false}/>
   },
   {
     name: "Auto",
