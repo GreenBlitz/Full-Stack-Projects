@@ -12,7 +12,7 @@ import StartMatchLocallyButton from "./scouter/components/StartMatchLocallyButto
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
-      <StartMatchLocallyButton {dia} />
+      <StartMatchLocallyButton originTime={0} disabled={false}/>
     </BrowserRouter>
   </StrictMode>,
 );

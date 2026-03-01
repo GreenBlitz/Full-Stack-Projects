@@ -24,8 +24,6 @@ const StartMatchLocallyButton: React.FC<StartMatchLocallyButtonProps> = ({
 
   const startTimeRef = useRef(INITIAL_TIME_MILLISECONDS);
 
-  const startCurrentCycleTime = useRef<number>(INITIAL_TIME_MILLISECONDS);
-
   const reset = () => {
     setElapsedTime(INITIAL_TIME_MILLISECONDS);
     setIsRunning(false);
@@ -39,10 +37,6 @@ const StartMatchLocallyButton: React.FC<StartMatchLocallyButtonProps> = ({
 
   const calculateMilliSeconds = () => {
     return Math.floor(elapsedTime % MILLLISECONDS_IN_A_SECOND);
-  };
-
-  const getCurrentRelativeTime = () => {
-    return Date.now() - originTime;
   };
 
   useEffect(() => {
@@ -62,9 +56,6 @@ const StartMatchLocallyButton: React.FC<StartMatchLocallyButtonProps> = ({
     if (isRunning || disabled) {
       return;
     }
-    const relativeTime = getCurrentRelativeTime();
-    startCurrentCycleTime.current = relativeTime;
-
     startTimeRef.current = Date.now() - elapsedTime;
     setIsRunning(true);
   };
@@ -76,6 +67,11 @@ const StartMatchLocallyButton: React.FC<StartMatchLocallyButtonProps> = ({
     setIsRunning(false);
     reset();
   };
+
+  const handleClick = ()=>{
+    if (disabled) return;
+    isRunning? stop() : start();
+  }
 
   const formatTime = () => {
     const seconds = String(calculateSeconds()).padStart(DECIMAL_PLACES, "0");
@@ -95,7 +91,7 @@ const StartMatchLocallyButton: React.FC<StartMatchLocallyButtonProps> = ({
           font-mono font-semibold shadow-lg transition-all duration-150
           ${disabled ? "bg-slate-800 text-slate-900" : isRunning ? "bg-emerald-500 text-white scale-95" : "bg-slate-800 text-green-400 hover:bg-slate-700"}
         `}
-        onClick={start}
+        onClick={handleClick}
       >
         {formatTime()}
       </div>
