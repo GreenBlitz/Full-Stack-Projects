@@ -68,10 +68,15 @@ const StartMatchLocallyButton: React.FC<StartMatchLocallyButtonProps> = ({
     reset();
   };
 
-  const handleClick = ()=>{
+    const handleClick = () => {
     if (disabled) return;
-    isRunning? stop() : start();
-  }
+
+    if (isRunning) {
+      stop();
+    } else {
+      start();
+    }
+  };
 
   const formatTime = () => {
     const seconds = String(calculateSeconds()).padStart(DECIMAL_PLACES, "0");
