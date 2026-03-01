@@ -96,7 +96,7 @@ return (
           : isRunning
           ? "bg-blue-700"
           : "bg-blue-500 hover:bg-blue-600 active:bg-blue-700"
-      } text-white`}
+      } text-black`}
     >
       {formatTime()}
     </button>
@@ -109,7 +109,7 @@ return (
         disabled
           ? "bg-gray-400 cursor-not-allowed"
           : "bg-blue-500 hover:bg-blue-600 active:bg-blue-700"
-      } text-white`}
+      } text-black`}
     >
       Reset
     </button>
