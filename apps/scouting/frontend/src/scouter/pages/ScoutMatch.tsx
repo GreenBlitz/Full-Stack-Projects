@@ -25,6 +25,10 @@ export interface TabProps {
   currentForm: ScoutingForm;
   alliance: Alliance;
   originTime: number;
+  elapsedTime: number;
+  setElapsedTime: Dispatch<SetStateAction<number>>;
+  isRunning: boolean;
+  setIsRunning: Dispatch<SetStateAction<boolean>>;
 }
 interface Tab {
   name: string;
@@ -37,7 +41,9 @@ const TABS: Tab[] = [
   },
   {
     name: "Start Match",
-    Component: () => <StartMatchLocallyButton disabled={false}/>
+    Component: (props) => (
+      <StartMatchLocallyButton disabled={false} {...props} />
+    ),
   },
   {
     name: "Auto",
@@ -185,13 +191,56 @@ export const ScoutMatch: FC = () => {
     "form",
     createNewScoutingForm(),
   );
+
   const [activeTabIndex, setActiveTab] = useState(STARTING_TAB_INDEX);
   const [alliance, _setAlliance] = useState<Alliance>("blue");
   const originTime = useMemo(() => Date.now(), []);
+
+  // ✅ Timer state moved here
+  const [elapsedTime, setElapsedTime] = useState<number>(0);
+  const [isRunning, setIsRunning] = useState<boolean>(false);
+
+  // ✅ Auto-switch tab based on time (adjust indices to your TABS)
+  useEffect(() => {
+    if (!isRunning) return;
+
+    const seconds = elapsedTime / 1000;
+
+    // These indices assume your current TABS order:
+    // 0 Pre
+    // 1 Start Match
+    // 2 Auto
+    // 3 Climb (auto)
+    // 4 Transition
+    // 5 Shift1
+    // 6 Shift2
+    // 7 Shift3
+    // 8 Shift4
+    // 9 Endgame
+    // 10 Climb (tele)
+    // 11 Post
+
+    let nextIndex: number | null = null;
+
+    if (seconds < 15)
+      nextIndex = 2; // Auto
+    else if (seconds < 20)
+      nextIndex = 4; // Transition
+    else if (seconds < 135)
+      nextIndex = 5; // Teleop (Shift1)
+    else nextIndex = 9; // Endgame
+
+    // ✅ avoid spamming setActiveTab every tick
+    if (nextIndex !== null && nextIndex !== activeTabIndex) {
+      setActiveTab(nextIndex);
+    }
+  }, [elapsedTime, isRunning, activeTabIndex]);
+
   const CurrentTab = useMemo(
     () => TABS[activeTabIndex].Component,
     [activeTabIndex],
   );
+
   return (
     <div
       className="max-h-screen bg-black p-4 md:p-6 flex items-center justify-center
@@ -208,6 +257,7 @@ export const ScoutMatch: FC = () => {
             activeTabIndex={activeTabIndex}
           />
         )}
+
         <div className="flex-1 flex flex-col overflow-hidden p-2 relative z-10">
           <div
             className="flex-1 min-h-0 text-green-100 overflow-hidden pr-2
@@ -219,9 +269,15 @@ export const ScoutMatch: FC = () => {
               currentForm={scoutingForm}
               alliance={alliance}
               originTime={originTime}
+              // ✅ pass timer props down
+              elapsedTime={elapsedTime}
+              setElapsedTime={setElapsedTime}
+              isRunning={isRunning}
+              setIsRunning={setIsRunning}
             />
           </div>
         </div>
+
         {alliance === "red" && (
           <SideBar
             setActiveTab={setActiveTab}

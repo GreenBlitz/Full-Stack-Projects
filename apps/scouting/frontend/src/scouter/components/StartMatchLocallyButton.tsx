@@ -13,20 +13,19 @@ const STORAGE_KEY = "match-timer";
 
 interface StartMatchLocallyButtonProps {
   disabled: boolean;
+  isRunning: boolean;
+  setIsRunning: React.Dispatch<React.SetStateAction<boolean>>;
+  elapsedTime: number;
+  setElapsedTime: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const StartMatchLocallyButton: React.FC<StartMatchLocallyButtonProps> = ({
   disabled,
+  isRunning,
+  setIsRunning,
+  elapsedTime,
+  setElapsedTime
 }) => {
-  const [isRunning, setIsRunning] = useState<boolean>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved).isRunning : false;
-  });
-
-  const [elapsedTime, setElapsedTime] = useState<number>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved).elapsedTime : INITIAL_TIME_MILLISECONDS;
-  });
 
   const startTimeRef = useRef<number>(INITIAL_TIME_MILLISECONDS);
 
