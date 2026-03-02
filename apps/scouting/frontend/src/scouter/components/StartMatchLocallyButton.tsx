@@ -28,23 +28,29 @@ const StartMatchLocallyButton: React.FC<StartMatchLocallyButtonProps> = ({
     return saved ? JSON.parse(saved).elapsedTime : INITIAL_TIME_MILLISECONDS;
   });
 
-  const startTimeRef = useRef<number>(INITIAL_TIME_MILLISECONDS)
+  const startTimeRef = useRef<number>(INITIAL_TIME_MILLISECONDS);
 
   useEffect(() => {
-  const savedRaw = localStorage.getItem(STORAGE_KEY);
-  if (!savedRaw) return;
+    const savedRaw = localStorage.getItem(STORAGE_KEY);
+    if (!savedRaw) return;
 
-  try {
-    const saved = JSON.parse(savedRaw) as { startTime?: number };
-    startTimeRef.current = saved.startTime ?? INITIAL_TIME_MILLISECONDS;
-  } catch {
-    // ignore bad data
-  }
-}, []);
-  
+    try {
+      const saved = JSON.parse(savedRaw) as { startTime?: number };
+      startTimeRef.current = saved.startTime ?? INITIAL_TIME_MILLISECONDS;
+    } catch {
+      // ignore bad data
+    }
+  }, []);
+
   const reset = () => {
     setElapsedTime(INITIAL_TIME_MILLISECONDS);
     setIsRunning(false);
+  };
+
+  const calculateMinutes = () => {
+    return Math.floor(
+      (elapsedTime / MILLLISECONDS_IN_A_SECOND) / SECOND_IN_A_MINUTE,
+    );
   };
 
   const calculateSeconds = () => {
@@ -71,22 +77,22 @@ const StartMatchLocallyButton: React.FC<StartMatchLocallyButtonProps> = ({
   }, [isRunning]);
 
   const start = () => {
-  if (isRunning || disabled) return;
+    if (isRunning || disabled) return;
 
-  const newStartTime = Date.now() - elapsedTime;
-  startTimeRef.current = newStartTime;
+    const newStartTime = Date.now() - elapsedTime;
+    startTimeRef.current = newStartTime;
 
-  localStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify({
-      isRunning: true,
-      elapsedTime,
-      startTime: newStartTime,
-    }),
-  );
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        isRunning: true,
+        elapsedTime,
+        startTime: newStartTime,
+      }),
+    );
 
-  setIsRunning(true);
-};
+    setIsRunning(true);
+  };
 
   const stop = () => {
     if (!isRunning) {
@@ -113,12 +119,13 @@ const StartMatchLocallyButton: React.FC<StartMatchLocallyButtonProps> = ({
   }, [isRunning, elapsedTime]);
 
   const formatTime = () => {
+    const minutes = String(calculateMinutes()).padStart(DECIMAL_PLACES, "0");
     const seconds = String(calculateSeconds()).padStart(DECIMAL_PLACES, "0");
     const milliseconds = String(calculateMilliSeconds()).padStart(
       DECIMAL_PLACES_MILLISECONDS,
       "0",
     );
-    return `${seconds}:${milliseconds}`;
+    return `${minutes}:${seconds}:${milliseconds}`;
   };
   return (
     <div className="flex flex-col items-center gap-2">
