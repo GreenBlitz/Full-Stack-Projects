@@ -32,3 +32,4 @@ export const superScoutCodec = t.type({
 });
 
 export type SuperScout = t.TypeOf<typeof superScoutCodec>;
+export type SuperRating = t.TypeOf<typeof sectionCodec>["rating"];
