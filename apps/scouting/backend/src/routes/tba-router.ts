@@ -6,7 +6,7 @@ import {
   createBodyVerificationPipe,
   createTypeCheckingEndpointFlow,
   type EndpointError,
-} from "../middleware/verification";
+} from "@repo/type-utils";
 import {
   matchesProps,
   scoreBreakdown2026,

@@ -3,7 +3,7 @@
 import { Router } from "express";
 import { right } from "fp-ts/lib/Either";
 import { pipe } from "fp-ts/lib/function";
-import { createTypeCheckingEndpointFlow } from "../middleware/verification";
+import { createTypeCheckingEndpointFlow } from "@repo/type-utils";
 import {
   flatMap,
   fold,

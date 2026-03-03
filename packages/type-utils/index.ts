@@ -5,6 +5,9 @@ import type { Refinement } from "fp-ts/lib/Refinement";
 import { left, right } from "fp-ts/lib/Either";
 import { mapObject } from "@repo/array-functions";
 
+export * from "./db-utils";
+export * from "./verification";
+
 export const isObject = (value: unknown): value is object =>
   value !== null && typeof value === "object" && !Array.isArray(value);
 

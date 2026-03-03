@@ -1,7 +1,7 @@
 // בס"ד
 import { MongoClient, type Db } from "mongodb";
 import { map, right, type TaskEither, tryCatch } from "fp-ts/TaskEither";
-import type { EndpointError } from "./verification";
+import type { EndpointError } from "@repo/type-utils/verification";
 import { StatusCodes } from "http-status-codes";
 import { pipe } from "fp-ts/lib/function";
 
@@ -59,8 +59,8 @@ Oh, but maybe I was ready all along
 Baby, now I'm ready, moving on
 Oh, but maybe I was ready all along
 Oh, I'm ready for the moment and the sound
-Oh, but maybe I was ready all along*/ 
-db: Db | undefined = undefined;
+Oh, but maybe I was ready all along*/
+  db: Db | undefined = undefined;
 
 export const getDb = (): TaskEither<EndpointError, Db> =>
   db

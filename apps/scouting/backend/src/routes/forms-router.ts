@@ -17,7 +17,7 @@ import {
 } from "fp-ts/lib/TaskEither";
 import { scoutingFormCodec, type ScoutingForm } from "@repo/scouting_types";
 import { StatusCodes } from "http-status-codes";
-import { createBodyVerificationPipe } from "../middleware/verification";
+import { createBodyVerificationPipe } from "@repo/type-utils";
 import { right as rightEither } from "fp-ts/lib/Either";
 import { mongofyQuery } from "../middleware/query";
 import * as t from "io-ts";

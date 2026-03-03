@@ -3,14 +3,11 @@ import { Router } from "express";
 import { flow, pipe } from "fp-ts/lib/function";
 import { getDb } from "../middleware/db";
 import { map, fold, bindTo, fromEither, bind } from "fp-ts/lib/TaskEither";
-import {
-  SuperScout,
-  superScoutCodec,
-} from "@repo/scouting_types";
+import { SuperScout, superScoutCodec } from "@repo/scouting_types";
 import { mongofyQuery } from "../middleware/query";
 import { StatusCodes } from "http-status-codes";
 import { right as rightEither } from "fp-ts/lib/Either";
-import { createBodyVerificationPipe } from "../middleware/verification";
+import { createBodyVerificationPipe } from "@repo/type-utils";
 
 export const superScoutRouter = Router();
 
