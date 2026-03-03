@@ -35,7 +35,7 @@ const createTinder: (ScoutingForm) => TinderStats = (
   },
 });
 
-tinderRouter.get("/team", (req, res) =>
+tinderRouter.get("/", (req, res) =>
   pipe(
     getFormsCollection(),
     flatMap((collection) =>
