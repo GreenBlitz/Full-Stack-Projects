@@ -1,5 +1,7 @@
 // בס"ד
 
+import type { Match, SuperRating, SuperSection } from "@repo/scouting_types";
+
 export const SUPER_SCOUT_METRICS = [
   { key: "defense", label: "Defense" },
   { key: "evasion", label: "Defended On" },
@@ -12,18 +14,11 @@ export const SUPER_SCOUT_METRICS = [
 
 export type MetricKey = (typeof SUPER_SCOUT_METRICS)[number]["key"];
 
-// Ratings are strings (not numbers) because the backend's io-ts `t.keyof` codec
-// validates against string keys at runtime.
-export type RatingValue = "1" | "2" | "3" | "4";
+export type RatingValue = Exclude<SuperRating, undefined>;
 
-export interface MetricSection {
-  rating: RatingValue | undefined;
-  info: string | undefined;
-}
+export type TeamMetricSections = Record<MetricKey, SuperSection>;
 
-export type TeamMetricSections = Record<MetricKey, MetricSection>;
-
-export type MatchType = "practice" | "qualification" | "playoff";
+export type MatchType = Match["type"];
 
 export const RATING_OPTIONS: RatingValue[] = ["1", "2", "3", "4"];
 
@@ -41,3 +36,28 @@ export const createEmptyMetricSections = (): TeamMetricSections =>
       { rating: undefined, info: undefined },
     ]),
   ) as TeamMetricSections;
+
+export interface TeamSuperScoutData extends TeamMetricSections {
+  teamNumber: number;
+}
+
+export type AllianceTeams = [
+  TeamSuperScoutData,
+  TeamSuperScoutData,
+  TeamSuperScoutData,
+];
+
+export const ALLIANCE_SIZE = 3;
+
+export const TEAM_POSITIONS = ["Team 1", "Team 2", "Team 3"] as const;
+
+export const createEmptyTeamData = (): TeamSuperScoutData => ({
+  ...createEmptyMetricSections(),
+  teamNumber: 0,
+});
+
+export const createEmptyAllianceTeams = (): AllianceTeams => [
+  createEmptyTeamData(),
+  createEmptyTeamData(),
+  createEmptyTeamData(),
+];

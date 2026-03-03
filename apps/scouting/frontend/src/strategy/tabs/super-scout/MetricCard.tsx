@@ -1,16 +1,12 @@
 // בס"ד
 
 import type { FC } from "react";
-import {
-  RATING_OPTIONS,
-  formInputStyles,
-  type MetricSection,
-  type RatingValue,
-} from "./metrics";
+import type { SuperSection } from "@repo/scouting_types";
+import { RATING_OPTIONS, formInputStyles, type RatingValue } from "./metrics";
 
 interface MetricCardProps {
   label: string;
-  section: MetricSection;
+  section: SuperSection;
   onRatingChange: (rating: RatingValue | undefined) => void;
   onCommentChange: (comment: string) => void;
 }

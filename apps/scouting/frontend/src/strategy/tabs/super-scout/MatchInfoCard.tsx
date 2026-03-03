@@ -34,7 +34,8 @@ export const MatchInfoCard: FC<MatchInfoCardProps> = ({
           type="number"
           value={matchNumber || ""}
           onChange={(e) => onMatchNumberChange(Number(e.target.value))}
-          min={0}
+          min={1}
+          max={127}
           className={formInputStyles}
         />
       </div>
