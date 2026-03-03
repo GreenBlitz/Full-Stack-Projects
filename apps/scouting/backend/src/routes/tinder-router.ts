@@ -9,12 +9,10 @@ import {
   filterOrElse,
   map,
   fold,
-  bindTo,
-  bind,
 } from "fp-ts/lib/TaskEither";
 import { mongofyQuery } from "../middleware/query";
 import { StatusCodes } from "http-status-codes";
-import type { BPS, ScoutingForm, TinderStats } from "@repo/scouting_types";
+import type { BPS, ScoutingForm } from "@repo/scouting_types";
 import {
   calcAverageGeneralFuelData,
   formsToFuelData,
@@ -22,7 +20,7 @@ import {
 import { findMaxClimbLevel } from "../climb/calculations";
 import { findTimesStuckOnBump } from "../movement/stats";
 import { isSingleTeam } from "../verification/functions";
-import { getTeamBPS, getTeamBPSes } from "./bps-router";
+import { getTeamBPSes } from "./bps-router";
 import { firstElement } from "@repo/array-functions";
 
 export const tinderRouter = Router();

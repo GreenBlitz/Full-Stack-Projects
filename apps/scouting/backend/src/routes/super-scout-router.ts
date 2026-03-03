@@ -7,7 +7,7 @@ import { SuperScout, superScoutCodec } from "@repo/scouting_types";
 import { mongofyQuery } from "../middleware/query";
 import { StatusCodes } from "http-status-codes";
 import { right as rightEither } from "fp-ts/lib/Either";
-import { createBodyVerificationPipe } from "@repo/type-utils";
+import { createBodyVerificationPipe } from "@repo/flow-utils";
 
 export const superScoutRouter = Router();
 

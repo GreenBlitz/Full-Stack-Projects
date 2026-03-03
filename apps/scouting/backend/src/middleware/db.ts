@@ -1,7 +1,7 @@
 // בס"ד
 import { MongoClient, type Db } from "mongodb";
 import { map, right, type TaskEither, tryCatch } from "fp-ts/TaskEither";
-import type { EndpointError } from "@repo/type-utils/verification";
+import type { EndpointError } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
 import { pipe } from "fp-ts/lib/function";
 

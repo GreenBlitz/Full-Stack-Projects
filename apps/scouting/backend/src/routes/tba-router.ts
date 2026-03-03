@@ -4,9 +4,9 @@ import axios from "axios";
 import { Router } from "express";
 import {
   createBodyVerificationPipe,
-  createTypeCheckingEndpointFlow,
   type EndpointError,
-} from "@repo/type-utils";
+} from "@repo/flow-utils";
+import { createTypeCheckingEndpointFlow } from "@repo/type-utils";
 import {
   matchesProps,
   scoreBreakdown2026,

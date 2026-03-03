@@ -3,12 +3,12 @@ import { Router } from "express";
 import { fold, fromEither, map, tryCatch } from "fp-ts/lib/TaskEither";
 import { StatusCodes } from "http-status-codes";
 import { flow, pipe } from "fp-ts/lib/function";
-import { flatMap} from "fp-ts/lib/TaskEither";
+import { flatMap } from "fp-ts/lib/TaskEither";
+import { createTypeCheckingEndpointFlow } from "@repo/type-utils";
 import {
   createBodyVerificationPipe,
-  createTypeCheckingEndpointFlow,
-} from "@repo/type-utils/verification";
-import type { EndpointError } from "@repo/type-utils";
+  type EndpointError,
+} from "@repo/flow-utils";
 import type { TaskEither } from "fp-ts/lib/TaskEither";
 import { right as rightEither } from "fp-ts/lib/Either";
 import { map as mapTask } from "fp-ts/lib/Task";
