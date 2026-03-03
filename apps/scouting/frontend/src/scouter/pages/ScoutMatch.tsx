@@ -32,7 +32,7 @@ interface Tab {
   Component: FC<TabProps>;
 }
 
-const ITERATION_PERIOD_MS = 10
+const ITERATION_PERIOD_MS = 10;
 
 const TABS: Tab[] = [
   {
@@ -182,10 +182,10 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
   );
 };
 
-export type ShiftNumber = 1 | 2 | 3 | 4 | 5 | 6;
-const AUTO_END = 15_000;
-const TRANSITION_END = 20_000;
-const MATCH_END = 150_000;
+export type ShiftNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7;
+const AUTO_END = 20000;
+const TRANSITION_END = 30000;
+const MATCH_END = 160000;
 
 const TELEOP_DURATION = MATCH_END - TRANSITION_END;
 const TELEOP_SHIFT_COUNT = 4;
@@ -211,28 +211,35 @@ export const ScoutMatch: FC = () => {
     3: TRANSITION_END + TELEOP_SHIFT_LENGTH * 1,
     4: TRANSITION_END + TELEOP_SHIFT_LENGTH * 2,
     5: TRANSITION_END + TELEOP_SHIFT_LENGTH * 3,
-    6: MATCH_END,
+    6: TRANSITION_END + TELEOP_DURATION,
+    7: MATCH_END,
   };
   const { elapsedMs } = useMatchTimer(ITERATION_PERIOD_MS);
   useEffect(() => {
     if (activeTabIndex !== 1) {
+      if (elapsedMs > 0) {
+        setActiveTab(2);
+      }
       if (elapsedMs > SHIFT_END_TIME_MS[1]) {
-        setActiveTab(2)
+        setActiveTab(4);
       }
       if (elapsedMs > SHIFT_END_TIME_MS[2]) {
-        setActiveTab(3)
+        setActiveTab(5);
       }
       if (elapsedMs > SHIFT_END_TIME_MS[3]) {
-        setActiveTab(4)
+        setActiveTab(6);
       }
       if (elapsedMs > SHIFT_END_TIME_MS[4]) {
-        setActiveTab(5)
+        setActiveTab(7);
       }
       if (elapsedMs > SHIFT_END_TIME_MS[5]) {
-        setActiveTab(6)
+        setActiveTab(8);
       }
       if (elapsedMs > SHIFT_END_TIME_MS[6]) {
-        setActiveTab(7)
+        setActiveTab(9);
+      }
+      if (elapsedMs > SHIFT_END_TIME_MS[7]) {
+        setActiveTab(10);
       }
     }
   }, [elapsedMs]);
