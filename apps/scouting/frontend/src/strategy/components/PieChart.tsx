@@ -53,7 +53,7 @@ const convertDataToPieChartFormat = ({
 export const PieGraph: FC<PieDataset<string | number>> = ({ name, points }) => {
   const data = convertDataToPieChartFormat({ name, points });
   const options: ChartOptions<"pie"> = {
-    responsive: false,
+    responsive: true,
     maintainAspectRatio: false,
   };
   return <Pie data={data} options={options} />;

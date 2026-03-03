@@ -113,23 +113,25 @@ export const TeamTab: FC = () => {
       )}
 
       {data && (
-        <PieGraph
-          name={"Distance Shots"}
-          points={{
-            "Meter And Half": {
-              value: data.accuracy[METER_AND_HALF_CENTIMETERS].amount,
-              color: "red",
-            },
-            "Three Meter": {
-              value: data.accuracy[THREE_METER_CENTIMETERS].amount,
-              color: "blue",
-            },
-            More: {
-              value: data.accuracy[MORE_DISTANCE].amount,
-              color: "orange",
-            },
-          }}
-        />
+        <div className={graphSection}>
+          <PieGraph
+            name={"Distance Shots"}
+            points={{
+              "Meter And Half": {
+                value: data.accuracy[METER_AND_HALF_CENTIMETERS].amount,
+                color: "red",
+              },
+              "Three Meter": {
+                value: data.accuracy[THREE_METER_CENTIMETERS].amount,
+                color: "blue",
+              },
+              More: {
+                value: data.accuracy[MORE_DISTANCE].amount,
+                color: "orange",
+              },
+            }}
+          />
+        </div>
       )}
 
       {data && (
