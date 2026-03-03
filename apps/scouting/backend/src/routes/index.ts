@@ -11,6 +11,7 @@ import { leaderboardRouter } from "./leaderboard-router";
 import { compareRouter } from "./compare-router";
 import { tinderRouter } from "./tinder-router";
 import { bpsRouter } from "./bps-router";
+import { superScoutRouter } from "./super-scout-router";
 
 export const apiRouter = Router();
 
@@ -24,6 +25,7 @@ apiRouter.use("/leaderboard", leaderboardRouter);
 apiRouter.use("/compare", compareRouter);
 apiRouter.use("/tinder", tinderRouter);
 apiRouter.use("/bps", bpsRouter);
+apiRouter.use("/super", superScoutRouter);
 
 apiRouter.get("/health", (req, res) => {
   res.status(StatusCodes.OK).send({ message: "Healthy!" });
