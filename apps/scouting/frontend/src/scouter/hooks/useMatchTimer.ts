@@ -5,8 +5,8 @@ const STORAGE_KEY = "match-timer";
 
 type TimerState = {
   isRunning: boolean;
-  startTime: number | null;      // absolute timestamp when started
-  elapsedBeforeStart: number;    // ms accumulated before last start (for pause/resume)
+  startTime: number | null; // absolute timestamp when started
+  elapsedBeforeStart: number; // ms accumulated before last start (for pause/resume)
 };
 
 const DEFAULT_STATE: TimerState = {
@@ -25,7 +25,9 @@ function readState(): TimerState {
       isRunning: Boolean(parsed.isRunning),
       startTime: typeof parsed.startTime === "number" ? parsed.startTime : null,
       elapsedBeforeStart:
-        typeof parsed.elapsedBeforeStart === "number" ? parsed.elapsedBeforeStart : 0,
+        typeof parsed.elapsedBeforeStart === "number"
+          ? parsed.elapsedBeforeStart
+          : 0,
     };
   } catch {
     return DEFAULT_STATE;
@@ -38,7 +40,9 @@ function writeState(next: TimerState) {
   window.dispatchEvent(new Event("match-timer-updated"));
 }
 
-export function useMatchTimer(tickMs = 10) {
+const ITERATION_PERIOD_MS = 10;
+
+export function useMatchTimer(tickMs = ITERATION_PERIOD_MS) {
   const [state, setState] = useState<TimerState>(() => readState());
   const [now, setNow] = useState(() => Date.now());
 
@@ -63,7 +67,9 @@ export function useMatchTimer(tickMs = 10) {
   useEffect(() => {
     if (!state.isRunning) return;
 
-    const id = window.setInterval(() => {setNow(Date.now())}, tickMs);
+    const id = window.setInterval(() => {
+      setNow(Date.now());
+    }, tickMs);
     return () => window.clearInterval(id);
   }, [state.isRunning, tickMs]);
 
