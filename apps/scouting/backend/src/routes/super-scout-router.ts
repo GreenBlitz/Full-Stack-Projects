@@ -6,7 +6,7 @@ import { map, fold, bindTo, fromEither, bind } from "fp-ts/lib/TaskEither";
 import {
   SuperScout,
   superScoutCodec,
-} from "@repo/scouting_types/rebuilt/super_scout";
+} from "@repo/scouting_types";
 import { mongofyQuery } from "../middleware/query";
 import { StatusCodes } from "http-status-codes";
 import { right as rightEither } from "fp-ts/lib/Either";
