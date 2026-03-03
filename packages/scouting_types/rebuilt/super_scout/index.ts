@@ -39,4 +39,4 @@ export type SuperRatingValue = Exclude<SuperRating, undefined>;
 export type TeamSuperScout = t.TypeOf<typeof teamSuperScoutCodec>;
 export type SuperMetricKey = keyof Omit<TeamSuperScout, "teamNumber">;
 export type AllianceTeams = SuperScout["teams"];
-export type MatchType = SuperScout["match"]["type"];
+export type MatchType = Match["type"];
