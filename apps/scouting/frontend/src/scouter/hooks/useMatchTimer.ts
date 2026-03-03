@@ -65,7 +65,7 @@ export const useMatchTimer = (tickMs = ITERATION_PERIOD_MS) => {
   }, []);
 
   useEffect(() => {
-    if (!state.isRunning) return;
+    if (!state.isRunning) return undefined;
 
     const id = window.setInterval(() => {
       setNow(Date.now());
