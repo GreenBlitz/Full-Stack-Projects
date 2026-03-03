@@ -32,7 +32,6 @@ ChartJS.register(
 const convertDataToPieChartFormat = ({
   name,
   points,
-  color,
 }: PieDataset<string | number>): ChartData<"pie", number[], string> => {
   const defaultColor = "red";
 
@@ -44,19 +43,15 @@ const convertDataToPieChartFormat = ({
     datasets: [
       {
         label: name,
-        data: values.map((point) => point),
-        backgroundColor: labels.map(() => color ?? defaultColor),
+        data: values.map((point) => point.value),
+        backgroundColor: values.map((point) => point.color ?? defaultColor),
       },
     ],
   };
 };
 
-export const PieGraph: FC<PieDataset<string | number>> = ({
-  name,
-  points,
-  color,
-}) => {
-  const data = convertDataToPieChartFormat({ name, points, color });
+export const PieGraph: FC<PieDataset<string | number>> = ({ name, points }) => {
+  const data = convertDataToPieChartFormat({ name, points });
   const options: ChartOptions<"pie"> = {
     responsive: false,
     maintainAspectRatio: false,
