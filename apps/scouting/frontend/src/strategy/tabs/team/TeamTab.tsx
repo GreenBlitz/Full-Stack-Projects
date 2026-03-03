@@ -87,6 +87,8 @@ export const TeamTab: FC = () => {
     fetchTeamNumbers().then(setScoutedTeams).catch(console.error);
   }, []);
 
+  console.log("ddd", data);
+
   return (
     <div className="flex flex-col text-black items-center bg-slate-950">
       <TeamSelect
