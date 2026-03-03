@@ -5,19 +5,19 @@ const STORAGE_KEY = "match-timer";
 
 type TimerState = {
   isRunning: boolean;
-  startTime: number | null; // absolute timestamp when started
-  elapsedBeforeStart: number; // ms accumulated before last start (for pause/resume)
+  startTime: number | null;
+  elapsedBeforeStart: number;
 };
 
-const DEFAULT_STATE: TimerState = {
+const defaultState: TimerState = {
   isRunning: false,
   startTime: null,
   elapsedBeforeStart: 0,
 };
 
-function readState(): TimerState {
+const readState = (): TimerState => {
   const raw = localStorage.getItem(STORAGE_KEY);
-  if (!raw) return DEFAULT_STATE;
+  if (!raw) return defaultState;
 
   try {
     const parsed = JSON.parse(raw) as Partial<TimerState>;
@@ -30,23 +30,20 @@ function readState(): TimerState {
           : 0,
     };
   } catch {
-    return DEFAULT_STATE;
+    return defaultState;
   }
-}
+};
 
 function writeState(next: TimerState) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-  // Make same-tab components update immediately too:
   window.dispatchEvent(new Event("match-timer-updated"));
 }
 
 const ITERATION_PERIOD_MS = 10;
 
-export function useMatchTimer(tickMs = ITERATION_PERIOD_MS) {
+export const useMatchTimer = (tickMs = ITERATION_PERIOD_MS) => {
   const [state, setState] = useState<TimerState>(() => readState());
   const [now, setNow] = useState(() => Date.now());
-
-  // Listen for cross-tab updates + same-tab custom event
   useEffect(() => {
     const onStorage = (e: StorageEvent) => {
       if (e.key !== STORAGE_KEY) return;
@@ -109,10 +106,10 @@ export function useMatchTimer(tickMs = ITERATION_PERIOD_MS) {
   };
 
   const reset = () => {
-    writeState(DEFAULT_STATE);
-    setState(DEFAULT_STATE);
+    writeState(defaultState);
+    setState(defaultState);
     setNow(Date.now());
   };
 
   return { isRunning: state.isRunning, elapsedMs, start, stop, reset };
-}
+};
