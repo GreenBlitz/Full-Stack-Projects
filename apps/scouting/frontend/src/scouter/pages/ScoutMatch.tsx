@@ -195,8 +195,10 @@ export const ScoutMatch: FC = () => {
   );
   const { elapsedMs } = useMatchTimer(10);
   useEffect(() => {
-    if (elapsedMs > 5000) {
-        setActiveTab(5)
+    if(activeTabIndex!==1){
+      if (elapsedMs > 5000) {
+        setActiveTab(6)
+      }
     }
   }, [elapsedMs]);
   return (
