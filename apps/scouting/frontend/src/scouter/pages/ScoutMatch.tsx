@@ -19,6 +19,7 @@ import { PostMatchTab } from "./tabs/PostMatchTab";
 import { useNavigate } from "react-router-dom";
 import { ClimbTab } from "./tabs/ClimbTab";
 import { PreMatchTab } from "./tabs/PreMatchTab";
+import { useMatchTimer } from "../hooks/useMatchTimer";
 import StartMatchLocallyButton from "../components/StartMatchLocallyButton";
 export interface TabProps {
   setForm: Dispatch<SetStateAction<ScoutingForm>>;
@@ -192,6 +193,12 @@ export const ScoutMatch: FC = () => {
     () => TABS[activeTabIndex].Component,
     [activeTabIndex],
   );
+  const { elapsedMs } = useMatchTimer(10);
+  useEffect(() => {
+    if (elapsedMs > 5000) {
+        setActiveTab(5)
+    }
+  }, [elapsedMs]);
   return (
     <div
       className="max-h-screen bg-black p-4 md:p-6 flex items-center justify-center
