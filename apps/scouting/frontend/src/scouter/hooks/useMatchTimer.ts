@@ -52,8 +52,9 @@ export const useMatchTimer = (tickMs = ITERATION_PERIOD_MS) => {
       if (e.key !== STORAGE_KEY) return;
       setState(readState());
     };
-    const onLocal = () => setState(readState());
-
+    const onLocal = () => {
+      setState(readState());
+    };
     window.addEventListener("storage", onStorage);
     window.addEventListener("match-timer-updated", onLocal);
 
@@ -69,7 +70,9 @@ export const useMatchTimer = (tickMs = ITERATION_PERIOD_MS) => {
     const id = window.setInterval(() => {
       setNow(Date.now());
     }, tickMs);
-    return () => window.clearInterval(id);
+    return () => {
+      window.clearInterval(id);
+    };
   }, [state.isRunning, tickMs]);
 
   const elapsedMs = useMemo(() => {
@@ -93,11 +96,11 @@ export const useMatchTimer = (tickMs = ITERATION_PERIOD_MS) => {
   };
 
   const stop = () => {
-    const cureent = readState();
-    if (!cureent.isRunning || cureent.startTime === null) return;
+    const current = readState();
+    if (!current.isRunning || current.startTime === null) return;
 
     const nextElapsed =
-      cureent.elapsedBeforeStart + (Date.now() - cureent.startTime);
+      current.elapsedBeforeStart + (Date.now() - current.startTime);
 
     const next: TimerState = {
       isRunning: false,
