@@ -1,20 +1,46 @@
 // בס"ד
 
 import { useState, type FC } from "react";
-import type { Alliance } from "@repo/scouting_types";
+import type {
+  Alliance,
+  AllianceTeams,
+  MatchType,
+  SuperMetricKey,
+  SuperRatingValue,
+  SuperSection,
+  TeamSuperScout,
+} from "@repo/scouting_types";
 import {
   SUPER_SCOUT_API_URL,
   createEmptyAllianceTeams,
-  type AllianceTeams,
-  type MetricKey,
-  type RatingValue,
-  type MatchType,
   ALLIANCE_SIZE,
 } from "./metrics";
 import { TeamCard } from "./TeamCard";
 import { MatchInfoCard } from "./MatchInfoCard";
 
 type TeamIndex = 0 | 1 | 2;
+
+const updateTeamAt = (
+  prev: AllianceTeams,
+  index: TeamIndex,
+  patch: Partial<TeamSuperScout>,
+): AllianceTeams => {
+  const updated = [...prev] as AllianceTeams;
+  updated[index] = { ...updated[index], ...patch };
+  return updated;
+};
+
+const updateTeamSection = (
+  prev: AllianceTeams,
+  index: TeamIndex,
+  key: SuperMetricKey,
+  sectionPatch: Partial<SuperSection>,
+): AllianceTeams => {
+  const team = prev[index];
+  return updateTeamAt(prev, index, {
+    [key]: { ...team[key], ...sectionPatch },
+  });
+};
 
 export const SuperScoutTab: FC = () => {
   const [matchNumber, setMatchNumber] = useState(0);
@@ -24,52 +50,13 @@ export const SuperScoutTab: FC = () => {
   const [activeTeamIndex, setActiveTeamIndex] = useState<TeamIndex>(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const updateTeamNumber = (teamIndex: TeamIndex, teamNumber: number) => {
-    setTeams((prev) => {
-      const updated = [...prev] as AllianceTeams;
-      updated[teamIndex] = { ...updated[teamIndex], teamNumber };
-      return updated;
-    });
-  };
-
-  const updateTeamRating = (
-    teamIndex: TeamIndex,
-    key: MetricKey,
-    rating: RatingValue | undefined,
-  ) => {
-    setTeams((prev) => {
-      const updated = [...prev] as AllianceTeams;
-      updated[teamIndex] = {
-        ...updated[teamIndex],
-        [key]: { ...updated[teamIndex][key], rating },
-      };
-      return updated;
-    });
-  };
-
-  const updateTeamComment = (
-    teamIndex: TeamIndex,
-    key: MetricKey,
-    comment: string,
-  ) => {
-    setTeams((prev) => {
-      const updated = [...prev] as AllianceTeams;
-      updated[teamIndex] = {
-        ...updated[teamIndex],
-        [key]: { ...updated[teamIndex][key], info: comment || undefined },
-      };
-      return updated;
-    });
-  };
-
   const submitSuperScoutForm = async () => {
     if (matchNumber <= 0) {
       alert("Please enter a valid match number.");
       return;
     }
 
-    const invalidTeams = teams.filter((t) => t.teamNumber <= 0);
-    if (invalidTeams.length > 0) {
+    if (teams.some((t) => t.teamNumber <= 0)) {
       alert("Please enter valid team numbers for all 3 teams.");
       return;
     }
@@ -141,12 +128,22 @@ export const SuperScoutTab: FC = () => {
       <TeamCard
         teamIndex={activeTeamIndex}
         teamData={teams[activeTeamIndex]}
-        onTeamNumberChange={(num) => updateTeamNumber(activeTeamIndex, num)}
+        onTeamNumberChange={(num) =>
+          setTeams((prev) =>
+            updateTeamAt(prev, activeTeamIndex, { teamNumber: num }),
+          )
+        }
         onRatingChange={(key, rating) =>
-          updateTeamRating(activeTeamIndex, key, rating)
+          setTeams((prev) =>
+            updateTeamSection(prev, activeTeamIndex, key, { rating }),
+          )
         }
         onCommentChange={(key, comment) =>
-          updateTeamComment(activeTeamIndex, key, comment)
+          setTeams((prev) =>
+            updateTeamSection(prev, activeTeamIndex, key, {
+              info: comment || undefined,
+            }),
+          )
         }
       />
 

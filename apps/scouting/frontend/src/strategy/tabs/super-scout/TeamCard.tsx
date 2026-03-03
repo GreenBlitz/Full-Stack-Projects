@@ -1,21 +1,23 @@
 // בס"ד
 
 import type { FC } from "react";
-import {
-  SUPER_SCOUT_METRICS,
-  formInputStyles,
-  type MetricKey,
-  type RatingValue,
-  type TeamSuperScoutData,
-} from "./metrics";
+import type {
+  SuperMetricKey,
+  SuperRatingValue,
+  TeamSuperScout,
+} from "@repo/scouting_types";
+import { SUPER_SCOUT_METRICS, formInputStyles } from "./metrics";
 import { MetricCard } from "./MetricCard";
 
 interface TeamCardProps {
   teamIndex: number;
-  teamData: TeamSuperScoutData;
+  teamData: TeamSuperScout;
   onTeamNumberChange: (teamNumber: number) => void;
-  onRatingChange: (key: MetricKey, rating: RatingValue | undefined) => void;
-  onCommentChange: (key: MetricKey, comment: string) => void;
+  onRatingChange: (
+    key: SuperMetricKey,
+    rating: SuperRatingValue | undefined,
+  ) => void;
+  onCommentChange: (key: SuperMetricKey, comment: string) => void;
 }
 
 export const TeamCard: FC<TeamCardProps> = ({

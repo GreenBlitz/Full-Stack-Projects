@@ -1,8 +1,8 @@
 // בס"ד
 
 import type { FC } from "react";
-import type { Alliance } from "@repo/scouting_types";
-import { formInputStyles, type MatchType } from "./metrics";
+import type { Alliance, MatchType } from "@repo/scouting_types";
+import { formInputStyles } from "./metrics";
 
 interface MatchInfoCardProps {
   matchNumber: number;

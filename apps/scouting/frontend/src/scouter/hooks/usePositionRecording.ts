@@ -21,24 +21,15 @@ interface PositionRecordingResult {
 
 const DEFAULT_RECORDING_INTERVAL_MS = 1000;
 
-/**
- * Records the current position at regular intervals while active.
- * @param currentPosition - The current position on the field map (updated by user interaction)
- * @param recordingIntervalMs - How often to sample the position (default: 1000ms)
- * @returns Controls and ref for position recording
- */
 export const usePositionRecording = (
   currentPosition: Point | undefined,
   recordingIntervalMs: number = DEFAULT_RECORDING_INTERVAL_MS,
 ): PositionRecordingResult => {
   const recordedPositionsRef = useRef<Point[]>([]);
   const positionIntervalRef = useRef<number | null>(null);
-  // Ref to access current position inside interval callback without stale closure
   const currentPositionRef = useRef<Point | undefined>(undefined);
-  // Store recording interval in ref for stable access
   const recordingIntervalRef = useRef(recordingIntervalMs);
 
-  // Sync refs whenever props change
   useEffect(() => {
     currentPositionRef.current = currentPosition;
   }, [currentPosition]);
@@ -47,19 +38,15 @@ export const usePositionRecording = (
     recordingIntervalRef.current = recordingIntervalMs;
   }, [recordingIntervalMs]);
 
-  // Stable function refs that never change identity
   const startRef = useRef(() => {
-    // Clear any existing interval to avoid duplicates
     if (positionIntervalRef.current !== null) {
       clearInterval(positionIntervalRef.current);
     }
 
-    // Reset recorded positions and capture initial position immediately
     recordedPositionsRef.current = [];
     const initialPosition = currentPositionRef.current ?? { ...defaultPoint };
     recordedPositionsRef.current.push(initialPosition);
 
-    // Sample position at regular intervals
     positionIntervalRef.current = window.setInterval(() => {
       const currentPos = currentPositionRef.current ?? { ...defaultPoint };
       recordedPositionsRef.current.push(currentPos);
@@ -72,7 +59,6 @@ export const usePositionRecording = (
     positionIntervalRef.current = null;
   });
 
-  // Cleanup interval on unmount
   useEffect(() => {
     return () => {
       if (positionIntervalRef.current === null) return;
