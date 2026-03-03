@@ -31,6 +31,9 @@ interface Tab {
   name: string;
   Component: FC<TabProps>;
 }
+
+const ITERATION_PERIOD_MS = 10
+
 const TABS: Tab[] = [
   {
     name: "Pre",
@@ -210,7 +213,7 @@ export const ScoutMatch: FC = () => {
     5: TRANSITION_END + TELEOP_SHIFT_LENGTH * 3,
     6: MATCH_END,
   };
-  const { elapsedMs } = useMatchTimer(10);
+  const { elapsedMs } = useMatchTimer(ITERATION_PERIOD_MS);
   useEffect(() => {
     if (activeTabIndex !== 1) {
       if (elapsedMs > SHIFT_END_TIME_MS[1]) {
