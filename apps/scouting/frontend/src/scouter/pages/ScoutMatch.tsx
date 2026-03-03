@@ -38,7 +38,7 @@ const TABS: Tab[] = [
   },
   {
     name: "Start Match",
-    Component: () => <StartMatchLocallyButton disabled={false}/>
+    Component: () => <StartMatchLocallyButton disabled={false} />,
   },
   {
     name: "Auto",
@@ -178,6 +178,15 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
     </div>
   );
 };
+
+export type ShiftNumber = 1 | 2 | 3 | 4 | 5 | 6;
+const AUTO_END = 15_000;
+const TRANSITION_END = 20_000;
+const MATCH_END = 150_000;
+
+const TELEOP_DURATION = MATCH_END - TRANSITION_END;
+const TELEOP_SHIFT_COUNT = 4;
+const TELEOP_SHIFT_LENGTH = TELEOP_DURATION / TELEOP_SHIFT_COUNT;
 export const createNewScoutingForm = (
   savedInfo?: Partial<ScoutingForm>,
 ): ScoutingForm => structuredClone({ ...defaultScoutForm, ...savedInfo });
@@ -193,11 +202,34 @@ export const ScoutMatch: FC = () => {
     () => TABS[activeTabIndex].Component,
     [activeTabIndex],
   );
+  const SHIFT_END_TIME_MS: Record<ShiftNumber, number> = {
+    1: AUTO_END,
+    2: TRANSITION_END,
+    3: TRANSITION_END + TELEOP_SHIFT_LENGTH * 1,
+    4: TRANSITION_END + TELEOP_SHIFT_LENGTH * 2,
+    5: TRANSITION_END + TELEOP_SHIFT_LENGTH * 3,
+    6: MATCH_END,
+  };
   const { elapsedMs } = useMatchTimer(10);
   useEffect(() => {
-    if(activeTabIndex!==1){
-      if (elapsedMs > 5000) {
+    if (activeTabIndex !== 1) {
+      if (elapsedMs > SHIFT_END_TIME_MS[1]) {
+        setActiveTab(2)
+      }
+      if (elapsedMs > SHIFT_END_TIME_MS[2]) {
+        setActiveTab(3)
+      }
+      if (elapsedMs > SHIFT_END_TIME_MS[3]) {
+        setActiveTab(4)
+      }
+      if (elapsedMs > SHIFT_END_TIME_MS[4]) {
+        setActiveTab(5)
+      }
+      if (elapsedMs > SHIFT_END_TIME_MS[5]) {
         setActiveTab(6)
+      }
+      if (elapsedMs > SHIFT_END_TIME_MS[6]) {
+        setActiveTab(7)
       }
     }
   }, [elapsedMs]);
