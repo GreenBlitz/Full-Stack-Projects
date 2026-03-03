@@ -63,7 +63,7 @@ export function useMatchTimer(tickMs = 10) {
   useEffect(() => {
     if (!state.isRunning) return;
 
-    const id = window.setInterval(() => setNow(Date.now()), tickMs);
+    const id = window.setInterval(() => {setNow(Date.now())}, tickMs);
     return () => window.clearInterval(id);
   }, [state.isRunning, tickMs]);
 

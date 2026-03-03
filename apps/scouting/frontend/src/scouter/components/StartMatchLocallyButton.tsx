@@ -5,7 +5,7 @@ import { useMatchTimer } from "../hooks/useMatchTimer"; // adjust path
 
 const MILLISECONDS_IN_A_SECOND = 1000;
 const SECONDS_IN_A_MINUTE = 60;
-
+const ITERATION_PERIOD_MS = 10
 const DECIMAL_PLACES = 2;
 const DECIMAL_PLACES_MILLISECONDS = 3;
 
@@ -16,7 +16,7 @@ interface StartMatchLocallyButtonProps {
 const StartMatchLocallyButton: React.FC<StartMatchLocallyButtonProps> = ({
   disabled,
 }) => {
-  const { isRunning, elapsedMs, start, stop, reset } = useMatchTimer(10);
+  const { isRunning, elapsedMs, start, stop, reset } = useMatchTimer(ITERATION_PERIOD_MS);
 
   const formatTime = useMemo(() => {
     const minutes = Math.floor(elapsedMs / MILLISECONDS_IN_A_SECOND / SECONDS_IN_A_MINUTE);
