@@ -7,7 +7,7 @@ export type Point = t.TypeOf<typeof point>;
 
 export const shootEventCodec = t.type({
   interval: intervalCodec,
-  startPosition: point,
+  positions: t.array(point),
 });
 
 export type ShootEvent = t.TypeOf<typeof shootEventCodec>;
