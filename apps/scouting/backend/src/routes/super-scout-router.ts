@@ -47,5 +47,5 @@ superScoutRouter.post("/", async (req, res) => {
       (result) => async () =>
         res.status(StatusCodes.OK).json({ result: await result }),
     ),
-  );
+  )();
 });
