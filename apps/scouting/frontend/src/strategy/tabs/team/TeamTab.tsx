@@ -21,6 +21,7 @@ import { useLocalStorage } from "@repo/local_storage_hook";
 import { HeatMap } from "../../components/heatmap/HeatMap";
 import { redField } from "@repo/rebuilt_map";
 import { fetchTeamNumbers } from "../../fetches";
+import { PieGraph } from "../../components/PieChart";
 
 const METER_AND_HALF_CENTIMETERS = 150;
 const THREE_METER_CENTIMETERS = 300;
@@ -107,6 +108,17 @@ export const TeamTab: FC = () => {
               data.accuracy[THREE_METER_CENTIMETERS],
             ),
             more: calculateAccuracy(data.accuracy[MORE_DISTANCE]),
+          }}
+        />
+      )}
+
+      {data && (
+        <PieGraph
+          name={"Distance Shots"}
+          points={{
+            meterAndHalf: data.accuracy[METER_AND_HALF_CENTIMETERS].amount,
+            threeMeter: data.accuracy[THREE_METER_CENTIMETERS].amount,
+            more: data.accuracy[MORE_DISTANCE].amount,
           }}
         />
       )}

@@ -22,17 +22,21 @@ export const averageFuel = (fuels: FuelObject[]): FuelObject => {
 export const splitByDistances = <T extends number>(
   fuels: FuelObject[],
   distances: readonly T[],
-): Record<T, FuelObject> =>
+): Record<T, FuelObject & { amount: number }> =>
   Object.assign(
     {},
-    ...distances.map((distance) => ({
-      [distance]: averageFuel(
-        fuels.filter((fuel) =>
-          fuel.positions.every(
-            (position) =>
-              distanceFromHub(convertPixelToCentimeters(position)) < distance,
-          ),
+    ...distances.map((distance) => {
+      const distancedFuels = fuels.filter((fuel) =>
+        fuel.positions.every(
+          (position) =>
+            distanceFromHub(convertPixelToCentimeters(position)) < distance,
         ),
-      ),
-    })),
+      );
+      return {
+        [distance]: {
+          ...averageFuel(distancedFuels),
+          amount: distancedFuels.length,
+        },
+      };
+    }),
   );
