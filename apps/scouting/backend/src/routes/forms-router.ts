@@ -19,7 +19,7 @@ import { scoutingFormCodec, type ScoutingForm } from "@repo/scouting_types";
 import { StatusCodes } from "http-status-codes";
 import { createBodyVerificationPipe } from "@repo/flow-utils";
 import { right as rightEither } from "fp-ts/lib/Either";
-import { mongofyQuery } from "../middleware/query";
+import { mongofyQuery } from "@repo/flow-utils";
 import * as t from "io-ts";
 import { isEmpty } from "@repo/array-functions";
 
