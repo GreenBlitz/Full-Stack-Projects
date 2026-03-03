@@ -3,11 +3,11 @@ import { useEffect, useMemo, useState } from "react";
 
 const STORAGE_KEY = "match-timer";
 
-type TimerState = {
+interface TimerState {
   isRunning: boolean;
   startTime: number | null;
   elapsedBeforeStart: number;
-};
+}
 
 const defaultState: TimerState = {
   isRunning: false,
@@ -23,21 +23,24 @@ const readState = (): TimerState => {
     const parsed = JSON.parse(raw) as Partial<TimerState>;
     return {
       isRunning: Boolean(parsed.isRunning),
-      startTime: typeof parsed.startTime === "number" ? parsed.startTime : null,
+      startTime:
+        typeof parsed.startTime === "number"
+          ? parsed.startTime
+          : defaultState.startTime,
       elapsedBeforeStart:
         typeof parsed.elapsedBeforeStart === "number"
           ? parsed.elapsedBeforeStart
-          : 0,
+          : defaultState.elapsedBeforeStart,
     };
   } catch {
     return defaultState;
   }
 };
 
-function writeState(next: TimerState) {
+const writeState = (next: TimerState) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
   window.dispatchEvent(new Event("match-timer-updated"));
-}
+};
 
 const ITERATION_PERIOD_MS = 10;
 
@@ -60,7 +63,6 @@ export const useMatchTimer = (tickMs = ITERATION_PERIOD_MS) => {
     };
   }, []);
 
-  // Ticking only used to cause re-render so elapsed updates in UI
   useEffect(() => {
     if (!state.isRunning) return;
 
@@ -78,23 +80,24 @@ export const useMatchTimer = (tickMs = ITERATION_PERIOD_MS) => {
   }, [state, now]);
 
   const start = () => {
-    const cur = readState();
-    if (cur.isRunning) return;
+    const current = readState();
+    if (current.isRunning) return;
 
     const next: TimerState = {
       isRunning: true,
       startTime: Date.now(),
-      elapsedBeforeStart: cur.elapsedBeforeStart,
+      elapsedBeforeStart: current.elapsedBeforeStart,
     };
     writeState(next);
     setState(next);
   };
 
   const stop = () => {
-    const cur = readState();
-    if (!cur.isRunning || cur.startTime === null) return;
+    const cureent = readState();
+    if (!cureent.isRunning || cureent.startTime === null) return;
 
-    const nextElapsed = cur.elapsedBeforeStart + (Date.now() - cur.startTime);
+    const nextElapsed =
+      cureent.elapsedBeforeStart + (Date.now() - cureent.startTime);
 
     const next: TimerState = {
       isRunning: false,
