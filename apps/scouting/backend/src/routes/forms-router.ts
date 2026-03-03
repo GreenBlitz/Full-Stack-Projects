@@ -3,7 +3,7 @@
 import { Router } from "express";
 import { flow, pipe } from "fp-ts/lib/function";
 import { getDb } from "../middleware/db";
-import { flatMap, fold, fromEither, map, tryCatch } from "fp-ts/lib/TaskEither";
+import {bind, bindTo, flatMap, fold, fromEither, map, tryCatch} from "fp-ts/lib/TaskEither";
 import { scoutingFormCodec, type ScoutingForm } from "@repo/scouting_types";
 import { StatusCodes } from "http-status-codes";
 import { createBodyVerificationPipe } from "../middleware/verification";
@@ -60,14 +60,20 @@ formsRouter.post("/", async (req, res) => {
 });
 
 formsRouter.put("/:id", async (req, res) => {
+  if (!ObjectId.isValid(req.params.id)) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .send("invalid object id");
+  }
+
   await pipe(
     getFormsCollection(),
-    flatMap((collection) =>
+    bindTo("collection"),
+    bind("formData", ({ collection }) =>
       pipe(
         right(req),
         createBodyVerificationPipe(scoutingFormCodec),
         fromEither,
-        map((formData) => ({ collection, formData })),
       ),
     ),
     flatMap(({ collection, formData }) =>
