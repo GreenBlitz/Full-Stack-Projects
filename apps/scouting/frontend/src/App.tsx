@@ -11,6 +11,7 @@ import BpsBase from "./scouter/components/bps-components/BpsBase";
 import { Leaderboard } from "./scouter/pages/Leaderboard";
 import { CURRENT_COMPETITION } from "@repo/scouting_types";
 import { StrategyNavigationBar } from "./strategy/components/StrategyNavBar";
+import { SuperScoutTab } from "./strategy/tabs/super-scout/SuperScoutTab";
 
 const App: FC = () => {
   return (
@@ -28,6 +29,7 @@ const App: FC = () => {
         <Route path="general" element={<GeneralDataTable filters={{}} />} />
         <Route path="forecast" element={<MatchForecast />} />
         <Route path="compare" element={<CompareTwo />} />
+        <Route path="super" element={<SuperScoutTab />} />
       </Route>
     </Routes>
   );
