@@ -9,6 +9,7 @@ import {
   filterOrElse,
   map,
   fold,
+  bindTo,
 } from "fp-ts/lib/TaskEither";
 import { mongofyQuery } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
@@ -22,6 +23,7 @@ import { findTimesStuckOnBump } from "../movement/stats";
 import { isSingleTeam } from "../verification/functions";
 import { getTeamBPSes } from "./bps-router";
 import { firstElement } from "@repo/array-functions";
+import { foldResponse } from "@repo/flow-utils/http";
 
 export const tinderRouter = Router();
 
@@ -65,12 +67,7 @@ tinderRouter.get("/team", (req, res) =>
         [firstElement(firstTeam.forms).teamNumber]: firstTeam.bpses,
       });
     }),
-
-    fold(
-      (error) => () =>
-        Promise.resolve(res.status(error.status).send(error.reason)),
-      (teamTinderStats) => () =>
-        Promise.resolve(res.status(StatusCodes.OK).json({ teamTinderStats })),
-    ),
+    bindTo("teamTinderStats"),
+    foldResponse(res),
   )(),
 );

@@ -1,6 +1,6 @@
 // בס"ד
 import { Router } from "express";
-import { fold, fromEither, map, tryCatch } from "fp-ts/lib/TaskEither";
+import { bindTo, fold, fromEither, map, tryCatch } from "fp-ts/lib/TaskEither";
 import { StatusCodes } from "http-status-codes";
 import { flow, pipe } from "fp-ts/lib/function";
 import { flatMap } from "fp-ts/lib/TaskEither";
@@ -18,6 +18,7 @@ import {
   type GameData,
 } from "@repo/scouting_types";
 import { getDb } from "../middleware/db";
+import { foldResponse } from "@repo/flow-utils/http";
 
 export const gameRouter = Router();
 
@@ -65,15 +66,7 @@ export const writeGames = (games: GameData[]) =>
   );
 
 gameRouter.get("/", async (req, res) => {
-  await pipe(
-    readGames(),
-    fold(
-      (error) => () =>
-        Promise.resolve(res.status(error.status).send(error.reason)),
-      (games) => () =>
-        Promise.resolve(res.status(StatusCodes.OK).json({ games })),
-    ),
-  )();
+  await pipe(readGames(), bindTo("games"), foldResponse(res))();
 });
 
 gameRouter.post("/", async (req, res) => {
@@ -82,13 +75,7 @@ gameRouter.post("/", async (req, res) => {
     createBodyVerificationPipe(gameDataCodec),
     fromEither,
     flatMap((game) => writeGames([game])),
-    fold(
-      (error) => () =>
-        Promise.resolve(res.status(error.status).send(error.reason)),
-      () => () =>
-        Promise.resolve(
-          res.status(StatusCodes.OK).json({ message: "Wrote Succefully" }),
-        ),
-    ),
+    map(() => ({ message: "Wrote Succefully" })),
+    foldResponse(res),
   )();
 });

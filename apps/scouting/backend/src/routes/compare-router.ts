@@ -19,7 +19,7 @@ import {
   bindTo,
   bind,
 } from "fp-ts/lib/TaskEither";
-import { mongofyQuery } from "../middleware/query";
+import { mongofyQuery } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
 import { calculateSum, firstElement, isEmpty } from "@repo/array-functions";
 import { calcAverageGeneralFuelData, generalCalculateFuel } from "../fuel/fuel-general";

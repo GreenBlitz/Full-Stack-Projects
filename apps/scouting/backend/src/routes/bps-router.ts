@@ -34,6 +34,7 @@ import { createBodyVerificationPipe, EndpointError } from "@repo/flow-utils";
 import { right as rightEither } from "fp-ts/lib/Either";
 import { mapWithIndex, sequence } from "fp-ts/lib/Record";
 import { sequenceS } from "fp-ts/lib/Apply";
+import { foldResponse } from "@repo/flow-utils/http";
 
 export const bpsRouter = Router();
 
@@ -109,14 +110,8 @@ bpsRouter.get("/matches", async (req, res) => {
       }),
     ),
     map(groupBy((game) => game.team.toString())),
-    fold(
-      (error) => () =>
-        Promise.resolve(res.status(error.status).send(error.reason)),
-      (teamGames) => () =>
-        Promise.resolve(
-          res.status(StatusCodes.OK).json({ teamGames } satisfies BPSBlueprint),
-        ),
-    ),
+    bindTo("teamGames"),
+    foldResponse(res),
   )();
 });
 
@@ -153,12 +148,8 @@ bpsRouter.post("/", async (req, res) => {
         }),
       ),
     ),
-    fold(
-      (error) => () =>
-        Promise.resolve(res.status(error.status).send(error.reason)),
-      (result) => () =>
-        Promise.resolve(res.status(StatusCodes.OK).json({ result })),
-    ),
+    bindTo("result"),
+    foldResponse(res),
   )();
 });
 

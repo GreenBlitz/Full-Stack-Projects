@@ -23,6 +23,7 @@ import {
   tryCatch,
   map,
   chainFirstTaskK,
+  bindTo,
 } from "fp-ts/lib/TaskEither";
 import { flow, pipe } from "fp-ts/lib/function";
 import { map as taskMap } from "fp-ts/lib/Task";
@@ -31,6 +32,7 @@ import type { Type } from "io-ts";
 import { getDb } from "../middleware/db";
 import { getMax } from "@repo/array-functions";
 import { fold as booleanFold } from "fp-ts/boolean";
+import { foldResponse } from "@repo/flow-utils/http";
 
 export const tbaRouter = Router();
 
@@ -119,13 +121,7 @@ tbaRouter.post("/matches", async (req, res) => {
     createBodyVerificationPipe(matchesProps),
     fromEither,
     getMatches,
-    fold(
-      (error) => () =>
-        new Promise((resolve) => {
-          resolve(res.status(error.status).send(error.reason));
-        }),
-      (matches) => () =>
-        Promise.resolve(res.status(StatusCodes.OK).json({ matches })),
-    ),
+    bindTo("matches"),
+    foldResponse(res),
   )();
 });

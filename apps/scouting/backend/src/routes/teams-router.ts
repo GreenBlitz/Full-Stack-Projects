@@ -12,6 +12,7 @@ import {
   right as taskRight,
   map,
   tryCatch,
+  bindTo,
 } from "fp-ts/lib/TaskEither";
 import { getFormsCollection } from "./forms-router";
 import { StatusCodes } from "http-status-codes";
@@ -32,6 +33,7 @@ import { splitByDistances } from "../fuel/distance-split";
 import { calculateFuelStatisticsOfShift } from "../fuel/fuel-general";
 import { calculateAverageBPS } from "../fuel/calculations/fuel-averaging";
 import { getTeamBPSes } from "./bps-router";
+import { foldResponse } from "@repo/flow-utils/http";
 
 export const teamsRouter = Router();
 
@@ -206,11 +208,7 @@ teamsRouter.get("/", async (req, res) => {
     map((teams) =>
       mapObject(teams, (team) => processTeam(team.bpses, team.forms)),
     ),
-    fold(
-      (error) => () =>
-        Promise.resolve(res.status(error.status).send(error.reason)),
-      (teams) => () =>
-        Promise.resolve(res.status(StatusCodes.OK).json({ teams })),
-    ),
+    bindTo("teams"),
+    foldResponse(res),
   )();
 });

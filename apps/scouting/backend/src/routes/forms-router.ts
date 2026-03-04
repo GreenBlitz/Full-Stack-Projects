@@ -22,6 +22,7 @@ import { right as rightEither } from "fp-ts/lib/Either";
 import { mongofyQuery } from "@repo/flow-utils";
 import * as t from "io-ts";
 import { isEmpty } from "@repo/array-functions";
+import { foldResponse } from "@repo/flow-utils/http";
 
 export const formsRouter = Router();
 
@@ -102,11 +103,7 @@ formsRouter.get("/teams", async (req, res) => {
     ),
     map((forms) => forms.map((form) => form.teamNumber)),
     map((numbers) => [...new Set(numbers)]),
-    fold(
-      (error) => () =>
-        Promise.resolve(res.status(error.status).send(error.reason)),
-      (teamNumbers) => () =>
-        Promise.resolve(res.status(StatusCodes.OK).json({ teamNumbers })),
-    ),
+    bindTo("teamNumbers"),
+    foldResponse(res),
   )();
 });

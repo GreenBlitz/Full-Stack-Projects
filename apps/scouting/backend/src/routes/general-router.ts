@@ -11,7 +11,7 @@ import {
   bindTo,
   bind,
 } from "fp-ts/lib/TaskEither";
-import { mongofyQuery } from "../middleware/query";
+import { mongofyQuery } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
 
 import type {

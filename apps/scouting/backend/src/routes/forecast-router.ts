@@ -14,6 +14,7 @@ import { right } from "fp-ts/lib/Either";
 import { getFormsCollection } from "./forms-router";
 import {
   ApplicativePar,
+  bindTo,
   flatMap,
   fold,
   fromEither,
@@ -31,6 +32,7 @@ import { castItem } from "@repo/type-utils";
 import { calculateAverageClimbsScore } from "../climb/score";
 import { getTeamBPS } from "./bps-router";
 import { traverseWithIndex } from "fp-ts/lib/Record";
+import { foldResponse } from "@repo/flow-utils/http";
 
 export const forecastRouter = Router();
 
@@ -109,14 +111,8 @@ forecastRouter.get("/", async (req, res) => {
         ),
       ),
     ),
-    fold(
-      (error) => () =>
-        Promise.resolve(res.status(error.status).send(error.reason)),
-      (allianceData) => () =>
-        Promise.resolve(
-          res.status(StatusCodes.OK).json({ allianceData } satisfies Forecast),
-        ),
-    ),
+    bindTo("allianceData"),
+    foldResponse(res),
   )();
 });
 
