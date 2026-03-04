@@ -34,6 +34,7 @@ import { calculateFuelStatisticsOfShift } from "../fuel/fuel-general";
 import { calculateAverageBPS } from "../fuel/calculations/fuel-averaging";
 import { getTeamBPSes } from "./bps-router";
 import { foldResponse } from "@repo/flow-utils/http";
+import { flatTryCatch } from "@repo/flow-utils/promise";
 
 export const teamsRouter = Router();
 
@@ -165,19 +166,15 @@ teamsRouter.get("/", async (req, res) => {
       teams: typeof teams === "number" ? [teams] : teams,
       recency,
     })),
-    flatMap(({ collection, teams, recency }) =>
-      tryCatch(
-        async () => ({
-          recency,
-          forms: await collection
-            .find({ teamNumber: { $in: teams } })
-            .toArray(),
-        }),
-        (error) => ({
-          status: StatusCodes.INTERNAL_SERVER_ERROR,
-          reason: `Error Getting Teams From DB: ${error}`,
-        }),
-      ),
+    flatTryCatch(
+      async ({ collection, teams, recency }) => ({
+        recency,
+        forms: await collection.find({ teamNumber: { $in: teams } }).toArray(),
+      }),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `Error Getting Teams From DB: ${error}`,
+      }),
     ),
     flatMap((item) =>
       isEmpty(item.forms)

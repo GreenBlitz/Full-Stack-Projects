@@ -24,6 +24,7 @@ import { isSingleTeam } from "../verification/functions";
 import { getTeamBPSes } from "./bps-router";
 import { firstElement } from "@repo/array-functions";
 import { foldResponse } from "@repo/flow-utils/http";
+import { flatTryCatch } from "@repo/flow-utils/promise";
 
 export const tinderRouter = Router();
 
@@ -42,14 +43,12 @@ const createTinder = (forms: ScoutingForm[], bpses: Record<string, BPS[]>) => ({
 tinderRouter.get("/team", (req, res) =>
   pipe(
     getFormsCollection(),
-    flatMap((collection) =>
-      tryCatch(
-        () => collection.find(mongofyQuery(req.query)).toArray(),
-        (error) => ({
-          status: StatusCodes.INTERNAL_SERVER_ERROR,
-          reason: `DB Error: ${error}`,
-        }),
-      ),
+    flatTryCatch(
+      (collection) => collection.find(mongofyQuery(req.query)).toArray(),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `DB Error: ${error}`,
+      }),
     ),
 
     filterOrElse(isSingleTeam, () => ({

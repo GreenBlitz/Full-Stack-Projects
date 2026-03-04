@@ -19,6 +19,7 @@ import type {
 } from "@repo/scouting_types";
 import { firstElement, isEmpty } from "@repo/array-functions";
 import { isSingleCompetition } from "../verification/functions";
+import { flatTryCatch } from "@repo/flow-utils/promise";
 
 const INCREMENT = 1;
 const NOT_FOUND_INDEX = -1;
@@ -60,14 +61,12 @@ const createLeaderboard = (
 leaderboardRouter.get("/", (req, res) =>
   pipe(
     getFormsCollection(),
-    flatMap((collection) =>
-      tryCatch(
-        () => collection.find(mongofyQuery(req.query)).toArray(),
-        (error) => ({
-          status: StatusCodes.INTERNAL_SERVER_ERROR,
-          reason: `DB Error: ${error}`,
-        }),
-      ),
+    flatTryCatch(
+      (collection) => collection.find(mongofyQuery(req.query)).toArray(),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `DB Error: ${error}`,
+      }),
     ),
 
     filterOrElse(isSingleCompetition, () => ({

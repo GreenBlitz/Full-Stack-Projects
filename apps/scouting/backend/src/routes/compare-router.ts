@@ -22,8 +22,12 @@ import {
 import { mongofyQuery } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
 import { calculateSum, firstElement, isEmpty } from "@repo/array-functions";
-import { calcAverageGeneralFuelData, generalCalculateFuel } from "../fuel/fuel-general";
+import {
+  calcAverageGeneralFuelData,
+  generalCalculateFuel,
+} from "../fuel/fuel-general";
 import { getTeamBPS } from "./bps-router";
+import { flatTryCatch } from "@repo/flow-utils/promise";
 
 export const compareRouter = Router();
 
@@ -102,14 +106,12 @@ const findTimesClimbedToLevels = (forms: ScoutingForm[]) => {
 compareRouter.get("/", async (req, res) => {
   await pipe(
     getFormsCollection(),
-    flatMap((collection) =>
-      tryCatch(
-        () => collection.find(mongofyQuery(req.query)).toArray(),
-        (error) => ({
-          status: StatusCodes.INTERNAL_SERVER_ERROR,
-          reason: `DB Error: ${error}`,
-        }),
-      ),
+    flatTryCatch(
+      async (collection) => collection.find(mongofyQuery(req.query)).toArray(),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `DB Error: ${error}`,
+      }),
     ),
     flatMap((forms) => {
       if (isEmpty(forms)) return right(forms);

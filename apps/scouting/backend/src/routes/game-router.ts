@@ -19,6 +19,7 @@ import {
 } from "@repo/scouting_types";
 import { getDb } from "../middleware/db";
 import { foldResponse } from "@repo/flow-utils/http";
+import { flatTryCatch } from "@repo/flow-utils/promise";
 
 export const gameRouter = Router();
 
@@ -30,14 +31,12 @@ const getGamesCollection = flow(
 export const readGames = (): TaskEither<EndpointError, GameData[]> =>
   pipe(
     getGamesCollection(),
-    flatMap((collection) =>
-      tryCatch(
-        () => collection.find({}).toArray(),
-        (error) => ({
-          status: StatusCodes.INTERNAL_SERVER_ERROR,
-          reason: `Error reading games file: ${error}`,
-        }),
-      ),
+    flatTryCatch(
+      (collection) => collection.find({}).toArray(),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `Error reading games file: ${error}`,
+      }),
     ),
     map((item) => {
       console.log(item);
@@ -54,14 +53,12 @@ export const readGames = (): TaskEither<EndpointError, GameData[]> =>
 export const writeGames = (games: GameData[]) =>
   pipe(
     getGamesCollection(),
-    flatMap((collection) =>
-      tryCatch(
-        () => collection.insertMany(games),
-        (error) => ({
-          status: StatusCodes.INTERNAL_SERVER_ERROR,
-          reason: `Error writing games file: ${error}`,
-        }),
-      ),
+    flatTryCatch(
+      (collection) => collection.insertMany(games),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `Error writing games file: ${error}`,
+      }),
     ),
   );
 

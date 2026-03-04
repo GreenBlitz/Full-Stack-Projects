@@ -33,6 +33,7 @@ import { calculateAverageClimbsScore } from "../climb/score";
 import { getTeamBPS } from "./bps-router";
 import { traverseWithIndex } from "fp-ts/lib/Record";
 import { foldResponse } from "@repo/flow-utils/http";
+import { flatTryCatch } from "@repo/flow-utils/promise";
 
 export const forecastRouter = Router();
 
@@ -52,25 +53,23 @@ forecastRouter.get("/", async (req, res) => {
         map((collection) => ({ collection, query })),
       ),
     ),
-    flatMap(({ collection, query }) =>
-      tryCatch(
-        async () => ({
-          redAlliance: await collection
-            .find({
-              teamNumber: { $in: query.redAlliance },
-            })
-            .toArray(),
-          blueAlliance: await collection
-            .find({
-              teamNumber: { $in: query.blueAlliance },
-            })
-            .toArray(),
-        }),
-        (error) => ({
-          status: StatusCodes.INTERNAL_SERVER_ERROR,
-          reason: `Error getting teams from DB: ${error}`,
-        }),
-      ),
+    flatTryCatch(
+      async ({ collection, query }) => ({
+        redAlliance: await collection
+          .find({
+            teamNumber: { $in: query.redAlliance },
+          })
+          .toArray(),
+        blueAlliance: await collection
+          .find({
+            teamNumber: { $in: query.blueAlliance },
+          })
+          .toArray(),
+      }),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `Error getting teams from DB: ${error}`,
+      }),
     ),
     map((alliancesForms) =>
       mapObject(

@@ -33,6 +33,7 @@ import { getDb } from "../middleware/db";
 import { getMax } from "@repo/array-functions";
 import { fold as booleanFold } from "fp-ts/boolean";
 import { foldResponse } from "@repo/flow-utils/http";
+import { flatTryCatch } from "@repo/flow-utils/promise";
 
 export const tbaRouter = Router();
 
@@ -81,11 +82,12 @@ const insertMatches = (matches: TBAMatches) =>
   );
 const getStoredMatches = flow(
   getCollection,
-  flatMap((collection) =>
-    tryCatch(collection.find().toArray, (error) => ({
+  flatTryCatch(
+    (collection) => collection.find().toArray(),
+    (error) => ({
       reason: `Error getting from collection ${String(error)}`,
       status: StatusCodes.BAD_REQUEST,
-    })),
+    }),
   ),
 );
 

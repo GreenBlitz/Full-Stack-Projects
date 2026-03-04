@@ -23,6 +23,7 @@ import { mongofyQuery } from "@repo/flow-utils";
 import * as t from "io-ts";
 import { isEmpty } from "@repo/array-functions";
 import { foldResponse } from "@repo/flow-utils/http";
+import { flatTryCatch } from "@repo/flow-utils/promise";
 
 export const formsRouter = Router();
 
@@ -76,14 +77,12 @@ formsRouter.post("/", async (req, res) => {
         }),
       ),
     ),
-    flatMap(({ collection, forms }) =>
-      tryCatch(
-        () => collection.insertMany(forms),
-        () => ({
-          status: StatusCodes.INTERNAL_SERVER_ERROR,
-          reason: "Error Inserting Forms To Collection ",
-        }),
-      ),
+    flatTryCatch(
+      ({ collection, forms }) => collection.insertMany(forms),
+      () => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: "Error Inserting Forms To Collection ",
+      }),
     ),
     bindTo("result"),
     foldResponse(res),
@@ -93,17 +92,15 @@ formsRouter.post("/", async (req, res) => {
 formsRouter.get("/teams", async (req, res) => {
   await pipe(
     getFormsCollection(),
-    flatMap((collection) =>
-      tryCatch(
-        () =>
-          collection
-            .find(mongofyQuery({ "match.type": "qualification" }))
-            .toArray(),
-        (error) => ({
-          status: StatusCodes.INTERNAL_SERVER_ERROR,
-          reason: `DB Error: ${error}`,
-        }),
-      ),
+    flatTryCatch(
+      (collection) =>
+        collection
+          .find(mongofyQuery({ "match.type": "qualification" }))
+          .toArray(),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `DB Error: ${error}`,
+      }),
     ),
     map((forms) => forms.map((form) => form.teamNumber)),
     map((numbers) => [...new Set(numbers)]),
