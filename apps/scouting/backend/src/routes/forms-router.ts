@@ -76,13 +76,17 @@ formsRouter.post("/", async (req, res) => {
         }),
       ),
     ),
-    map(({ collection, forms }) => collection.insertMany(forms)),
-    fold(
-      (error) => () =>
-        Promise.resolve(res.status(error.status).send(error.reason)),
-      (result) => async () =>
-        res.status(StatusCodes.OK).json({ result: await result }),
+    flatMap(({ collection, forms }) =>
+      tryCatch(
+        () => collection.insertMany(forms),
+        () => ({
+          status: StatusCodes.INTERNAL_SERVER_ERROR,
+          reason: "Error Inserting Forms To Collection ",
+        }),
+      ),
     ),
+    bindTo("result"),
+    foldResponse(res),
   )();
 });
 
