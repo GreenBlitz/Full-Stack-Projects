@@ -11,6 +11,7 @@ import BpsBase from "./scouter/components/bps-components/BpsBase";
 import { Leaderboard } from "./scouter/pages/Leaderboard";
 import { CURRENT_COMPETITION } from "@repo/scouting_types";
 import { StrategyNavigationBar } from "./strategy/components/StrategyNavBar";
+import AdminPage from "./scouter/pages/AdminPage";
 
 const App: FC = () => {
   return (
@@ -22,6 +23,7 @@ const App: FC = () => {
         element={<Leaderboard competition={CURRENT_COMPETITION} />}
       />
       <Route path="bps" element={<BpsBase />} />
+      <Route path="admin" element={<AdminPage />} />
 
       <Route path="/strategy" element={<StrategyNavigationBar />}>
         <Route path="team" element={<TeamTab />} />
