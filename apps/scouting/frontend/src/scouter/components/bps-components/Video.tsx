@@ -1,230 +1,104 @@
-//בס"ד
-import { useState } from "react";
-import "./Video.css";
+import { useEffect, useRef, useState } from "react";
 import type React from "react";
-import { isEmpty, lastElement } from "@repo/array-functions";
+import type { VideoPlayerHandle, VideoProps } from "./video-types";
+import { useYoutubePlayer } from "./useYoutubePlayer";
+import { VideoControls } from "./VideoControls";
 
-interface VideoProps {
-  videoSrc: string;
-  videoRef?: React.RefObject<HTMLVideoElement | null>;
-  timestamps?: string[];
-}
-
-interface Timestamp {
-  time: string;
-  timeInSecs: number;
-}
-
-  export const convertToSecs = (time: string): number => {
-    const oneMin = 60;
-    const parts = time.split(":").map(Number);
-
-    if (parts.length === 2) {
-      const [minutes, seconds] = parts;
-      return minutes * oneMin + seconds;
-    }
-
-    return 0;
-  };
-
-const Video: React.FC<VideoProps> = ({
-  videoSrc,
-  timestamps = [],
-  videoRef,
-}) => {
-  const VIDEO_START = 0;
-  const quarter = 0.25;
-  const half = 0.5;
-  const initialSpeed = 1;
-  const minsAndSecs = 2;
-  const fiveSeconds = 5;
+const Video: React.FC<VideoProps> = ({ source, playerRef }) => {
   const fullVideo = 100;
+  const htmlVideoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(true);
-  const [speed, setSpeed] = useState(initialSpeed);
-  const [progress, setProgress] = useState(VIDEO_START);
+  const [speed, setSpeed] = useState(1);
+  const [progress, setProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+
+  const { ytContainerRef } = useYoutubePlayer(
+    source,
+    playerRef,
+    setProgress,
+    setIsPlaying,
+    setCurrentTime,
+    setDuration,
+  );
+
+  useEffect(() => {
+    if (source.type !== "file") return;
+    const el = htmlVideoRef.current;
+    if (el) {
+      (playerRef as React.MutableRefObject<VideoPlayerHandle | null>).current = el;
+    }
+  }, [source, playerRef]);
 
   const updateProgress = () => {
-    if (videoRef?.current) {
-      const percent =
-        (videoRef.current.currentTime / videoRef.current.duration) * fullVideo;
-      setProgress(percent);
-    }
-  };
-
-  const togglePlay = () => {
-    if (videoRef?.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-      } else {
-        void videoRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
-    }
-  };
-
-  const handleSpeedChange = (newSpeed: number) => {
-    setSpeed(newSpeed);
-    if (videoRef?.current) {
-      videoRef.current.playbackRate = newSpeed;
+    if (source.type === "file" && htmlVideoRef.current) {
+      const el = htmlVideoRef.current;
+      const p = (el.currentTime / el.duration) * fullVideo;
+      setProgress(p);
+      setCurrentTime(el.currentTime);
+      setDuration(el.duration);
     }
   };
 
   const jumpTime = (seconds: number) => {
-    if (videoRef?.current) {
-      videoRef.current.currentTime += seconds;
-    }
+    if (playerRef.current) playerRef.current.currentTime += seconds;
   };
 
-  const jumpToTime = (time: number) => {
-    if (videoRef?.current) {
-      videoRef.current.currentTime = time;
+  const handleSeek = (percent: number) => {
+    if (!playerRef.current) return;
+    const d = playerRef.current.duration;
+    if (Number.isFinite(d) && d > 0) {
+      playerRef.current.currentTime = percent * d;
     }
-  };
-
-
-
-  const prevTimestamp = (): string | null => {
-    if (!videoRef?.current) return null;
-
-    const { currentTime } = videoRef.current;
-    let lastTimestamp: string | null = null;
-
-    const tolerance = 1;
-    const filteredTimestamps = timestamps.filter((time) => convertToSecs(time) <= currentTime - tolerance);
-
-    return lastElement(filteredTimestamps);
   };
 
   return (
     <>
-      {/* Timestamp Buttons */}
-      {!isEmpty(timestamps) && (
-        <div className="timestampContainer">
-          <button
-            className="settingsButton leftButton"
-            onClick={() => {
-              jumpToTime(convertToSecs(prevTimestamp() ?? "00:00"));
-            }}
-          >
-            {"<<<"}
-          </button>
-          {timestamps.map((timestamp, index) => (
-            <button
-              key={index}
-              className="settingsButton centerButton"
-              onClick={() => {
-                jumpToTime(convertToSecs(timestamp));
-              }}
-            >
-              {timestamp}
-            </button>
-          ))}
-          <button
-            className="settingsButton rightButton"
-            onClick={() => {
-              const prev = prevTimestamp();
-              if (prev) {
-                jumpToTime(convertToSecs(prev));
-              } else if (videoRef?.current) {
-                jumpToTime(videoRef.current.duration);
-              } else {
-                jumpToTime(VIDEO_START);
-              }
-            }}
-          >
-            {">>>"}
-          </button>
-        </div>
+      {source.type === "file" ? (
+        <video
+          className="w-full max-w-[640px] h-auto min-[2001px]:w-[640px] min-[2001px]:h-[400px] block mx-auto rounded-lg overflow-hidden"
+          ref={htmlVideoRef}
+          autoPlay
+          muted
+          playsInline
+          onTimeUpdate={updateProgress}
+          onLoadedMetadata={(e) => {
+            setDuration(e.currentTarget.duration);
+          }}
+        >
+          <source src={source.src} type="video/mp4" />
+        </video>
+      ) : (
+        <div
+          className="w-full max-w-[640px] aspect-video bg-black rounded-lg mx-auto min-[2001px]:w-[640px] min-[2001px]:h-[400px] min-[2001px]:aspect-auto overflow-hidden [&_iframe]:w-full [&_iframe]:h-full [&_iframe]:border-0"
+          ref={ytContainerRef}
+        />
       )}
 
-      {/* Video */}
-      <video
-        className="video"
-        ref={videoRef}
-        autoPlay
-        muted
-        playsInline
-        onTimeUpdate={updateProgress}
-      >
-        <source src={videoSrc} type="video/mp4" />
-      </video>
-
-      <div className="progressBar" style={{ width: `${progress}%` }} />
-
-      {/* Settings Under Video */}
-      <div className="settingsContainer">
-        <div className="speedSettings">
-          <button onClick={togglePlay}>{isPlaying ? "⏸️" : "▶️"}</button>
-
-
-          <label className="buttonLabel">
-            <input
-              type="radio"
-              name="speed"
-              value="1"
-              checked={speed === initialSpeed}
-              onChange={() => {
-                handleSpeedChange(initialSpeed);
-              }}
-            />
-            <span className="settingsButton leftButton">1×</span>
-          </label>
-
-          <label className="buttonLabel">
-            <input
-              type="radio"
-              name="speed"
-              value="0.5"
-              checked={speed === half}
-              onChange={() => {
-                handleSpeedChange(half);
-              }}
-            />
-            <span className="settingsButton centerButton">0.5×</span>
-          </label>
-
-          <label className="buttonLabel">
-            <input
-              type="radio"
-              name="speed"
-              value="0.25"
-              checked={speed === quarter}
-              onChange={() => {
-                handleSpeedChange(quarter);
-              }}
-            />
-            <span className="settingsButton rightButton">0.25×</span>
-          </label>
-        </div>
-
-        <div className="timeJumpSettings">
-          <label className="buttonLabel">
-            <input
-              type="button"
-              name="jumpBack"
-              value="<< 5"
-              onClick={() => {
-                jumpTime(-fiveSeconds);
-              }}
-            />
-            <span className="settingsButton leftButton">{"<< 5"}</span>
-          </label>
-
-          <label className="buttonLabel">
-            <input
-              type="button"
-              name="jumpBack"
-              value="5 >>"
-              onClick={() => {
-                jumpTime(fiveSeconds);
-              }}
-            />
-            <span className="settingsButton rightButton">{"5 >>"}</span>
-          </label>
-        </div>
-      </div>
+      <VideoControls
+        progress={progress}
+        isPlaying={isPlaying}
+        speed={speed}
+        currentTime={currentTime}
+        duration={duration}
+        onTogglePlay={() => {
+          const p = playerRef.current;
+          if (!p) return;
+          if (isPlaying) p.pause();
+          else void p.play();
+          setIsPlaying(!isPlaying);
+        }}
+        onSpeedChange={(s) => {
+          setSpeed(s);
+          if (playerRef.current) playerRef.current.playbackRate = s;
+        }}
+        onJump={jumpTime}
+        onSeek={handleSeek}
+      />
     </>
   );
 };
 
 export default Video;
+export type { VideoPlayerHandle, VideoSource } from "./video-types";
+export { convertToSecs, extractYouTubeId } from "./video-utils";
