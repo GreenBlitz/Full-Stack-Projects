@@ -1,3 +1,4 @@
+//בס"ד
 import { useEffect, useRef, useState } from "react";
 import type React from "react";
 import type { VideoPlayerHandle, VideoProps } from "./video-types";

@@ -1,3 +1,4 @@
+//בס"ד
 import type React from "react";
 
 export interface VideoPlayerHandle {

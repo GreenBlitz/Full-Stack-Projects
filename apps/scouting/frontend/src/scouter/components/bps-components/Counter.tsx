@@ -1,3 +1,4 @@
+//בס"ד
 import React from "react";
 import Burst from "./Burst";
 import type { VideoPlayerHandle } from "./Video";

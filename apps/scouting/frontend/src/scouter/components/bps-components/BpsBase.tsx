@@ -1,3 +1,4 @@
+//בס"ד
 import { useRef, useState } from "react";
 import Video, { extractYouTubeId } from "./Video";
 import Counter from "./Counter";

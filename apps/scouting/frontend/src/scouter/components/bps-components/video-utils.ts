@@ -1,3 +1,4 @@
+//בס"ד
 export const convertToSecs = (time: string): number => {
   const parts = time.split(":").map(Number);
   if (parts.length === 2) {

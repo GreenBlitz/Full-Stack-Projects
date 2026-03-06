@@ -1,3 +1,4 @@
+//בס"ד
 import { useEffect, useRef } from "react";
 import type React from "react";
 import type { VideoPlayerHandle, VideoSource, YTPlayer } from "./video-types";
