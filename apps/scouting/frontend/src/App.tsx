@@ -15,20 +15,19 @@ import { StrategyNavigationBar } from "./strategy/components/StrategyNavBar";
 const App: FC = () => {
   return (
     <Routes>
-      <Route path="*" element={<ScoutedMatches />} />
       <Route path="/scout" element={<ScoutMatch />} />
       <Route
         path="/leaderboard"
         element={<Leaderboard competition={CURRENT_COMPETITION} />}
       />
-      <Route path="bps" element={<BpsBase />} />
-
+      <Route path="/bps" element={<BpsBase />} />
       <Route path="/strategy" element={<StrategyNavigationBar />}>
         <Route path="team" element={<TeamTab />} />
         <Route path="general" element={<GeneralDataTable filters={{}} />} />
         <Route path="forecast" element={<MatchForecast />} />
         <Route path="compare" element={<CompareTwo />} />
       </Route>
+      <Route path="*" element={<ScoutedMatches />} />
     </Routes>
   );
 };
