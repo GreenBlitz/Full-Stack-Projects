@@ -1,6 +1,15 @@
 //בס"ד
 const SECONDS_PER_MINUTE = 60;
 const TIME_PARTS_MM_SS = 2;
+const SECONDS_DISPLAY_PADDING = 2;
+
+/** Formats total seconds as "m:ss" (e.g. 90 → "1:30") */
+export const formatDuration = (totalSeconds: number): string => {
+  if (!Number.isFinite(totalSeconds) || totalSeconds < 0) return "0:00";
+  const minutes = Math.floor(totalSeconds / SECONDS_PER_MINUTE);
+  const seconds = Math.floor(totalSeconds % SECONDS_PER_MINUTE);
+  return `${minutes}:${seconds.toString().padStart(SECONDS_DISPLAY_PADDING, "0")}`;
+};
 
 export const convertToSecs = (time: string): number => {
   const parts = time.split(":").map(Number);

@@ -2,22 +2,14 @@
 import type React from "react";
 import { useRef } from "react";
 import { IoPlay, IoPause, IoPlaySkipBack, IoPlaySkipForward } from "react-icons/io5";
+import { formatDuration } from "@repo/video-utils";
 
 const PLAY_PAUSE_ICON_SIZE = 18;
 const SKIP_ICON_SIZE = 16;
-const SECONDS_PER_MINUTE = 60;
-const SECONDS_DISPLAY_PADDING = 2;
 const SEEK_JUMP_SECONDS = 5;
 const PROGRESS_MIN = 0;
 const PROGRESS_MAX = 1;
 const PROGRESS_PERCENT_MAX = 100;
-
-const formatTime = (totalSeconds: number): string => {
-  if (!Number.isFinite(totalSeconds) || totalSeconds < 0) return "0:00";
-  const minutes = Math.floor(totalSeconds / SECONDS_PER_MINUTE);
-  const seconds = Math.floor(totalSeconds % SECONDS_PER_MINUTE);
-  return `${minutes}:${seconds.toString().padStart(SECONDS_DISPLAY_PADDING, "0")}`;
-};
 
 interface VideoControlsProps {
   progress: number;
@@ -104,7 +96,7 @@ export const VideoControls: React.FC<VideoControlsProps> = ({
         </div>
 
         <span className="text-sm text-slate-400 tabular-nums min-w-[100px] text-right">
-          {formatTime(currentTime)} / {formatTime(duration)}
+          {formatDuration(currentTime)} / {formatDuration(duration)}
         </span>
 
         <button

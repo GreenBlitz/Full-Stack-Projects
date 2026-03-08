@@ -1,6 +1,7 @@
 //בס"ד
 import type React from "react";
 import { useState } from "react";
+import { useLocalStorage } from "@repo/local_storage_hook";
 import type { VideoSource } from "@repo/video-utils";
 import { extractYouTubeId } from "@repo/video-utils";
 
@@ -13,10 +14,7 @@ interface VideoSourceSelectorProps {
 export const VideoSourceSelector: React.FC<VideoSourceSelectorProps> = ({
   onVideoSourceSelected,
 }) => {
-  const [urlInput, setUrlInput] = useState(() => {
-    if (typeof window === "undefined") return "";
-    return localStorage.getItem(BPS_YT_URL_KEY) ?? "";
-  });
+  const [urlInput, setUrlInput] = useLocalStorage(BPS_YT_URL_KEY, "");
   const [urlError, setUrlError] = useState(false);
 
   const handleYouTubeUrl = () => {
@@ -24,7 +22,7 @@ export const VideoSourceSelector: React.FC<VideoSourceSelectorProps> = ({
     const videoId = extractYouTubeId(trimmed);
     if (videoId) {
       setUrlError(false);
-      localStorage.setItem(BPS_YT_URL_KEY, trimmed);
+      setUrlInput(trimmed);
       onVideoSourceSelected({ type: "youtube", videoId });
     } else {
       setUrlError(true);

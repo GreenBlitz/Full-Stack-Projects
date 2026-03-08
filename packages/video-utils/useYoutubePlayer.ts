@@ -5,6 +5,13 @@ import type { VideoPlayerHandle, VideoSource } from "./types";
 import type { YouTubeWindow, YTPlayer } from "./youtube";
 import { loadYouTubeAPI } from "./youtube";
 
+/** Mutable state scoped to the effect - shared across async callbacks and cleanup */
+interface EffectState {
+  destroyed: boolean;
+  pollIntervalId: number | null;
+  ytPlayer: YTPlayer | null;
+}
+
 const YT_PLAYING_STATE = 1;
 const POLL_INTERVAL_MS = 250;
 const PROGRESS_PERCENT_MAX = 100;
@@ -64,20 +71,21 @@ export const useYoutubePlayer = (
   setCurrentTime: (t: number) => void,
   setDuration: (d: number) => void,
 ) => {
-  const ytPlayerRef = useRef<YTPlayer | null>(null);
   const ytContainerRef = useRef<HTMLDivElement>(null);
-  const pollIntervalRef = useRef<number | null>(null);
-  const destroyedRef = useRef(false);
 
   useEffect(() => {
     if (source.type !== "youtube") return;
 
-    destroyedRef.current = false;
+    const state: EffectState = {
+      destroyed: false,
+      pollIntervalId: null,
+      ytPlayer: null,
+    };
     const win = window as YouTubeWindow;
 
     const initYT = async () => {
       await loadYouTubeAPI();
-      if (destroyedRef.current || !win.YT || !ytContainerRef.current) return;
+      if (state.destroyed || !win.YT || !ytContainerRef.current) return;
 
       const playerId = "yt-bps-player";
       const playerDiv = document.createElement("div");
@@ -87,18 +95,18 @@ export const useYoutubePlayer = (
 
       createYTPlayer(win, playerId, source.videoId,
         (event) => {
-          if (destroyedRef.current) {
+          if (state.destroyed) {
             event.target.destroy();
             return;
           }
-          ytPlayerRef.current = event.target;
+          state.ytPlayer = event.target;
           (playerRef as React.MutableRefObject<VideoPlayerHandle | null>).current =
             createYtHandle(event.target);
 
-          pollIntervalRef.current = window.setInterval(() => {
-            if (!ytPlayerRef.current) return;
-            const current = ytPlayerRef.current.getCurrentTime();
-            const dur = ytPlayerRef.current.getDuration();
+          state.pollIntervalId = window.setInterval(() => {
+            if (!state.ytPlayer) return;
+            const current = state.ytPlayer.getCurrentTime();
+            const dur = state.ytPlayer.getDuration();
             setCurrentTime(current);
             setDuration(dur);
             if (dur > 0) setProgress((current / dur) * PROGRESS_PERCENT_MAX);
@@ -111,12 +119,9 @@ export const useYoutubePlayer = (
     void initYT();
 
     return () => {
-      destroyedRef.current = true;
-      const id = pollIntervalRef.current;
-      if (id != null) clearInterval(id);
-      pollIntervalRef.current = null;
-      ytPlayerRef.current?.destroy();
-      ytPlayerRef.current = null;
+      state.destroyed = true;
+      if (state.pollIntervalId != null) clearInterval(state.pollIntervalId);
+      state.ytPlayer?.destroy();
       (playerRef as React.MutableRefObject<VideoPlayerHandle | null>).current = null;
     };
   }, [source, playerRef]);
