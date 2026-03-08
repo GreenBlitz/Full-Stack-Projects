@@ -1,15 +1,23 @@
 //בס"ד
 import { useEffect, useRef, useState } from "react";
 import type React from "react";
-import type { VideoPlayerHandle, VideoProps } from "./video-types";
+import type { VideoPlayerHandle, VideoSource } from "./video-types";
 import { useYoutubePlayer } from "./useYoutubePlayer";
 import { VideoControls } from "./VideoControls";
 
+interface VideoProps {
+  source: VideoSource;
+  playerRef: React.RefObject<VideoPlayerHandle | null>;
+  timestamps?: string[];
+}
+
+const PROGRESS_PERCENT_MAX = 100;
+const DEFAULT_PLAYBACK_SPEED = 1;
+
 const Video: React.FC<VideoProps> = ({ source, playerRef }) => {
-  const fullVideo = 100;
   const htmlVideoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(true);
-  const [speed, setSpeed] = useState(1);
+  const [speed, setSpeed] = useState(DEFAULT_PLAYBACK_SPEED);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -27,14 +35,15 @@ const Video: React.FC<VideoProps> = ({ source, playerRef }) => {
     if (source.type !== "file") return;
     const el = htmlVideoRef.current;
     if (el) {
-      (playerRef as React.MutableRefObject<VideoPlayerHandle | null>).current = el;
+      (playerRef as React.MutableRefObject<VideoPlayerHandle | null>).current =
+        el;
     }
   }, [source, playerRef]);
 
   const updateProgress = () => {
     if (source.type === "file" && htmlVideoRef.current) {
       const el = htmlVideoRef.current;
-      const p = (el.currentTime / el.duration) * fullVideo;
+      const p = (el.currentTime / el.duration) * PROGRESS_PERCENT_MAX;
       setProgress(p);
       setCurrentTime(el.currentTime);
       setDuration(el.duration);
@@ -47,9 +56,9 @@ const Video: React.FC<VideoProps> = ({ source, playerRef }) => {
 
   const handleSeek = (percent: number) => {
     if (!playerRef.current) return;
-    const d = playerRef.current.duration;
-    if (Number.isFinite(d) && d > 0) {
-      playerRef.current.currentTime = percent * d;
+    const { duration } = playerRef.current;
+    if (Number.isFinite(duration) && duration > 0) {
+      playerRef.current.currentTime = percent * duration;
     }
   };
 
@@ -83,10 +92,10 @@ const Video: React.FC<VideoProps> = ({ source, playerRef }) => {
         currentTime={currentTime}
         duration={duration}
         onTogglePlay={() => {
-          const p = playerRef.current;
-          if (!p) return;
-          if (isPlaying) p.pause();
-          else void p.play();
+          const player = playerRef.current;
+          if (!player) return;
+          if (isPlaying) player.pause();
+          else void player.play();
           setIsPlaying(!isPlaying);
         }}
         onSpeedChange={(s) => {
@@ -100,6 +109,4 @@ const Video: React.FC<VideoProps> = ({ source, playerRef }) => {
   );
 };
 
-export default Video;
-export type { VideoPlayerHandle, VideoSource } from "./video-types";
-export { convertToSecs, extractYouTubeId } from "./video-utils";
+export { Video };

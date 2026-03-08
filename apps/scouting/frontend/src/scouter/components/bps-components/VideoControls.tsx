@@ -1,37 +1,23 @@
 //בס"ד
 import type React from "react";
 import { useRef } from "react";
+import { IoPlay, IoPause, IoPlaySkipBack, IoPlaySkipForward } from "react-icons/io5";
 
-const formatTime = (seconds: number): string => {
-  if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
-  const m = Math.floor(seconds / 60);
-  const s = Math.floor(seconds % 60);
-  return `${m}:${s.toString().padStart(2, "0")}`;
+const PLAY_PAUSE_ICON_SIZE = 18;
+const SKIP_ICON_SIZE = 16;
+const SECONDS_PER_MINUTE = 60;
+const SECONDS_DISPLAY_PADDING = 2;
+const SEEK_JUMP_SECONDS = 5;
+const PROGRESS_MIN = 0;
+const PROGRESS_MAX = 1;
+const PROGRESS_PERCENT_MAX = 100;
+
+const formatTime = (totalSeconds: number): string => {
+  if (!Number.isFinite(totalSeconds) || totalSeconds < 0) return "0:00";
+  const minutes = Math.floor(totalSeconds / SECONDS_PER_MINUTE);
+  const seconds = Math.floor(totalSeconds % SECONDS_PER_MINUTE);
+  return `${minutes}:${seconds.toString().padStart(SECONDS_DISPLAY_PADDING, "0")}`;
 };
-
-const PlayIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M8 5v14l11-7z" />
-  </svg>
-);
-
-const PauseIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
-  </svg>
-);
-
-const SkipBackIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z" />
-  </svg>
-);
-
-const SkipFwdIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z" />
-  </svg>
-);
 
 interface VideoControlsProps {
   progress: number;
@@ -64,12 +50,15 @@ export const VideoControls: React.FC<VideoControlsProps> = ({
     const bar = barRef.current;
     if (!bar) return;
     const rect = bar.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const p = Math.max(0, Math.min(1, x / rect.width));
-    onSeek(p);
+    const clickOffsetFromLeft = e.clientX - rect.left;
+    const seekPercent = Math.max(
+      PROGRESS_MIN,
+      Math.min(PROGRESS_MAX, clickOffsetFromLeft / rect.width),
+    );
+    onSeek(seekPercent);
   };
 
-  const idx = SPEEDS.indexOf(speed);
+  const idx = SPEEDS.indexOf(speed as (typeof SPEEDS)[number]);
   const nextSpeed = SPEEDS[idx >= 0 ? (idx + 1) % SPEEDS.length : 0];
 
   return (
@@ -78,8 +67,8 @@ export const VideoControls: React.FC<VideoControlsProps> = ({
         ref={barRef}
         role="progressbar"
         aria-valuenow={progress}
-        aria-valuemin={0}
-        aria-valuemax={100}
+        aria-valuemin={PROGRESS_MIN}
+        aria-valuemax={PROGRESS_PERCENT_MAX}
         className="h-2 w-full bg-slate-700 rounded-full overflow-hidden cursor-pointer mb-3 group"
         onClick={handleBarClick}
       >
@@ -96,21 +85,21 @@ export const VideoControls: React.FC<VideoControlsProps> = ({
             className="w-11 h-11 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center transition-colors shadow-lg shadow-emerald-900/30"
             aria-label={isPlaying ? "Pause" : "Play"}
           >
-            {isPlaying ? <PauseIcon /> : <PlayIcon />}
+            {isPlaying ? <IoPause size={PLAY_PAUSE_ICON_SIZE} /> : <IoPlay size={PLAY_PAUSE_ICON_SIZE} />}
           </button>
           <button
-            onClick={() => onJump(-5)}
+            onClick={() => onJump(-SEEK_JUMP_SECONDS)}
             className="w-10 h-10 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 flex items-center justify-center transition-colors"
-            aria-label="Back 5 seconds"
+            aria-label={`Back ${SEEK_JUMP_SECONDS} seconds`}
           >
-            <SkipBackIcon />
+            <IoPlaySkipBack size={SKIP_ICON_SIZE} />
           </button>
           <button
-            onClick={() => onJump(5)}
+            onClick={() => onJump(SEEK_JUMP_SECONDS)}
             className="w-10 h-10 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 flex items-center justify-center transition-colors"
-            aria-label="Forward 5 seconds"
+            aria-label={`Forward ${SEEK_JUMP_SECONDS} seconds`}
           >
-            <SkipFwdIcon />
+            <IoPlaySkipForward size={SKIP_ICON_SIZE} />
           </button>
         </div>
 
