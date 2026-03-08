@@ -1,9 +1,9 @@
 //בס"ד
 import { useEffect, useRef } from "react";
 import type React from "react";
-import type { VideoPlayerHandle, VideoSource } from "./video-types";
-import type { YouTubeWindow, YTPlayer } from "./video-utils";
-import { loadYouTubeAPI } from "./video-utils";
+import type { VideoPlayerHandle, VideoSource } from "./types";
+import type { YouTubeWindow, YTPlayer } from "./youtube";
+import { loadYouTubeAPI } from "./youtube";
 
 const YT_PLAYING_STATE = 1;
 const POLL_INTERVAL_MS = 250;
@@ -41,22 +41,19 @@ const createYtHandle = (target: YTPlayer): VideoPlayerHandle => ({
   },
 });
 
-interface CreateYTPlayerParams {
-  playerId: string;
-  videoId: string;
-  onReady: (event: { target: YTPlayer }) => void;
-  onStateChange: (event: { data: number }) => void;
-}
-
 /** Creates a YouTube IFrame player instance */
-const createYTPlayer = (win: YouTubeWindow, params: CreateYTPlayerParams): YTPlayer => {
-  const { playerId, videoId, onReady, onStateChange } = params;
-  return new win.YT!.Player(playerId, {
+const createYTPlayer = (
+  win: YouTubeWindow,
+  playerId: string,
+  videoId: string,
+  onReady: (e: { target: YTPlayer }) => void,
+  onStateChange: (e: { data: number }) => void,
+): YTPlayer =>
+  new win.YT!.Player(playerId, {
     videoId,
     playerVars: YT_PLAYER_VARS,
     events: { onReady, onStateChange },
   });
-};
 
 /** Loads YT API, mounts player in container, wires progress/playback state; cleanup on unmount */
 export const useYoutubePlayer = (
@@ -88,10 +85,8 @@ export const useYoutubePlayer = (
       ytContainerRef.current.innerHTML = "";
       ytContainerRef.current.appendChild(playerDiv);
 
-      createYTPlayer(win, {
-        playerId,
-        videoId: source.videoId,
-        onReady: (event) => {
+      createYTPlayer(win, playerId, source.videoId,
+        (event) => {
           if (destroyedRef.current) {
             event.target.destroy();
             return;
@@ -109,24 +104,19 @@ export const useYoutubePlayer = (
             if (dur > 0) setProgress((current / dur) * PROGRESS_PERCENT_MAX);
           }, POLL_INTERVAL_MS);
         },
-        onStateChange: (event) => {
-          setIsPlaying(event.data === YT_PLAYING_STATE);
-        },
-      });
+        (event) => setIsPlaying(event.data === YT_PLAYING_STATE),
+      );
     };
 
     void initYT();
 
     return () => {
       destroyedRef.current = true;
-      if (pollIntervalRef.current) {
-        clearInterval(pollIntervalRef.current);
-        pollIntervalRef.current = null;
-      }
-      if (ytPlayerRef.current) {
-        ytPlayerRef.current.destroy();
-        ytPlayerRef.current = null;
-      }
+      const id = pollIntervalRef.current;
+      if (id != null) clearInterval(id);
+      pollIntervalRef.current = null;
+      ytPlayerRef.current?.destroy();
+      ytPlayerRef.current = null;
       (playerRef as React.MutableRefObject<VideoPlayerHandle | null>).current = null;
     };
   }, [source, playerRef]);

@@ -1,8 +1,8 @@
 //בס"ד
 import type React from "react";
 import { useState } from "react";
-import type { VideoSource } from "./video-types";
-import { extractYouTubeId } from "./video-utils";
+import type { VideoSource } from "@repo/video-utils";
+import { extractYouTubeId } from "@repo/video-utils";
 
 const BPS_YT_URL_KEY = "bps-youtube-url";
 

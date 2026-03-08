@@ -2,7 +2,7 @@
 import { useRef, useState } from "react";
 import { Video } from "./Video";
 import Counter from "./Counter";
-import type { VideoPlayerHandle, VideoSource } from "./video-types";
+import type { VideoPlayerHandle, VideoSource } from "@repo/video-utils";
 import { VideoSourceSelector } from "./VideoSourceSelector";
 
 function App() {

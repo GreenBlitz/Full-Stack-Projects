@@ -1,8 +1,8 @@
 //בס"ד
 import { useEffect, useRef, useState } from "react";
 import type React from "react";
-import type { VideoPlayerHandle, VideoSource } from "./video-types";
-import { useYoutubePlayer } from "./useYoutubePlayer";
+import type { VideoPlayerHandle, VideoSource } from "@repo/video-utils";
+import { useYoutubePlayer } from "@repo/video-utils";
 import { VideoControls } from "./VideoControls";
 
 interface VideoProps {
@@ -41,13 +41,11 @@ const Video: React.FC<VideoProps> = ({ source, playerRef }) => {
   }, [source, playerRef]);
 
   const updateProgress = () => {
-    if (source.type === "file" && htmlVideoRef.current) {
-      const el = htmlVideoRef.current;
-      const p = (el.currentTime / el.duration) * PROGRESS_PERCENT_MAX;
-      setProgress(p);
-      setCurrentTime(el.currentTime);
-      setDuration(el.duration);
-    }
+    const el = source.type === "file" ? htmlVideoRef.current : null;
+    if (!el) return;
+    setProgress((el.currentTime / el.duration) * PROGRESS_PERCENT_MAX);
+    setCurrentTime(el.currentTime);
+    setDuration(el.duration);
   };
 
   const jumpTime = (seconds: number) => {

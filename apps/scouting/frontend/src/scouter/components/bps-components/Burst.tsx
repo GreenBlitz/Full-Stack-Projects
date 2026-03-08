@@ -1,7 +1,7 @@
 //בס"ד
 import type React from "react";
 import type { BurstData } from "./Counter";
-import type { VideoPlayerHandle } from "./video-types";
+import type { VideoPlayerHandle } from "@repo/video-utils";
 
 interface BurstProps {
   playerRef?: React.RefObject<VideoPlayerHandle | null>;

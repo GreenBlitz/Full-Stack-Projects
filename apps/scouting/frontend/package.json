@@ -14,6 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@repo/video-utils": "*",
     "@tailwindcss/vite": "^4.1.16",
     "heatmap.js": "^2.0.5",
     "react": "^19.1.1",
