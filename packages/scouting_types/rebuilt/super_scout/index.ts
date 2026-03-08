@@ -1,17 +1,17 @@
 // בס"ד
 import * as t from "io-ts";
-import { matchCodec } from "../scouting_form";
+import { matchCodec, type Match } from "../scouting_form";
 import { allianceCodec } from "../../alliance";
 
-const sectionCodec = t.type({
+export const sectionCodec = t.type({
   rating: t.union([
     t.undefined,
-    t.keyof({ 1: null, 2: null, 3: null, 4: null }),
+    t.keyof({ "1": null, "2": null, "3": null, "4": null }),
   ]),
   info: t.union([t.undefined, t.string]),
 });
 
-const teamSuperScoutCodec = t.type({
+export const teamSuperScoutCodec = t.type({
   defense: sectionCodec,
   evasion: sectionCodec,
   perception: sectionCodec,
@@ -19,12 +19,13 @@ const teamSuperScoutCodec = t.type({
   bump: sectionCodec,
   collection: sectionCodec,
   moveShoot: sectionCodec,
+  teamNumber: t.number,
 });
 
 export const superScoutCodec = t.type({
   match: matchCodec,
   alliance: allianceCodec,
-  teams: t.union([
+  teams: t.tuple([
     teamSuperScoutCodec,
     teamSuperScoutCodec,
     teamSuperScoutCodec,
@@ -32,4 +33,10 @@ export const superScoutCodec = t.type({
 });
 
 export type SuperScout = t.TypeOf<typeof superScoutCodec>;
-export type SuperRating = t.TypeOf<typeof sectionCodec>["rating"];
+export type SuperSection = t.TypeOf<typeof sectionCodec>;
+export type SuperRating = SuperSection["rating"];
+export type SuperRatingValue = Exclude<SuperRating, undefined>;
+export type TeamSuperScout = t.TypeOf<typeof teamSuperScoutCodec>;
+export type SuperMetricKey = keyof Omit<TeamSuperScout, "teamNumber">;
+export type AllianceTeams = SuperScout["teams"];
+export type MatchType = Match["type"];
