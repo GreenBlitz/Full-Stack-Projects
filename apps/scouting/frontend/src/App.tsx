@@ -16,14 +16,12 @@ import { SuperScoutTab } from "./strategy/tabs/super-scout/SuperScoutTab";
 const App: FC = () => {
   return (
     <Routes>
-      <Route path="*" element={<ScoutedMatches />} />
       <Route path="/scout" element={<ScoutMatch />} />
       <Route
         path="/leaderboard"
         element={<Leaderboard competition={CURRENT_COMPETITION} />}
       />
-      <Route path="bps" element={<BpsBase />} />
-
+      <Route path="/bps" element={<BpsBase />} />
       <Route path="/strategy" element={<StrategyNavigationBar />}>
         <Route path="team" element={<TeamTab />} />
         <Route path="general" element={<GeneralDataTable filters={{}} />} />
@@ -31,6 +29,7 @@ const App: FC = () => {
         <Route path="compare" element={<CompareTwo />} />
         <Route path="super" element={<SuperScoutTab />} />
       </Route>
+      <Route path="*" element={<ScoutedMatches />} />
     </Routes>
   );
 };

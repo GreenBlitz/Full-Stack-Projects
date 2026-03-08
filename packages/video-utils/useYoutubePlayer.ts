@@ -1,0 +1,130 @@
+//בס"ד
+import { useEffect, useRef } from "react";
+import type React from "react";
+import type { VideoPlayerHandle, VideoSource } from "./types";
+import type { YouTubeWindow, YTPlayer } from "./youtube";
+import { loadYouTubeAPI } from "./youtube";
+
+/** Mutable state scoped to the effect - shared across async callbacks and cleanup */
+interface EffectState {
+  destroyed: boolean;
+  pollIntervalId: number | null;
+  ytPlayer: YTPlayer | null;
+}
+
+const YT_PLAYING_STATE = 1;
+const POLL_INTERVAL_MS = 250;
+const PROGRESS_PERCENT_MAX = 100;
+
+const YT_PLAYER_VARS = {
+  autoplay: 1,
+  controls: 0,
+  modestbranding: 1,
+  rel: 0,
+} as const;
+
+/** Wraps YT player in VideoPlayerHandle interface so HTML5 and YT use same API */
+const createYtHandle = (target: YTPlayer): VideoPlayerHandle => ({
+  get currentTime() {
+    return target.getCurrentTime();
+  },
+  set currentTime(v: number) {
+    target.seekTo(v, true);
+  },
+  get duration() {
+    return target.getDuration();
+  },
+  get playbackRate() {
+    return target.getPlaybackRate();
+  },
+  set playbackRate(v: number) {
+    target.setPlaybackRate(v);
+  },
+  play() {
+    target.playVideo();
+  },
+  pause() {
+    target.pauseVideo();
+  },
+});
+
+/** Creates a YouTube IFrame player instance */
+const createYTPlayer = (
+  win: YouTubeWindow,
+  playerId: string,
+  videoId: string,
+  onReady: (e: { target: YTPlayer }) => void,
+  onStateChange: (e: { data: number }) => void,
+): YTPlayer =>
+  new win.YT!.Player(playerId, {
+    videoId,
+    playerVars: YT_PLAYER_VARS,
+    events: { onReady, onStateChange },
+  });
+
+/** Loads YT API, mounts player in container, wires progress/playback state; cleanup on unmount */
+export const useYoutubePlayer = (
+  source: VideoSource,
+  playerRef: React.RefObject<VideoPlayerHandle | null>,
+  setProgress: (p: number) => void,
+  setIsPlaying: (p: boolean) => void,
+  setCurrentTime: (t: number) => void,
+  setDuration: (d: number) => void,
+) => {
+  const ytContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (source.type !== "youtube") return;
+
+    const state: EffectState = {
+      destroyed: false,
+      pollIntervalId: null,
+      ytPlayer: null,
+    };
+    const win = window as YouTubeWindow;
+
+    const initYT = async () => {
+      await loadYouTubeAPI();
+      if (state.destroyed || !win.YT || !ytContainerRef.current) return;
+
+      const playerId = "yt-bps-player";
+      const playerDiv = document.createElement("div");
+      playerDiv.id = playerId;
+      ytContainerRef.current.innerHTML = "";
+      ytContainerRef.current.appendChild(playerDiv);
+
+      createYTPlayer(win, playerId, source.videoId,
+        (event) => {
+          if (state.destroyed) {
+            event.target.destroy();
+            return;
+          }
+          state.ytPlayer = event.target;
+          (playerRef as React.MutableRefObject<VideoPlayerHandle | null>).current =
+            createYtHandle(event.target);
+
+          state.pollIntervalId = window.setInterval(() => {
+            if (!state.ytPlayer) return;
+            const current = state.ytPlayer.getCurrentTime();
+            const dur = state.ytPlayer.getDuration();
+            setCurrentTime(current);
+            setDuration(dur);
+            if (dur > 0) setProgress((current / dur) * PROGRESS_PERCENT_MAX);
+          }, POLL_INTERVAL_MS);
+        },
+        (event) => setIsPlaying(event.data === YT_PLAYING_STATE),
+      );
+    };
+
+    void initYT();
+
+    return () => {
+      state.destroyed = true;
+      if (state.pollIntervalId != null) clearInterval(state.pollIntervalId);
+      state.ytPlayer?.destroy();
+      (playerRef as React.MutableRefObject<VideoPlayerHandle | null>).current = null;
+    };
+  }, [source, playerRef]);
+
+  return { ytContainerRef };
+};

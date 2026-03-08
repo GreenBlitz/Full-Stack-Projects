@@ -1,6 +1,6 @@
 // בס"ד
 import * as t from "io-ts";
-import { matchCodec } from "../scouting_form";
+import { matchCodec, type Match } from "../scouting_form";
 import { allianceCodec } from "../../alliance";
 
 export const sectionCodec = t.type({
