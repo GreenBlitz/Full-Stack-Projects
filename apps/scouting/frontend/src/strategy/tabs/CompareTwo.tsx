@@ -141,7 +141,7 @@ export const CompareTwo: React.FC = () => {
             Select Teams
           </span>
           <div className="flex flex-wrap justify-center gap-3">
-            { teamNumbers.map((teamNumber) => (
+            {teamNumbers.map((teamNumber) => (
               <button
                 key={teamNumber}
                 onClick={() => {
