@@ -9,6 +9,7 @@ import { GeneralDataTable } from "./strategy/tabs/GeneralDataTable";
 import { CompareTwo } from "./strategy/tabs/CompareTwo";
 import BpsBase from "./scouter/components/bps-components/BpsBase";
 import { Leaderboard } from "./scouter/pages/Leaderboard";
+import SettingsPage from "./scouter/pages/SettingsPage";
 import { CURRENT_COMPETITION } from "@repo/scouting_types";
 import { StrategyNavigationBar } from "./strategy/components/StrategyNavBar";
 import { SuperScoutTab } from "./strategy/tabs/super-scout/SuperScoutTab";
@@ -21,6 +22,7 @@ const App: FC = () => {
         path="/leaderboard"
         element={<Leaderboard competition={CURRENT_COMPETITION} />}
       />
+      <Route path="/settings" element={<SettingsPage />} />
       <Route path="/bps" element={<BpsBase />} />
       <Route path="/strategy" element={<StrategyNavigationBar />}>
         <Route path="team" element={<TeamTab />} />
