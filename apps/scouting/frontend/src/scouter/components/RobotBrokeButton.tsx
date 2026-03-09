@@ -1,13 +1,13 @@
 // בס"ד
 import type { FC } from "react";
 
-interface RobotBrokeButtonProps {
-  robotBroke: boolean;
+interface RobotBrokenButtonProps {
+  isRobotBroken: boolean;
   onChange: (value: boolean) => void;
 }
 
-export const RobotBrokeButton: FC<RobotBrokeButtonProps> = ({
-  robotBroke,
+export const RobotBrokenButton: FC<RobotBrokenButtonProps> = ({
+  isRobotBroken: robotBroke,
   onChange,
 }) => {
   return (

@@ -6,7 +6,7 @@ import { useLocalStorage } from "@repo/local_storage_hook";
 import { createNewScoutingForm } from "../ScoutMatch";
 import { useNavigate } from "react-router-dom";
 import { ConfirmDeletePopup } from "../../components/ConfirmDeletePopup";
-import { RobotBrokeButton } from "../../components/RobotBrokeButton";
+import { RobotBrokenButton } from "../../components/RobotBrokeButton";
 
 const BUTTON_STYLES = `px-8 py-3 text-base font-bold text-black 
             transition-all duration-300 
@@ -59,10 +59,10 @@ export const PostMatchTab: FC<TabProps> = ({ setForm, currentForm }) => {
           />
         </div>
         <div className="flex justify-center">
-          <RobotBrokeButton
-            robotBroke={currentForm.robotBroke ?? false}
+          <RobotBrokenButton
+            isRobotBroken={currentForm.robotBroken ?? false}
             onChange={(value) =>
-              setForm((prev) => ({ ...prev, robotBroke: value }))
+              setForm((prev) => ({ ...prev, robotBroken: value }))
             }
           />
         </div>

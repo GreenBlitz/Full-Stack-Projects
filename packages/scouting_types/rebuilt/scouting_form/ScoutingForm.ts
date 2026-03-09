@@ -24,7 +24,7 @@ export const scoutingFormCodec = t.type({
   auto: autoCodec,
   tele: teleCodec,
   comment: t.string,
-  robotBroke: t.union([t.boolean, t.undefined]),
+  robotBroken: t.boolean,
 });
 
 export const defaultScoutForm: ScoutingForm = {
@@ -38,7 +38,7 @@ export const defaultScoutForm: ScoutingForm = {
   auto: defaultAuto,
   tele: defaultTele,
   comment: "",
-  robotBroke: false,
+  robotBroken: false,
 };
 
 export type ScoutingForm = t.TypeOf<typeof scoutingFormCodec>;

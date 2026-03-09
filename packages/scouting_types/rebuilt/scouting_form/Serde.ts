@@ -101,7 +101,7 @@ const serdeFields = {
   comment: serdeString(),
   auto: serdeAuto,
   tele: serdeTele,
-  robotBroke: serdeOptional(serdeBool()),
+  robotBroken: serdeOptional(serdeBool()),
 } satisfies Record<keyof ScoutingForm, unknown>;
 
 export const scoutingFormSerde = createRecordSerde(serdeFields);
