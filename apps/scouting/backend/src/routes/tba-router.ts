@@ -8,6 +8,7 @@ import {
   type EndpointError,
 } from "../middleware/verification";
 import {
+  Match,
   matchesProps,
   tbaMatches2026,
   TBAMatches2026,
@@ -33,13 +34,15 @@ import type { Type } from "io-ts";
 import { getDb } from "../middleware/db";
 import { getMax, isEmpty } from "@repo/array-functions";
 import { fold as booleanFold } from "fp-ts/boolean";
+import {
+  compareMatches,
+  tbaMatchToRegularMatch,
+} from "@repo/scouting_types/tba/MatchNumbering";
 
 export const tbaRouter = Router();
 
 const TBA_KEY = process.env.TBA_API_KEY;
 const TBA_URL = "https://www.thebluealliance.com/api/v3";
-
-
 
 const getCollection = flow(
   getDb,
@@ -110,14 +113,21 @@ const getStoredMatches = pipe(
   map((docs) => docs.map(({ _id, ...rest }) => rest) satisfies TBAMatches2026),
 );
 
-const getMaxMatchNumber = (matches: TBAMatches2026) =>
-  isEmpty(matches) ? 0 : getMax(matches, (m) => m.match_number).match_number;
+const getMaxMatch = (matches: TBAMatches2026): Match => {
+  if (isEmpty(matches)) {
+    return { type: "practice", number: 0 };
+  }
+  const lastMatch = getMax(matches, (match) => match.match_number);
+  return tbaMatchToRegularMatch(lastMatch);
+};
 
 /**
  * IMPORTANT FIXES:
  * 1) booleanFold order: fold(onFalse, onTrue)
  * 2) insert side-effect: use chainFirstW with TaskEither (NOT chainFirstTaskK)
  */
+
+const DID_COMPARE_FAIL = 0;
 const getMatches = flow(
   flatMap((body: TBAMatchesProps) =>
     pipe(
@@ -127,7 +137,7 @@ const getMatches = flow(
   ),
   flatMap(({ currentMatches, body }) =>
     pipe(
-      getMaxMatchNumber(currentMatches) < body.maxMatch,
+      compareMatches(getMaxMatch(currentMatches), body.maxMatch) < DID_COMPARE_FAIL,
       booleanFold(
         // FALSE => already have enough stored
         () => fromEither(right(currentMatches)),

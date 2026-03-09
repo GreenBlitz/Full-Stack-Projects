@@ -24,3 +24,18 @@ export const tbaMatchToRegularMatch = (tbaMatch: TBAMatch): Match => {
     type: "playoff",
   };
 };
+
+const MATCH_TYPES_ORDER: Record<Match["type"], number> = {
+  practice: 0,
+  qualification: 1,
+  playoff: 2,
+};
+
+export const compareMatches = (match1: Match, match2: Match) => {
+  const isTypeSame = match1.type === match2.type;
+
+  if (!isTypeSame) {
+    return MATCH_TYPES_ORDER[match1.type] - MATCH_TYPES_ORDER[match2.type];
+  }
+  return match1.number - match2.number;
+};

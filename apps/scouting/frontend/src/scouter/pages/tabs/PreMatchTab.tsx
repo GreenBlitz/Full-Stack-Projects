@@ -1,20 +1,24 @@
 //בס"ד
 import { useEffect, useState, type FC, type JSX } from "react";
-import type { Alliance, Match, TBAMatches2026 } from "@repo/scouting_types";
+import type {
+  Alliance,
+  Match,
+  TBAMatches2026,
+  TBAMatchesProps,
+} from "@repo/scouting_types";
 import type { TabProps } from "../ScoutMatch";
 import { useLocalStorage } from "@repo/local_storage_hook";
 
 const MATCH_NUMBER_MAX = 127;
-const TEAM_NUMBER_MAX = 16383;
 
 export const fetchGameMatches = async <TBAMatches = unknown,>(
   event: string,
-  maxMatch: number,
+  maxMatch: Match,
 ): Promise<TBAMatches> => {
   const response = await fetch("/api/v1/tba/matches", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ event, maxMatch }),
+    body: JSON.stringify({ event, maxMatch } satisfies TBAMatchesProps),
   });
 
   const text = await response.text();
@@ -102,7 +106,7 @@ const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
     }
     const newTBAMatches = await fetchGameMatches<TBAMatches2026>(
       form.competition,
-      match.number,
+      match,
     );
     setTbaMatches(newTBAMatches);
   };
