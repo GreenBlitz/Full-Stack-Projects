@@ -1,5 +1,5 @@
 //בס"ד
-import { useEffect, type FC } from "react";
+import { useEffect, type FC, type JSX } from "react";
 import type { Alliance, Match, TBAMatches2026 } from "@repo/scouting_types";
 import type { TabProps } from "../ScoutMatch";
 import { useLocalStorage } from "@repo/local_storage_hook";
@@ -26,17 +26,12 @@ export const fetchGameMatches = async <TBAMatches = unknown,>(
   return matches;
 };
 
-const initialLocation = {
-  close: "CLOSE",
-  middle: "MIDDLE",
-  far: "FAR",
-} as const;
-
-type InitialLocation = keyof typeof initialLocation;
+const initialLocation = ["close", "middle", "far"] as const;
+type InitialLocation =  (typeof initialLocation)[number];
 
 interface RobotPositionInfo {
   alliance: Alliance;
-  position: InitialLocation;
+  location: InitialLocation;
 }
 
 interface MatchQualWithTeamNumberProps {
@@ -85,7 +80,7 @@ const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
   const [robotPositionInfo, setRobotPositionInfo] =
     useLocalStorage<RobotPositionInfo>("robotPositionInfo", {
       alliance: "red",
-      position: "close",
+      location: "close",
     });
   const [tbaMatches, setTbaMatches] = useLocalStorage<TBAMatches2026>(
     "tbaMatches",
@@ -130,95 +125,94 @@ const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
   }, []);
   return (
     <div className="flex flex-col items-center justify-center w-full h-full gap-3  mx-auto">
-      <div className="w-120 border-2 border-green-500 rounded-lg p-5 flex flex-col gap-3 py-0 h-15">
-        <div className="flex w-115 justify-between items-center text-green-500 pr-1 h-50">
-          <div>Scouter Name:</div>
-          <input
-            type="text"
-            className="inputStyle w-85 h-full"
-            value={form.scouterName}
-            onChange={(event) => {
-              setForm((prev) => ({
-                ...prev,
-                scouterName: event.target.value,
-              }));
-            }}
-          />
-        </div>
-      </div>
-      <div className="w-120 border-2 border-green-500 rounded-lg p-5 flex flex-col gap-3 py-0 h-15">
-        <div className="flex w-115 justify-between items-center text-green-500 pr-1 h-30">
-          <div>Match Number:</div>
-          <input
-            type="number"
-            className="inputStyle w-83.75 h-full"
-            min={0}
-            max={MATCH_NUMBER_MAX}
-            value={form.match.number}
-            onChange={(event) => {
-              updateMatch({ number: Number(event.target.value) });
-            }}
-          />
-        </div>
-      </div>
+      <InputBox name="Match Number">
+        <input
+          type="text"
+          className="w-85 h-full"
+          value={form.scouterName}
+          onChange={(event) => {
+            setForm((prev) => ({
+              ...prev,
+              scouterName: event.target.value,
+            }));
+          }}
+        />
+      </InputBox>
+      <InputBox name="Match Number">
+        <input
+          type="number"
+          className="w-83.75 h-full"
+          min={0}
+          max={MATCH_NUMBER_MAX}
+          value={form.match.number}
+          onChange={(event) => {
+            updateMatch({ number: Number(event.target.value) });
+          }}
+        />
+      </InputBox>
 
-      <div className="w-120 border-2 border-green-500 rounded-lg p-5 flex flex-col gap-3 py-0 h-15">
-        <div className="flex w-115 justify-between items-center text-green-500 pr-1 h-70">
-          <div>Match Type:</div>
-          <select
-            className="inputStyle w-90.75 h-full"
-            value={form.match.type}
-            onChange={(event) => {
-              updateMatch({
-                type: event.target.value as Match["type"],
-              });
-            }}
-          >
-            <option value="practice">Practice</option>
-            <option value="qualification">Qualification</option>
-            <option value="playoff">Playoff</option>
-          </select>
-        </div>
-      </div>
-      <div className="w-120 border-2 border-green-500 rounded-lg p-5 flex flex-col gap-3 py-0 h-15">
-        <div className="flex w-115 justify-between items-center text-green-500 pr-1 h-70">
-          <div>Alliance</div>
-          <select
-            className="inputStyle w-90.75 h-full"
-            value={form.match.type}
-            onChange={(event) => {
-              setRobotPositionInfo((prev) => ({
-                ...prev,
-                alliance: event.currentTarget.value as Alliance,
-              }));
-            }}
-          >
-            <option value="red">Practice</option>
-            <option value="blue">Qualification</option>
-          </select>
-        </div>
-      </div>
-      <div className="w-120 border-2 border-green-500 rounded-lg p-5 flex flex-col gap-3 py-0 h-15">
-        <div className="flex w-115 justify-between items-center text-green-500 pr-1 h-70">
-          <div>Location</div>
-          <select
-            className="inputStyle w-90.75 h-full"
-            value={form.match.type}
-            onChange={(event) => {
-              setRobotPositionInfo((prev) => ({
-                ...prev,
-                position: event.currentTarget.value as InitialLocation,
-              }));
-            }}
-          >
-            <option value="close">Close</option>
-            <option value="middle">Middle</option>
-            <option value="far">Far</option>
-          </select>
-        </div>
-      </div>
+      <InputBox name="Match Type">
+        <select
+          className="w-90.75 h-full"
+          value={form.match.type}
+          onChange={(event) => {
+            updateMatch({
+              type: event.target.value as Match["type"],
+            });
+          }}
+        >
+          <option value="practice">Practice</option>
+          <option value="qualification">Qualification</option>
+          <option value="playoff">Playoff</option>
+        </select>
+      </InputBox>
+      <InputBox name="Alliance">
+        <select
+          className="w-90.75 h-full"
+          value={robotPositionInfo.alliance}
+          onChange={(event) => {
+            setRobotPositionInfo((prev) => ({
+              ...prev,
+              alliance: event.currentTarget.value as Alliance,
+            }));
+          }}
+        >
+          <option value="red">Practice</option>
+          <option value="blue">Qualification</option>
+        </select>
+      </InputBox>
+      <InputBox name="Location">
+        <select
+          className="w-90.75 h-full"
+          value={robotPositionInfo.location}
+          onChange={(event) => {
+            setRobotPositionInfo((prev) => ({
+              ...prev,
+              location: event.currentTarget.value as InitialLocation,
+            }));
+          }}
+        >
+          <option value="close">Close</option>
+          <option value="middle">Middle</option>
+          <option value="far">Far</option>
+        </select>
+      </InputBox>
     </div>
   );
 };
+
+interface InputBoxProps {
+  name: string;
+  children: JSX.Element;
+}
+
+const InputBox: FC<InputBoxProps> = ({ name, children }) => (
+  <div className="w-120 border-2 border-green-500 rounded-lg p-5 flex flex-col gap-3 py-0 h-12">
+    <div className="flex w-115 justify-between items-center text-green-500 pr-1 h-70">
+      <div>{`${name}:`}</div>
+      {children}
+    </div>
+  </div>
+);
 
 export { PreMatchTab };
