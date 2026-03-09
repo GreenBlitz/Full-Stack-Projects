@@ -205,18 +205,31 @@ export const ScoutMatch: FC = () => {
     6: TRANSITION_END + TELEOP_DURATION,
     7: MATCH_END,
   };
+
+  const MILLISECONDS_IN_FIVE_SECONDS = 5000;
+
+  const SHIFT_EXTRA_END_TIME_MS: Record<ShiftNumber, number> = {
+    1: AUTO_END + MILLISECONDS_IN_FIVE_SECONDS,
+    2: TRANSITION_END + MILLISECONDS_IN_FIVE_SECONDS,
+    3: TRANSITION_END + TELEOP_SHIFT_LENGTH * 1 + MILLISECONDS_IN_FIVE_SECONDS,
+    4: TRANSITION_END + TELEOP_SHIFT_LENGTH * 2 + MILLISECONDS_IN_FIVE_SECONDS,
+    5: TRANSITION_END + TELEOP_SHIFT_LENGTH * 3 + MILLISECONDS_IN_FIVE_SECONDS,
+    6: TRANSITION_END + TELEOP_DURATION + MILLISECONDS_IN_FIVE_SECONDS,
+    7: MATCH_END,
+  };
+
   const { elapsedMs } = useMatchTimer(ITERATION_PERIOD_MS);
   useEffect(() => {
     if (activeTabIndex === 1) return;
 
     if (elapsedMs <= 0) return;
-    if (elapsedMs <= SHIFT_END_TIME_MS[1]) return setActiveTab(1); // Auto
-    if (elapsedMs <= SHIFT_END_TIME_MS[2]) return setActiveTab(3); // Transition
-    if (elapsedMs <= SHIFT_END_TIME_MS[3]) return setActiveTab(4); // Shift1
-    if (elapsedMs <= SHIFT_END_TIME_MS[4]) return setActiveTab(5); // Shift2
-    if (elapsedMs <= SHIFT_END_TIME_MS[5]) return setActiveTab(6); // Shift3
-    if (elapsedMs <= SHIFT_END_TIME_MS[6]) return setActiveTab(7); // Shift4
-    if (elapsedMs <= SHIFT_END_TIME_MS[7]) return setActiveTab(8); // Endgame
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[1]) return setActiveTab(2); // Auto
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[2]) return setActiveTab(3); // Transition
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[3]) return setActiveTab(4); // Shift1
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[4]) return setActiveTab(5); // Shift2
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[5]) return setActiveTab(6); // Shift3
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[6]) return setActiveTab(7); // Shift4
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[7]) return setActiveTab(8); // Endgame
 
     setActiveTab(9); // Post
   }, [elapsedMs, activeTabIndex]);
