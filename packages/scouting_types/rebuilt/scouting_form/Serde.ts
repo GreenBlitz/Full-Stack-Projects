@@ -4,6 +4,7 @@ import {
   serdeArray,
   serdeBool,
   serdeEnumedString,
+  serdeOptional,
   serdeOptionalNull,
   serdeString,
   serdeUnsignedInt,
@@ -100,6 +101,7 @@ const serdeFields = {
   comment: serdeString(),
   auto: serdeAuto,
   tele: serdeTele,
+  robotBroke: serdeOptional(serdeBool()),
 } satisfies Record<keyof ScoutingForm, unknown>;
 
 export const scoutingFormSerde = createRecordSerde(serdeFields);
