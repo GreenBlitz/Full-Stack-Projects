@@ -150,12 +150,11 @@ tbaRouter.post("/matches", async (req, res) => {
     createBodyVerificationPipe(matchesProps),
     fromEither,
     getMatches,
-    bindTo("matches"),
     fold(
       (error) => async () => {
         res.status(error.status).send(error.reason);
       },
-      ({matches}) => async () => {
+      (matches) => async () => {
         res.status(StatusCodes.OK).json({ matches });
       },
     ),

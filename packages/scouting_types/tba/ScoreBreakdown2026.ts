@@ -23,6 +23,7 @@ const hubScoreCodec = t.type({
   ...scoreSegment("shift3"),
   ...scoreSegment("shift4"),
   ...scoreSegment("endgame"),
+  uncounted: t.number,
 });
 
 export const scoreBreakdown2026 = t.type({
@@ -38,9 +39,8 @@ export const scoreBreakdown2026 = t.type({
   endGameTowerRobot2: climbCodec,
   endGameTowerRobot3: climbCodec,
 
-  foulCount: t.number,
   foulPoints: t.number,
-  g206Penalty: t.boolean,
+  penalties: t.string,
   majorFoulCount: t.number,
   minorFoulCount: t.number,
 
@@ -49,7 +49,7 @@ export const scoreBreakdown2026 = t.type({
   rp: t.number,
   energizedAchieved: t.boolean,
   superchargedAchieved: t.boolean,
-  traversalAchived: t.boolean,
+  traversalAchieved: t.boolean,
 
   totalAutoPoints: t.number,
   totalTeleopPoints: t.number,
