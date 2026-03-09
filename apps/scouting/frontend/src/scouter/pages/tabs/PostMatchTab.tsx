@@ -60,7 +60,7 @@ export const PostMatchTab: FC<TabProps> = ({ setForm, currentForm }) => {
         </div>
         <div className="flex justify-center">
           <RobotBrokenButton
-            isRobotBroken={currentForm.robotBroken ?? false}
+            isRobotBroken={currentForm.robotBroken}
             onChange={(value) =>
               setForm((prev) => ({ ...prev, robotBroken: value }))
             }
