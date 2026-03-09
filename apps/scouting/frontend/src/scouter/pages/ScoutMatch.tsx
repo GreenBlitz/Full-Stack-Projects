@@ -175,13 +175,14 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
 };
 
 export type ShiftNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7;
-const AUTO_END = 20000;
-const TRANSITION_END = 30000;
-const MATCH_END = 160000;
+const AUTO_END = 20_000;
+const TRANSITION_END = 30_000;
 
-const TELEOP_DURATION = MATCH_END - TRANSITION_END;
-const TELEOP_SHIFT_COUNT = 4;
-const TELEOP_SHIFT_LENGTH = TELEOP_DURATION / TELEOP_SHIFT_COUNT;
+const SHIFT_1_END = 55_000;
+const SHIFT_2_END = 80_000;
+const SHIFT_3_END = 105_000;
+const SHIFT_4_END = 130_000;
+const MATCH_END = 160_000;
 export const createNewScoutingForm = (
   savedInfo?: Partial<ScoutingForm>,
 ): ScoutingForm => structuredClone({ ...defaultScoutForm, ...savedInfo });
@@ -201,10 +202,10 @@ export const ScoutMatch: FC = () => {
   const SHIFT_END_TIME_MS: Record<ShiftNumber, number> = {
     1: AUTO_END,
     2: TRANSITION_END,
-    3: TRANSITION_END + TELEOP_SHIFT_LENGTH * 1,
-    4: TRANSITION_END + TELEOP_SHIFT_LENGTH * 2,
-    5: TRANSITION_END + TELEOP_SHIFT_LENGTH * 3,
-    6: TRANSITION_END + TELEOP_DURATION,
+    3: SHIFT_1_END,
+    4: SHIFT_2_END,
+    5: SHIFT_3_END,
+    6: SHIFT_4_END,
     7: MATCH_END,
   };
 
@@ -213,10 +214,10 @@ export const ScoutMatch: FC = () => {
   const SHIFT_EXTRA_END_TIME_MS: Record<ShiftNumber, number> = {
     1: AUTO_END + MILLISECONDS_IN_FIVE_SECONDS,
     2: TRANSITION_END + MILLISECONDS_IN_FIVE_SECONDS,
-    3: TRANSITION_END + TELEOP_SHIFT_LENGTH * 1 + MILLISECONDS_IN_FIVE_SECONDS,
-    4: TRANSITION_END + TELEOP_SHIFT_LENGTH * 2 + MILLISECONDS_IN_FIVE_SECONDS,
-    5: TRANSITION_END + TELEOP_SHIFT_LENGTH * 3 + MILLISECONDS_IN_FIVE_SECONDS,
-    6: TRANSITION_END + TELEOP_DURATION + MILLISECONDS_IN_FIVE_SECONDS,
+    3: SHIFT_1_END + MILLISECONDS_IN_FIVE_SECONDS,
+    4: SHIFT_2_END + MILLISECONDS_IN_FIVE_SECONDS,
+    5: SHIFT_3_END + MILLISECONDS_IN_FIVE_SECONDS,
+    6: SHIFT_4_END + MILLISECONDS_IN_FIVE_SECONDS,
     7: MATCH_END,
   };
 
@@ -270,8 +271,8 @@ export const ScoutMatch: FC = () => {
     if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[5]) return setActiveTab(6);
     if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[6]) return setActiveTab(7);
     if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[7]) return setActiveTab(8);
+    setActiveTab(9)
 
-    setActiveTab(9);
   }, [elapsedMs, activeTabIndex]);
   return (
     <div
