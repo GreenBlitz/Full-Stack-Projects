@@ -257,7 +257,7 @@ export const ScoutMatch: FC = () => {
 
   useEffect(() => {
     setBackgroundColor(
-      hasShiftJustEnded(elapsedMs) ? "bg-red-500/40" : "bg-black/40",
+      hasShiftJustEnded(elapsedMs) ? "bg-amber-400/40" : "bg-black/40",
     );
 
     if (activeTabIndex === 1) return;
