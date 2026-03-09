@@ -3,7 +3,7 @@ import * as t from "io-ts";
 
 export const matchesProps = t.type({
   event: t.string,
-  maxMatch: t.number
+  maxMatch: t.number,
 });
 
 export type TBAMatchesProps = t.TypeOf<typeof matchesProps>;
@@ -50,3 +50,5 @@ export const tbaMatch = <A extends t.Mixed, M extends t.Mixed>(
       }),
     ),
   });
+
+export type TBAMatch = t.TypeOf<ReturnType<typeof tbaMatch>>;
