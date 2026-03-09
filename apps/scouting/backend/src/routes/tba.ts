@@ -24,31 +24,23 @@ import {
   map,
   mapLeft,
   chainFirstW,
+  bindTo,
 } from "fp-ts/lib/TaskEither";
 import { flow, pipe } from "fp-ts/lib/function";
 import { map as taskMap } from "fp-ts/lib/Task";
 import * as t from "io-ts";
 import type { Type } from "io-ts";
 import { getDb } from "../middleware/db";
-import { getMax } from "@repo/array-functions";
+import { getMax, isEmpty } from "@repo/array-functions";
 import { fold as booleanFold } from "fp-ts/boolean";
 
 export const tbaRouter = Router();
 
-// NOTE: do NOT hardcode secrets in production
-const TBA_KEY =
-  process.env.TBA_API_KEY ??
-  "DRoJnMBCb5aNElE4KDPRjOHOZklV2yAPwzi9tU9WMPe8WdLk4Xwe4iaHXb1JjEl5";
+const TBA_KEY = process.env.TBA_API_KEY;
 const TBA_URL = "https://www.thebluealliance.com/api/v3";
 
 const tbaMatches = t.array(tbaMatch(scoreBreakdown2026, t.type({})));
 type TBAMatches = t.TypeOf<typeof tbaMatches>;
-
-const print = <T>(x: T) => {
-  console.log("ttt");
-  console.log(x);
-  return x;
-};
 
 const getCollection = flow(
   getDb,
@@ -69,13 +61,13 @@ const fetchTba = <U>(
             ...config,
           })
           .then((response) => response.data as unknown),
-      (error): EndpointError => ({
+      (error) => ({
         status: StatusCodes.INTERNAL_SERVER_ERROR,
         reason: `Error Fetching From TBA: error ${String(error)}`,
       }),
     ),
     taskMap(
-      createTypeCheckingEndpointFlow(typeToCheck, (errors): EndpointError => ({
+      createTypeCheckingEndpointFlow(typeToCheck, (errors) => ({
         status: StatusCodes.INTERNAL_SERVER_ERROR,
         reason: `Recieved incorrect response from the TBA. error: ${errors}`,
       })),
@@ -92,7 +84,7 @@ const insertMatches = (matches: TBAMatches) =>
     flatMap((collection) =>
       tryCatch(
         () => collection.insertMany(matches),
-        (error): EndpointError => ({
+        (error) => ({
           status: StatusCodes.INTERNAL_SERVER_ERROR,
           reason: `Error inserting matches: ${String(error)}`,
         }),
@@ -110,17 +102,17 @@ const getStoredMatches = pipe(
   flatMap((collection) =>
     tryCatch(
       () => collection.find().toArray(),
-      (error): EndpointError => ({
+      (error) => ({
         reason: `Error getting from collection ${String(error)}`,
         status: StatusCodes.BAD_REQUEST,
       }),
     ),
   ),
-  map((docs) => docs.map(({ _id, ...rest }) => rest) as TBAMatches),
+  map((docs) => docs.map(({ _id, ...rest }) => rest) satisfies TBAMatches),
 );
 
 const getMaxMatchNumber = (matches: TBAMatches) =>
-  matches.length === 0 ? 0 : getMax(matches, (m) => m.match_number).match_number;
+  isEmpty(matches) ? 0 : getMax(matches, (m) => m.match_number).match_number;
 
 /**
  * IMPORTANT FIXES:
@@ -134,14 +126,9 @@ const getMatches = flow(
       map((currentMatches) => ({ currentMatches, body })),
     ),
   ),
-  flatMap(({ currentMatches, body }) => {
-    const maxStored = getMaxMatchNumber(currentMatches);
-
-    console.log("getMatches body:", body);
-    console.log("stored:", { count: currentMatches.length, maxStored });
-
-    return pipe(
-      maxStored < body.maxMatch,
+  flatMap(({ currentMatches, body }) =>
+    pipe(
+      getMaxMatchNumber(currentMatches) < body.maxMatch,
       booleanFold(
         // FALSE => already have enough stored
         () => fromEither(right(currentMatches)),
@@ -153,8 +140,8 @@ const getMatches = flow(
             chainFirstW((fetchedMatches) => insertMatches(fetchedMatches)),
           ),
       ),
-    );
-  }),
+    ),
+  ),
 );
 
 tbaRouter.post("/matches", async (req, res) => {
@@ -163,12 +150,12 @@ tbaRouter.post("/matches", async (req, res) => {
     createBodyVerificationPipe(matchesProps),
     fromEither,
     getMatches,
-    mapLeft(print),
+    bindTo("matches"),
     fold(
       (error) => async () => {
         res.status(error.status).send(error.reason);
       },
-      (matches) => async () => {
+      ({matches}) => async () => {
         res.status(StatusCodes.OK).json({ matches });
       },
     ),
