@@ -1,7 +1,6 @@
 //בס"ד
 
-import type { ClimbAllianceData } from "../../forecast";
-import type { ClimbLevel, Match, Point } from "../scouting_form";
+import type { ClimbLevel, Point } from "../scouting_form";
 
 export interface GeneralFuelData {
   fullGame: FuelObject;
@@ -24,16 +23,6 @@ export interface GeneralData {
 
 export type GameTime = keyof GeneralFuelData;
 
-export interface BPSEvent {
-  shoot: number[];
-  score: number[];
-  positions: Point[];
-}
-
-export interface BPS {
-  events: BPSEvent[];
-  match: Match;
-}
 
 export type FuelEvents = "scored" | "shot" | "missed" | "passed";
 
@@ -43,6 +32,8 @@ export type FuelObject = GameObject<
     positions: Point[];
   }
 >;
+
+export type GamePeriod = "auto" | "fullGame" | "teleop";
 
 export type GameObject<T extends string, AdditionalInfo> = Record<T, number> &
   AdditionalInfo;

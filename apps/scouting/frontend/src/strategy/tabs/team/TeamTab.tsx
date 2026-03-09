@@ -18,7 +18,10 @@ import { MetricsChart } from "../../components/MetricsChart";
 import { BarChart } from "../../components/BarChart";
 import { calculateMedianClimbs, getClimbDataset } from "../../ClimbProcessing";
 import { useLocalStorage } from "@repo/local_storage_hook";
+import { HeatMap } from "../../components/heatmap/HeatMap";
+import { redField } from "@repo/rebuilt_map";
 import { fetchTeamNumbers } from "../../fetches";
+import { PieGraph } from "../../components/PieChart";
 
 const METER_AND_HALF_CENTIMETERS = 150;
 const THREE_METER_CENTIMETERS = 300;
@@ -84,6 +87,8 @@ export const TeamTab: FC = () => {
     fetchTeamNumbers().then(setScoutedTeams).catch(console.error);
   }, []);
 
+  console.log("ddd", data);
+
   return (
     <div className="flex flex-col text-black items-center bg-slate-950">
       <TeamSelect
@@ -108,6 +113,44 @@ export const TeamTab: FC = () => {
           }}
         />
       )}
+
+      {data && (
+        <div className={graphSection}>
+          <PieGraph
+            name={"Distance Shots"}
+            points={{
+              "Meter And Half": {
+                value: data.accuracy[METER_AND_HALF_CENTIMETERS].amount,
+                color: "red",
+              },
+              "Three Meter": {
+                value: data.accuracy[THREE_METER_CENTIMETERS].amount,
+                color: "blue",
+              },
+              More: {
+                value: data.accuracy[MORE_DISTANCE].amount,
+                color: "orange",
+              },
+            }}
+          />
+        </div>
+      )}
+
+      {data && (
+        <div className={`${graphSection} text-center`}>
+          <span className="font-black tracking-wider uppercase text-slate-400 text-2xl">
+            shoot positions
+          </span>
+          <div className="w-full h-48">
+            <HeatMap
+              positions={data.fuel.flatMap((fuel) => fuel.positions)}
+              path={redField}
+              aspectRatio={0} //bro this does nothing
+            />
+          </div>
+        </div>
+      )}
+
       {data && (
         <div className={graphSection}>
           <LineChart

@@ -4,7 +4,6 @@ import { Router } from "express";
 import { pipe } from "fp-ts/lib/function";
 import { createTypeCheckingEndpointFlow } from "../middleware/verification";
 import {
-  type ClimbLevel,
   convertGeneralToAllianceData,
   defaultAllianceData,
   type Forecast,
@@ -13,40 +12,27 @@ import {
 } from "@repo/scouting_types";
 import { right } from "fp-ts/lib/Either";
 import { getFormsCollection } from "./forms-router";
-import { flatMap, fold, fromEither, map, tryCatch } from "fp-ts/lib/TaskEither";
+import {
+  ApplicativePar,
+  flatMap,
+  fold,
+  fromEither,
+  map,
+  tryCatch,
+} from "fp-ts/lib/TaskEither";
 import { StatusCodes } from "http-status-codes";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
-import { calculateAverage, mapObject } from "@repo/array-functions";
-import { generalCalculateFuel } from "../fuel/fuel-general";
-import { getAllBPS } from "./teams-router";
-import { calcAverageGeneralFuelData } from "./general-router";
+import { mapObject } from "@repo/array-functions";
+import {
+  calcAverageGeneralFuelData,
+  generalCalculateFuel,
+} from "../fuel/fuel-general";
 import { castItem } from "@repo/type-utils";
+import { calculateAverageClimbsScore } from "../climb/score";
+import { getTeamBPS } from "./bps-router";
+import { traverseWithIndex } from "fp-ts/lib/Record";
 
 export const forecastRouter = Router();
-
-const CLIMB_SCORE_VALUES = { L0: 0, L1: 10, L2: 20, L3: 30 };
-
-const TELE_CLIMB_MULTIPLIER = 1;
-const AUTO_CLIMB_MULTIPLIER = 1.5;
-
-const calculateAverageClimbScore = (climbs: ClimbLevel[], isAuto: boolean) =>
-  calculateAverage(
-    climbs,
-    (climb) =>
-      CLIMB_SCORE_VALUES[climb] *
-      (isAuto ? AUTO_CLIMB_MULTIPLIER : TELE_CLIMB_MULTIPLIER),
-  );
-
-export const calculateAverageClimbsScore = (forms: ScoutingForm[]) => ({
-  auto: calculateAverageClimbScore(
-    forms.map((form) => form.auto.climb.level),
-    true,
-  ),
-  tele: calculateAverageClimbScore(
-    forms.map((form) => form.tele.climb.level),
-    false,
-  ),
-});
 
 forecastRouter.get("/", async (req, res) => {
   await pipe(
@@ -93,16 +79,14 @@ forecastRouter.get("/", async (req, res) => {
     map((alliancesForms) =>
       mapObject(alliancesForms, Object.values<ScoutingForm[]>),
     ),
-    map((alliancesTeamedForms) => ({
-      alliancesTeamedForms,
-      bps: getAllBPS(),
-    })),
-    map(({ alliancesTeamedForms, bps }) =>
-      mapObject(alliancesTeamedForms, (allianceTeamedForms) =>
+
+    flatMap(addBPSes),
+    map((alliancesTeamedForms) =>
+      mapObject(alliancesTeamedForms, ({ allianceTeamedForms, bpses }) =>
         allianceTeamedForms.map((teamForms) => ({
           climb: calculateAverageClimbsScore(teamForms),
           fuel: calcAverageGeneralFuelData(
-            teamForms.map((form) => generalCalculateFuel(form, bps)),
+            teamForms.map((form) => generalCalculateFuel(form, bpses)),
           ),
         })),
       ),
@@ -135,3 +119,23 @@ forecastRouter.get("/", async (req, res) => {
     ),
   )();
 });
+
+interface AlliancesTeamedForms {
+  redAlliance: ScoutingForm[][];
+  blueAlliance: ScoutingForm[][];
+}
+
+const addBPSes = (alliancesTeamedForms: AlliancesTeamedForms) =>
+  pipe(
+    alliancesTeamedForms,
+    traverseWithIndex(ApplicativePar)(
+      (teamStringedNumber, allianceTeamedForms) =>
+        pipe(
+          getTeamBPS(parseInt(teamStringedNumber)),
+          map((bpses) => ({
+            allianceTeamedForms,
+            bpses,
+          })),
+        ),
+    ),
+  );

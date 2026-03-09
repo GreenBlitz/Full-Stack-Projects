@@ -12,10 +12,14 @@ const useLocalStorage = <T>(
       );
       return initialValue;
     }
-    const item = window.localStorage.getItem(key);
-    const parsedItem = item ? (JSON.parse(item) as T) : initialValue;
-    localStorage.setItem(key, JSON.stringify(parsedItem));
-    return parsedItem;
+    try {
+      const item = window.localStorage.getItem(key);
+      if (!item) return initialValue;
+      const parsedItem = JSON.parse(item) as T;
+      return parsedItem;
+    } catch {
+      return initialValue;
+    }
   });
 
   const setValue = (value: T | ((prevState: T) => T)) => {

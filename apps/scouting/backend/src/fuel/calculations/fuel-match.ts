@@ -1,12 +1,15 @@
 // בס"ד
 import type { BPS, FuelObject, ShootEvent } from "@repo/scouting_types";
 
+/** Filters timestamps that fall within the shooting interval. */
 const getIncludedShots = (section: number[], shot: ShootEvent) => {
   return section.filter(
     (timestamp) =>
       timestamp > shot.interval.start && timestamp < shot.interval.end,
   );
 };
+
+/** Calculates fuel statistics based on match-specific BPS data. */
 export const calculateFuelByMatch = (
   shot: ShootEvent,
   isPass: boolean,
@@ -23,7 +26,7 @@ export const calculateFuelByMatch = (
     return {
       shot: shotAmount,
       passed: shotAmount,
-      positions: [shot.startPosition],
+      positions: shot.positions,
     };
   }
 
@@ -34,6 +37,6 @@ export const calculateFuelByMatch = (
     shot: shotAmount,
     scored: scoredAmount,
     missed: shotAmount - scoredAmount,
-    positions: [shot.startPosition],
+    positions: shot.positions,
   };
 };

@@ -13,7 +13,7 @@ import {
 } from "chart.js";
 
 import type { ChartData, ChartOptions } from "chart.js";
-import type { PieDataset } from "../Dataset";
+import type { BarDataset, PieDataset } from "../Dataset";
 import type { FC } from "react";
 
 ChartJS.register(
@@ -28,7 +28,7 @@ ChartJS.register(
 );
 
 export interface LineChartProps {
-  dataSetsProps: PieDataset<string | number>[];
+  dataSetsProps: BarDataset<string | number>[];
   max?: number;
   min?: number;
 }

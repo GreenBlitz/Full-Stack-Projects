@@ -19,20 +19,34 @@ export const averageFuel = (fuels: FuelObject[]): FuelObject => {
   };
 };
 
+const NO_DISTANCE = 0;
+const LAST_ELEMENT_OFFSET = 1;
+const PASSED_FUELS_IN_SCORING = 0;
+
 export const splitByDistances = <T extends number>(
   fuels: FuelObject[],
   distances: readonly T[],
-): Record<T, FuelObject> =>
+): Record<T, FuelObject & { amount: number }> =>
   Object.assign(
     {},
-    ...distances.map((distance) => ({
-      [distance]: averageFuel(
-        fuels.filter((fuel) =>
-          fuel.positions.every(
-            (position) =>
-              distanceFromHub(convertPixelToCentimeters(position)) < distance,
-          ),
-        ),
-      ),
-    })),
+    ...distances.map((distance, index, arr) => {
+      const distancedFuels = fuels.filter(
+        (fuel) =>
+          fuel.passed === PASSED_FUELS_IN_SCORING &&
+          fuel.positions.every((position) => {
+            const distanceShot = distanceFromHub(
+              convertPixelToCentimeters(position),
+            );
+            const prevDistance =
+              arr[index - LAST_ELEMENT_OFFSET] ?? NO_DISTANCE;
+            return distanceShot < distance && distanceShot > prevDistance;
+          }),
+      );
+      return {
+        [distance]: {
+          ...averageFuel(distancedFuels),
+          amount: distancedFuels.length,
+        },
+      };
+    }),
   );

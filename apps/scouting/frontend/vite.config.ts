@@ -12,6 +12,7 @@ const DEFAULT_PORT = 80;
 const port = parseInt(process.env.FRONTEND_PORT ?? DEFAULT_PORT.toString());
 
 export default defineConfig({
+  appType: "spa",
   server: {
     port: port,
     proxy: {
