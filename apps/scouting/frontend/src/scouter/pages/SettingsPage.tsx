@@ -6,11 +6,13 @@ import ToggleSetting from "../components/ToggleSetting";
 interface SettingsKeyType {
   matchStarter: boolean;
   moveAutomaticallyToNextShift: boolean;
+  startTimerOnSetPoint: boolean;
 }
 
 const defaultSettings: SettingsKeyType = {
   matchStarter: false,
   moveAutomaticallyToNextShift: false,
+  startTimerOnSetPoint: false,
 };
 
 const SettingsPage: FC = () => {
@@ -51,6 +53,19 @@ const SettingsPage: FC = () => {
               onChange={(event) => {
                 updateSetting(
                   "moveAutomaticallyToNextShift",
+                  event.target.checked,
+                );
+              }}
+            />
+
+            <ToggleSetting
+              id="startTimerOnSetPoint"
+              title="Start Timer On Set Point"
+              description="Automatically start timer when point is set"
+              checked={isSettingsKey.startTimerOnSetPoint}
+              onChange={(event) => {
+                updateSetting(
+                  "startTimerOnSetPoint",
                   event.target.checked,
                 );
               }}
