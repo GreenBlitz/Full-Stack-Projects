@@ -72,6 +72,15 @@ export const TeamCard: React.FC<{
       />
 
       <TinderStatBox
+        label="Auto Scored"
+        value={stats.fuel.auto.scored.toFixed(DIGITS_AFTER_DECIMAL_DOT)}
+        colorClass={getStatColor(
+          stats.fuel.auto.scored,
+          opponentStats.fuel.auto.scored,
+        )}
+      />
+
+      <TinderStatBox
         label="Max Climb"
         value={stats.climb.maxClimbLevel}
         colorClass={getStatColor(
