@@ -38,8 +38,8 @@ const FULL_PERCENT = 100;
 
 export const Tinder: React.FC = () => {
   const [teamOrder, setTeamOrder] = useState<number[]>([]);
-  const [indexOne, setIndexOne] = useState<number>(FIRST_INDEX);
-  const [indexTwo, setIndexTwo] = useState<number>(SECOND_INDEX);
+  const [teamOneIndex, setTeamOneIndex] = useState<number>(FIRST_INDEX);
+  const [teamTwoIndex, setTeamTwoIndex] = useState<number>(SECOND_INDEX);
   const [isSortComplete, setSortComlete] = useState<boolean>(true);
   const [statsOne, setStatsOne] = useState<TinderStats | null>(null);
   const [statsTwo, setStatsTwo] = useState<TinderStats | null>(null);
@@ -49,36 +49,36 @@ export const Tinder: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (!isSortComplete && teamOrder[indexOne] && teamOrder[indexTwo]) {
-      fetchTeamTinderStats(teamOrder[indexOne])
+    if (!isSortComplete && teamOrder[teamOneIndex] && teamOrder[teamTwoIndex]) {
+      fetchTeamTinderStats(teamOrder[teamOneIndex])
         .then(setStatsOne)
         .catch(console.error);
-      fetchTeamTinderStats(teamOrder[indexTwo])
+      fetchTeamTinderStats(teamOrder[teamTwoIndex])
         .then(setStatsTwo)
         .catch(console.error);
     }
-  }, [indexOne, indexTwo, isSortComplete, teamOrder]);
+  }, [teamOneIndex, teamTwoIndex, isSortComplete, teamOrder]);
 
   const resetSort = () => {
     setSortComlete(false);
 
-    setIndexOne(FIRST_INDEX);
+    setTeamOneIndex(FIRST_INDEX);
 
-    setIndexTwo(SECOND_INDEX);
+    setTeamTwoIndex(SECOND_INDEX);
   };
 
   const handleChosen = (winnerIndex: number) => {
-    const nextTeamIndex = indexTwo + INCREMENT;
-    if (winnerIndex === indexOne) {
+    const nextTeamIndex = teamTwoIndex + INCREMENT;
+    if (winnerIndex === teamOneIndex) {
       const newOrder = [...teamOrder];
-      [newOrder[indexOne], newOrder[indexTwo]] = [
-        newOrder[indexTwo],
-        newOrder[indexOne],
+      [newOrder[teamOneIndex], newOrder[teamTwoIndex]] = [
+        newOrder[teamTwoIndex],
+        newOrder[teamOneIndex],
       ];
       setTeamOrder(newOrder);
     }
-    setIndexOne(indexTwo);
-    setIndexTwo(nextTeamIndex);
+    setTeamOneIndex(teamTwoIndex);
+    setTeamTwoIndex(nextTeamIndex);
     setSortComlete(nextTeamIndex >= teamOrder.length);
   };
 
@@ -103,22 +103,22 @@ export const Tinder: React.FC = () => {
         <div className="flex flex-col items-center gap-12 w-full max-w-7xl">
           <div className="flex flex-wrap justify-center gap-12 items-center">
             <TeamCard
-              teamNumber={teamOrder[indexOne]}
+              teamNumber={teamOrder[teamOneIndex]}
               stats={statsOne}
               opponentStats={statsTwo}
               onSelect={() => {
-                handleChosen(indexOne);
+                handleChosen(teamOneIndex);
               }}
             />
             <div className="text-slate-700 font-black italic text-6xl select-none opacity-20">
               VS
             </div>
             <TeamCard
-              teamNumber={teamOrder[indexTwo]}
+              teamNumber={teamOrder[teamTwoIndex]}
               stats={statsTwo}
               opponentStats={statsOne}
               onSelect={() => {
-                handleChosen(indexTwo);
+                handleChosen(teamTwoIndex);
               }}
             />
           </div>
@@ -126,7 +126,7 @@ export const Tinder: React.FC = () => {
             <div
               className="h-full bg-emerald-500 transition-all duration-500 shadow-[0_0_15px_rgba(16,185,129,0.5)]"
               style={{
-                width: `${(indexTwo / teamOrder.length) * FULL_PERCENT}%`,
+                width: `${(teamTwoIndex / teamOrder.length) * FULL_PERCENT}%`,
               }}
             />
           </div>

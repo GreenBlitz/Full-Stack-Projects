@@ -4,8 +4,7 @@ import type { TinderStats, TeleClimbLevel } from "@repo/scouting_types";
 
 const DEFAULT_LEVEL = 0;
 const levelToScore = (level: TeleClimbLevel) => {
-  const map: Record<string, number> = { L0: 0, L1: 1, L2: 2, L3: 3 };
-  return map[level] || DEFAULT_LEVEL;
+  return Number(level.slice(1));
 };
 
 const TinderStatBox: React.FC<{
