@@ -192,10 +192,10 @@ export const ScoutMatch: FC = () => {
   const [activeTabIndex, setActiveTab] = useState(STARTING_TAB_INDEX);
   const [alliance, _setAlliance] = useState<Alliance>("red");
   const originTime = useMemo(() => Date.now(), []);
-  const CurrentTab = useMemo(
-    () => TABS[activeTabIndex].Component,
-    [activeTabIndex],
-  );
+  const CurrentTab = useMemo(() => {
+    return TABS[activeTabIndex]?.Component ?? PostMatchTab;
+  }, [activeTabIndex]);
+
   const SHIFT_END_TIME_MS: Record<ShiftNumber, number> = {
     1: AUTO_END,
     2: TRANSITION_END,
@@ -207,33 +207,19 @@ export const ScoutMatch: FC = () => {
   };
   const { elapsedMs } = useMatchTimer(ITERATION_PERIOD_MS);
   useEffect(() => {
-    if (activeTabIndex !== 1) {
-      if (elapsedMs > 0) {
-        setActiveTab(2);
-      }
-      if (elapsedMs > SHIFT_END_TIME_MS[1]) {
-        setActiveTab(3);
-      }
-      if (elapsedMs > SHIFT_END_TIME_MS[2]) {
-        setActiveTab(4);
-      }
-      if (elapsedMs > SHIFT_END_TIME_MS[3]) {
-        setActiveTab(5);
-      }
-      if (elapsedMs > SHIFT_END_TIME_MS[4]) {
-        setActiveTab(6);
-      }
-      if (elapsedMs > SHIFT_END_TIME_MS[5]) {
-        setActiveTab(7);
-      }
-      if (elapsedMs > SHIFT_END_TIME_MS[6]) {
-        setActiveTab(8);
-      }
-      if (elapsedMs > SHIFT_END_TIME_MS[7]) {
-        setActiveTab(9);
-      }
-    }
-  }, [elapsedMs]);
+    if (activeTabIndex === 1) return;
+
+    if (elapsedMs <= 0) return;
+    if (elapsedMs <= SHIFT_END_TIME_MS[1]) return setActiveTab(1); // Auto
+    if (elapsedMs <= SHIFT_END_TIME_MS[2]) return setActiveTab(3); // Transition
+    if (elapsedMs <= SHIFT_END_TIME_MS[3]) return setActiveTab(4); // Shift1
+    if (elapsedMs <= SHIFT_END_TIME_MS[4]) return setActiveTab(5); // Shift2
+    if (elapsedMs <= SHIFT_END_TIME_MS[5]) return setActiveTab(6); // Shift3
+    if (elapsedMs <= SHIFT_END_TIME_MS[6]) return setActiveTab(7); // Shift4
+    if (elapsedMs <= SHIFT_END_TIME_MS[7]) return setActiveTab(8); // Endgame
+
+    setActiveTab(9); // Post
+  }, [elapsedMs, activeTabIndex]);
   return (
     <div
       className="max-h-screen bg-black p-4 md:p-6 flex items-center justify-center
