@@ -190,7 +190,7 @@ export const ScoutMatch: FC = () => {
     "form",
     createNewScoutingForm(),
   );
-  
+  const [backgroundColor, setBackgroundColor] = useState("bg-black/40");
   const [activeTabIndex, setActiveTab] = useState(STARTING_TAB_INDEX);
   const [alliance, _setAlliance] = useState<Alliance>("red");
   const originTime = useMemo(() => Date.now(), []);
@@ -220,23 +220,44 @@ export const ScoutMatch: FC = () => {
     7: MATCH_END,
   };
 
-  const hasShiftJustEnded = (elapsedMs: number): boolean=> {
-    if(SHIFT_END_TIME_MS[1]<=elapsedMs && elapsedMs<=SHIFT_EXTRA_END_TIME_MS[1])
-      return true
-    if(SHIFT_END_TIME_MS[2]<=elapsedMs && elapsedMs<=SHIFT_EXTRA_END_TIME_MS[2])
-      return true
-    if(SHIFT_END_TIME_MS[3]<=elapsedMs && elapsedMs<=SHIFT_EXTRA_END_TIME_MS[3])
-      return true
-    if(SHIFT_END_TIME_MS[4]<=elapsedMs && elapsedMs<=SHIFT_EXTRA_END_TIME_MS[4])
-      return true
-    if(SHIFT_END_TIME_MS[5]<=elapsedMs && elapsedMs<=SHIFT_EXTRA_END_TIME_MS[5])
-      return true
-    if(SHIFT_END_TIME_MS[6]<=elapsedMs && elapsedMs<=SHIFT_EXTRA_END_TIME_MS[6])
-      return true
+  const hasShiftJustEnded = (elapsedMs: number): boolean => {
+    if (
+      SHIFT_END_TIME_MS[1] <= elapsedMs &&
+      elapsedMs <= SHIFT_EXTRA_END_TIME_MS[1]
+    )
+      return true;
+    if (
+      SHIFT_END_TIME_MS[2] <= elapsedMs &&
+      elapsedMs <= SHIFT_EXTRA_END_TIME_MS[2]
+    )
+      return true;
+    if (
+      SHIFT_END_TIME_MS[3] <= elapsedMs &&
+      elapsedMs <= SHIFT_EXTRA_END_TIME_MS[3]
+    )
+      return true;
+    if (
+      SHIFT_END_TIME_MS[4] <= elapsedMs &&
+      elapsedMs <= SHIFT_EXTRA_END_TIME_MS[4]
+    )
+      return true;
+    if (
+      SHIFT_END_TIME_MS[5] <= elapsedMs &&
+      elapsedMs <= SHIFT_EXTRA_END_TIME_MS[5]
+    )
+      return true;
+    if (
+      SHIFT_END_TIME_MS[6] <= elapsedMs &&
+      elapsedMs <= SHIFT_EXTRA_END_TIME_MS[6]
+    )
+      return true;
     return false;
-  }
+  };
   const { elapsedMs } = useMatchTimer(ITERATION_PERIOD_MS);
   useEffect(() => {
+    hasShiftJustEnded(elapsedMs)
+      ? setBackgroundColor("red")
+      : setBackgroundColor("bg-black/40");
     if (activeTabIndex === 1) return;
 
     if (elapsedMs <= 0) return;
@@ -268,9 +289,9 @@ export const ScoutMatch: FC = () => {
         )}
         <div className="flex-1 flex flex-col overflow-hidden p-2 relative z-10">
           <div
-            className="flex-1 min-h-0 text-green-100 overflow-hidden pr-2
-           bg-black/40 rounded-xl p-3 sm:p-4 lg:p-6 border border-green-500/20 shadow-inner
-            animate-in fade-in slide-in-from-right-4 duration-300"
+            className={`flex-1 min-h-0 text-green-100 overflow-hidden pr-2
+            ${backgroundColor} rounded-xl p-3 sm:p-4 lg:p-6 border border-green-500/20 shadow-inner
+            animate-in fade-in slide-in-from-right-4 duration-300`}
           >
             <CurrentTab
               setForm={setScoutingForm}
