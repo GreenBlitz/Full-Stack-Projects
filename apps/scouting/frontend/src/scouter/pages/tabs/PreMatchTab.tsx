@@ -40,31 +40,39 @@ interface MatchQualWithTeamNumberProps {
   initialLocation: InitialLocation;
 }
 
-type MatchTeams = { blueAlliance: number[]; redAlliance: number[] };
+type MatchTeams = {
+  blueAlliance: number[];
+  redAlliance: number[];
+  matchNumber: number;
+};
 
 const toTeamNum = (k: string) => Number(k.replace("frc", ""));
 
 const toQualMatches = (matches: TBAMatches2026): MatchTeams[] =>
   matches
-    .filter((match) => match.comp_level === "qm")
-    .sort((match1, match2) => match1.match_number - match2.match_number)
-    .map((match) => ({
-      blueAlliance: match.alliances.blue.team_keys.map(toTeamNum),
-      redAlliance: match.alliances.red.team_keys.map(toTeamNum),
+    .filter((tbaMatch) => tbaMatch.comp_level === "qm")
+    .sort(
+      (tbaMatch1, tbaMatch2) => tbaMatch1.match_number - tbaMatch2.match_number,
+    )
+    .map((tbaMatch) => ({
+      matchNumber: tbaMatch.match_number,
+      blueAlliance: tbaMatch.alliances.blue.team_keys.map(toTeamNum),
+      redAlliance: tbaMatch.alliances.red.team_keys.map(toTeamNum),
     }));
 
 const matchQualWithTeamNumber = (
   props: MatchQualWithTeamNumberProps,
-  allMatches: MatchTeams[],
+  allTBAMatches: MatchTeams[],
 ): number => {
-  const DEFAULT_TEAM_NUMBER = 4590;
-  const CALIBERATION_CONSTANT = 1;
+  const DEFAULT_TEAM_NUMBER = 0;
 
-  const match = allMatches[props.qual - CALIBERATION_CONSTANT];
-  if (!match) return DEFAULT_TEAM_NUMBER;
+  const tbaMatch = allTBAMatches.find(
+    (tbaMatch) => tbaMatch.matchNumber === props.qual,
+  );
+  if (!tbaMatch) return DEFAULT_TEAM_NUMBER;
 
   const allianceArr =
-    props.alliance === "blue" ? match.blueAlliance : match.redAlliance;
+    props.alliance === "blue" ? tbaMatch.blueAlliance : tbaMatch.redAlliance;
 
   const index =
     props.initialLocation === "close"
@@ -88,33 +96,34 @@ const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
   );
   const [match, setMatch] = useState(form.match);
 
-  useEffect(() => {
-    void (async () => {
-      if (
-        tbaMatches.some((tbaMatch) => tbaMatch.match_number === match.number)
-      ) {
-        return;
-      }
-      const newTBAMatches = await fetchGameMatches<TBAMatches2026>(
-        form.competition,
-        match.number,
-      );
-      setTbaMatches(newTBAMatches);
-    })();
-  }, [match]);
+  const updateTBAMatches = async () => {
+    if (tbaMatches.some((tbaMatch) => tbaMatch.match_number === match.number)) {
+      return;
+    }
+    const newTBAMatches = await fetchGameMatches<TBAMatches2026>(
+      form.competition,
+      match.number,
+    );
+    setTbaMatches(newTBAMatches);
+  };
 
   useEffect(() => {
     const qualMatches = toQualMatches(tbaMatches);
     const newTeam = matchQualWithTeamNumber(
       {
-        qual: form.match.number,
+        qual: match.number,
         alliance: robotPositionInfo.alliance,
         initialLocation: robotPositionInfo.location,
       },
       qualMatches,
     );
+
     setForm((prev) => ({ ...prev, teamNumber: newTeam, match }));
-  }, [tbaMatches, match]);
+  }, [tbaMatches, match, robotPositionInfo]);
+
+  useEffect(() => {
+    void updateTBAMatches();
+  }, [match]);
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-full gap-3  mx-auto">
