@@ -59,6 +59,14 @@ export const Tinder: React.FC = () => {
     }
   }, [indexOne, indexTwo, isSortComplete, teamOrder]);
 
+  const resetSort = () => {
+    setSortComlete(false);
+
+    setIndexOne(FIRST_INDEX);
+
+    setIndexTwo(SECOND_INDEX);
+  };
+
   const handleChosen = (winnerIndex: number) => {
     const nextTeamIndex = indexTwo + INCREMENT;
     if (winnerIndex === indexOne) {
@@ -75,17 +83,16 @@ export const Tinder: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-8 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-slate-900 via-black to-black">
+    <div className="min-h-screen text-white flex flex-col items-center justify-center p-8">
       {isSortComplete ? (
         <div className="text-center">
           <h1 className="text-5xl font-black mb-8 italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-500">
             STRATEGY <span className="text-emerald-500">TINDER</span>
           </h1>
+
           <button
             onClick={() => {
-              setSortComlete(false);
-              setIndexOne(FIRST_INDEX);
-              setIndexTwo(SECOND_INDEX);
+              resetSort();
             }}
             className="px-12 py-4 bg-emerald-500 text-slate-950 font-black uppercase tracking-widest rounded-full hover:scale-110 hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] transition-all active:scale-95"
           >

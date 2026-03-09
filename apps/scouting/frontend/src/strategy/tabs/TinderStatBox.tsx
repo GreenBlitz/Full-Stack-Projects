@@ -50,10 +50,10 @@ export const TeamCard: React.FC<{
   };
 
   return (
-    <div className="bg-slate-900/40 border border-white/10 rounded-[3rem] overflow-hidden shadow-2xl backdrop-blur-sm w-96 transition-all hover:scale-[1.02]">
+    <div className="bg-slate-900/40 border border-white/10 rounded-[1rem] overflow-hidden shadow-2xl backdrop-blur-sm w-96 transition-all hover:scale-[1.02]">
       <div className="bg-slate-900 border-b border-white/10 py-12 flex flex-col items-center justify-center text-center">
         <span className="text-[10px] uppercase tracking-[0.5em] font-black text-emerald-500 mb-4">
-          Candidate
+          Team
         </span>
         <h1 className="text-8xl font-black italic tracking-tighter text-white leading-none">
           {teamNumber}
@@ -92,7 +92,7 @@ export const TeamCard: React.FC<{
         onClick={onSelect}
         className="w-full py-8 bg-emerald-500 text-slate-950 font-black uppercase tracking-[0.3em] text-sm hover:bg-emerald-400 transition-all active:scale-95 shadow-[0_-10px_20px_rgba(16,185,129,0.1)]"
       >
-        Select Candidate
+        Select Team
       </button>
     </div>
   );
