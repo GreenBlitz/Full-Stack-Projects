@@ -20,6 +20,7 @@ import { useNavigate } from "react-router-dom";
 import { PreMatchTab } from "./tabs/PreMatchTab";
 import { useMatchTimer } from "../hooks/useMatchTimer";
 import StartMatchLocallyButton from "../components/StartMatchLocallyButton";
+import { boolean } from "io-ts";
 export interface TabProps {
   setForm: Dispatch<SetStateAction<ScoutingForm>>;
   currentForm: ScoutingForm;
@@ -189,6 +190,7 @@ export const ScoutMatch: FC = () => {
     "form",
     createNewScoutingForm(),
   );
+  
   const [activeTabIndex, setActiveTab] = useState(STARTING_TAB_INDEX);
   const [alliance, _setAlliance] = useState<Alliance>("red");
   const originTime = useMemo(() => Date.now(), []);
@@ -218,6 +220,21 @@ export const ScoutMatch: FC = () => {
     7: MATCH_END,
   };
 
+  const hasShiftJustEnded = (elapsedMs: number): boolean=> {
+    if(SHIFT_END_TIME_MS[1]<=elapsedMs && elapsedMs<=SHIFT_EXTRA_END_TIME_MS[1])
+      return true
+    if(SHIFT_END_TIME_MS[2]<=elapsedMs && elapsedMs<=SHIFT_EXTRA_END_TIME_MS[2])
+      return true
+    if(SHIFT_END_TIME_MS[3]<=elapsedMs && elapsedMs<=SHIFT_EXTRA_END_TIME_MS[3])
+      return true
+    if(SHIFT_END_TIME_MS[4]<=elapsedMs && elapsedMs<=SHIFT_EXTRA_END_TIME_MS[4])
+      return true
+    if(SHIFT_END_TIME_MS[5]<=elapsedMs && elapsedMs<=SHIFT_EXTRA_END_TIME_MS[5])
+      return true
+    if(SHIFT_END_TIME_MS[6]<=elapsedMs && elapsedMs<=SHIFT_EXTRA_END_TIME_MS[6])
+      return true
+    return false;
+  }
   const { elapsedMs } = useMatchTimer(ITERATION_PERIOD_MS);
   useEffect(() => {
     if (activeTabIndex === 1) return;
