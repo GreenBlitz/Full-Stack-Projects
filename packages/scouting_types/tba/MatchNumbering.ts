@@ -19,5 +19,8 @@ export const tbaMatchToRegularMatch = (tbaMatch: TBAMatch): Match => {
   if (matchLevel === "sf") {
     return { number: setNumber, type: "playoff" };
   }
-  return { number: setNumber + PLAYOFF_MATCHES_UNTIL_FINALS, type: "playoff" };
+  return {
+    number: matchNumber + PLAYOFF_MATCHES_UNTIL_FINALS,
+    type: "playoff",
+  };
 };
