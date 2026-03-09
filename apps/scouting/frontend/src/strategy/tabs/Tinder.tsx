@@ -3,6 +3,7 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import { fetchTeamNumbers } from "../fetches";
 import type { TinderStats } from "@repo/scouting_types";
+import { TeamCard } from "./TinderStatBox";
 
 const FIRST_INDEX = 0;
 const SECOND_INDEX = 1;
@@ -35,94 +36,11 @@ const fetchTeamTinderStats = async (teamNumber: number) => {
 
 const FULL_PERCENT = 100;
 
-const StatBox: React.FC<{
-  label: string;
-  value: string | number;
-  isBetter: boolean;
-  isWorse: boolean;
-}> = ({ label, value, isBetter, isWorse }) => (
-  <div
-    className={`p-3 rounded-xl border transition-all duration-500 ${
-      isBetter
-        ? "bg-emerald-500/10 border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.2)]"
-        : isWorse
-          ? "bg-rose-500/10 border-rose-500 shadow-[0_0_15px_rgba(244,63,94,0.1)]"
-          : "bg-slate-800/50 border-white/10"
-    }`}
-  >
-    <p className="text-[10px] uppercase tracking-widest text-slate-500 font-black mb-1">
-      {label}
-    </p>
-    <p
-      className={`text-xl font-mono font-bold ${isBetter ? "text-emerald-400" : isWorse ? "text-rose-400" : "text-white"}`}
-    >
-      {value}
-    </p>
-  </div>
-);
-
-export const TeamCard: React.FC<{
-  teamNumber: number;
-  stats: TinderStats | null;
-  opponentStats: TinderStats | null;
-  onSelect: () => void;
-}> = ({ teamNumber, stats, opponentStats, onSelect }) => {
-  if (!stats || !opponentStats)
-    return (
-      <div className="w-80 h-96 animate-pulse bg-slate-900 rounded-3xl border border-white/5" />
-    );
-
-  const isFuelBetter = stats.fuel.tele.scored > opponentStats.fuel.tele.scored;
-  const isFuelWorse = stats.fuel.tele.scored < opponentStats.fuel.tele.scored;
-
-  const isMovementBetter =
-    stats.movement.stuckOnBump < opponentStats.movement.stuckOnBump;
-  const isMovementWorse =
-    stats.movement.stuckOnBump > opponentStats.movement.stuckOnBump;
-
-  return (
-    <button
-      onClick={onSelect}
-      className="group relative w-80 bg-slate-900/80 backdrop-blur-md p-6 rounded-3xl border border-white/10 hover:border-emerald-500/50 transition-all duration-300 hover:scale-[1.02] shadow-2xl text-left"
-    >
-      <h2 className="text-slate-400 font-black uppercase text-xs mb-6 tracking-[0.2em]">
-        {teamNumber}
-      </h2>
-
-      <div className="flex flex-col gap-4">
-        <StatBox
-          label="Teleop Scored"
-          value={stats.fuel.tele.scored}
-          isBetter={isFuelBetter}
-          isWorse={isFuelWorse}
-        />
-        <StatBox
-          label="Max Climb"
-          value={stats.climb.maxClimbLevel}
-          isBetter={false}
-          isWorse={false}
-        />
-        <StatBox
-          label="Stuck on Bump"
-          value={stats.movement.stuckOnBump}
-          isBetter={isMovementBetter}
-          isWorse={isMovementWorse}
-        />
-      </div>
-
-      <div className="mt-8 w-full py-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-center rounded-xl font-black uppercase text-[10px] tracking-widest group-hover:bg-emerald-500 group-hover:text-slate-950 transition-all">
-        Choose Team
-      </div>
-    </button>
-  );
-};
-
 export const Tinder: React.FC = () => {
   const [teamOrder, setTeamOrder] = useState<number[]>([]);
   const [indexOne, setIndexOne] = useState<number>(FIRST_INDEX);
   const [indexTwo, setIndexTwo] = useState<number>(SECOND_INDEX);
   const [isSortComplete, setSortComlete] = useState<boolean>(true);
-
   const [statsOne, setStatsOne] = useState<TinderStats | null>(null);
   const [statsTwo, setStatsTwo] = useState<TinderStats | null>(null);
 
@@ -140,12 +58,6 @@ export const Tinder: React.FC = () => {
         .catch(console.error);
     }
   }, [indexOne, indexTwo, isSortComplete, teamOrder]);
-
-  const resetSort = () => {
-    setSortComlete(false);
-    setIndexOne(FIRST_INDEX);
-    setIndexTwo(SECOND_INDEX);
-  };
 
   const handleChosen = (winnerIndex: number) => {
     const nextTeamIndex = indexTwo + INCREMENT;
@@ -171,7 +83,9 @@ export const Tinder: React.FC = () => {
           </h1>
           <button
             onClick={() => {
-              resetSort();
+              setSortComlete(false);
+              setIndexOne(FIRST_INDEX);
+              setIndexTwo(SECOND_INDEX);
             }}
             className="px-12 py-4 bg-emerald-500 text-slate-950 font-black uppercase tracking-widest rounded-full hover:scale-110 hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] transition-all active:scale-95"
           >
@@ -179,8 +93,8 @@ export const Tinder: React.FC = () => {
           </button>
         </div>
       ) : (
-        <div className="flex flex-col items-center gap-12 w-full max-w-5xl">
-          <div className="flex flex-wrap justify-center gap-8 items-center">
+        <div className="flex flex-col items-center gap-12 w-full max-w-7xl">
+          <div className="flex flex-wrap justify-center gap-12 items-center">
             <TeamCard
               teamNumber={teamOrder[indexOne]}
               stats={statsOne}
@@ -189,11 +103,9 @@ export const Tinder: React.FC = () => {
                 handleChosen(indexOne);
               }}
             />
-
-            <div className="text-slate-700 font-black italic text-4xl select-none">
+            <div className="text-slate-700 font-black italic text-6xl select-none opacity-20">
               VS
             </div>
-
             <TeamCard
               teamNumber={teamOrder[indexTwo]}
               stats={statsTwo}
@@ -203,10 +115,9 @@ export const Tinder: React.FC = () => {
               }}
             />
           </div>
-
-          <div className="w-full max-w-md h-1 bg-slate-800 rounded-full overflow-hidden">
+          <div className="w-full max-w-md h-1.5 bg-slate-800 rounded-full overflow-hidden border border-white/5">
             <div
-              className="h-full bg-emerald-500 transition-all duration-500"
+              className="h-full bg-emerald-500 transition-all duration-500 shadow-[0_0_15px_rgba(16,185,129,0.5)]"
               style={{
                 width: `${(indexTwo / teamOrder.length) * FULL_PERCENT}%`,
               }}

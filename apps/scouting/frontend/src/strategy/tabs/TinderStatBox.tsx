@@ -11,17 +11,10 @@ const levelToScore = (level: TeleClimbLevel) => {
 const TinderStatBox: React.FC<{
   label: string;
   value: number | string;
-  isWinner: boolean;
-  isLoser: boolean;
-}> = ({ label, value, isWinner, isLoser }) => (
+  colorClass: string;
+}> = ({ label, value, colorClass }) => (
   <div
-    className={`p-6 border-b border-white/5 flex flex-col items-center justify-center text-center transition-all duration-300 ${
-      isWinner
-        ? "bg-emerald-500/10 text-emerald-400"
-        : isLoser
-          ? "bg-rose-500/5 text-rose-500/60"
-          : "bg-slate-900/50 text-slate-400"
-    }`}
+    className={`p-6 border-b border-white/5 flex flex-col items-center justify-center text-center transition-all duration-300 ${colorClass}`}
   >
     <span className="text-[10px] uppercase tracking-[0.3em] font-bold mb-2 opacity-60">
       {label}
@@ -30,7 +23,7 @@ const TinderStatBox: React.FC<{
   </div>
 );
 
-export const TinderCard: React.FC<{
+export const TeamCard: React.FC<{
   teamNumber: number;
   stats: TinderStats | null;
   opponentStats: TinderStats | null;
@@ -38,28 +31,26 @@ export const TinderCard: React.FC<{
 }> = ({ teamNumber, stats, opponentStats, onSelect }) => {
   if (!stats || !opponentStats) {
     return (
-      <div className="w-96 h-[600px] bg-slate-900/40 animate-pulse rounded-3xl border border-white/10" />
+      <div className="w-96 h-[600px] bg-slate-900/40 animate-pulse rounded-[3rem] border border-white/10" />
     );
   }
 
-  const isFuelWinner = stats.fuel.tele.scored > opponentStats.fuel.tele.scored;
-  const isFuelLoser = stats.fuel.tele.scored < opponentStats.fuel.tele.scored;
-
-  const isClimbWinner =
-    levelToScore(stats.climb.maxClimbLevel) >
-    levelToScore(opponentStats.climb.maxClimbLevel);
-  const isClimbLoser =
-    levelToScore(stats.climb.maxClimbLevel) <
-    levelToScore(opponentStats.climb.maxClimbLevel);
-
-  const isMovementWinner =
-    stats.movement.stuckOnBump < opponentStats.movement.stuckOnBump;
-  const isMovementLoser =
-    stats.movement.stuckOnBump > opponentStats.movement.stuckOnBump;
+  const getStatColor = (
+    thisStat: number,
+    otherStat: number,
+    isHigherBetter = true,
+  ) => {
+    if (thisStat === otherStat) return "bg-slate-900/50 text-slate-400";
+    const isWinner = isHigherBetter
+      ? thisStat > otherStat
+      : thisStat < otherStat;
+    return isWinner
+      ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+      : "bg-rose-500/5 text-rose-500/60 border-rose-500/10";
+  };
 
   return (
     <div className="bg-slate-900/40 border border-white/10 rounded-[3rem] overflow-hidden shadow-2xl backdrop-blur-sm w-96 transition-all hover:scale-[1.02]">
-      
       <div className="bg-slate-900 border-b border-white/10 py-12 flex flex-col items-center justify-center text-center">
         <span className="text-[10px] uppercase tracking-[0.5em] font-black text-emerald-500 mb-4">
           Candidate
@@ -72,22 +63,29 @@ export const TinderCard: React.FC<{
       <TinderStatBox
         label="Tele Scored"
         value={stats.fuel.tele.scored}
-        isWinner={isFuelWinner}
-        isLoser={isFuelLoser}
+        colorClass={getStatColor(
+          stats.fuel.tele.scored,
+          opponentStats.fuel.tele.scored,
+        )}
       />
 
       <TinderStatBox
         label="Max Climb"
         value={stats.climb.maxClimbLevel}
-        isWinner={isClimbWinner}
-        isLoser={isClimbLoser}
+        colorClass={getStatColor(
+          levelToScore(stats.climb.maxClimbLevel),
+          levelToScore(opponentStats.climb.maxClimbLevel),
+        )}
       />
 
       <TinderStatBox
         label="Stuck on Bump"
         value={stats.movement.stuckOnBump}
-        isWinner={isMovementWinner}
-        isLoser={isMovementLoser}
+        colorClass={getStatColor(
+          stats.movement.stuckOnBump,
+          opponentStats.movement.stuckOnBump,
+          false,
+        )}
       />
 
       <button
