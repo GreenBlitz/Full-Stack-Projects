@@ -49,6 +49,8 @@ export const TeamCard: React.FC<{
       : "bg-rose-500/5 text-rose-500/60 border-rose-500/10";
   };
 
+  const DIGITS_AFTER_DECIMAL_DOT = 3;
+
   return (
     <div className="bg-slate-900/40 border border-white/10 rounded-[1rem] overflow-hidden shadow-2xl backdrop-blur-sm w-96 transition-all hover:scale-[1.02]">
       <div className="bg-slate-900 border-b border-white/10 py-12 flex flex-col items-center justify-center text-center">
@@ -62,7 +64,7 @@ export const TeamCard: React.FC<{
 
       <TinderStatBox
         label="Tele Scored"
-        value={stats.fuel.tele.scored}
+        value={stats.fuel.tele.scored.toFixed(DIGITS_AFTER_DECIMAL_DOT)}
         colorClass={getStatColor(
           stats.fuel.tele.scored,
           opponentStats.fuel.tele.scored,
