@@ -1,29 +1,15 @@
 //בס"ד
-import type { FC } from "react";
-import type { Alliance } from "@repo/scouting_types";
+import { useEffect, type FC } from "react";
+import type { Alliance, TBAMatches2026 } from "@repo/scouting_types";
 import type { TabProps } from "../ScoutMatch";
+
 const MATCH_NUMBER_MAX = 127;
 const TEAM_NUMBER_MAX = 16383;
 
-type FRC_ISDE_2025_EventKey =
-  | "2025isde1"
-  | "2025isde2"
-  | "2025isde3"
-  | "2025isde4"
-  | "2025iscmp"
-  |"2026week0";
-
-
-const compareUrl = "/api/v1/tba/matches";
-
-type MatchesResponse<TMatch> = {
-  matches: TMatch[];
-};
-
-export const fetchGameMatches = async <TMatch = unknown>(
-  event: FRC_ISDE_2025_EventKey,
+export const fetchGameMatches = async <TBAMatches = unknown,>(
+  event: string,
   maxMatch: number,
-): Promise<TMatch[]> => {
+): Promise<TBAMatches> => {
   const response = await fetch("/api/v1/tba/matches", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -35,19 +21,18 @@ export const fetchGameMatches = async <TMatch = unknown>(
     throw new Error(`Server Error (${response.status}): ${text}`);
   }
 
-  const data = JSON.parse(text) as MatchesResponse<TMatch>;
-  return data.matches;
+  const { matches } = JSON.parse(text);
+  return matches;
 };
 
-
 const initialLocation = {
-  CLOSE :"close",
-  MIDDLE : "middle",
-  FAR: "far"
+  CLOSE: "close",
+  MIDDLE: "middle",
+  FAR: "far",
+} as const;
 
-}
-
-type initialLocationType = typeof initialLocation[keyof typeof initialLocation];
+type initialLocationType =
+  (typeof initialLocation)[keyof typeof initialLocation];
 
 interface MatchQualWithTeamNumberProps {
   qual: number;
@@ -57,18 +42,9 @@ interface MatchQualWithTeamNumberProps {
 
 type Match = { blueAlliance: number[]; redAlliance: number[] };
 
-type TBAMatchLike = {
-  comp_level: string;
-  match_number: number;
-  alliances: {
-    blue: { team_keys: string[] };
-    red: { team_keys: string[] };
-  };
-};
-
 const toTeamNum = (k: string) => Number(k.replace("frc", ""));
 
-const toQualMatches = (matches: TBAMatchLike[]): Match[] =>
+const toQualMatches = (matches: TBAMatches2026): Match[] =>
   matches
     .filter((m) => m.comp_level === "qm")
     .sort((a, b) => a.match_number - b.match_number)
@@ -76,7 +52,6 @@ const toQualMatches = (matches: TBAMatchLike[]): Match[] =>
       blueAlliance: m.alliances.blue.team_keys.map(toTeamNum),
       redAlliance: m.alliances.red.team_keys.map(toTeamNum),
     }));
-
 
 const matchQualWithTeamNumber = (
   props: MatchQualWithTeamNumberProps,
@@ -88,23 +63,36 @@ const matchQualWithTeamNumber = (
   const match = allMatches[props.qual - CALIBERATION_CONSTANT];
   if (!match) return DEFAULT_TEAM_NUMBER;
 
-  const allianceArr = props.alliance === "blue" ? match.blueAlliance : match.redAlliance;
+  const allianceArr =
+    props.alliance === "blue" ? match.blueAlliance : match.redAlliance;
 
   const index =
-    props.initialLocation === "close" ? 0 :
-    props.initialLocation === "middle" ? 1 : 2;
+    props.initialLocation === "close"
+      ? 0
+      : props.initialLocation === "middle"
+        ? 1
+        : 2;
 
   return allianceArr[index] ?? DEFAULT_TEAM_NUMBER;
 };
 
-console.log("sending", { event: 20, isFinite: Number.isFinite(20), type: typeof 20 });
-const tbaMatches = await fetchGameMatches<TBAMatchLike>("2026week0", 20);
-console.log(tbaMatches)
-const allMatches = toQualMatches(tbaMatches);
-console.log(allMatches)
-const team = matchQualWithTeamNumber({qual: 23, alliance: "blue", initialLocation: "close"}, allMatches);
-
 const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
+  useEffect(() => {
+    const x = async () => {
+      const tbaMatches = await fetchGameMatches<TBAMatches2026>(
+        "2026cahal",
+        20,
+      );
+      const allMatches = toQualMatches(tbaMatches);
+      const team = matchQualWithTeamNumber(
+        { qual: 23, alliance: "blue", initialLocation: "close" },
+        allMatches,
+      );
+      console.log(allMatches);
+      console.log(team);
+    };
+    x();
+  }, []);
   return (
     <div className="flex flex-col items-center justify-center w-full h-full gap-3  mx-auto">
       <div className="w-120 border-2 border-green-500 rounded-lg p-5 flex flex-col gap-3 py-0 h-15">

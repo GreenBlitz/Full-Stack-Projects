@@ -9,8 +9,8 @@ import {
 } from "../middleware/verification";
 import {
   matchesProps,
-  scoreBreakdown2026,
-  tbaMatch,
+  tbaMatches2026,
+  TBAMatches2026,
   type TBAMatchesProps,
 } from "@repo/scouting_types";
 import { right } from "fp-ts/lib/Either";
@@ -39,12 +39,11 @@ export const tbaRouter = Router();
 const TBA_KEY = process.env.TBA_API_KEY;
 const TBA_URL = "https://www.thebluealliance.com/api/v3";
 
-const tbaMatches = t.array(tbaMatch(scoreBreakdown2026, t.type({})));
-type TBAMatches = t.TypeOf<typeof tbaMatches>;
+
 
 const getCollection = flow(
   getDb,
-  map((db) => db.collection<TBAMatches[number]>("tba")),
+  map((db) => db.collection<TBAMatches2026[number]>("tba")),
 );
 
 const fetchTba = <U>(
@@ -78,7 +77,7 @@ const fetchTba = <U>(
  * Insert fetched matches into Mongo.
  * We ignore the insert result for now; endpoint returns the matches array anyway.
  */
-const insertMatches = (matches: TBAMatches) =>
+const insertMatches = (matches: TBAMatches2026) =>
   pipe(
     getCollection(),
     flatMap((collection) =>
@@ -108,10 +107,10 @@ const getStoredMatches = pipe(
       }),
     ),
   ),
-  map((docs) => docs.map(({ _id, ...rest }) => rest) satisfies TBAMatches),
+  map((docs) => docs.map(({ _id, ...rest }) => rest) satisfies TBAMatches2026),
 );
 
-const getMaxMatchNumber = (matches: TBAMatches) =>
+const getMaxMatchNumber = (matches: TBAMatches2026) =>
   isEmpty(matches) ? 0 : getMax(matches, (m) => m.match_number).match_number;
 
 /**
@@ -136,7 +135,7 @@ const getMatches = flow(
         // TRUE => fetch more, store them, return fetched
         () =>
           pipe(
-            fetchTba(`/event/${body.event}/matches`, tbaMatches),
+            fetchTba(`/event/${body.event}/matches`, tbaMatches2026),
             chainFirstW((fetchedMatches) => insertMatches(fetchedMatches)),
           ),
       ),
