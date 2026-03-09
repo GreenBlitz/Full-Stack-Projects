@@ -88,15 +88,6 @@ const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
   );
   const [match, setMatch] = useState(form.match);
 
-  const updateMatch = (newItems: Partial<Match>) => {
-    const newMatch = {
-      ...form.match,
-      ...newItems,
-    };
-
-    setMatch(newMatch);
-  };
-
   useEffect(() => {
     void (async () => {
       if (
@@ -148,7 +139,10 @@ const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
           max={MATCH_NUMBER_MAX}
           defaultValue={match.number}
           onChange={(event) => {
-            updateMatch({ number: Number(event.target.value) });
+            setMatch((prev) => ({
+              ...prev,
+              number: Number(event.target.value),
+            }));
           }}
         />
       </InputBox>
@@ -158,9 +152,10 @@ const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
           className="w-90.75 h-full"
           defaultValue={match.type}
           onChange={(event) => {
-            updateMatch({
+            setMatch((prev) => ({
+              ...prev,
               type: event.target.value as Match["type"],
-            });
+            }));
           }}
         >
           <option value="practice">Practice</option>
@@ -179,8 +174,12 @@ const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
             }));
           }}
         >
-          <option value="red">Red</option>
-          <option value="blue">Blue</option>
+          <option value="red" className="text-red-400">
+            Red
+          </option>
+          <option value="blue" className="text-blue-400">
+            Blue
+          </option>
         </select>
       </InputBox>
       <InputBox name="Location">
