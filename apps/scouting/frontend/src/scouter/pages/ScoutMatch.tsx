@@ -230,7 +230,7 @@ export const ScoutMatch: FC = () => {
         setActiveTab(9);
       }
       if (elapsedMs > SHIFT_END_TIME_MS[7]) {
-        setActiveTab(10);
+        setActiveTab(9);
       }
     }
   }, [elapsedMs]);
