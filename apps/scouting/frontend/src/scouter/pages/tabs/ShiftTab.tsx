@@ -12,7 +12,7 @@ import { MovementForm } from "../../components/MovementForm";
 import { usePositionRecording } from "../../hooks/usePositionRecording";
 import { isEmpty } from "@repo/array-functions";
 import { ClimbSection } from "../../components/ClimbSection";
-import Stopwatch from "../../components/stopwatch";
+import Stopwatch from "../../components/Stopwatch";
 
 interface ShiftTabProps extends TabProps {
   tabIndex: number;
