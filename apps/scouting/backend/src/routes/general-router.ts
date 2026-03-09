@@ -3,52 +3,59 @@
 import { Router } from "express";
 import { getFormsCollection } from "./forms-router";
 import { pipe } from "fp-ts/lib/function";
-import { flatMap, fold, map, tryCatch } from "fp-ts/lib/TaskEither";
+import {
+  flatMap,
+  fold,
+  map,
+  tryCatch,
+  bindTo,
+  bind,
+} from "fp-ts/lib/TaskEither";
 import { mongofyQuery } from "../middleware/query";
-import { generalCalculateFuel } from "../fuel/fuel-general";
 import { StatusCodes } from "http-status-codes";
 
-import type { FuelObject, GeneralFuelData } from "@repo/scouting_types";
-import { averageFuel } from "../fuel/distance-split";
-import { firstElement, isEmpty } from "@repo/array-functions";
-import { getAllBPS } from "./teams-router";
+import type {
+  BPS,
+  GeneralData,
+  ScoutingForm,
+  TeamNumberAndFuelData,
+} from "@repo/scouting_types";
+import { findMaxClimbLevel } from "../climb/calculations";
+import { calculateAverageClimbsScore } from "../climb/score";
+import { formsToFuelData, generalCalculateFuel } from "../fuel/fuel-general";
+import { getAllBPSes } from "./bps-router";
+import { isEmpty } from "@repo/array-functions";
 
 export const generalRouter = Router();
 
-interface AccumulatedFuelData {
-  fullGame: FuelObject[];
-  auto: FuelObject[];
-  tele: FuelObject[];
-}
+const formsToGeneralData = (forms: ScoutingForm[], bpses: Record<string,BPS[]>) => {
+  const calculatedFuel: TeamNumberAndFuelData = formsToFuelData(bpses)(forms);
 
-const ONE_ITEM_ARRAY = 1;
+  const allGeneralData: GeneralData[] = Object.entries(calculatedFuel).map(
+    (teamNumberAndFuelData) => {
+      const [teamNumber, fuelData] = teamNumberAndFuelData;
+      const teamForms = forms.filter(
+        (form) => form.teamNumber.toString() === teamNumber,
+      );
 
-export const calcAverageGeneralFuelData = (fuelData: GeneralFuelData[]): GeneralFuelData => {
-  if (fuelData.length === ONE_ITEM_ARRAY || isEmpty(fuelData)) {
-    return firstElement(fuelData);
-  }
+      const generalData: GeneralData = {
+        teamNumber: Number(teamNumber),
+        fuelData: fuelData,
+        highestClimbLevel: findMaxClimbLevel(teamForms),
+        avarageClimbPoints: {
+          fullGame:
+            calculateAverageClimbsScore(teamForms).auto +
+            calculateAverageClimbsScore(teamForms).tele,
+          auto: calculateAverageClimbsScore(teamForms).auto,
+          tele: calculateAverageClimbsScore(teamForms).tele,
+        },
+      };
 
-  const accumulatedFuelData: AccumulatedFuelData =
-    fuelData.reduce<AccumulatedFuelData>(
-      (accumulated, currentFuelData) => ({
-        fullGame: [...accumulated.fullGame, currentFuelData.fullGame],
-        auto: [...accumulated.auto, currentFuelData.auto],
-        tele: [...accumulated.tele, currentFuelData.tele],
-      }),
-      {
-        fullGame: [],
-        auto: [],
-        tele: [],
-      },
-    );
+      return generalData;
+    },
+  );
 
-  const averagedFuelData: GeneralFuelData = {
-    fullGame: averageFuel(accumulatedFuelData.fullGame),
-    auto: averageFuel(accumulatedFuelData.auto),
-    tele: averageFuel(accumulatedFuelData.tele),
-  };
-
-  return averagedFuelData;
+  return allGeneralData;
 };
 
 generalRouter.get("/", async (req, res) => {
@@ -63,41 +70,20 @@ generalRouter.get("/", async (req, res) => {
         }),
       ),
     ),
-    map((forms) =>
-      forms.map((form) => ({
-        teamNumber: form.teamNumber,
-        generalFuelData: generalCalculateFuel(form, getAllBPS()),
-      })),
-    ),
+    bindTo("forms"),
+    bind("teamBpses", ({ forms }) => getAllBPSes(forms)),
+    map(({ forms, teamBpses }) => ({
+      forms: forms.filter((form) => !isEmpty(teamBpses[form.teamNumber])),
+      teamBpses,
+    })),
 
-    map((generalFuelsData) =>
-      generalFuelsData.reduce<Record<number, GeneralFuelData[]>>(
-        (accumulatorRecord, fuelData) => ({
-          ...accumulatorRecord,
-          [fuelData.teamNumber]: [
-            ...(accumulatorRecord[fuelData.teamNumber] ?? []),
-            fuelData.generalFuelData,
-          ],
-        }),
-        {},
-      ),
-    ),
-
-    map((teamAndAllFuelData) => {
-      const teamAndAvaragedFuelData: Record<number, GeneralFuelData> = {};
-      Object.entries(teamAndAllFuelData).forEach(([teamNumber, fuelArray]) => {
-        teamAndAvaragedFuelData[teamNumber] =
-          calcAverageGeneralFuelData(fuelArray);
-      });
-
-      return teamAndAvaragedFuelData;
-    }),
+    map(({ forms, teamBpses }) => formsToGeneralData(forms, teamBpses)),
 
     fold(
       (error) => () =>
         Promise.resolve(res.status(error.status).send(error.reason)),
-      (calculatedFuel) => () =>
-        Promise.resolve(res.status(StatusCodes.OK).json({ calculatedFuel })),
+      (generalData) => () =>
+        Promise.resolve(res.status(StatusCodes.OK).json({ generalData })),
     ),
   )();
 });

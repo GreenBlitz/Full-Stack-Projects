@@ -1,7 +1,10 @@
 // בס"ד
-import type { FC, ForwardRefExoticComponent, RefAttributes } from "react";
-import { Zap, Play, LayoutGrid, type LucideProps } from "lucide-react";
+import type { FC } from "react";
+import { FiZap } from "react-icons/fi";
 import type { GamePhase } from "@repo/scouting_types";
+import type { IconType } from "react-icons/lib";
+import { IoPlayOutline } from "react-icons/io5";
+import { LuLayoutGrid } from "react-icons/lu";
 
 const ACTIVE_SIZE = 3;
 const INACTIVE_SIZE = 2;
@@ -12,13 +15,11 @@ export const PhaseToggle: FC<{
   const options: {
     id: GamePhase;
     label: string;
-    icon: ForwardRefExoticComponent<
-      Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>
-    >;
+    icon: IconType;
   }[] = [
-    { id: "auto", label: "Auto", icon: Play },
-    { id: "tele", label: "Tele", icon: Zap },
-    { id: "fullGame", label: "Full", icon: LayoutGrid },
+    { id: "auto", label: "Auto", icon: IoPlayOutline },
+    { id: "tele", label: "Tele", icon: FiZap },
+    { id: "fullGame", label: "Full", icon: LuLayoutGrid },
   ];
 
   const handlePress = (mode: GamePhase) => {

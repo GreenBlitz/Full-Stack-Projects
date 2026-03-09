@@ -1,9 +1,15 @@
 // בס"ד
-import type { BPS, BPSEvent, FuelObject, ShootEvent } from "@repo/scouting_types";
+import type {
+  BPS,
+  BPSEvent,
+  FuelObject,
+  ShootEvent,
+} from "@repo/scouting_types";
 import {
   calculateAverage,
   calculateSum,
   firstElement,
+  getMax,
   isEmpty,
   lastElement,
 } from "@repo/array-functions";
@@ -21,13 +27,16 @@ const NO_FUEL_COLLECTED = 0;
 const FIRST_SECTION_AMOUNT = 1;
 const ONE_SECTION_ONLY_LENGTH = 1;
 
-/**
+/** 
  * @param sections consists of sections that contains a list of timestamps in ms
  * @returns mean ball amount
- */
-const calculateBallAmount = (sections: number[][], shot: ShotStats): number => {
+ * Recursively calculates mean ball amount from timestamp sections. */
+const calculateBallAmount = (
+  sections: number[][],
+  shotDuration: number,
+): number => {
   // Base Case 1
-  if (shot.durationMilliseconds <= EMPTY_INTERVAL_DURATION) {
+  if (shotDuration <= EMPTY_INTERVAL_DURATION) {
     return NO_FUEL_COLLECTED;
   }
   // Base Case 2: Happens if no section is long enough for the shot length
@@ -35,7 +44,7 @@ const calculateBallAmount = (sections: number[][], shot: ShotStats): number => {
     const onlySection = firstElement(sections);
     const ballAmount = onlySection.length;
     const sectionDuration = lastElement(onlySection);
-    return (ballAmount / sectionDuration) * shot.durationMilliseconds;
+    return (ballAmount / sectionDuration) * shotDuration;
   }
 
   // finds the average for the first interval, removes it and then recurses
@@ -48,9 +57,7 @@ const calculateBallAmount = (sections: number[][], shot: ShotStats): number => {
 
   const firstIntervalSections = adjustedSections.map((section) =>
     section.filter(
-      (timing) =>
-        timing <= FIRST_INTERVAL_BOUNDARY &&
-        timing <= shot.durationMilliseconds,
+      (timing) => timing <= FIRST_INTERVAL_BOUNDARY && timing <= shotDuration,
     ),
   );
 
@@ -66,10 +73,7 @@ const calculateBallAmount = (sections: number[][], shot: ShotStats): number => {
 
   return (
     avgBallsFirstInterval +
-    calculateBallAmount(nonFirstSections, {
-      durationMilliseconds: shot.durationMilliseconds - firstIntervalDuration,
-      hubDistanceCentimeters: shot.hubDistanceCentimeters,
-    })
+    calculateBallAmount(nonFirstSections, shotDuration - firstIntervalDuration)
   );
 };
 
@@ -116,6 +120,26 @@ const formatSections = (sections: BPS["events"]) =>
       compareSections(formattedSection1.shoot, formattedSection2.shoot),
     );
 
+const MILLISECONDS_IN_SECONDS = 1000;
+
+export const calculateAverageBPS = (bpses: BPS[]) => {
+  const formattedSections = formatSections(bpses.flatMap((bps) => bps.events));
+
+  const longestSection = getMax(formattedSections, (section) =>
+    lastElement(section.shoot),
+  );
+
+  const longestSectionDuration = lastElement(longestSection.shoot);
+
+  const shotAmount = calculateBallAmount(
+    formattedSections.map((section) => section.shoot),
+    longestSectionDuration,
+  );
+
+  return (shotAmount * MILLISECONDS_IN_SECONDS) / longestSectionDuration;
+};
+
+/** Calculates fuel statistics by averaging across multiple matches. */
 export const calculateFuelByAveraging = (
   shot: ShootEvent,
   isPass: boolean,
@@ -124,7 +148,7 @@ export const calculateFuelByAveraging = (
   const shotStats: ShotStats = {
     durationMilliseconds: shot.interval.end - shot.interval.start,
     hubDistanceCentimeters: distanceFromHub(
-      convertPixelToCentimeters(shot.startPosition),
+      convertPixelToCentimeters(firstElement(shot.positions)),
     ),
   };
 
@@ -132,14 +156,14 @@ export const calculateFuelByAveraging = (
 
   const shotAmount = calculateBallAmount(
     formattedSections.map((section) => section.shoot),
-    shotStats,
+    shotStats.durationMilliseconds,
   );
 
   if (isPass) {
     return {
       shot: shotAmount,
       passed: shotAmount,
-      positions: [shot.startPosition],
+      positions: shot.positions,
     };
   }
   const scoredAccuracy = interpolateQuadratic(
@@ -155,6 +179,6 @@ export const calculateFuelByAveraging = (
     scored: scoredAmount,
     shot: shotAmount,
     missed: shotAmount - scoredAmount,
-    positions: [shot.startPosition],
+    positions: shot.positions,
   };
 };

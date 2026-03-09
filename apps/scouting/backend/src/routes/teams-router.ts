@@ -30,6 +30,8 @@ import { calculateSum, isEmpty, mapObject } from "@repo/array-functions";
 import { createFuelObject } from "../fuel/fuel-object";
 import { splitByDistances } from "../fuel/distance-split";
 import { calculateFuelStatisticsOfShift } from "../fuel/fuel-general";
+import { calculateAverageBPS } from "../fuel/calculations/fuel-averaging";
+import { getTeamBPSes } from "./bps-router";
 
 export const teamsRouter = Router();
 
@@ -114,23 +116,31 @@ const processTeam = (bpses: BPS[], forms: ScoutingForm[]): TeamData => {
     })),
     bpses,
   );
-  return { tele, auto, fullGame, metrics: { epa: 0, bps: 0 } };
+  return {
+    tele,
+    auto,
+    fullGame,
+    metrics: { epa: 0, bps: calculateAverageBPS(bpses) },
+  };
 };
 
-export const getAllBPS = (): BPS[] => [
-  {
-    events: [
-      {
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-        score: [1000, 2000, 3000],
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-        shoot: [1000, 1400, 2000, 3000],
-        positions: [{ x: 300, y: 200 }],
-      },
-    ],
-    match: { type: "qualification", number: 10 },
-  },
-];
+const MATCH_TYPES_ORDER: Record<Match["type"], number> = {
+  practice: 0,
+  qualification: 1,
+  playoff: 2,
+};
+const compareForms = (form1: ScoutingForm, form2: ScoutingForm) => {
+  const isTypeSame = form1.match.type === form2.match.type;
+
+  if (!isTypeSame) {
+    return (
+      MATCH_TYPES_ORDER[form1.match.type] - MATCH_TYPES_ORDER[form2.match.type]
+    );
+  }
+  return form1.match.number - form2.match.number;
+};
+
+const NO_RECENCY_STARTING_INDEX = 0;
 
 teamsRouter.get("/", async (req, res) => {
   await pipe(
@@ -145,16 +155,22 @@ teamsRouter.get("/", async (req, res) => {
           reason: `Incorrect Query Parameters: ${error}`,
         })),
         fromEither,
-        map(({ teams }) => ({ collection, teams })),
+        map(({ teams, recency }) => ({ collection, teams, recency })),
       ),
     ),
-    map(({ collection, teams }) => ({
+    map(({ collection, teams, recency }) => ({
       collection,
       teams: typeof teams === "number" ? [teams] : teams,
+      recency,
     })),
-    flatMap(({ collection, teams }) =>
+    flatMap(({ collection, teams, recency }) =>
       tryCatch(
-        () => collection.find({ teamNumber: { $in: teams } }).toArray(),
+        async () => ({
+          recency,
+          forms: await collection
+            .find({ teamNumber: { $in: teams } })
+            .toArray(),
+        }),
         (error) => ({
           status: StatusCodes.INTERNAL_SERVER_ERROR,
           reason: `Error Getting Teams From DB: ${error}`,
@@ -162,16 +178,34 @@ teamsRouter.get("/", async (req, res) => {
       ),
     ),
     flatMap((item) =>
-      isEmpty(item)
+      isEmpty(item.forms)
         ? taskLeft({
             status: StatusCodes.BAD_GATEWAY,
             reason: `Form Array Is Empty`,
           })
         : taskRight(item),
     ),
-    map(groupBy((form) => form.teamNumber.toString())),
-    map((teams) => ({ teams, bpses: getAllBPS() })),
-    map(({ teams, bpses }) => mapObject(teams, processTeam.bind(null, bpses))),
+    map(({ forms, recency }) => ({
+      recency,
+      teamedForms: groupBy<ScoutingForm>((form) => form.teamNumber.toString())(
+        forms,
+      ),
+    })),
+    map(({ teamedForms, recency }) =>
+      mapObject(teamedForms, (forms) =>
+        forms
+          .sort(compareForms)
+          .slice(
+            recency && recency < forms.length
+              ? forms.length - recency
+              : NO_RECENCY_STARTING_INDEX,
+          ),
+      ),
+    ),
+    flatMap(getTeamBPSes),
+    map((teams) =>
+      mapObject(teams, (team) => processTeam(team.bpses, team.forms)),
+    ),
     fold(
       (error) => () =>
         Promise.resolve(res.status(error.status).send(error.reason)),

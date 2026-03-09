@@ -17,7 +17,7 @@ export const MovementForm: FC<MovementFormProps> = ({
       {"trenchPass" in currentMovement && (
         <>
           <button
-            className={`bg-${currentMovement.trenchPass ? "rose-500" : "slate-800"} w-32 h-8 sm:h-10 md:h-12 px-2 text-xs shrink-0`}
+            className={`bg-${currentMovement.trenchPass ? "yellow-500" : "slate-800"} w-32 h-8 sm:h-10 md:h-12 px-2 text-xs shrink-0`}
             onClick={() => {
               setMovement({
                 ...currentMovement,
@@ -28,7 +28,7 @@ export const MovementForm: FC<MovementFormProps> = ({
             Pass Trench
           </button>
           <button
-            className={`bg-${currentMovement.bumpPass ? "rose-500" : "slate-800"} w-32 h-8 sm:h-10 md:h-12 px-2 text-xs shrink-0`}
+            className={`bg-${currentMovement.bumpPass ? "yellow-500" : "slate-800"} w-32 h-8 sm:h-10 md:h-12 px-2 text-xs shrink-0`}
             onClick={() => {
               setMovement({
                 ...currentMovement,
@@ -41,7 +41,7 @@ export const MovementForm: FC<MovementFormProps> = ({
         </>
       )}
       <button
-        className={`bg-${currentMovement.bumpStuck ? "rose-500" : "slate-800"} w-32 h-8 sm:h-10 md:h-12 px-2 text-xs shrink-0`}
+        className={`bg-${currentMovement.bumpStuck ? "yellow-500" : "slate-800"} w-32 h-8 sm:h-10 md:h-12 px-2 text-xs shrink-0`}
         onClick={() => {
           setMovement({
             ...currentMovement,

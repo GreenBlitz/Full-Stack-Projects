@@ -1,6 +1,7 @@
 // בס"ד
 import type { FC } from "react";
-import { AlertTriangle, X } from "lucide-react";
+import { FiAlertTriangle } from "react-icons/fi";
+import { IoClose } from "react-icons/io5";
 
 interface ConfirmDeletePopupProps {
   onDelete: () => void;
@@ -28,13 +29,13 @@ export const ConfirmDeletePopup: FC<ConfirmDeletePopupProps> = ({
           onClick={close}
           className="absolute top-4 right-4 text-slate-500 hover:text-slate-200 transition-colors"
         >
-          <X size={20} />
+          <IoClose size={20} />
         </button>
 
         <div className="flex flex-col items-center text-center">
           {/* Warning Icon */}
           <div className="w-16 h-16 bg-rose-500/20 rounded-2xl flex items-center justify-center mb-4">
-            <AlertTriangle className="text-rose-500" size={32} />
+            <FiAlertTriangle className="text-rose-500" size={32} />
           </div>
 
           <h3 className="text-xl font-bold text-slate-100 mb-2">

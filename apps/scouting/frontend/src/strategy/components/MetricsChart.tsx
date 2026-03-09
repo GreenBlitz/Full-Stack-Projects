@@ -3,6 +3,7 @@
 import type { FC } from "react";
 import type { TeamData } from "@repo/scouting_types";
 
+const NUMBER_OF_DIGITS = 2;
 const Metric: FC<{ name: string; value: number; colors: string }> = ({
   name,
   value,
@@ -15,7 +16,9 @@ const Metric: FC<{ name: string; value: number; colors: string }> = ({
     <span className="text-xl uppercase tracking-widest opacity-70 font-black mb-1">
       {name}
     </span>
-    <span className="text-3xl font-black">{value}</span>
+    <span className="text-3xl font-black">
+      {value.toFixed(NUMBER_OF_DIGITS)}
+    </span>
   </div>
 );
 

@@ -7,7 +7,7 @@ export const forecastProps = t.type({
   blueAlliance: t.tuple([t.number, t.number, t.number]),
 });
 
-interface ClimbAllianceData {
+export interface ClimbAllianceData {
   auto: number;
   tele: number;
 }

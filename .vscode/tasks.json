@@ -7,7 +7,7 @@
         "kind": "build",
         "isDefault": true
       },
-      "type": "shell",  
+      "type": "shell",
       "command": "turbo run build --filter=${input:project}-frontend --filter=${input:project}-backend"
     },
     {
@@ -30,7 +30,7 @@
     {
       "label": "package",
       "type": "shell",
-      "command": "docker compose -f .\\apps\\${input:project}\\${input:workspace}\\docker-compose.yml build"
+      "command": "docker compose -f .\\apps\\${input:project}\\${input:workspace}\\docker-compose.yml --env-file .public.env --env-file .secret.env build"
     },
     {
       "label": "deliver",

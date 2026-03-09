@@ -9,7 +9,7 @@ export interface DataPoint {
 export interface DataSet<T extends string | number, Point> {
   name: string;
   points: Record<T, Point>;
-  color?: string; //assign color if not defined
+  color?: string;
 }
 
 export interface PointDataset<T extends string | number> extends DataSet<
@@ -19,4 +19,9 @@ export interface PointDataset<T extends string | number> extends DataSet<
   size?: number;
 }
 
-export type PieDataset<T extends string | number> = DataSet<T, number>;
+export type PieDataset<T extends string | number> = DataSet<
+  T,
+  { value: number; color: string }
+>;
+
+export type BarDataset<T extends string | number> = DataSet<T, number>;
