@@ -254,22 +254,24 @@ export const ScoutMatch: FC = () => {
     return false;
   };
   const { elapsedMs } = useMatchTimer(ITERATION_PERIOD_MS);
+
   useEffect(() => {
-    hasShiftJustEnded(elapsedMs)
-      ? setBackgroundColor("red")
-      : setBackgroundColor("bg-black/40");
+    setBackgroundColor(
+      hasShiftJustEnded(elapsedMs) ? "bg-red-500/40" : "bg-black/40",
+    );
+
     if (activeTabIndex === 1) return;
 
     if (elapsedMs <= 0) return;
-    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[1]) return setActiveTab(2); // Auto
-    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[2]) return setActiveTab(3); // Transition
-    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[3]) return setActiveTab(4); // Shift1
-    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[4]) return setActiveTab(5); // Shift2
-    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[5]) return setActiveTab(6); // Shift3
-    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[6]) return setActiveTab(7); // Shift4
-    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[7]) return setActiveTab(8); // Endgame
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[1]) return setActiveTab(2);
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[2]) return setActiveTab(3);
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[3]) return setActiveTab(4);
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[4]) return setActiveTab(5);
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[5]) return setActiveTab(6);
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[6]) return setActiveTab(7);
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[7]) return setActiveTab(8);
 
-    setActiveTab(9); // Post
+    setActiveTab(9);
   }, [elapsedMs, activeTabIndex]);
   return (
     <div
