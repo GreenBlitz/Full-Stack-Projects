@@ -15,6 +15,8 @@ interface StopwatchProps {
   originTime: number;
   disabled: boolean;
   size?: "default" | "compact";
+  onStart?: () => void;
+  onStop?: () => void;
 }
 
 const Stopwatch: React.FC<StopwatchProps> = ({
@@ -22,6 +24,8 @@ const Stopwatch: React.FC<StopwatchProps> = ({
   originTime,
   disabled,
   size = "default",
+  onStart,
+  onStop,
 }) => {
   const [isRunning, setIsRunning] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(INITIAL_TIME_MILLISECONDS);
@@ -49,6 +53,15 @@ const Stopwatch: React.FC<StopwatchProps> = ({
     return Date.now() - originTime;
   };
 
+  const formatTime = () => {
+    const seconds = String(calculateSeconds()).padStart(DECIMAL_PLACES, "0");
+    const milliseconds = String(calculateMilliSeconds()).padStart(
+      DECIMAL_PLACES_MILLISECONDS,
+      "0",
+    );
+    return `${seconds}:${milliseconds}`;
+  };
+
   useEffect(() => {
     if (!isRunning) {
       return undefined;
@@ -71,6 +84,7 @@ const Stopwatch: React.FC<StopwatchProps> = ({
 
     startTimeRef.current = Date.now() - elapsedTime;
     setIsRunning(true);
+    onStart?.();
   };
 
   const stop = () => {
@@ -87,15 +101,7 @@ const Stopwatch: React.FC<StopwatchProps> = ({
 
     setIsRunning(false);
     reset();
-  };
-
-  const formatTime = () => {
-    const seconds = String(calculateSeconds()).padStart(DECIMAL_PLACES, "0");
-    const milliseconds = String(calculateMilliSeconds()).padStart(
-      DECIMAL_PLACES_MILLISECONDS,
-      "0",
-    );
-    return `${seconds}:${milliseconds}`;
+    onStop?.();
   };
 
   const isCompact = size === "compact";
