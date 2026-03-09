@@ -212,22 +212,22 @@ export const ScoutMatch: FC = () => {
         setActiveTab(2);
       }
       if (elapsedMs > SHIFT_END_TIME_MS[1]) {
-        setActiveTab(4);
+        setActiveTab(3);
       }
       if (elapsedMs > SHIFT_END_TIME_MS[2]) {
-        setActiveTab(5);
+        setActiveTab(4);
       }
       if (elapsedMs > SHIFT_END_TIME_MS[3]) {
-        setActiveTab(6);
+        setActiveTab(5);
       }
       if (elapsedMs > SHIFT_END_TIME_MS[4]) {
-        setActiveTab(7);
+        setActiveTab(6);
       }
       if (elapsedMs > SHIFT_END_TIME_MS[5]) {
-        setActiveTab(8);
+        setActiveTab(7);
       }
       if (elapsedMs > SHIFT_END_TIME_MS[6]) {
-        setActiveTab(9);
+        setActiveTab(8);
       }
       if (elapsedMs > SHIFT_END_TIME_MS[7]) {
         setActiveTab(9);
