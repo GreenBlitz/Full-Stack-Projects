@@ -2,12 +2,12 @@
 import { useState, type FC } from "react";
 import { ScoreMap } from "../../components/ScoreMap";
 import type { Alliance, Point } from "@repo/scouting_types";
-import Stopwatch from "../../components/Stopwatch";
 import { MovementForm } from "../../components/MovementForm";
 import type { TabProps } from "../ScoutMatch";
 import { defaultPoint } from "../../components/ScoreMap";
 import { usePositionRecording } from "../../hooks/usePositionRecording";
 import { isEmpty } from "@repo/array-functions";
+import Stopwatch from "../../components/stopwatch";
 
 export const AutoTab: FC<TabProps> = ({
   setForm,
