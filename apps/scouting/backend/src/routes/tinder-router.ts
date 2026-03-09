@@ -39,7 +39,7 @@ const createTinder = (forms: ScoutingForm[], bpses: Record<string, BPS[]>) => ({
   },
 });
 
-tinderRouter.get("/team", (req, res) =>
+tinderRouter.get("/", (req, res) =>
   pipe(
     getFormsCollection(),
     flatMap((collection) =>
