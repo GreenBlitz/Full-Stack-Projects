@@ -1,6 +1,7 @@
 //בס"ד
 
 import type {
+  BPS,
   ScoutingForm,
   TeleClimbLevel,
   TimesClimedToLevels,
@@ -15,13 +16,14 @@ import {
   right,
   tryCatch,
   fold,
+  bindTo,
+  bind,
 } from "fp-ts/lib/TaskEither";
 import { mongofyQuery } from "../middleware/query";
 import { StatusCodes } from "http-status-codes";
 import { calculateSum, firstElement, isEmpty } from "@repo/array-functions";
-import { calcAverageGeneralFuelData } from "./general-router";
-import { generalCalculateFuel } from "../fuel/fuel-general";
-import { getAllBPS } from "./teams-router";
+import { calcAverageGeneralFuelData, generalCalculateFuel } from "../fuel/fuel-general";
+import { getTeamBPS } from "./bps-router";
 
 export const compareRouter = Router();
 
@@ -34,9 +36,10 @@ const INCREMENT = 1;
 const calculateAverageScoredFuel = (
   forms: ScoutingForm[],
   gamePeriod: GamePeriod,
+  bpses: BPS[],
 ) => {
   const generalFuelData = forms.map((form) =>
-    generalCalculateFuel(form, getAllBPS()),
+    generalCalculateFuel(form, bpses),
   );
   const averagedFuelData = calcAverageGeneralFuelData(generalFuelData);
   console.log(
@@ -51,7 +54,7 @@ const calculateAverageScoredFuel = (
   );
 };
 
-export const findMaxClimbLevel = (forms: ScoutingForm[]) => {
+const findMaxClimbLevel = (forms: ScoutingForm[]) => {
   const fullGameClimbedLevels = [
     ...forms.map((form) => form.tele.climb.level),
     ...forms.map((form) => form.auto.climb.level),
@@ -122,11 +125,19 @@ compareRouter.get("/", async (req, res) => {
               "Compare Two Validation Error: Forms contain data from multiple different teams.",
           });
     }),
-    map((teamForms) => ({
+    bindTo("teamForms"),
+    bind("bpses", ({ teamForms }) =>
+      getTeamBPS(firstElement(teamForms).teamNumber),
+    ),
+    map(({ teamForms, bpses }) => ({
       teamNumber: firstElement(teamForms).teamNumber,
       averageFuel: {
-        averageFuelInGame: calculateAverageScoredFuel(teamForms, "fullGame"),
-        averageFuelInAuto: calculateAverageScoredFuel(teamForms, "auto"),
+        averageFuelInGame: calculateAverageScoredFuel(
+          teamForms,
+          "fullGame",
+          bpses,
+        ),
+        averageFuelInAuto: calculateAverageScoredFuel(teamForms, "auto", bpses),
       },
       climb: {
         maxClimbLevel: findMaxClimbLevel(teamForms),

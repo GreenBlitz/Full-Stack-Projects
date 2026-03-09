@@ -41,7 +41,7 @@ export const isEmpty = (arr: unknown[]): boolean =>
 
 export const mapObject = <K extends string, A, B>(
   obj: Record<K, A>,
-  transformation: (value: A) => B,
+  transformation: (value: A,key: K) => B,
 ): Record<K, B> => {
   /* 
    these eslint warnings are because 
@@ -50,7 +50,7 @@ export const mapObject = <K extends string, A, B>(
   */
   const entries: [K, B][] = Object.entries<A>(obj).map(([key, value]) => [
     key as K,
-    transformation(value),
+    transformation(value,key as K),
   ]);
 
   return Object.fromEntries(entries) as unknown as Record<K, B>;

@@ -3,6 +3,6 @@ export * from "./rebuilt";
 export * from "./forecast";
 
 export * from "./tba";
-export * from "./teams"
+export * from "./teams";
 
-export type Alliance = "red" | "blue";
+export * from "./alliance";

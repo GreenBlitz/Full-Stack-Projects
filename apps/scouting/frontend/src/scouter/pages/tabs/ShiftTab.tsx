@@ -1,5 +1,4 @@
 // בס"ד
-
 import { useState, type FC } from "react";
 import type { TabProps } from "../ScoutMatch";
 import { ScoreMap, defaultPoint } from "../../components/ScoreMap";
@@ -11,6 +10,9 @@ import type {
 } from "@repo/scouting_types";
 import { MovementForm } from "../../components/MovementForm";
 import Stopwatch from "../../components/stopwatch";
+import { usePositionRecording } from "../../hooks/usePositionRecording";
+import { isEmpty } from "@repo/array-functions";
+import { ClimbSection } from "../../components/ClimbSection";
 
 interface ShiftTabProps extends TabProps {
   tabIndex: number;
@@ -27,6 +29,27 @@ export const ShiftTab: FC<ShiftTabProps> = ({
 }) => {
   const [mapPosition, setMapPosition] = useState<Point>();
   const [mapZone, setMapZone] = useState<Alliance>(alliance);
+  const { recordedPositionsRef, start, stop } = usePositionRecording(mapPosition);
+  const [isClimbing, setIsClimbing] = useState(false);
+
+  const isAuto = shiftType === "auto";
+  const gamePhase = isAuto ? "auto" : "tele";
+
+  if (isClimbing) {
+    return (
+      <ClimbSection
+        isAuto={isAuto}
+        setForm={setForm}
+        currentForm={currentForm}
+        originTime={originTime}
+        onBack={() => {
+          setIsClimbing(false);
+        }}
+        name={shiftType}
+        alliance={alliance}
+      />
+    );
+  }
 
   const getEvents = (form: ScoutingForm) => {
     if (shiftType === "auto") {
@@ -44,15 +67,19 @@ export const ShiftTab: FC<ShiftTabProps> = ({
   const handleSetForm = (cycle: { start: number; end: number }) => {
     setForm((prevForm) => {
       const prevEvents = getEvents(prevForm);
+      const positions = isEmpty(recordedPositionsRef.current)
+        ? [mapPosition ?? { ...defaultPoint }]
+        : [...recordedPositionsRef.current];
       prevEvents.push({
         interval: cycle,
-        startPosition: mapPosition ?? { ...defaultPoint },
+        positions,
       });
+
+      recordedPositionsRef.current = [];
       return prevForm;
     });
   };
 
-  const gamePhase = shiftType === "auto" ? "auto" : "tele";
   const scoreMap = (
     <div className="flex-1 min-w-0 h-full">
       <ScoreMap
@@ -69,12 +96,12 @@ export const ShiftTab: FC<ShiftTabProps> = ({
       {alliance === "red" && scoreMap}
       <div className="flex flex-col items-center gap-0.5 sm:gap-1 shrink-0 w-32 sm:w-36 min-h-0 py-0.5 sm:py-1">
         <Stopwatch
-          addCycleTimeSeconds={(cycle) => {
-            handleSetForm(cycle);
-          }}
+          addCycleTimeSeconds={handleSetForm}
           originTime={originTime}
           disabled={mapPosition === undefined}
           size="compact"
+          onStart={start}
+          onStop={stop}
         />
         <MovementForm
           setMovement={(value) => {
@@ -89,14 +116,27 @@ export const ShiftTab: FC<ShiftTabProps> = ({
           currentMovement={currentForm[gamePhase].movement}
         />
 
-        <button
-          className={`bg-${mapZone}-500 h-8 sm:h-10 w-32 text-[10px] sm:text-xs px-2`}
-          onClick={() => {
-            setMapZone((prev) => (prev === "red" ? "blue" : "red"));
-          }}
-        >
-          Field Side
-        </button>
+        {gamePhase === "tele" && (
+          <button
+            className={`bg-${mapZone}-500 h-8 sm:h-10 w-32 text-[10px] sm:text-xs px-2`}
+            onClick={() => {
+              setMapZone((prev) => (prev === "red" ? "blue" : "red"));
+            }}
+          >
+            Field Side
+          </button>
+        )}
+
+        {(shiftType === "auto" || shiftType === "endgame") && (
+          <button
+            className={`bg-amber-600 h-8 sm:h-10 w-32 text-[10px] sm:text-xs px-2`}
+            onClick={() => {
+              setIsClimbing(true);
+            }}
+          >
+            Climb
+          </button>
+        )}
       </div>
       {alliance === "blue" && scoreMap}
     </div>
