@@ -49,14 +49,15 @@ export const Tinder: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (!isSortComplete && teamOrder[teamOneIndex] && teamOrder[teamTwoIndex]) {
-      fetchTeamTinderStats(teamOrder[teamOneIndex])
-        .then(setStatsOne)
-        .catch(console.error);
-      fetchTeamTinderStats(teamOrder[teamTwoIndex])
-        .then(setStatsTwo)
-        .catch(console.error);
+    if (isSortComplete && teamOrder[teamOneIndex] && teamOrder[teamTwoIndex]) {
+      return;
     }
+    fetchTeamTinderStats(teamOrder[teamOneIndex])
+      .then(setStatsOne)
+      .catch(console.error);
+    fetchTeamTinderStats(teamOrder[teamTwoIndex])
+      .then(setStatsTwo)
+      .catch(console.error);
   }, [teamOneIndex, teamTwoIndex, isSortComplete, teamOrder]);
 
   const resetSort = () => {
