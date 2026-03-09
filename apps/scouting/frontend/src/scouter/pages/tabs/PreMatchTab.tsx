@@ -1,5 +1,5 @@
 //בס"ד
-import { useEffect, type FC, type JSX } from "react";
+import { useEffect, useState, type FC, type JSX } from "react";
 import type { Alliance, Match, TBAMatches2026 } from "@repo/scouting_types";
 import type { TabProps } from "../ScoutMatch";
 import { useLocalStorage } from "@repo/local_storage_hook";
@@ -27,7 +27,7 @@ export const fetchGameMatches = async <TBAMatches = unknown,>(
 };
 
 const initialLocation = ["close", "middle", "far"] as const;
-type InitialLocation =  (typeof initialLocation)[number];
+type InitialLocation = (typeof initialLocation)[number];
 
 interface RobotPositionInfo {
   alliance: Alliance;
@@ -86,50 +86,52 @@ const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
     "tbaMatches",
     [],
   );
-
-  const updateTBAMatches = async (newMatch: Match) => {
-    const newTBAMatches = await fetchGameMatches<TBAMatches2026>(
-      form.competition,
-      newMatch.number,
-    );
-    setTbaMatches(newTBAMatches);
-  };
+  const [match, setMatch] = useState(form.match);
 
   const updateMatch = (newItems: Partial<Match>) => {
     const newMatch = {
       ...form.match,
       ...newItems,
     };
-    setForm((prev) => ({
-      ...prev,
-      match: newMatch,
-    }));
-    updateTBAMatches(newMatch);
+
+    setMatch(newMatch);
   };
 
   useEffect(() => {
-    const x = async () => {
-      const tbaMatches = await fetchGameMatches<TBAMatches2026>(
-        "2026cahal",
-        20,
+    void (async () => {
+      if (
+        tbaMatches.some((tbaMatch) => tbaMatch.match_number === match.number)
+      ) {
+        return;
+      }
+      const newTBAMatches = await fetchGameMatches<TBAMatches2026>(
+        form.competition,
+        match.number,
       );
-      const allMatches = toQualMatches(tbaMatches);
-      const team = matchQualWithTeamNumber(
-        { qual: 23, alliance: "blue", initialLocation: "close" },
-        allMatches,
-      );
-      console.log(allMatches);
-      console.log(team);
-    };
-    x();
-  }, []);
+      setTbaMatches(newTBAMatches);
+    })();
+  }, [match]);
+
+  useEffect(() => {
+    const qualMatches = toQualMatches(tbaMatches);
+    const newTeam = matchQualWithTeamNumber(
+      {
+        qual: form.match.number,
+        alliance: robotPositionInfo.alliance,
+        initialLocation: robotPositionInfo.location,
+      },
+      qualMatches,
+    );
+    setForm((prev) => ({ ...prev, teamNumber: newTeam, match }));
+  }, [tbaMatches, match]);
+
   return (
     <div className="flex flex-col items-center justify-center w-full h-full gap-3  mx-auto">
       <InputBox name="Match Number">
         <input
           type="text"
           className="w-85 h-full"
-          value={form.scouterName}
+          defaultValue={form.scouterName}
           onChange={(event) => {
             setForm((prev) => ({
               ...prev,
@@ -144,7 +146,7 @@ const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
           className="w-83.75 h-full"
           min={0}
           max={MATCH_NUMBER_MAX}
-          value={form.match.number}
+          defaultValue={match.number}
           onChange={(event) => {
             updateMatch({ number: Number(event.target.value) });
           }}
@@ -154,7 +156,7 @@ const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
       <InputBox name="Match Type">
         <select
           className="w-90.75 h-full"
-          value={form.match.type}
+          defaultValue={match.type}
           onChange={(event) => {
             updateMatch({
               type: event.target.value as Match["type"],
@@ -169,7 +171,7 @@ const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
       <InputBox name="Alliance">
         <select
           className="w-90.75 h-full"
-          value={robotPositionInfo.alliance}
+          defaultValue={robotPositionInfo.alliance}
           onChange={(event) => {
             setRobotPositionInfo((prev) => ({
               ...prev,
@@ -177,14 +179,14 @@ const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
             }));
           }}
         >
-          <option value="red">Practice</option>
-          <option value="blue">Qualification</option>
+          <option value="red">Red</option>
+          <option value="blue">Blue</option>
         </select>
       </InputBox>
       <InputBox name="Location">
         <select
           className="w-90.75 h-full"
-          value={robotPositionInfo.location}
+          defaultValue={robotPositionInfo.location}
           onChange={(event) => {
             setRobotPositionInfo((prev) => ({
               ...prev,
