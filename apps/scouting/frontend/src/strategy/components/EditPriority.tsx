@@ -1,4 +1,38 @@
+import { number } from "io-ts";
 import React, { useEffect, useState } from "react";
+
+export interface TeamPriority {
+  teamNumber: number;
+  priority: number;
+}
+const priorityUrl = "/api/v1/priority/";
+
+export const fetchTeamPriority = async (
+  teamNumber: number,
+): Promise<TeamPriority> => {
+  const params = new URLSearchParams({
+    teamNumber: String(teamNumber),
+  });
+
+  const url = `${priorityUrl}?${params.toString()}`;
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Server Error: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data.teamPriority as TeamPriority;
+  } catch (err) {
+    console.error("Fetch failed:", err);
+    throw err;
+  }
+};
 
 const PRIORITY_STORAGE_KEY = "scouting-priority";
 
@@ -121,7 +155,9 @@ export const EditPriority: React.FC<PriorityInputProps> = ({ teamNumber }) => {
         {isSubmitting ? "Saving..." : "Save"}
       </button>
 
-      {feedbackMessage && <p className="text-[10px] text-green-200">{feedbackMessage}</p>}
+      {feedbackMessage && (
+        <p className="text-[10px] text-green-200">{feedbackMessage}</p>
+      )}
     </div>
   );
 };
