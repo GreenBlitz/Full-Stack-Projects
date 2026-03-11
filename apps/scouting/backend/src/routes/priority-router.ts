@@ -1,13 +1,7 @@
 import { Router } from "express";
 import { StatusCodes } from "http-status-codes";
 import { flow, pipe } from "fp-ts/lib/function";
-import {
-  flatMap,
-  fold,
-  map,
-  tryCatch,
-  fromEither,
-} from "fp-ts/lib/TaskEither";
+import { flatMap, fold, map, tryCatch, fromEither } from "fp-ts/lib/TaskEither";
 import { right as rightEither } from "fp-ts/lib/Either";
 import { map as mapTask } from "fp-ts/lib/Task";
 import * as t from "io-ts";
@@ -19,6 +13,7 @@ import {
 import type { EndpointError } from "../middleware/verification";
 import type { TaskEither } from "fp-ts/lib/TaskEither";
 import { getDb } from "../middleware/db";
+import { left } from "fp-ts/lib/TaskEither";
 
 /* =========================
    Codecs + Types
@@ -83,29 +78,26 @@ export const readPriorityByTeamNumber = (
     flatMap((collection) =>
       tryCatch(
         () => collection.findOne({ teamNumber }),
-        (error) => ({
+        (error): EndpointError => ({
           status: StatusCodes.INTERNAL_SERVER_ERROR,
-          reason: `Error reading priority for team ${teamNumber}: ${error}`,
+          reason: `Error reading priority for team ${teamNumber}: ${String(error)}`,
         }),
       ),
     ),
     flatMap((result) =>
       result
-        ? mapTask(
+        ? pipe(
+            rightEither(result),
             createTypeCheckingEndpointFlow(teamPriorityCodec, (errors) => ({
               status: StatusCodes.INTERNAL_SERVER_ERROR,
               reason: `Invalid team priority format. error: ${errors}`,
             })),
-          )(async () => result),
-        : tryCatch(
-            async () => {
-              throw new Error(`Priority for team ${teamNumber} not found`);
-            },
-            () => ({
-              status: StatusCodes.NOT_FOUND,
-              reason: `Priority for team ${teamNumber} not found`,
-            }),
-          ),
+            fromEither,
+          )
+        : left({
+            status: StatusCodes.NOT_FOUND,
+            reason: `Priority for team ${teamNumber} not found`,
+          }),
     ),
   );
 
