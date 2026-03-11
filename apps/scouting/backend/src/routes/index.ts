@@ -27,7 +27,7 @@ apiRouter.use("/compare", compareRouter);
 apiRouter.use("/tinder", tinderRouter);
 apiRouter.use("/bps", bpsRouter);
 apiRouter.use("/super", superScoutRouter);
-apiRouter.use("/priority")
+apiRouter.use("/priority", priorityRouter)
 
 apiRouter.get("/health", (req, res) => {
   res.status(StatusCodes.OK).send({ message: "Healthy!" });
