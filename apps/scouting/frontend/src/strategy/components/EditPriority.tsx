@@ -3,18 +3,15 @@ import React, { useEffect, useState } from "react";
 const PRIORITY_STORAGE_KEY = "scouting-priority";
 
 interface PriorityInputProps {
-  matchId: string;
   teamNumber: number;
 }
 
 interface SavePriorityPayload {
-  matchId: string;
   teamNumber: number;
   priority: number;
 }
 
 export const PriorityInput: React.FC<PriorityInputProps> = ({
-  matchId,
   teamNumber,
 }) => {
   const [priority, setPriority] = useState<number | "">("");
@@ -23,7 +20,7 @@ export const PriorityInput: React.FC<PriorityInputProps> = ({
 
   useEffect(() => {
     const savedValue = localStorage.getItem(
-      `${PRIORITY_STORAGE_KEY}-${matchId}-${teamNumber}`,
+      `${PRIORITY_STORAGE_KEY}-${teamNumber}`,
     );
 
     if (!savedValue) return;
@@ -32,10 +29,10 @@ export const PriorityInput: React.FC<PriorityInputProps> = ({
     if (!Number.isNaN(parsed)) {
       setPriority(parsed);
     }
-  }, [matchId, teamNumber]);
+  }, [teamNumber]);
 
   useEffect(() => {
-    const storageKey = `${PRIORITY_STORAGE_KEY}-${matchId}-${teamNumber}`;
+    const storageKey = `${PRIORITY_STORAGE_KEY}--${teamNumber}`;
 
     if (priority === "") {
       localStorage.removeItem(storageKey);
@@ -43,7 +40,7 @@ export const PriorityInput: React.FC<PriorityInputProps> = ({
     }
 
     localStorage.setItem(storageKey, String(priority));
-  }, [priority, matchId, teamNumber]);
+  }, [priority, teamNumber]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -70,7 +67,6 @@ export const PriorityInput: React.FC<PriorityInputProps> = ({
     setMessage("");
 
     const payload: SavePriorityPayload = {
-      matchId,
       teamNumber,
       priority,
     };
