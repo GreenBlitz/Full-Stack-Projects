@@ -14,7 +14,7 @@ interface SavePriorityPayload {
 export const EditPriority: React.FC<PriorityInputProps> = ({ teamNumber }) => {
   const [priority, setPriority] = useState<number | "">("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [message, setMessage] = useState<string>("");
+  const [feedbackMessage, setFeedbackMessage] = useState<string>("");
 
   useEffect(() => {
     const savedValue = localStorage.getItem(
@@ -57,12 +57,12 @@ export const EditPriority: React.FC<PriorityInputProps> = ({ teamNumber }) => {
 
   const handleSubmit = async () => {
     if (priority === "") {
-      setMessage("Please enter a priority first.");
+      setFeedbackMessage("Please enter a priority first.");
       return;
     }
 
     setIsSubmitting(true);
-    setMessage("");
+    setFeedbackMessage("");
 
     const payload: SavePriorityPayload = {
       teamNumber,
@@ -82,10 +82,10 @@ export const EditPriority: React.FC<PriorityInputProps> = ({ teamNumber }) => {
         throw new Error("Failed to save priority");
       }
 
-      setMessage("Priority saved successfully.");
+      setFeedbackMessage("Priority saved successfully.");
     } catch (error) {
       console.error(error);
-      setMessage("Error saving priority.");
+      setFeedbackMessage("Error saving priority.");
     } finally {
       setIsSubmitting(false);
     }
@@ -121,7 +121,7 @@ export const EditPriority: React.FC<PriorityInputProps> = ({ teamNumber }) => {
         {isSubmitting ? "Saving..." : "Save"}
       </button>
 
-      {message && <p className="text-[10px] text-green-200">{message}</p>}
+      {feedbackMessage && <p className="text-[10px] text-green-200">{feedbackMessage}</p>}
     </div>
   );
 };
