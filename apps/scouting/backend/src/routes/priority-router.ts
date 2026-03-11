@@ -15,10 +15,6 @@ import type { TaskEither } from "fp-ts/lib/TaskEither";
 import { getDb } from "../middleware/db";
 import { left } from "fp-ts/lib/TaskEither";
 
-/* =========================
-   Codecs + Types
-========================= */
-
 export const teamPriorityCodec = t.type({
   teamNumber: t.number,
   priority: t.number,
@@ -28,24 +24,12 @@ export const teamPriorityArrayCodec = t.array(teamPriorityCodec);
 
 export type TeamPriority = t.TypeOf<typeof teamPriorityCodec>;
 
-/* =========================
-   Router
-========================= */
-
 export const priorityRouter = Router();
-
-/* =========================
-   Collection
-========================= */
 
 const getPriorityCollection = flow(
   getDb,
   map((db) => db.collection<TeamPriority>("teamPriorities")),
 );
-
-/* =========================
-   DB functions
-========================= */
 
 export const readAllPriorities = (): TaskEither<
   EndpointError,
@@ -123,14 +107,6 @@ export const upsertPriority = (
     map(() => undefined),
   );
 
-/* =========================
-   Routes
-========================= */
-
-/**
- * GET /priority
- * returns all team priorities
- */
 priorityRouter.get("/", async (_req, res) => {
   await pipe(
     readAllPriorities(),
@@ -143,10 +119,6 @@ priorityRouter.get("/", async (_req, res) => {
   )();
 });
 
-/**
- * GET /priority/:teamNumber
- * returns one team's priority
- */
 priorityRouter.get("/:teamNumber", async (req, res) => {
   const teamNumber = Number(req.params.teamNumber);
 
@@ -168,11 +140,6 @@ priorityRouter.get("/:teamNumber", async (req, res) => {
   )();
 });
 
-/**
- * POST /priority
- * inserts or updates a team's priority
- * body: { teamNumber: number, priority: number }
- */
 priorityRouter.post("/", async (req, res) => {
   await pipe(
     rightEither(req),
