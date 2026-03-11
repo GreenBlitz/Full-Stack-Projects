@@ -19,7 +19,7 @@ const StartMatchLocallyButton: React.FC<StartMatchLocallyButtonProps> = ({
   const { isRunning, elapsedMs, start, stop, reset } =
     useMatchTimer(ITERATION_PERIOD_MS);
 
-  const formatTime = useMemo(() => {
+  const formattedTime = useMemo(() => {
     const minutes = Math.floor(
       elapsedMs / MILLISECONDS_IN_A_SECOND / SECONDS_IN_A_MINUTE,
     );
@@ -57,7 +57,7 @@ const StartMatchLocallyButton: React.FC<StartMatchLocallyButtonProps> = ({
           }
         `}
       >
-        {formatTime}
+        {formattedTime}
       </button>
 
       <button
