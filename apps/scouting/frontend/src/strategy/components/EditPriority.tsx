@@ -34,6 +34,25 @@ export const fetchTeamPriority = async (
   }
 };
 
+
+const submitPriority = async (teamPriority: TeamPriority) => {
+    try {
+      const response = await fetch("/api/v1/priority", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(teamPriority),
+      });
+      if (response.ok) {
+        console.log("sent successfully")
+      }
+    } catch (error: unknown) {
+      alert(error);
+    }
+  };
+
+
 const PRIORITY_STORAGE_KEY = "scouting-priority";
 
 interface PriorityInputProps {
