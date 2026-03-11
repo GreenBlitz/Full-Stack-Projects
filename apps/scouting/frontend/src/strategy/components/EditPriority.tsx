@@ -1,20 +1,17 @@
-import { number } from "io-ts";
 import React, { useEffect, useState } from "react";
 
 export interface TeamPriority {
   teamNumber: number;
   priority: number;
 }
-const priorityUrl = "/api/v1/priority/";
 
-const fetchATeamPriority = async (
+const priorityUrl = "/api/v1/priority";
+
+export const fetchATeamPriority = async (
   teamNumber: number,
 ): Promise<TeamPriority> => {
-  const params = new URLSearchParams({
-    teamNumber: String(teamNumber),
-  });
+  const url = `${priorityUrl}/${teamNumber}`;
 
-  const url = `${priorityUrl}?${params.toString()}`;
   try {
     const response = await fetch(url, {
       method: "GET",
@@ -34,10 +31,9 @@ const fetchATeamPriority = async (
   }
 };
 
-export const AllTeamsPriorities = async (): Promise<TeamPriority[]> => {
-  const url = `${priorityUrl}`;
+export const fetchAllTeamsPriorities = async (): Promise<TeamPriority[]> => {
   try {
-    const response = await fetch(url, {
+    const response = await fetch(priorityUrl, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
@@ -48,27 +44,35 @@ export const AllTeamsPriorities = async (): Promise<TeamPriority[]> => {
     }
 
     const data = await response.json();
-    return data.teamPriority as TeamPriority[];
+    return data.priorities as TeamPriority[];
   } catch (err) {
     console.error("Fetch failed:", err);
     throw err;
   }
 };
 
-const submitPriority = async (teamPriority: TeamPriority) => {
+export const submitPriority = async (
+  teamPriority: TeamPriority,
+): Promise<{ message: string }> => {
   try {
-    const response = await fetch("/api/v1/priority", {
+    const response = await fetch(priorityUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(teamPriority),
     });
-    if (response.ok) {
-      console.log("sent successfully");
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Server Error: ${errorText}`);
     }
-  } catch (error: unknown) {
-    alert(error);
+
+    const data = await response.json();
+    return data as { message: string };
+  } catch (err) {
+    console.error("Submit failed:", err);
+    throw err;
   }
 };
 
