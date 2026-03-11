@@ -7,7 +7,7 @@ export interface TeamPriority {
 }
 const priorityUrl = "/api/v1/priority/";
 
-export const fetchTeamPriority = async (
+const fetchATeamPriority = async (
   teamNumber: number,
 ): Promise<TeamPriority> => {
   const params = new URLSearchParams({
@@ -34,24 +34,43 @@ export const fetchTeamPriority = async (
   }
 };
 
+export const AllTeamsPriorities = async (): Promise<TeamPriority[]> => {
+  const url = `${priorityUrl}`;
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Server Error: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data.teamPriority as TeamPriority[];
+  } catch (err) {
+    console.error("Fetch failed:", err);
+    throw err;
+  }
+};
 
 const submitPriority = async (teamPriority: TeamPriority) => {
-    try {
-      const response = await fetch("/api/v1/priority", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(teamPriority),
-      });
-      if (response.ok) {
-        console.log("sent successfully")
-      }
-    } catch (error: unknown) {
-      alert(error);
+  try {
+    const response = await fetch("/api/v1/priority", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(teamPriority),
+    });
+    if (response.ok) {
+      console.log("sent successfully");
     }
-  };
-
+  } catch (error: unknown) {
+    alert(error);
+  }
+};
 
 const PRIORITY_STORAGE_KEY = "scouting-priority";
 
