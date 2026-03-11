@@ -5,13 +5,14 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
+import { EditPriority } from "./strategy/components/EditPriority";
 
 // registerSW({ immediate: true });
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <EditPriority teamNumber={4590}/>
     </BrowserRouter>
   </StrictMode>,
 );
