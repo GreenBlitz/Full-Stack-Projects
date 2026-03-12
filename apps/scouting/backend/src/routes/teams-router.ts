@@ -3,7 +3,7 @@
 import { Router } from "express";
 import { right } from "fp-ts/lib/Either";
 import { pipe } from "fp-ts/lib/function";
-import { createTypeCheckingEndpointFlow } from "../middleware/verification";
+import { createTypeCheckingEndpointFlow } from "@repo/type-utils";
 import {
   flatMap,
   fold,
@@ -12,6 +12,7 @@ import {
   right as taskRight,
   map,
   tryCatch,
+  bindTo,
 } from "fp-ts/lib/TaskEither";
 import { getFormsCollection } from "./forms-router";
 import { StatusCodes } from "http-status-codes";
@@ -32,6 +33,7 @@ import { splitByDistances } from "../fuel/distance-split";
 import { calculateFuelStatisticsOfShift } from "../fuel/fuel-general";
 import { calculateAverageBPS } from "../fuel/calculations/fuel-averaging";
 import { getTeamBPSes } from "./bps-router";
+import { foldResponse,flatTryCatch } from "@repo/flow-utils";
 import { compareMatches } from "@repo/scouting_types";
 
 export const teamsRouter = Router();
@@ -152,19 +154,15 @@ teamsRouter.get("/", async (req, res) => {
       teams: typeof teams === "number" ? [teams] : teams,
       recency,
     })),
-    flatMap(({ collection, teams, recency }) =>
-      tryCatch(
-        async () => ({
-          recency,
-          forms: await collection
-            .find({ teamNumber: { $in: teams } })
-            .toArray(),
-        }),
-        (error) => ({
-          status: StatusCodes.INTERNAL_SERVER_ERROR,
-          reason: `Error Getting Teams From DB: ${error}`,
-        }),
-      ),
+    flatTryCatch(
+      async ({ collection, teams, recency }) => ({
+        recency,
+        forms: await collection.find({ teamNumber: { $in: teams } }).toArray(),
+      }),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `Error Getting Teams From DB: ${error}`,
+      }),
     ),
     flatMap((item) =>
       isEmpty(item.forms)
@@ -195,11 +193,7 @@ teamsRouter.get("/", async (req, res) => {
     map((teams) =>
       mapObject(teams, (team) => processTeam(team.bpses, team.forms)),
     ),
-    fold(
-      (error) => () =>
-        Promise.resolve(res.status(error.status).send(error.reason)),
-      (teams) => () =>
-        Promise.resolve(res.status(StatusCodes.OK).json({ teams })),
-    ),
+    bindTo("teams"),
+    foldResponse(res),
   )();
 });

@@ -4,9 +4,10 @@ import axios from "axios";
 import { Router } from "express";
 import {
   createBodyVerificationPipe,
-  createTypeCheckingEndpointFlow,
+  flatTryCatch,
   type EndpointError,
-} from "../middleware/verification";
+} from "@repo/flow-utils";
+import { createTypeCheckingEndpointFlow } from "@repo/type-utils";
 import {
   Match,
   matchesProps,
@@ -18,12 +19,12 @@ import { right } from "fp-ts/lib/Either";
 import { StatusCodes } from "http-status-codes";
 import {
   flatMap,
-  fold,
   type TaskEither,
   fromEither,
   tryCatch,
   map,
   chainFirstW,
+  bindTo,
 } from "fp-ts/lib/TaskEither";
 import { flow, pipe } from "fp-ts/lib/function";
 import { map as taskMap } from "fp-ts/lib/Task";
@@ -31,10 +32,8 @@ import type { Type } from "io-ts";
 import { getDb } from "../middleware/db";
 import { getMax, isEmpty } from "@repo/array-functions";
 import { fold as booleanFold } from "fp-ts/boolean";
-import {
-  compareMatches,
-  tbaMatchToRegularMatch,
-} from "@repo/scouting_types";
+import { foldResponse } from "@repo/flow-utils";
+import { compareMatches, tbaMatchToRegularMatch } from "@repo/scouting_types";
 
 export const tbaRouter = Router();
 
@@ -76,27 +75,23 @@ const fetchTba = <U>(
 const insertMatches = (matches: TBAMatches2026) =>
   pipe(
     getCollection(),
-    flatMap((collection) =>
-      tryCatch(
-        () => collection.insertMany(matches),
-        (error) => ({
-          status: StatusCodes.INTERNAL_SERVER_ERROR,
-          reason: `Error inserting matches: ${String(error)}`,
-        }),
-      ),
+    flatTryCatch(
+      (collection) => collection.insertMany(matches),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `Error inserting matches: ${String(error)}`,
+      }),
     ),
   );
 
 const getStoredMatches = pipe(
   getCollection(),
-  flatMap((collection) =>
-    tryCatch(
-      () => collection.find().toArray(),
-      (error) => ({
-        reason: `Error getting from collection ${String(error)}`,
-        status: StatusCodes.BAD_REQUEST,
-      }),
-    ),
+  flatTryCatch(
+    (collection) => collection.find().toArray(),
+    (error) => ({
+      reason: `Error getting from collection ${String(error)}`,
+      status: StatusCodes.BAD_REQUEST,
+    }),
   ),
   map((docs) => docs.map(({ _id, ...rest }) => rest) satisfies TBAMatches2026),
 );
@@ -119,7 +114,8 @@ const getMatches = flow(
   ),
   flatMap(({ currentMatches, body }) =>
     pipe(
-      compareMatches(getMaxMatch(currentMatches), body.maxMatch) < DID_COMPARE_FAIL,
+      compareMatches(getMaxMatch(currentMatches), body.maxMatch) <
+        DID_COMPARE_FAIL,
       booleanFold(
         // FALSE => already have enough stored
         () => fromEither(right(currentMatches)),
@@ -141,13 +137,7 @@ tbaRouter.post("/matches", async (req, res) => {
     createBodyVerificationPipe(matchesProps),
     fromEither,
     getMatches,
-    fold(
-      (error) => async () => {
-        res.status(error.status).send(error.reason);
-      },
-      (matches) => async () => {
-        res.status(StatusCodes.OK).json({ matches });
-      },
-    ),
+    bindTo("matches"),
+    foldResponse(res),
   )();
 });
