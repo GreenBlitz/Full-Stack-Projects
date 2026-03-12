@@ -90,6 +90,7 @@ const matchMatchWithTeamNumber = (
   return allianceArr[index] ?? DEFAULT_TEAM_NUMBER;
 };
 
+const MATCH_ADJUSTMENT_OFFSET = 1;
 const PreMatchTab: FC<TabProps> = ({
   currentForm: form,
   setForm,
@@ -141,7 +142,7 @@ const PreMatchTab: FC<TabProps> = ({
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-full gap-3  mx-auto">
-      <InputBox name="Match Number">
+      <InputBox name="Scouter Name">
         <input
           type="text"
           className="w-85 h-full"
@@ -155,19 +156,43 @@ const PreMatchTab: FC<TabProps> = ({
         />
       </InputBox>
       <InputBox name="Match Number">
-        <input
-          type="number"
-          className="w-83.75 h-full"
-          min={0}
-          max={MATCH_NUMBER_MAX}
-          defaultValue={match.number}
-          onChange={(event) => {
-            setMatch((prev) => ({
-              ...prev,
-              number: Number(event.target.value),
-            }));
-          }}
-        />
+        <>
+          <input
+            type="number"
+            className="w-43.75 h-full"
+            min={0}
+            max={MATCH_NUMBER_MAX}
+            value={match.number}
+            onChange={(event) => {
+              setMatch((prev) => ({
+                ...prev,
+                number: Number(event.target.value),
+              }));
+            }}
+          />
+          <button
+            className="w-20 h-full"
+            onClick={() => {
+              setMatch((prev) => ({
+                ...prev,
+                number: prev.number + MATCH_ADJUSTMENT_OFFSET,
+              }));
+            }}
+          >
+            +
+          </button>
+          <button
+            className="w-20 h-full"
+            onClick={() => {
+              setMatch((prev) => ({
+                ...prev,
+                number: prev.number - MATCH_ADJUSTMENT_OFFSET,
+              }));
+            }}
+          >
+            -
+          </button>
+        </>
       </InputBox>
 
       <InputBox name="Match Type">

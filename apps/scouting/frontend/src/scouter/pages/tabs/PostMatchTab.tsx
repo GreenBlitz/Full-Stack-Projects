@@ -12,6 +12,7 @@ const BUTTON_STYLES = `px-8 py-3 text-base font-bold text-black
             active:scale-95 border rounded-xl
             bg-linear-to-r`;
 
+const MATCH_SUBMIT_INCREMENT = 1;
 export const PostMatchTab: FC<TabProps> = ({ setForm, currentForm }) => {
   const [_scoutingForms, setScoutingForms] = useLocalStorage<ScoutingForm[]>(
     "scouted_forms",
@@ -21,7 +22,15 @@ export const PostMatchTab: FC<TabProps> = ({ setForm, currentForm }) => {
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
-    setForm(createNewScoutingForm({ scouterName: currentForm.scouterName }));
+    setForm(
+      createNewScoutingForm({
+        scouterName: currentForm.scouterName,
+        match: {
+          type: currentForm.match.type,
+          number: currentForm.match.number + MATCH_SUBMIT_INCREMENT,
+        },
+      }),
+    );
     setScoutingForms((prev) => [...prev, currentForm]);
     await navigate("/");
   };
