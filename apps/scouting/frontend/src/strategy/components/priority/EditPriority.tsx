@@ -146,7 +146,7 @@ export const EditPriority: React.FC<PriorityInputProps> = ({ teamNumber }) => {
     };
 
     try {
-      const response = await fetch("/api/scouting/priority", {
+      const response = await fetch("/api/v1/priority", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
