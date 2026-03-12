@@ -23,6 +23,7 @@ export interface TabProps {
   currentForm: ScoutingForm;
   alliance: Alliance;
   originTime: number;
+  goToNextTab?: () => void;
 }
 interface Tab {
   name: string;
@@ -178,6 +179,11 @@ export const ScoutMatch: FC = () => {
     () => TABS[activeTabIndex].Component,
     [activeTabIndex],
   );
+  
+  const goToNextTab = () => {
+    setActiveTab((prev) => Math.min(prev + 1, TABS.length - 1));
+  };
+
   return (
     <div
       className="max-h-screen bg-black p-4 md:p-6 flex items-center justify-center
@@ -205,6 +211,7 @@ export const ScoutMatch: FC = () => {
               currentForm={scoutingForm}
               alliance={alliance}
               originTime={originTime}
+              goToNextTab={goToNextTab}
             />
           </div>
         </div>

@@ -1,9 +1,15 @@
 //בס"ד
 import type { FC } from "react";
 import type { TabProps } from "../ScoutMatch";
+import { useLocalStorage } from "@repo/local_storage_hook";
+import { defaultSettings, type SettingsKeyType } from "../SettingsPage";
+import StartGameButton from "../../components/StartGameButton";
+
 const MATCH_NUMBER_MAX = 127;
 const TEAM_NUMBER_MAX = 16383;
 const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
+  const [settings] = useLocalStorage<SettingsKeyType>("settings", defaultSettings);
+
   return (
     <div className="flex flex-col items-center justify-center w-full h-full gap-3  mx-auto">
       <div className="w-120 border-2 border-green-500 rounded-lg p-5 flex flex-col gap-3 py-0 h-15">
@@ -86,6 +92,15 @@ const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
           </select>
         </div>
       </div>
+
+      {settings.matchStarter && (
+        <div className="w-120 flex justify-center mt-2">
+          <StartGameButton
+            matchNumber={form.match.number}
+            matchType={form.match.type}
+          />
+        </div>
+      )}
     </div>
   );
 };

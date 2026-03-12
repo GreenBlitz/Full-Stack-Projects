@@ -3,13 +3,13 @@ import type { FC } from "react";
 import { useLocalStorage } from "@repo/local_storage_hook";
 import ToggleSetting from "../components/ToggleSetting";
 
-interface SettingsKeyType {
+export interface SettingsKeyType {
   matchStarter: boolean;
   moveAutomaticallyToNextShift: boolean;
   startTimerOnSetPoint: boolean;
 }
 
-const defaultSettings: SettingsKeyType = {
+export const defaultSettings: SettingsKeyType = {
   matchStarter: false,
   moveAutomaticallyToNextShift: false,
   startTimerOnSetPoint: false,

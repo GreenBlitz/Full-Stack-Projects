@@ -9,6 +9,8 @@ import type {
   ShiftType,
 } from "@repo/scouting_types";
 import { MovementForm } from "../../components/MovementForm";
+import { useLocalStorage } from "@repo/local_storage_hook";
+import { defaultSettings, type SettingsKeyType } from "../SettingsPage";
 import Stopwatch from "../../components/stopwatch";
 import { usePositionRecording } from "../../hooks/usePositionRecording";
 import { isEmpty } from "@repo/array-functions";
@@ -26,11 +28,14 @@ export const ShiftTab: FC<ShiftTabProps> = ({
   alliance,
   originTime,
   currentForm,
+  goToNextTab,
 }) => {
   const [mapPosition, setMapPosition] = useState<Point>();
   const [mapZone, setMapZone] = useState<Alliance>(alliance);
   const { recordedPositionsRef, start, stop } = usePositionRecording(mapPosition);
   const [isClimbing, setIsClimbing] = useState(false);
+
+  const [settings] = useLocalStorage<SettingsKeyType>("settings", defaultSettings);
 
   const isAuto = shiftType === "auto";
   const gamePhase = isAuto ? "auto" : "tele";
@@ -78,6 +83,10 @@ export const ShiftTab: FC<ShiftTabProps> = ({
       recordedPositionsRef.current = [];
       return prevForm;
     });
+
+    if (settings.moveAutomaticallyToNextShift && goToNextTab) {
+      goToNextTab();
+    }
   };
 
   const scoreMap = (

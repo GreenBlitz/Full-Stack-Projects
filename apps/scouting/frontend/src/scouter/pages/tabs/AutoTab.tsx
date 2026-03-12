@@ -1,23 +1,36 @@
 // בס"ד
-import { useState, type FC } from "react";
+import { useState, useRef, type FC, type Dispatch, type SetStateAction } from "react";
 import { ScoreMap } from "../../components/ScoreMap";
 import type { Alliance, Point } from "@repo/scouting_types";
-import Stopwatch from "../../components/stopwatch";
+import Stopwatch, { type StopwatchHandle } from "../../components/stopwatch";
 import { MovementForm } from "../../components/MovementForm";
 import type { TabProps } from "../ScoutMatch";
 import { defaultPoint } from "../../components/ScoreMap";
 import { usePositionRecording } from "../../hooks/usePositionRecording";
 import { isEmpty } from "@repo/array-functions";
+import { useLocalStorage } from "@repo/local_storage_hook";
+import { defaultSettings, type SettingsKeyType } from "../SettingsPage";
 
 export const AutoTab: FC<TabProps> = ({
   setForm,
   alliance,
   originTime,
   currentForm,
+  goToNextTab,
 }) => {
   const [mapPosition, setMapPosition] = useState<Point>();
   const [mapZone, setMapZone] = useState<Alliance>(alliance);
   const { recordedPositionsRef, start, stop } = usePositionRecording(mapPosition);
+
+  const [settings] = useLocalStorage<SettingsKeyType>("settings", defaultSettings);
+  const stopwatchRef = useRef<StopwatchHandle>(null);
+
+  const handleMapPositionChange: Dispatch<SetStateAction<Point | undefined>> = (pointAction) => {
+    setMapPosition(pointAction);
+    if (typeof pointAction !== 'function' && pointAction && settings.startTimerOnSetPoint) {
+      stopwatchRef.current?.start(true);
+    }
+  };
 
   return (
     <div className="flex flex-row h-full w-full gap-3">
@@ -42,10 +55,13 @@ export const AutoTab: FC<TabProps> = ({
                 interval: cycle,
                 positions,
               });
-
               recordedPositionsRef.current = [];
               return prevForm;
             });
+
+            if (settings.moveAutomaticallyToNextShift && goToNextTab) {
+              goToNextTab();
+            }
           }}
           originTime={originTime}
           disabled={mapPosition === undefined}
