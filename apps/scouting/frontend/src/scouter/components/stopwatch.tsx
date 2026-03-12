@@ -2,6 +2,7 @@
 import type React from "react";
 import { useEffect, useRef, useState, type Dispatch } from "react";
 import type { Interval } from "@repo/scouting_types";
+import { playStartFeedback } from "./startFeedback";
 
 const MILLLISECONDS_IN_A_SECOND = 1000;
 const SECOND_IN_A_MINUTE = 60;
@@ -31,13 +32,12 @@ const Stopwatch: React.FC<StopwatchProps> = ({
   const [elapsedTime, setElapsedTime] = useState(INITIAL_TIME_MILLISECONDS);
 
   const startTimeRef = useRef(INITIAL_TIME_MILLISECONDS);
-
   const startCurrentCycleTime = useRef<number>(INITIAL_TIME_MILLISECONDS);
-
-  const reset = () => {
-    setElapsedTime(INITIAL_TIME_MILLISECONDS);
-    setIsRunning(false);
-  };
+  const buttonRef = useRef<HTMLDivElement>(null);
+  const disabledRef = useRef(disabled);
+  const isRunningRef = useRef(isRunning);
+  disabledRef.current = disabled;
+  isRunningRef.current = isRunning;
 
   const calculateSeconds = () => {
     return Math.floor(
@@ -70,10 +70,23 @@ const Stopwatch: React.FC<StopwatchProps> = ({
       setElapsedTime(Date.now() - startTimeRef.current);
     }, CYCLE_TIME_MILLISECONDS);
 
-    return () => {
-      clearInterval(intervalId);
-    };
+    return () => clearInterval(intervalId);
   }, [isRunning]);
+
+  useEffect(() => {
+    const el = buttonRef.current;
+    if (!el) return;
+    const onGesture = () => {
+      if (disabledRef.current || isRunningRef.current) return;
+      playStartFeedback();
+    };
+    el.addEventListener("touchstart", onGesture, { capture: true });
+    el.addEventListener("mousedown", onGesture, { capture: true });
+    return () => {
+      el.removeEventListener("touchstart", onGesture, { capture: true });
+      el.removeEventListener("mousedown", onGesture, { capture: true });
+    };
+  }, []);
 
   const start = () => {
     if (isRunning || disabled) {
@@ -81,7 +94,6 @@ const Stopwatch: React.FC<StopwatchProps> = ({
     }
     const relativeTime = getCurrentRelativeTime();
     startCurrentCycleTime.current = relativeTime;
-
     startTimeRef.current = Date.now() - elapsedTime;
     setIsRunning(true);
     onStart?.();
@@ -91,16 +103,14 @@ const Stopwatch: React.FC<StopwatchProps> = ({
     if (!isRunning) {
       return;
     }
-
     const cycleStopwatchCounter: Interval = {
       start: startCurrentCycleTime.current,
       end: getCurrentRelativeTime(),
     };
-
     addCycleTimeSeconds(cycleStopwatchCounter);
 
+    setElapsedTime(INITIAL_TIME_MILLISECONDS);
     setIsRunning(false);
-    reset();
     onStop?.();
   };
 
@@ -113,17 +123,17 @@ const Stopwatch: React.FC<StopwatchProps> = ({
       }`}
     >
       <div
+        ref={buttonRef}
         className={`
-          select-none cursor-pointer rounded-2xl
+          select-none cursor-pointer rounded-2xl touch-none
           ${isCompact ? "px-2 py-1 text-xl sm:px-3 sm:py-2 sm:text-2xl" : "px-4 py-4 text-3xl"}
           font-mono font-semibold shadow-lg transition-all duration-150
           ${disabled ? "bg-slate-800 text-slate-900" : isRunning ? "bg-emerald-500 text-white scale-95" : "bg-slate-800 text-green-400 hover:bg-slate-700"}
         `}
-        onMouseDown={start}
-        onMouseUp={stop}
-        onMouseLeave={stop}
-        onTouchStart={start}
-        onTouchEnd={stop}
+        onPointerDown={start}
+        onPointerUp={stop}
+        onPointerLeave={stop}
+        onPointerCancel={stop}
       >
         {formatTime()}
       </div>
