@@ -12,7 +12,7 @@ import { EditPriority } from "./strategy/components/EditPriority";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
-      <EditPriority teamNumber={4590}/>
+      <App />
     </BrowserRouter>
   </StrictMode>,
 );
