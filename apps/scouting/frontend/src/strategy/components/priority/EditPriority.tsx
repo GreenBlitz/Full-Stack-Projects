@@ -106,7 +106,7 @@ export const EditPriority: React.FC<PriorityInputProps> = ({ teamNumber }) => {
   }, [teamNumber]);
 
   useEffect(() => {
-    const storageKey = `${PRIORITY_STORAGE_KEY}--${teamNumber}`;
+    const storageKey = `${PRIORITY_STORAGE_KEY}-${teamNumber}`;
 
     if (priority === "") {
       localStorage.removeItem(storageKey);
