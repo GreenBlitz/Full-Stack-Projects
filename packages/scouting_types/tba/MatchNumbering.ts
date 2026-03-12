@@ -39,3 +39,7 @@ export const compareMatches = (match1: Match, match2: Match) => {
   }
   return match1.number - match2.number;
 };
+
+const MATCH_SAME_COMPARANCE = 0;
+export const isMatchesSame = (match1: Match, match2: Match) =>
+  compareMatches(match1, match2) === MATCH_SAME_COMPARANCE;

@@ -32,7 +32,7 @@ import { splitByDistances } from "../fuel/distance-split";
 import { calculateFuelStatisticsOfShift } from "../fuel/fuel-general";
 import { calculateAverageBPS } from "../fuel/calculations/fuel-averaging";
 import { getTeamBPSes } from "./bps-router";
-import { compareMatches } from "@repo/scouting_types/tba/MatchNumbering";
+import { compareMatches } from "@repo/scouting_types";
 
 export const teamsRouter = Router();
 

@@ -23,6 +23,7 @@ export interface TabProps {
   currentForm: ScoutingForm;
   alliance: Alliance;
   originTime: number;
+  setAlliance: Dispatch<SetStateAction<Alliance>>;
 }
 interface Tab {
   name: string;
@@ -183,7 +184,7 @@ export const ScoutMatch: FC = () => {
     createNewScoutingForm(),
   );
   const [activeTabIndex, setActiveTab] = useState(STARTING_TAB_INDEX);
-  const [alliance, _setAlliance] = useState<Alliance>("red");
+  const [alliance, setAlliance] = useState<Alliance>("red");
   const originTime = useMemo(() => Date.now(), []);
   const CurrentTab = useMemo(
     () => TABS[activeTabIndex].Component,
@@ -217,6 +218,7 @@ export const ScoutMatch: FC = () => {
               currentForm={scoutingForm}
               alliance={alliance}
               originTime={originTime}
+              setAlliance={setAlliance}
             />
           </div>
         </div>

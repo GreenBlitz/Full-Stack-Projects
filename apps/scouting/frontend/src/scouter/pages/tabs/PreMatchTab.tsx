@@ -1,10 +1,13 @@
 //בס"ד
 import { useEffect, useState, type FC, type JSX } from "react";
-import type {
-  Alliance,
-  Match,
-  TBAMatches2026,
-  TBAMatchesProps,
+import {
+  compareMatches,
+  isMatchesSame,
+  tbaMatchToRegularMatch,
+  type Alliance,
+  type Match,
+  type TBAMatches2026,
+  type TBAMatchesProps,
 } from "@repo/scouting_types";
 import type { TabProps } from "../ScoutMatch";
 import { useLocalStorage } from "@repo/local_storage_hook";
@@ -39,7 +42,7 @@ interface RobotPositionInfo {
 }
 
 interface MatchQualWithTeamNumberProps {
-  qual: number;
+  match: Match;
   alliance: Alliance;
   initialLocation: InitialLocation;
 }
@@ -47,31 +50,30 @@ interface MatchQualWithTeamNumberProps {
 type MatchTeams = {
   blueAlliance: number[];
   redAlliance: number[];
-  matchNumber: number;
+  match: Match;
 };
 
 const toTeamNum = (k: string) => Number(k.replace("frc", ""));
 
 const toQualMatches = (matches: TBAMatches2026): MatchTeams[] =>
   matches
-    .filter((tbaMatch) => tbaMatch.comp_level === "qm")
-    .sort(
-      (tbaMatch1, tbaMatch2) => tbaMatch1.match_number - tbaMatch2.match_number,
-    )
     .map((tbaMatch) => ({
-      matchNumber: tbaMatch.match_number,
+      match: tbaMatchToRegularMatch(tbaMatch),
       blueAlliance: tbaMatch.alliances.blue.team_keys.map(toTeamNum),
       redAlliance: tbaMatch.alliances.red.team_keys.map(toTeamNum),
-    }));
+    }))
+    .sort((tbaMatch1, tbaMatch2) =>
+      compareMatches(tbaMatch1.match, tbaMatch2.match),
+    );
 
-const matchQualWithTeamNumber = (
+const matchMatchWithTeamNumber = (
   props: MatchQualWithTeamNumberProps,
   allTBAMatches: MatchTeams[],
 ): number => {
   const DEFAULT_TEAM_NUMBER = 0;
 
-  const tbaMatch = allTBAMatches.find(
-    (tbaMatch) => tbaMatch.matchNumber === props.qual,
+  const tbaMatch = allTBAMatches.find((tbaMatch) =>
+    isMatchesSame(tbaMatch.match, props.match),
   );
   if (!tbaMatch) return DEFAULT_TEAM_NUMBER;
 
@@ -88,7 +90,11 @@ const matchQualWithTeamNumber = (
   return allianceArr[index] ?? DEFAULT_TEAM_NUMBER;
 };
 
-const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
+const PreMatchTab: FC<TabProps> = ({
+  currentForm: form,
+  setForm,
+  setAlliance,
+}) => {
   const [robotPositionInfo, setRobotPositionInfo] =
     useLocalStorage<RobotPositionInfo>("robotPositionInfo", {
       alliance: "red",
@@ -112,10 +118,14 @@ const PreMatchTab: FC<TabProps> = ({ currentForm: form, setForm }) => {
   };
 
   useEffect(() => {
+    setAlliance(robotPositionInfo.alliance);
+  }, [robotPositionInfo]);
+
+  useEffect(() => {
     const qualMatches = toQualMatches(tbaMatches);
-    const newTeam = matchQualWithTeamNumber(
+    const newTeam = matchMatchWithTeamNumber(
       {
-        qual: match.number,
+        match: match,
         alliance: robotPositionInfo.alliance,
         initialLocation: robotPositionInfo.location,
       },

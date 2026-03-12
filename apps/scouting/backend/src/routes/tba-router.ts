@@ -37,7 +37,7 @@ import { fold as booleanFold } from "fp-ts/boolean";
 import {
   compareMatches,
   tbaMatchToRegularMatch,
-} from "@repo/scouting_types/tba/MatchNumbering";
+} from "@repo/scouting_types";
 
 export const tbaRouter = Router();
 
