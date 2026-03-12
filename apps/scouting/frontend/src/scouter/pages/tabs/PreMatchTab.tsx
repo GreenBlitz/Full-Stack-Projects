@@ -122,7 +122,7 @@ const PreMatchTab: FC<TabProps> = ({
 
     if (input === null) return;
 
-    const teamNumber = parseInt(input, 10);
+    const teamNumber = parseInt(input);
 
     setForm((prev) => ({ ...prev, teamNumber }));
   };
