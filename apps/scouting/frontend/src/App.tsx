@@ -9,9 +9,11 @@ import { GeneralDataTable } from "./strategy/tabs/GeneralDataTable";
 import { CompareTwo } from "./strategy/tabs/CompareTwo";
 import BpsBase from "./scouter/components/bps-components/BpsBase";
 import { Leaderboard } from "./scouter/pages/Leaderboard";
+import SettingsPage from "./scouter/pages/SettingsPage";
 import { CURRENT_COMPETITION } from "@repo/scouting_types";
 import { StrategyNavigationBar } from "./strategy/components/StrategyNavBar";
 import { SuperScoutTab } from "./strategy/tabs/super-scout/SuperScoutTab";
+import { Tinder } from "./strategy/tabs/Tinder";
 
 const App: FC = () => {
   return (
@@ -21,6 +23,7 @@ const App: FC = () => {
         path="/leaderboard"
         element={<Leaderboard competition={CURRENT_COMPETITION} />}
       />
+      <Route path="/settings" element={<SettingsPage />} />
       <Route path="/bps" element={<BpsBase />} />
       <Route path="/strategy" element={<StrategyNavigationBar />}>
         <Route path="team" element={<TeamTab />} />
@@ -28,6 +31,7 @@ const App: FC = () => {
         <Route path="forecast" element={<MatchForecast />} />
         <Route path="compare" element={<CompareTwo />} />
         <Route path="super" element={<SuperScoutTab />} />
+        <Route path="tinder" element={<Tinder />} />
       </Route>
       <Route path="*" element={<ScoutedMatches />} />
     </Routes>
