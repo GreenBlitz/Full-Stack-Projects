@@ -3,15 +3,8 @@
 import { Router } from "express";
 import { getFormsCollection } from "./forms-router";
 import { pipe } from "fp-ts/lib/function";
-import {
-  flatMap,
-  fold,
-  map,
-  tryCatch,
-  bindTo,
-  bind,
-} from "fp-ts/lib/TaskEither";
-import { mongofyQuery } from "@repo/flow-utils";
+import { fold, map, bindTo, bind } from "fp-ts/lib/TaskEither";
+import { mongofyQuery, flatTryCatch } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
 
 import type {
@@ -22,10 +15,9 @@ import type {
 } from "@repo/scouting_types";
 import { findMaxClimbLevel } from "../climb/calculations";
 import { calculateAverageClimbsScore } from "../climb/score";
-import { formsToFuelData, generalCalculateFuel } from "../fuel/fuel-general";
+import { formsToFuelData } from "../fuel/fuel-general";
 import { getAllBPSes } from "./bps-router";
 import { isEmpty } from "@repo/array-functions";
-import { flatTryCatch } from "@repo/flow-utils/promise";
 
 export const generalRouter = Router();
 

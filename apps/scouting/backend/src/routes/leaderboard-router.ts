@@ -3,13 +3,11 @@
 import { Router } from "express";
 import { getFormsCollection } from "./forms-router";
 import {
-  flatMap,
   map,
-  tryCatch,
   fold,
   filterOrElse,
 } from "fp-ts/lib/TaskEither";
-import { mongofyQuery } from "@repo/flow-utils";
+import { mongofyQuery,flatTryCatch } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
 import { pipe } from "fp-ts/lib/function";
 import type {
@@ -19,7 +17,6 @@ import type {
 } from "@repo/scouting_types";
 import { firstElement, isEmpty } from "@repo/array-functions";
 import { isSingleCompetition } from "../verification/functions";
-import { flatTryCatch } from "@repo/flow-utils/promise";
 
 const INCREMENT = 1;
 const NOT_FOUND_INDEX = -1;

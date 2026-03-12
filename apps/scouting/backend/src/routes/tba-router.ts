@@ -32,8 +32,8 @@ import type { Type } from "io-ts";
 import { getDb } from "../middleware/db";
 import { getMax } from "@repo/array-functions";
 import { fold as booleanFold } from "fp-ts/boolean";
-import { foldResponse } from "@repo/flow-utils/http";
-import { flatTryCatch } from "@repo/flow-utils/promise";
+import { foldResponse } from "@repo/flow-utils";
+import { flatTryCatch } from "@repo/flow-utils";
 
 export const tbaRouter = Router();
 

@@ -19,7 +19,7 @@ import {
   bindTo,
   bind,
 } from "fp-ts/lib/TaskEither";
-import { mongofyQuery } from "@repo/flow-utils";
+import { mongofyQuery, flatTryCatch } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
 import { calculateSum, firstElement, isEmpty } from "@repo/array-functions";
 import {
@@ -27,7 +27,6 @@ import {
   generalCalculateFuel,
 } from "../fuel/fuel-general";
 import { getTeamBPS } from "./bps-router";
-import { flatTryCatch } from "@repo/flow-utils/promise";
 
 export const compareRouter = Router();
 

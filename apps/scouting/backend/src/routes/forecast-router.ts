@@ -32,8 +32,7 @@ import { castItem } from "@repo/type-utils";
 import { calculateAverageClimbsScore } from "../climb/score";
 import { getTeamBPS } from "./bps-router";
 import { traverseWithIndex } from "fp-ts/lib/Record";
-import { foldResponse } from "@repo/flow-utils/http";
-import { flatTryCatch } from "@repo/flow-utils/promise";
+import { foldResponse,flatTryCatch } from "@repo/flow-utils";
 
 export const forecastRouter = Router();
 

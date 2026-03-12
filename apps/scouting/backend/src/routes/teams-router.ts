@@ -33,8 +33,7 @@ import { splitByDistances } from "../fuel/distance-split";
 import { calculateFuelStatisticsOfShift } from "../fuel/fuel-general";
 import { calculateAverageBPS } from "../fuel/calculations/fuel-averaging";
 import { getTeamBPSes } from "./bps-router";
-import { foldResponse } from "@repo/flow-utils/http";
-import { flatTryCatch } from "@repo/flow-utils/promise";
+import { foldResponse,flatTryCatch } from "@repo/flow-utils";
 
 export const teamsRouter = Router();
 

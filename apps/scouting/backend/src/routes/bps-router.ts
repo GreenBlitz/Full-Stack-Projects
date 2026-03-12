@@ -34,8 +34,8 @@ import { createBodyVerificationPipe, EndpointError } from "@repo/flow-utils";
 import { right as rightEither } from "fp-ts/lib/Either";
 import { mapWithIndex, sequence } from "fp-ts/lib/Record";
 import { sequenceS } from "fp-ts/lib/Apply";
-import { foldResponse } from "@repo/flow-utils/http";
-import { flatTryCatch } from "@repo/flow-utils/promise";
+import { foldResponse } from "@repo/flow-utils";
+import { flatTryCatch } from "@repo/flow-utils";
 
 export const bpsRouter = Router();
 

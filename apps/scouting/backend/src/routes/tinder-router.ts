@@ -11,7 +11,7 @@ import {
   fold,
   bindTo,
 } from "fp-ts/lib/TaskEither";
-import { mongofyQuery } from "@repo/flow-utils";
+import { mongofyQuery,foldResponse,flatTryCatch } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
 import type { BPS, ScoutingForm } from "@repo/scouting_types";
 import {
@@ -23,8 +23,6 @@ import { findTimesStuckOnBump } from "../movement/stats";
 import { isSingleTeam } from "../verification/functions";
 import { getTeamBPSes } from "./bps-router";
 import { firstElement } from "@repo/array-functions";
-import { foldResponse } from "@repo/flow-utils/http";
-import { flatTryCatch } from "@repo/flow-utils/promise";
 
 export const tinderRouter = Router();
 
