@@ -82,22 +82,25 @@ interface PriorityInputProps {
   teamNumber: number;
 }
 
-interface SavePriorityPayload {
-  teamNumber: number;
-  priority: number;
-}
-
 export const EditPriority: React.FC<PriorityInputProps> = ({ teamNumber }) => {
   const [priority, setPriority] = useState<number | "">("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState<string>("");
 
   useEffect(() => {
+    if (!Number.isFinite(teamNumber)) {
+      setPriority("");
+      return;
+    }
+
     const savedValue = localStorage.getItem(
       `${PRIORITY_STORAGE_KEY}-${teamNumber}`,
     );
 
-    if (!savedValue) return;
+    if (!savedValue) {
+      setPriority("");
+      return;
+    }
 
     const parsed = Number(savedValue);
     if (!Number.isNaN(parsed)) {
@@ -106,6 +109,8 @@ export const EditPriority: React.FC<PriorityInputProps> = ({ teamNumber }) => {
   }, [teamNumber]);
 
   useEffect(() => {
+    if (!Number.isFinite(teamNumber)) return;
+
     const storageKey = `${PRIORITY_STORAGE_KEY}-${teamNumber}`;
 
     if (priority === "") {
@@ -132,6 +137,11 @@ export const EditPriority: React.FC<PriorityInputProps> = ({ teamNumber }) => {
   };
 
   const handleSubmit = async () => {
+    if (!Number.isFinite(teamNumber)) {
+      setFeedbackMessage("Select a valid team first.");
+      return;
+    }
+
     if (priority === "") {
       setFeedbackMessage("Please enter a priority first.");
       return;
@@ -140,23 +150,11 @@ export const EditPriority: React.FC<PriorityInputProps> = ({ teamNumber }) => {
     setIsSubmitting(true);
     setFeedbackMessage("");
 
-    const payload: SavePriorityPayload = {
-      teamNumber,
-      priority,
-    };
-
     try {
-      const response = await fetch("/api/v1/priority", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
+      await submitPriority({
+        teamNumber,
+        priority,
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to save priority");
-      }
 
       setFeedbackMessage("Priority saved successfully.");
     } catch (error) {
@@ -168,9 +166,20 @@ export const EditPriority: React.FC<PriorityInputProps> = ({ teamNumber }) => {
   };
 
   return (
-    <div className="flex flex-col gap-1 rounded-lg border border-green-700 bg-black/40 p-2 w-40">
-      <label htmlFor="priority" className="text-xs font-medium text-green-100">
-        Priority
+    <div
+      className="
+        w-52 p-4
+        flex flex-col gap-3
+        bg-slate-900/40 backdrop-blur-md
+        border border-white/10
+        rounded-3xl shadow-2xl
+      "
+    >
+      <label
+        htmlFor="priority"
+        className="text-xs font-black tracking-[0.2em] uppercase text-slate-400"
+      >
+        Edit Priority
       </label>
 
       <input
@@ -178,8 +187,20 @@ export const EditPriority: React.FC<PriorityInputProps> = ({ teamNumber }) => {
         type="number"
         value={priority}
         onChange={handleChange}
-        placeholder="Priority"
-        className="rounded-md border border-green-700 bg-gray-900 px-2 py-1 text-xs text-green-100 outline-none focus:border-green-500"
+        placeholder="Enter priority"
+        className="
+          w-full min-h-[44px]
+          rounded-2xl
+          border border-white/10
+          bg-slate-950/70
+          px-4 py-2
+          text-sm font-semibold text-white
+          outline-none
+          transition
+          placeholder:text-slate-500
+          focus:border-emerald-400/70
+          focus:ring-2 focus:ring-emerald-500/20
+        "
       />
 
       <button
@@ -188,17 +209,36 @@ export const EditPriority: React.FC<PriorityInputProps> = ({ teamNumber }) => {
           void handleSubmit();
         }}
         disabled={isSubmitting}
-        className={`rounded-md px-2 py-1 text-xs font-semibold text-white transition ${
-          isSubmitting
-            ? "cursor-not-allowed bg-gray-600"
-            : "bg-green-700 hover:bg-green-600 active:bg-green-800"
-        }`}
+        className={`
+          min-h-[44px]
+          rounded-2xl
+          px-4 py-2
+          text-sm font-black tracking-wide text-white
+          transition
+          ${
+            isSubmitting
+              ? "cursor-not-allowed bg-slate-700/70 border border-white/10"
+              : "bg-emerald-600/90 hover:bg-emerald-500 active:bg-emerald-700 shadow-lg"
+          }
+        `}
       >
         {isSubmitting ? "Saving..." : "Save"}
       </button>
 
-      {feedbackMessage && (
-        <p className="text-[10px] text-green-200">{feedbackMessage}</p>
+      {feedbackMessage ? (
+        <p
+          className={`text-xs text-center ${
+            feedbackMessage.toLowerCase().includes("error")
+              ? "text-red-300"
+              : "text-slate-400"
+          }`}
+        >
+          {feedbackMessage}
+        </p>
+      ) : (
+        <p className="text-[11px] text-slate-500 text-center">
+          Save a custom team priority
+        </p>
       )}
     </div>
   );
