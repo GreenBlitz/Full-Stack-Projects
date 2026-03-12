@@ -32,6 +32,7 @@ import { splitByDistances } from "../fuel/distance-split";
 import { calculateFuelStatisticsOfShift } from "../fuel/fuel-general";
 import { calculateAverageBPS } from "../fuel/calculations/fuel-averaging";
 import { getTeamBPSes } from "./bps-router";
+import { compareMatches } from "@repo/scouting_types";
 
 export const teamsRouter = Router();
 
@@ -124,21 +125,9 @@ const processTeam = (bpses: BPS[], forms: ScoutingForm[]): TeamData => {
   };
 };
 
-const MATCH_TYPES_ORDER: Record<Match["type"], number> = {
-  practice: 0,
-  qualification: 1,
-  playoff: 2,
-};
-const compareForms = (form1: ScoutingForm, form2: ScoutingForm) => {
-  const isTypeSame = form1.match.type === form2.match.type;
 
-  if (!isTypeSame) {
-    return (
-      MATCH_TYPES_ORDER[form1.match.type] - MATCH_TYPES_ORDER[form2.match.type]
-    );
-  }
-  return form1.match.number - form2.match.number;
-};
+const compareForms = (form1: ScoutingForm, form2: ScoutingForm) =>
+  compareMatches(form1.match, form2.match);
 
 const NO_RECENCY_STARTING_INDEX = 0;
 
