@@ -20,6 +20,7 @@ import { useState, useEffect, useMemo } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { HiOutlineChevronUpDown } from "react-icons/hi2";
 import { DisplayPriority } from "../components/priority/DisplayPriority";
+import { DisplayPriorityCell } from "../components/priority/DisplayPriorityCell";
 
 interface TableRow {
   teamNumber: number;
@@ -125,7 +126,7 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
         id: "priority",
         header: "Priority",
         cell: (info) => (
-          <DisplayPriority teamNumber={info.row.original.teamNumber} />
+          <DisplayPriorityCell teamNumber={info.row.original.teamNumber} />
         ),
       }),
     ],
