@@ -18,6 +18,7 @@ import {
   fold,
   bindTo,
   bind,
+  filterOrElse,
 } from "fp-ts/lib/TaskEither";
 import { mongofyQuery, flatTryCatch } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
@@ -27,6 +28,7 @@ import {
   generalCalculateFuel,
 } from "../fuel/fuel-general";
 import { getTeamBPS } from "./bps-router";
+import { isSingleTeam } from "../verification/functions";
 
 export const compareRouter = Router();
 
@@ -112,20 +114,10 @@ compareRouter.get("/", async (req, res) => {
         reason: `DB Error: ${error}`,
       }),
     ),
-    flatMap((forms) => {
-      if (isEmpty(forms)) return right(forms);
-
-      const firstTeam = firstElement(forms).teamNumber;
-      const isSameTeam = forms.every((f) => f.teamNumber === firstTeam);
-
-      return isSameTeam
-        ? right(forms)
-        : left({
-            status: StatusCodes.BAD_REQUEST,
-            reason:
-              "Compare Two Validation Error: Forms contain data from multiple different teams.",
-          });
-    }),
+    filterOrElse(isSingleTeam, () => ({
+      status: StatusCodes.BAD_REQUEST,
+      reason: "Compare: Forms contain data from multiple different teams.",
+    })),
     bindTo("teamForms"),
     bind("bpses", ({ teamForms }) =>
       getTeamBPS(firstElement(teamForms).teamNumber),

@@ -38,7 +38,8 @@ const createTinder = (forms: ScoutingForm[], bpses: Record<string, BPS[]>) => ({
   },
 });
 
-tinderRouter.get("/team", (req, res) =>
+// בס"ד
+tinderRouter.get("/", (req, res) =>
   pipe(
     getFormsCollection(),
     flatTryCatch(
@@ -48,7 +49,6 @@ tinderRouter.get("/team", (req, res) =>
         reason: `DB Error: ${error}`,
       }),
     ),
-
     filterOrElse(isSingleTeam, () => ({
       status: StatusCodes.BAD_REQUEST,
       reason:
@@ -57,11 +57,12 @@ tinderRouter.get("/team", (req, res) =>
     flatMap((forms) =>
       getTeamBPSes({ [firstElement(forms).teamNumber]: forms }),
     ),
-
     map((teams) => {
       const firstTeam = firstElement(Object.values(teams));
-      createTinder(firstTeam.forms, {
-        [firstElement(firstTeam.forms).teamNumber]: firstTeam.bpses,
+      const teamNumber = firstElement(firstTeam.forms).teamNumber;
+      
+      return createTinder(firstTeam.forms, {
+        [teamNumber]: firstTeam.bpses,
       });
     }),
     bindTo("teamTinderStats"),

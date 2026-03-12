@@ -1,9 +1,10 @@
 //בס"ד
 import React from "react";
 import Burst from "./Burst";
+import type { VideoPlayerHandle } from "@repo/video-utils";
 
 interface CounterProps {
-  videoRef?: React.RefObject<HTMLVideoElement | null>;
+  playerRef?: React.RefObject<VideoPlayerHandle | null>;
 }
 
 export interface BurstData {
@@ -14,7 +15,7 @@ export interface BurstData {
   scoredArray: number[];
 }
 
-const Counter: React.FC<CounterProps> = ({ videoRef }) => {
+const Counter: React.FC<CounterProps> = ({ playerRef }) => {
   const COUNTER_STARTING_VALUE = 0;
   const increment = 1;
 
@@ -66,18 +67,27 @@ const Counter: React.FC<CounterProps> = ({ videoRef }) => {
     <>
       <div>
         <Burst
-          videoRef={videoRef}
+          playerRef={playerRef}
           data={burstsArray[currentBurstIndex]}
           onChange={updateCurrentBurst}
         />
-        <div>
-          <button className="leftButton settingsButton" onClick={goBack}>
+        <div className="flex gap-1 justify-center mt-2">
+          <button
+            className="w-10 h-10 bg-slate-800 text-white rounded-l-xl border border-white/5 font-medium hover:bg-slate-700 transition-colors"
+            onClick={goBack}
+          >
             {"<<<"}
           </button>
-          <button className="centerButton settingsButton" onClick={addNewBurst}>
+          <button
+            className="w-10 h-10 bg-slate-800 text-white rounded-none border border-white/5 font-medium hover:bg-slate-700 transition-colors"
+            onClick={addNewBurst}
+          >
             +
           </button>
-          <button className="rightButton settingsButton" onClick={goForward}>
+          <button
+            className="w-10 h-10 bg-slate-800 text-white rounded-r-xl border border-white/5 font-medium hover:bg-slate-700 transition-colors"
+            onClick={goForward}
+          >
             {">>>"}
           </button>
         </div>

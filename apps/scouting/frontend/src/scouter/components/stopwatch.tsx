@@ -53,6 +53,15 @@ const Stopwatch: React.FC<StopwatchProps> = ({
     return Date.now() - originTime;
   };
 
+  const formatTime = () => {
+    const seconds = String(calculateSeconds()).padStart(DECIMAL_PLACES, "0");
+    const milliseconds = String(calculateMilliSeconds()).padStart(
+      DECIMAL_PLACES_MILLISECONDS,
+      "0",
+    );
+    return `${seconds}:${milliseconds}`;
+  };
+
   useEffect(() => {
     if (!isRunning) {
       return undefined;
@@ -93,15 +102,6 @@ const Stopwatch: React.FC<StopwatchProps> = ({
     setIsRunning(false);
     reset();
     onStop?.();
-  };
-
-  const formatTime = () => {
-    const seconds = String(calculateSeconds()).padStart(DECIMAL_PLACES, "0");
-    const milliseconds = String(calculateMilliSeconds()).padStart(
-      DECIMAL_PLACES_MILLISECONDS,
-      "0",
-    );
-    return `${seconds}:${milliseconds}`;
   };
 
   const isCompact = size === "compact";

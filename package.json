@@ -4,6 +4,7 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "dotenv -e .dev.env -e .public.env -e .secret.env -- turbo run dev",
+    "dev:scouting": "dotenv -e .dev.env -e .public.env -e .secret.env -- turbo run dev --filter=scouting*",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "serve": "dotenv -e .public.env -e .secret.env -- turbo run serve",

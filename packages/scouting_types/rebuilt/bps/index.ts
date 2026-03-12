@@ -1,4 +1,5 @@
-import { Match, matchCodec, point, Point, ShootEvent } from "../scouting_form";
+import type { Match, Point, ShootEvent } from "../scouting_form";
+import { matchCodec, point } from "../scouting_form";
 import * as t from "io-ts";
 
 const bpsEventCodec = t.type({
