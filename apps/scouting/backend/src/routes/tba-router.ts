@@ -23,13 +23,10 @@ import {
   fromEither,
   tryCatch,
   map,
-  mapLeft,
   chainFirstW,
-  bindTo,
 } from "fp-ts/lib/TaskEither";
 import { flow, pipe } from "fp-ts/lib/function";
 import { map as taskMap } from "fp-ts/lib/Task";
-import * as t from "io-ts";
 import type { Type } from "io-ts";
 import { getDb } from "../middleware/db";
 import { getMax, isEmpty } from "@repo/array-functions";
@@ -76,10 +73,6 @@ const fetchTba = <U>(
     ),
   ) satisfies TaskEither<EndpointError, U>;
 
-/**
- * Insert fetched matches into Mongo.
- * We ignore the insert result for now; endpoint returns the matches array anyway.
- */
 const insertMatches = (matches: TBAMatches2026) =>
   pipe(
     getCollection(),
@@ -94,11 +87,6 @@ const insertMatches = (matches: TBAMatches2026) =>
     ),
   );
 
-/**
- * IMPORTANT FIX:
- * Mongo returns WithId<T>[] from find().toArray(), but your fetched matches are T[].
- * So we strip _id here and return plain TBAMatches.
- */
 const getStoredMatches = pipe(
   getCollection(),
   flatMap((collection) =>
@@ -120,12 +108,6 @@ const getMaxMatch = (matches: TBAMatches2026): Match => {
   const lastMatch = getMax(matches, (match) => match.match_number);
   return tbaMatchToRegularMatch(lastMatch);
 };
-
-/**
- * IMPORTANT FIXES:
- * 1) booleanFold order: fold(onFalse, onTrue)
- * 2) insert side-effect: use chainFirstW with TaskEither (NOT chainFirstTaskK)
- */
 
 const DID_COMPARE_FAIL = 0;
 const getMatches = flow(
@@ -169,7 +151,3 @@ tbaRouter.post("/matches", async (req, res) => {
     ),
   )();
 });
-
-/**
- * Optional: dev helper (don’t leave this in prod)
- */
