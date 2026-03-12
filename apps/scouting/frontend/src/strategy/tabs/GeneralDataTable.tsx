@@ -19,6 +19,7 @@ import type React from "react";
 import { useState, useEffect, useMemo } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { HiOutlineChevronUpDown } from "react-icons/hi2";
+import { DisplayPriority } from "../components/priority/DisplayPriority";
 
 interface TableRow {
   teamNumber: number;
@@ -119,6 +120,14 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
       createColumn("passed", "text-orange-400 font-medium"),
       createColumn("climb", "text-purple-400 font-bold"),
       createColumn("max climb", "text-slate-400 uppercase text-[10px]"),
+
+      columnHelper.display({
+        id: "priority",
+        header: "Priority",
+        cell: (info) => (
+          <DisplayPriority teamNumber={info.row.original.teamNumber} />
+        ),
+      }),
     ],
     [gameTime, sorting],
   );
