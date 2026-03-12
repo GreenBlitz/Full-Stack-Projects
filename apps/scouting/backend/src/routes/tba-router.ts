@@ -34,15 +34,21 @@ import { getMax, isEmpty } from "@repo/array-functions";
 import { fold as booleanFold } from "fp-ts/boolean";
 import { foldResponse } from "@repo/flow-utils";
 import { compareMatches, tbaMatchToRegularMatch } from "@repo/scouting_types";
+import { TeamOPR } from "@repo/scouting_types";
 
 export const tbaRouter = Router();
 
 const TBA_KEY = process.env.TBA_API_KEY;
 const TBA_URL = "https://www.thebluealliance.com/api/v3";
 
-const getCollection = flow(
+const getMatchesCollection = flow(
   getDb,
-  map((db) => db.collection<TBAMatches2026[number]>("tba")),
+  map((db) => db.collection<TBAMatches2026[number]>("tba/matches")),
+);
+
+const getOPRCollection = flow(
+  getDb,
+  map((db) => db.collection<TeamOPR>("tba/opr")),
 );
 
 const fetchTba = <U>(
@@ -74,7 +80,7 @@ const fetchTba = <U>(
 
 const insertMatches = (matches: TBAMatches2026) =>
   pipe(
-    getCollection(),
+    getMatchesCollection(),
     flatTryCatch(
       (collection) => collection.insertMany(matches),
       (error) => ({
@@ -85,7 +91,7 @@ const insertMatches = (matches: TBAMatches2026) =>
   );
 
 const getStoredMatches = pipe(
-  getCollection(),
+  getMatchesCollection(),
   flatTryCatch(
     (collection) => collection.find().toArray(),
     (error) => ({
