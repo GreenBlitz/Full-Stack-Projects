@@ -101,8 +101,6 @@ export const TeamTab: FC = () => {
         scoutedTeams={scoutedTeams ?? []}
       />
       <PhaseToggle activeMode={phase} setActiveMode={setPhase} />
-      <EditPriority teamNumber={teamNumber as number}></EditPriority>
-      <DisplayPriority teamNumber={teamNumber as number} />
       {data && (
         <AccuracyChart
           metrics={{
@@ -211,6 +209,8 @@ export const TeamTab: FC = () => {
       {teamData && phase === "fullGame" && (
         <MetricsChart {...teamData.metrics} />
       )}
+      <DisplayPriority teamNumber={teamNumber as number} />
+
     </div>
   );
 };
