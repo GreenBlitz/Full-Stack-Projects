@@ -22,6 +22,8 @@ import { HeatMap } from "../../components/heatmap/HeatMap";
 import { redField } from "@repo/rebuilt_map";
 import { fetchTeamNumbers } from "../../fetches";
 import { PieGraph } from "../../components/PieChart";
+import { DisplayPriority } from "../../components/priority/DisplayPriority";
+import { EditPriority } from "../../components/priority/EditPriority";
 
 const METER_AND_HALF_CENTIMETERS = 150;
 const THREE_METER_CENTIMETERS = 300;
@@ -99,7 +101,8 @@ export const TeamTab: FC = () => {
         scoutedTeams={scoutedTeams ?? []}
       />
       <PhaseToggle activeMode={phase} setActiveMode={setPhase} />
-
+      <EditPriority teamNumber={teamNumber as number}></EditPriority>
+      <DisplayPriority teamNumber={teamNumber as number} />
       {data && (
         <AccuracyChart
           metrics={{
@@ -113,7 +116,6 @@ export const TeamTab: FC = () => {
           }}
         />
       )}
-
       {data && (
         <div className={graphSection}>
           <PieGraph
