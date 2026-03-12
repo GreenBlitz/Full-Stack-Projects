@@ -117,6 +117,15 @@ const PreMatchTab: FC<TabProps> = ({
     );
     setTbaMatches(newTBAMatches);
   };
+  const handleManual = () => {
+    const input = window.prompt("Enter the team number:");
+
+    if (input === null) return;
+
+    const teamNumber = parseInt(input, 10);
+
+    setForm((prev) => ({ ...prev, teamNumber }));
+  };
 
   useEffect(() => {
     setAlliance(robotPositionInfo.alliance);
@@ -198,8 +207,12 @@ const PreMatchTab: FC<TabProps> = ({
       <InputBox name="Match Type">
         <select
           className="w-90.75 h-full"
-          defaultValue={match.type}
+          value={match.type}
           onChange={(event) => {
+            if (event.target.value === "manual") {
+              handleManual();
+              return;
+            }
             setMatch((prev) => ({
               ...prev,
               type: event.target.value as Match["type"],
@@ -209,6 +222,7 @@ const PreMatchTab: FC<TabProps> = ({
           <option value="practice">Practice</option>
           <option value="qualification">Qualification</option>
           <option value="playoff">Playoff</option>
+          <option value="manual">Manual</option>
         </select>
       </InputBox>
       <InputBox name="Alliance">
