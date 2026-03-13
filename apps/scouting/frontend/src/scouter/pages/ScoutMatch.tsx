@@ -254,26 +254,52 @@ export const ScoutMatch: FC = () => {
       return true;
     return false;
   };
-  const { elapsedMs } = useMatchTimer(ITERATION_PERIOD_MS);
+  const { elapsedMs, isRunning } = useMatchTimer(ITERATION_PERIOD_MS);
+
+  const previousIsRunningRef = useRef(isRunning);
+
+  const getTabIndexFromElapsedMs = (elapsedMs: number): number => {
+    if (elapsedMs <= 0) return 1;
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[1]) return 2;
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[2]) return 3;
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[3]) return 4;
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[4]) return 5;
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[5]) return 6;
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[6]) return 7;
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[7]) return 8;
+    return 9;
+  };
 
   useEffect(() => {
     setBackgroundColor(
       hasShiftJustEnded(elapsedMs) ? "bg-amber-400/40" : "bg-black/40",
     );
 
-    if (activeTabIndex === 1) return;
+    const hasJustStartedOrResumed =
+      previousIsRunningRef.current === false && isRunning === true;
 
-    if (elapsedMs <= 0) return;
-    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[1]) return setActiveTab(2);
-    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[2]) return setActiveTab(3);
-    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[3]) return setActiveTab(4);
-    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[4]) return setActiveTab(5);
-    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[5]) return setActiveTab(6);
-    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[6]) return setActiveTab(7);
-    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[7]) return setActiveTab(8);
-    setActiveTab(9)
+    if (elapsedMs <= 0) {
+      previousIsRunningRef.current = isRunning;
+      return;
+    }
 
-  }, [elapsedMs, activeTabIndex]);
+    const nextTab = getTabIndexFromElapsedMs(elapsedMs);
+
+    if (activeTabIndex === 1) {
+      if (hasJustStartedOrResumed) {
+        setActiveTab(nextTab);
+      }
+
+      previousIsRunningRef.current = isRunning;
+      return;
+    }
+
+    if (activeTabIndex !== nextTab) {
+      setActiveTab(nextTab);
+    }
+
+    previousIsRunningRef.current = isRunning;
+  }, [elapsedMs, isRunning, activeTabIndex, setActiveTab]);
   return (
     <div
       className="max-h-screen bg-black p-4 md:p-6 flex items-center justify-center
