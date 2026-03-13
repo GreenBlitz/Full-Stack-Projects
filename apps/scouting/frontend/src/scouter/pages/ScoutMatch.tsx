@@ -259,7 +259,7 @@ export const ScoutMatch: FC = () => {
   const previousIsRunningRef = useRef(isRunning);
 
   const getTabIndexFromElapsedMs = (elapsedMs: number): number => {
-    if (elapsedMs <= 0) return 1;
+    if (elapsedMs <= 0) return 2;
     if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[1]) return 2;
     if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[2]) return 3;
     if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[3]) return 4;
@@ -275,26 +275,19 @@ export const ScoutMatch: FC = () => {
       hasShiftJustEnded(elapsedMs) ? "bg-amber-400/40" : "bg-black/40",
     );
 
-    const hasJustStartedOrResumed =
-      previousIsRunningRef.current === false && isRunning === true;
-
-    if (elapsedMs <= 0) {
-      previousIsRunningRef.current = isRunning;
-      return;
-    }
+    const hasJustStartedOrResumed = !previousIsRunningRef.current && isRunning;
 
     const nextTab = getTabIndexFromElapsedMs(elapsedMs);
 
-    if (activeTabIndex === 1) {
-      if (hasJustStartedOrResumed) {
-        setActiveTab(nextTab);
-      }
+    const shouldSyncFromTabOne =
+      activeTabIndex === 1 && hasJustStartedOrResumed;
 
-      previousIsRunningRef.current = isRunning;
-      return;
-    }
+    const shouldSyncNormally = activeTabIndex !== 1 && elapsedMs > 0;
 
-    if (activeTabIndex !== nextTab) {
+    if (
+      (shouldSyncFromTabOne || shouldSyncNormally) &&
+      activeTabIndex !== nextTab
+    ) {
       setActiveTab(nextTab);
     }
 
