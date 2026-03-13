@@ -45,15 +45,15 @@ const writeState = (next: TimerState) => {
 const ITERATION_PERIOD_MS = 10;
 
 export const useMatchTimer = (tickMs = ITERATION_PERIOD_MS) => {
-  const [state, setState] = useState<TimerState>(() => readState());
+  const [timeState, setTimeState] = useState<TimerState>(() => readState());
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     const onStorage = (e: StorageEvent) => {
       if (e.key !== STORAGE_KEY) return;
-      setState(readState());
+      setTimeState(readState());
     };
     const onLocal = () => {
-      setState(readState());
+      setTimeState(readState());
     };
     window.addEventListener("storage", onStorage);
     window.addEventListener("match-timer-updated", onLocal);
@@ -65,7 +65,7 @@ export const useMatchTimer = (tickMs = ITERATION_PERIOD_MS) => {
   }, []);
 
   useEffect(() => {
-    if (!state.isRunning) return undefined;
+    if (!timeState.isRunning) return undefined;
 
     const id = window.setInterval(() => {
       setNow(Date.now());
@@ -73,14 +73,14 @@ export const useMatchTimer = (tickMs = ITERATION_PERIOD_MS) => {
     return () => {
       window.clearInterval(id);
     };
-  }, [state.isRunning, tickMs]);
+  }, [timeState.isRunning, tickMs]);
 
   const elapsedMs = useMemo(() => {
-    if (!state.isRunning || state.startTime === null) {
-      return state.elapsedBeforeStart;
+    if (!timeState.isRunning || timeState.startTime === null) {
+      return timeState.elapsedBeforeStart;
     }
-    return state.elapsedBeforeStart + (now - state.startTime);
-  }, [state, now]);
+    return timeState.elapsedBeforeStart + (now - timeState.startTime);
+  }, [timeState, now]);
 
   const start = () => {
     const current = readState();
@@ -92,7 +92,7 @@ export const useMatchTimer = (tickMs = ITERATION_PERIOD_MS) => {
       elapsedBeforeStart: current.elapsedBeforeStart,
     };
     writeState(next);
-    setState(next);
+    setTimeState(next);
   };
 
   const stop = () => {
@@ -108,14 +108,14 @@ export const useMatchTimer = (tickMs = ITERATION_PERIOD_MS) => {
       elapsedBeforeStart: nextElapsed,
     };
     writeState(next);
-    setState(next);
+    setTimeState(next);
   };
 
   const reset = () => {
     writeState(defaultState);
-    setState(defaultState);
+    setTimeState(defaultState);
     setNow(Date.now());
   };
 
-  return { isRunning: state.isRunning, elapsedMs, start, stop, reset };
+  return { isRunning: timeState.isRunning, elapsedMs, start, stop, reset };
 };
