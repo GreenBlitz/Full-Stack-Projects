@@ -174,7 +174,7 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
   );
 };
 
-export type ShiftNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7;
+export type ShiftNumber = "Auto" | "Transition" | "Shift1" | "Shift2" | "Shift3" | "Shift4" | "Endgame";
 const AUTO_END = 20_000;
 const TRANSITION_END = 30_000;
 
@@ -200,56 +200,56 @@ export const ScoutMatch: FC = () => {
   }, [activeTabIndex]);
 
   const SHIFT_END_TIME_MS: Record<ShiftNumber, number> = {
-    1: AUTO_END,
-    2: TRANSITION_END,
-    3: SHIFT_1_END,
-    4: SHIFT_2_END,
-    5: SHIFT_3_END,
-    6: SHIFT_4_END,
-    7: MATCH_END,
+    Auto: AUTO_END,
+    Transition: TRANSITION_END,
+    Shift1: SHIFT_1_END,
+    Shift2: SHIFT_2_END,
+    Shift3: SHIFT_3_END,
+    Shift4: SHIFT_4_END,
+    Endgame: MATCH_END,
   };
 
   const MILLISECONDS_IN_FIVE_SECONDS = 5000;
 
   const SHIFT_EXTRA_END_TIME_MS: Record<ShiftNumber, number> = {
-    1: AUTO_END + MILLISECONDS_IN_FIVE_SECONDS,
-    2: TRANSITION_END + MILLISECONDS_IN_FIVE_SECONDS,
-    3: SHIFT_1_END + MILLISECONDS_IN_FIVE_SECONDS,
-    4: SHIFT_2_END + MILLISECONDS_IN_FIVE_SECONDS,
-    5: SHIFT_3_END + MILLISECONDS_IN_FIVE_SECONDS,
-    6: SHIFT_4_END + MILLISECONDS_IN_FIVE_SECONDS,
-    7: MATCH_END,
+    Auto: AUTO_END + MILLISECONDS_IN_FIVE_SECONDS,
+    Transition: TRANSITION_END + MILLISECONDS_IN_FIVE_SECONDS,
+    Shift1: SHIFT_1_END + MILLISECONDS_IN_FIVE_SECONDS,
+    Shift2: SHIFT_2_END + MILLISECONDS_IN_FIVE_SECONDS,
+    Shift3: SHIFT_3_END + MILLISECONDS_IN_FIVE_SECONDS,
+    Shift4: SHIFT_4_END + MILLISECONDS_IN_FIVE_SECONDS,
+    Endgame: MATCH_END,
   };
 
   const hasShiftJustEnded = (elapsedMs: number): boolean => {
     if (
-      SHIFT_END_TIME_MS[1] <= elapsedMs &&
-      elapsedMs <= SHIFT_EXTRA_END_TIME_MS[1]
+      SHIFT_END_TIME_MS.Auto <= elapsedMs &&
+      elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Auto
     )
       return true;
     if (
-      SHIFT_END_TIME_MS[2] <= elapsedMs &&
-      elapsedMs <= SHIFT_EXTRA_END_TIME_MS[2]
+      SHIFT_END_TIME_MS.Transition <= elapsedMs &&
+      elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Transition
     )
       return true;
     if (
-      SHIFT_END_TIME_MS[3] <= elapsedMs &&
-      elapsedMs <= SHIFT_EXTRA_END_TIME_MS[3]
+      SHIFT_END_TIME_MS.Shift1 <= elapsedMs &&
+      elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Shift1
     )
       return true;
     if (
-      SHIFT_END_TIME_MS[4] <= elapsedMs &&
-      elapsedMs <= SHIFT_EXTRA_END_TIME_MS[4]
+      SHIFT_END_TIME_MS.Shift2 <= elapsedMs &&
+      elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Shift2
     )
       return true;
     if (
-      SHIFT_END_TIME_MS[5] <= elapsedMs &&
-      elapsedMs <= SHIFT_EXTRA_END_TIME_MS[5]
+      SHIFT_END_TIME_MS.Shift3 <= elapsedMs &&
+      elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Shift3
     )
       return true;
     if (
-      SHIFT_END_TIME_MS[6] <= elapsedMs &&
-      elapsedMs <= SHIFT_EXTRA_END_TIME_MS[6]
+      SHIFT_END_TIME_MS.Shift4 <= elapsedMs &&
+      elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Shift4
     )
       return true;
     return false;
@@ -260,13 +260,13 @@ export const ScoutMatch: FC = () => {
 
   const getTabIndexFromElapsedMs = (elapsedMs: number): number => {
     if (elapsedMs <= 0) return 2;
-    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[1]) return 2;
-    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[2]) return 3;
-    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[3]) return 4;
-    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[4]) return 5;
-    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[5]) return 6;
-    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[6]) return 7;
-    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS[7]) return 8;
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Auto) return 2;
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Transition) return 3;
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Shift1) return 4;
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Shift2) return 5;
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Shift3) return 6;
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Shift4) return 7;
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Endgame) return 8;
     return 9;
   };
 
