@@ -29,9 +29,9 @@ export const TeamSelect: FC<TeamSelectProps> = ({
   );
 
   return (
-    <div className="flex flex-col gap-3 w-full max-w-md mx-auto p-4 bg-slate-900/40 backdrop-blur-sm rounded-2xl border border-white/10 shadow-2xl">
-      <div className="flex flex-col sm:flex-row gap-3 w-full">
-        <div className="relative flex-1">
+    <div className="w-full max-w-md mx-auto p-4 bg-slate-900/40 backdrop-blur-sm rounded-2xl border border-white/10 shadow-2xl">
+      <div className="grid grid-cols-1 sm:grid-cols-[1fr_2fr_auto] gap-3 items-start w-full">
+        <div className="relative">
           <div className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-500/50">
             <LuHash size={16} />
           </div>
@@ -50,7 +50,7 @@ export const TeamSelect: FC<TeamSelectProps> = ({
           />
         </div>
 
-        <div className="relative flex-[2]">
+        <div className="relative">
           <div className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-500/50 pointer-events-none">
             <LuUsers size={16} />
           </div>
@@ -123,13 +123,13 @@ export const TeamSelect: FC<TeamSelectProps> = ({
             className="w-20 pl-10 pr-2 py-3 bg-slate-950/50 border border-white/5 rounded-xl text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500/50 transition-all font-mono"
           />
         </div>
-      </div>
 
-      {teamNumber != null && teamNumber !== EMPTY_INPUT && (
-        <div className="w-full">
-          <EditPriority teamNumber={teamNumber} />
-        </div>
-      )}
+        {teamNumber != null && teamNumber !== EMPTY_INPUT && (
+          <div className="sm:col-start-2 sm:col-span-1">
+            <EditPriority teamNumber={teamNumber} />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
