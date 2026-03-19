@@ -200,10 +200,7 @@ export const EditPriority: React.FC<EditPriorityProps> = ({
         <option value="" disabled>
           Select priority
         </option>
-        <option key={0} value={0}>
-          Not Interesting
-        </option>
-        {Array.from({ length: 10 }, (_, i) => i + 1).map((num) => (
+        {Array.from({ length: 11 }, (_, i) => i).map((num) => (
           <option key={num} value={num}>
             {num}
           </option>
