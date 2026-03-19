@@ -31,26 +31,6 @@ export const fetchATeamPriority = async (
   }
 };
 
-export const fetchAllTeamsPriorities = async (): Promise<TeamPriority[]> => {
-  try {
-    const response = await fetch(priorityUrl, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Server Error: ${errorText}`);
-    }
-
-    const data = await response.json();
-    return data.priorities as TeamPriority[];
-  } catch (err) {
-    console.error("Fetch failed:", err);
-    throw err;
-  }
-};
-
 export const submitPriority = async (
   teamPriority: TeamPriority,
 ): Promise<{ message: string }> => {
@@ -78,11 +58,19 @@ export const submitPriority = async (
 
 const PRIORITY_STORAGE_KEY = "scouting-priority";
 
-interface PriorityInputProps {
+interface EditPriorityProps {
   teamNumber: number;
+  initialPriority?: number | null;
+  onSaved?: (savedPriority: TeamPriority) => void;
+  onCancel?: () => void;
 }
 
-export const EditPriority: React.FC<PriorityInputProps> = ({ teamNumber }) => {
+export const EditPriority: React.FC<EditPriorityProps> = ({
+  teamNumber,
+  initialPriority,
+  onSaved,
+  onCancel,
+}) => {
   const [priority, setPriority] = useState<number | "">("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState<string>("");
@@ -90,6 +78,11 @@ export const EditPriority: React.FC<PriorityInputProps> = ({ teamNumber }) => {
   useEffect(() => {
     if (!Number.isFinite(teamNumber)) {
       setPriority("");
+      return;
+    }
+
+    if (typeof initialPriority === "number") {
+      setPriority(initialPriority);
       return;
     }
 
@@ -106,7 +99,7 @@ export const EditPriority: React.FC<PriorityInputProps> = ({ teamNumber }) => {
     if (!Number.isNaN(parsed)) {
       setPriority(parsed);
     }
-  }, [teamNumber]);
+  }, [teamNumber, initialPriority]);
 
   useEffect(() => {
     if (!Number.isFinite(teamNumber)) return;
@@ -156,7 +149,9 @@ export const EditPriority: React.FC<PriorityInputProps> = ({ teamNumber }) => {
         priority,
       });
 
+      const savedPriority = { teamNumber, priority };
       setFeedbackMessage("Priority saved successfully.");
+      onSaved?.(savedPriority);
     } catch (error) {
       console.error(error);
       setFeedbackMessage("Error saving priority.");
@@ -203,27 +198,49 @@ export const EditPriority: React.FC<PriorityInputProps> = ({ teamNumber }) => {
         "
       />
 
-      <button
-        type="button"
-        onClick={() => {
-          void handleSubmit();
-        }}
-        disabled={isSubmitting}
-        className={`
-          min-h-[44px]
-          rounded-2xl
-          px-4 py-2
-          text-sm font-black tracking-wide text-white
-          transition
-          ${
-            isSubmitting
-              ? "cursor-not-allowed bg-slate-700/70 border border-white/10"
-              : "bg-emerald-600/90 hover:bg-emerald-500 active:bg-emerald-700 shadow-lg"
-          }
-        `}
-      >
-        {isSubmitting ? "Saving..." : "Save"}
-      </button>
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={() => {
+            void handleSubmit();
+          }}
+          disabled={isSubmitting}
+          className={`
+            flex-1 min-h-[44px]
+            rounded-2xl
+            px-4 py-2
+            text-sm font-black tracking-wide text-white
+            transition
+            ${
+              isSubmitting
+                ? "cursor-not-allowed bg-slate-700/70 border border-white/10"
+                : "bg-emerald-600/90 hover:bg-emerald-500 active:bg-emerald-700 shadow-lg"
+            }
+          `}
+        >
+          {isSubmitting ? "Saving..." : "Save"}
+        </button>
+
+        {onCancel ? (
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={isSubmitting}
+            className="
+              min-h-[44px]
+              rounded-2xl
+              px-4 py-2
+              text-sm font-black tracking-wide text-white
+              transition
+              border border-white/10
+              bg-slate-800/70
+              hover:bg-slate-700/70
+            "
+          >
+            Cancel
+          </button>
+        ) : null}
+      </div>
 
       {feedbackMessage ? (
         <p

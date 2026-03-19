@@ -4,6 +4,7 @@ import { useMemo, type FC } from "react";
 import { FaRegClock } from "react-icons/fa";
 import { LuUsers, LuHash } from "react-icons/lu";
 import { EditPriority } from "../../components/priority/EditPriority";
+import { PriorityCard } from "../../components/priority/PriorityCard";
 
 interface TeamSelectProps {
   teamNumber?: number;
@@ -65,7 +66,11 @@ export const TeamSelect: FC<TeamSelectProps> = ({
             }}
             value={teamNumber ?? "none"}
           >
-            <option disabled value="none" className="bg-slate-900 text-slate-500">
+            <option
+              disabled
+              value="none"
+              className="bg-slate-900 text-slate-500"
+            >
               Select Team
             </option>
 
@@ -126,7 +131,7 @@ export const TeamSelect: FC<TeamSelectProps> = ({
 
         {teamNumber != null && teamNumber !== EMPTY_INPUT && (
           <div className="sm:col-start-2 sm:col-span-1">
-            <EditPriority teamNumber={teamNumber} />
+            <PriorityCard teamNumber={teamNumber} />{" "}
           </div>
         )}
       </div>
