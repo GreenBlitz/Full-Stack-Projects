@@ -177,12 +177,13 @@ export const EditPriority: React.FC<EditPriorityProps> = ({
         Edit Priority
       </label>
 
-      <input
+      <select
         id="priority"
-        type="number"
-        value={priority}
-        onChange={handleChange}
-        placeholder="Enter priority"
+        value={priority === "" ? "" : String(priority)}
+        onChange={(e) => {
+          const value = e.target.value;
+          setPriority(value === "" ? "" : Number(value));
+        }}
         className="
           w-full min-h-[44px]
           rounded-2xl
@@ -192,11 +193,22 @@ export const EditPriority: React.FC<EditPriorityProps> = ({
           text-sm font-semibold text-white
           outline-none
           transition
-          placeholder:text-slate-500
           focus:border-emerald-400/70
           focus:ring-2 focus:ring-emerald-500/20
         "
-      />
+      >
+        <option value="" disabled>
+          Select priority
+        </option>
+        <option key={0} value={0}>
+          Not Interesting
+        </option>
+        {Array.from({ length: 10 }, (_, i) => i + 1).map((num) => (
+          <option key={num} value={num}>
+            {num}
+          </option>
+        ))}
+      </select>
 
       <div className="flex gap-2">
         <button
