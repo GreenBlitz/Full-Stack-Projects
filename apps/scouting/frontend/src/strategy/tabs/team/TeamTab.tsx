@@ -209,8 +209,6 @@ export const TeamTab: FC = () => {
       {teamData && phase === "fullGame" && (
         <MetricsChart {...teamData.metrics} />
       )}
-      <DisplayPriority teamNumber={teamNumber as number} />
-
     </div>
   );
 };
