@@ -56,7 +56,7 @@ export const submitPriority = async (
   }
 };
 
-const PRIORITY_STORAGE_KEY = "scouting-priority";
+const PRIORITY_STORAGE_KEY = "priority";
 
 interface EditPriorityProps {
   teamNumber: number;
@@ -71,16 +71,11 @@ export const EditPriority: React.FC<EditPriorityProps> = ({
   onSaved,
   onCancel,
 }) => {
-  const [priority, setPriority] = useState<number | "">("");
+  const [priority, setPriority] = useState<number>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState<string>("");
 
   useEffect(() => {
-    if (!Number.isFinite(teamNumber)) {
-      setPriority("");
-      return;
-    }
-
     if (typeof initialPriority === "number") {
       setPriority(initialPriority);
       return;
@@ -91,7 +86,6 @@ export const EditPriority: React.FC<EditPriorityProps> = ({
     );
 
     if (!savedValue) {
-      setPriority("");
       return;
     }
 
@@ -106,7 +100,7 @@ export const EditPriority: React.FC<EditPriorityProps> = ({
 
     const storageKey = `${PRIORITY_STORAGE_KEY}-${teamNumber}`;
 
-    if (priority === "") {
+    if (priority === undefined) {
       localStorage.removeItem(storageKey);
       return;
     }
@@ -114,20 +108,6 @@ export const EditPriority: React.FC<EditPriorityProps> = ({
     localStorage.setItem(storageKey, String(priority));
   }, [priority, teamNumber]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-
-    if (value === "") {
-      setPriority("");
-      return;
-    }
-
-    const parsed = Number(value);
-
-    if (Number.isNaN(parsed)) return;
-
-    setPriority(parsed);
-  };
 
   const handleSubmit = async () => {
     if (!Number.isFinite(teamNumber)) {
@@ -135,7 +115,7 @@ export const EditPriority: React.FC<EditPriorityProps> = ({
       return;
     }
 
-    if (priority === "") {
+    if (priority === undefined) {
       setFeedbackMessage("Please enter a priority first.");
       return;
     }
@@ -179,10 +159,10 @@ export const EditPriority: React.FC<EditPriorityProps> = ({
 
       <select
         id="priority"
-        value={priority === "" ? "" : String(priority)}
+        value={priority === undefined ? undefined : String(priority)}
         onChange={(e) => {
           const value = e.target.value;
-          setPriority(value === "" ? "" : Number(value));
+          setPriority(value === undefined ? undefined : Number(value));
         }}
         className="
           w-full min-h-[44px]
