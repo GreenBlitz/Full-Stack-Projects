@@ -5,7 +5,6 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
-import { EditPriority } from "./strategy/components/priority/EditPriority";
 
 // registerSW({ immediate: true });
 
