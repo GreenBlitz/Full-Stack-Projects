@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { fetchATeamPriority, type TeamPriority } from "./EditPriority";
+import { useTeamPriority } from "../../hooks/useTeamPriority";
 
 interface DisplayPriorityProps {
   teamNumber: number;
@@ -8,28 +9,8 @@ interface DisplayPriorityProps {
 export const DisplayPriority: React.FC<DisplayPriorityProps> = ({
   teamNumber,
 }) => {
-  const [teamPriority, setTeamPriority] = useState<TeamPriority>();
-  const [isLoading, setIsLoading] = useState(false);
-  const [feedbackMessage, setFeedbackMessage] = useState("");
-
-  useEffect(() => {
-    const loadPriority = async () => {
-      setIsLoading(true);
-      setFeedbackMessage("");
-
-      try {
-        const data = await fetchATeamPriority(teamNumber);
-        setTeamPriority(data);
-      } catch (error) {
-        console.error(error);
-        setFeedbackMessage("Error loading priority.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    void loadPriority();
-  }, [teamNumber]);
+  const { teamPriority, isLoading, feedbackMessage } =
+  useTeamPriority(teamNumber);
 
   return (
     <div

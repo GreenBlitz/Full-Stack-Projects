@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { fetchATeamPriority, type TeamPriority } from "./EditPriority";
+import { useTeamPriority } from "../../hooks/useTeamPriority";
 
 interface DisplayPriorityCellProps {
   teamNumber: number;
@@ -8,25 +9,8 @@ interface DisplayPriorityCellProps {
 export const DisplayPriorityCell: React.FC<DisplayPriorityCellProps> = ({
   teamNumber,
 }) => {
-  const [teamPriority, setTeamPriority] = useState<TeamPriority>();
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    const loadPriority = async () => {
-      setIsLoading(true);
-
-      try {
-        const data = await fetchATeamPriority(teamNumber);
-        setTeamPriority(data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    void loadPriority();
-  }, [teamNumber]);
+  const { teamPriority, isLoading } =
+  useTeamPriority(teamNumber);
 
   return (
     <span
