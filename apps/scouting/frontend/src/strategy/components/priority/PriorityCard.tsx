@@ -6,20 +6,13 @@ interface PriorityCardProps {
 }
 
 export const PriorityCard: React.FC<PriorityCardProps> = ({ teamNumber }) => {
-  const [teamPriority, setTeamPriority] = useState<TeamPriority | null>(null);
+  const [teamPriority, setTeamPriority] = useState<TeamPriority>();
   const [isLoading, setIsLoading] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState("");
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const loadPriority = async () => {
-      if (!Number.isFinite(teamNumber)) {
-        setTeamPriority(null);
-        setFeedbackMessage("");
-        setIsEditing(false);
-        return;
-      }
-
       setIsLoading(true);
       setFeedbackMessage("");
 
@@ -28,7 +21,6 @@ export const PriorityCard: React.FC<PriorityCardProps> = ({ teamNumber }) => {
         setTeamPriority(data);
       } catch (error) {
         console.error(error);
-        setTeamPriority(null);
         setFeedbackMessage("Error loading priority.");
       } finally {
         setIsLoading(false);
