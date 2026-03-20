@@ -4,45 +4,45 @@ import axios from "axios";
 import { Router } from "express";
 import {
   createBodyVerificationPipe,
-  createTypeCheckingEndpointFlow,
+  flatTryCatch,
   type EndpointError,
-} from "../middleware/verification";
+} from "@repo/flow-utils";
+import { createTypeCheckingEndpointFlow } from "@repo/type-utils";
 import {
+  Match,
   matchesProps,
-  scoreBreakdown2026,
-  tbaMatch,
+  tbaMatches2026,
+  TBAMatches2026,
   type TBAMatchesProps,
 } from "@repo/scouting_types";
 import { right } from "fp-ts/lib/Either";
 import { StatusCodes } from "http-status-codes";
 import {
   flatMap,
-  fold,
   type TaskEither,
   fromEither,
   tryCatch,
   map,
-  chainFirstTaskK,
+  chainFirstW,
+  bindTo,
 } from "fp-ts/lib/TaskEither";
 import { flow, pipe } from "fp-ts/lib/function";
 import { map as taskMap } from "fp-ts/lib/Task";
-import * as t from "io-ts";
 import type { Type } from "io-ts";
 import { getDb } from "../middleware/db";
-import { getMax } from "@repo/array-functions";
+import { getMax, isEmpty } from "@repo/array-functions";
 import { fold as booleanFold } from "fp-ts/boolean";
+import { foldResponse } from "@repo/flow-utils";
+import { compareMatches, tbaMatchToRegularMatch } from "@repo/scouting_types";
 
 export const tbaRouter = Router();
 
-const TBA_KEY = process.env.TBA_API_KEY ?? "yourtbakey";
+const TBA_KEY = process.env.TBA_API_KEY;
 const TBA_URL = "https://www.thebluealliance.com/api/v3";
-
-const tbaMatches = t.array(tbaMatch(scoreBreakdown2026, t.type({})));
-type TBAMatches = t.TypeOf<typeof tbaMatches>;
 
 const getCollection = flow(
   getDb,
-  map((db) => db.collection<TBAMatches[number]>("tba")),
+  map((db) => db.collection<TBAMatches2026[number]>("tba")),
 );
 
 const fetchTba = <U>(
@@ -61,7 +61,7 @@ const fetchTba = <U>(
           .then((response) => response.data as unknown),
       (error) => ({
         status: StatusCodes.INTERNAL_SERVER_ERROR,
-        reason: `Error Fetching From TBA: error ${error}`,
+        reason: `Error Fetching From TBA: error ${String(error)}`,
       }),
     ),
     taskMap(
@@ -72,42 +72,60 @@ const fetchTba = <U>(
     ),
   ) satisfies TaskEither<EndpointError, U>;
 
-const insertMatches = (matches: TBAMatches) =>
+const insertMatches = (matches: TBAMatches2026) =>
   pipe(
     getCollection(),
-    map((collection) => collection.insertMany(matches)),
+    flatTryCatch(
+      (collection) => collection.insertMany(matches),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `Error inserting matches: ${String(error)}`,
+      }),
+    ),
   );
-const getStoredMatches = flow(
-  getCollection,
-  flatMap((collection) =>
-    tryCatch(collection.find().toArray, (error) => ({
+
+const getStoredMatches = pipe(
+  getCollection(),
+  flatTryCatch(
+    (collection) => collection.find().toArray(),
+    (error) => ({
       reason: `Error getting from collection ${String(error)}`,
       status: StatusCodes.BAD_REQUEST,
-    })),
+    }),
   ),
+  map((docs) => docs.map(({ _id, ...rest }) => rest) satisfies TBAMatches2026),
 );
 
+const getMaxMatch = (matches: TBAMatches2026): Match => {
+  if (isEmpty(matches)) {
+    return { type: "practice", number: 0 };
+  }
+  const lastMatch = getMax(matches, (match) => match.match_number);
+  return tbaMatchToRegularMatch(lastMatch);
+};
+
+const DID_COMPARE_FAIL = 0;
 const getMatches = flow(
   flatMap((body: TBAMatchesProps) =>
     pipe(
-      getStoredMatches(),
+      getStoredMatches,
       map((currentMatches) => ({ currentMatches, body })),
     ),
   ),
   flatMap(({ currentMatches, body }) =>
     pipe(
-      getMax(currentMatches, (match) => match.match_number).match_number <
-        body.maxMatch,
+      compareMatches(getMaxMatch(currentMatches), body.maxMatch) <
+        DID_COMPARE_FAIL,
       booleanFold(
+        // FALSE => already have enough stored
+        () => fromEither(right(currentMatches)),
+
+        // TRUE => fetch more, store them, return fetched
         () =>
           pipe(
-            fetchTba(`/event/${body.event}/matches`, tbaMatches),
-            chainFirstTaskK(
-              (fetchedMatches) => async () =>
-                Promise.resolve(insertMatches(fetchedMatches)),
-            ),
+            fetchTba(`/event/${body.event}/matches`, tbaMatches2026),
+            chainFirstW((fetchedMatches) => insertMatches(fetchedMatches)),
           ),
-        () => fromEither(right(currentMatches)),
       ),
     ),
   ),
@@ -119,13 +137,7 @@ tbaRouter.post("/matches", async (req, res) => {
     createBodyVerificationPipe(matchesProps),
     fromEither,
     getMatches,
-    fold(
-      (error) => () =>
-        new Promise((resolve) => {
-          resolve(res.status(error.status).send(error.reason));
-        }),
-      (matches) => () =>
-        Promise.resolve(res.status(StatusCodes.OK).json({ matches })),
-    ),
+    bindTo("matches"),
+    foldResponse(res),
   )();
 });
