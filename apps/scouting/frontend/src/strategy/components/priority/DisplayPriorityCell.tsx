@@ -8,16 +8,11 @@ interface DisplayPriorityCellProps {
 export const DisplayPriorityCell: React.FC<DisplayPriorityCellProps> = ({
   teamNumber,
 }) => {
-  const [teamPriority, setTeamPriority] = useState<TeamPriority | null>(null);
+  const [teamPriority, setTeamPriority] = useState<TeamPriority>();
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const loadPriority = async () => {
-      if (!Number.isFinite(teamNumber)) {
-        setTeamPriority(null);
-        return;
-      }
-
       setIsLoading(true);
 
       try {
@@ -25,7 +20,6 @@ export const DisplayPriorityCell: React.FC<DisplayPriorityCellProps> = ({
         setTeamPriority(data);
       } catch (error) {
         console.error(error);
-        setTeamPriority(null);
       } finally {
         setIsLoading(false);
       }

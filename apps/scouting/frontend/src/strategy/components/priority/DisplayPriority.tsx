@@ -8,17 +8,12 @@ interface DisplayPriorityProps {
 export const DisplayPriority: React.FC<DisplayPriorityProps> = ({
   teamNumber,
 }) => {
-  const [teamPriority, setTeamPriority] = useState<TeamPriority | null>(null);
+  const [teamPriority, setTeamPriority] = useState<TeamPriority>();
   const [isLoading, setIsLoading] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState("");
 
   useEffect(() => {
     const loadPriority = async () => {
-      if (!Number.isFinite(teamNumber)) {
-        setTeamPriority(null);
-        return;
-      }
-
       setIsLoading(true);
       setFeedbackMessage("");
 
@@ -27,7 +22,6 @@ export const DisplayPriority: React.FC<DisplayPriorityProps> = ({
         setTeamPriority(data);
       } catch (error) {
         console.error(error);
-        setTeamPriority(null);
         setFeedbackMessage("Error loading priority.");
       } finally {
         setIsLoading(false);
@@ -63,11 +57,7 @@ export const DisplayPriority: React.FC<DisplayPriorityProps> = ({
           shadow-inner
         "
       >
-        {isLoading
-          ? "..."
-          : teamPriority
-            ? teamPriority.priority
-            : "--"}
+        {isLoading ? "..." : teamPriority ? teamPriority.priority : "--"}
       </div>
 
       {feedbackMessage ? (
