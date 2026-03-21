@@ -20,6 +20,15 @@ export const FRC_TEAMS = [
     teamNumber: 1576,
   },
   {
+    city: "California",
+    country: "California",
+    key: "frc971",
+    name: "California",
+    nickname: "Spartan Robotics",
+    stateProvidence: "California",
+    teamNumber: 971,
+  },
+  {
     city: "Raanana",
     country: "Israel",
     key: "frc1577",
