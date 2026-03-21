@@ -146,6 +146,19 @@ const getMatches = flow(
   ),
 );
 
+export const fetchCOPRS = (event: string) =>
+  pipe(
+    fetchTba(`/event/${event}/coprs`, eventOPRCodec),
+    map((coprs) =>
+      Object.keys(firstElement(Object.values(coprs)) ?? {}) // gets all of the team strings (frc4590, frc1690)
+        .map((teamString) => ({
+          ...mapObject(coprs, (coprTeams) => coprTeams?.[teamString]),
+          teamNumber: parseInt(teamString.slice(3)),
+        })),
+    ),
+    map((item) => item satisfies TeamOPR[]),
+  );
+
 tbaRouter.post("/matches", async (req, res) => {
   await pipe(
     rightEither(req),
@@ -162,20 +175,12 @@ tbaRouter.get("/copr", async (req, res) => {
     req.query,
     castItem,
     rightEither,
-    createTypeCheckingEndpointFlow(oprPropsCodec, (error) => ({
+    createTypeCheckingEndpointFlow(oprPropsCodec, () => ({
       status: StatusCodes.BAD_REQUEST,
       reason: "Did not pass in event",
     })),
     fromEither,
-    flatMap(({ event }) => fetchTba(`/event/${event}/coprs`, eventOPRCodec)),
-    map((coprs) =>
-      Object.keys(firstElement(Object.values(coprs)) ?? {}) // gets all of the team strings (frc4590, frc1690)
-        .map((teamString) => ({
-          ...mapObject(coprs, (coprTeams) => coprTeams?.[teamString]),
-          teamNumber: parseInt(teamString.slice(3)),
-        })),
-    ),
-    map((item) => item satisfies TeamOPR[]),
+    flatMap(({ event }) => fetchCOPRS(event)),
     bindTo("teams"),
     foldResponse(res),
   )();
