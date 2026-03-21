@@ -43,8 +43,16 @@ export const COPR_TO_TBA_COPR = {
 
 export const teamOPRCodec = t.type({
   teamNumber: t.number,
-  opr: t.number,
-  ...mapObject(COPR_TO_TBA_COPR, () => t.number),
+  ...mapObject(COPR_TO_TBA_COPR, () => t.union([t.number, t.undefined])),
 });
 
+const stringToNumberCodec = t.record(t.string, t.number);
+
+export const eventOPRCodec = t.type({
+  ...mapObject(COPR_TO_TBA_COPR, () =>
+    t.union([t.undefined, stringToNumberCodec]),
+  ),
+});
 export type TeamOPR = t.TypeOf<typeof teamOPRCodec>;
+
+export const oprPropsCodec = t.type({ event: t.string });
