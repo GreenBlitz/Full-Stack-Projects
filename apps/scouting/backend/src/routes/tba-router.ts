@@ -50,14 +50,11 @@ export const tbaRouter = Router();
 const TBA_KEY = process.env.TBA_API_KEY;
 const TBA_URL = "https://www.thebluealliance.com/api/v3";
 
+const currentEvent = "2026cahal";
+
 const getMatchesCollection = flow(
   getDb,
   map((db) => db.collection<TBAMatches2026[number]>("tba/matches")),
-);
-
-const getOPRCollection = flow(
-  getDb,
-  map((db) => db.collection<TeamOPR>("tba/opr")),
 );
 
 const fetchTba = <U>(
@@ -157,6 +154,20 @@ export const fetchCOPRS = (event: string) =>
         })),
     ),
     map((item) => item satisfies TeamOPR[]),
+  );
+
+export const fetchTeamsCOPRs = <A extends object>(
+  teams: Record<string, A>,
+  event: string = currentEvent,
+) =>
+  pipe(
+    fetchCOPRS(event),
+    map((coprs) =>
+      mapObject(teams, (team, teamNumber) => ({
+        ...team,
+        coprs: coprs.find((copr) => copr.teamNumber === parseInt(teamNumber)),
+      })),
+    ),
   );
 
 tbaRouter.post("/matches", async (req, res) => {

@@ -9,6 +9,7 @@ import type {
   TeleClimb,
   TeleMovement,
 } from "../rebuilt";
+import { TeamOPR } from "../tba";
 
 export const teamsProps = t.type({
   teams: t.union([t.array(t.number), t.number]),
@@ -25,9 +26,6 @@ export interface SectionTeamData {
     (typeof ACCURACY_DISTANCES)[number],
     FuelObject & { amount: number }
   >;
-
-  copr: number; //Compoent offensive power ranking (from tba)
-  cdpr: number; //Component defensive power ranking (from tba)
 }
 interface SectionSpecificTeamData<
   Movement extends TeleMovement = TeleMovement,
@@ -41,7 +39,7 @@ export interface TeamData {
   tele: SectionTeamData & SectionSpecificTeamData;
   auto: SectionTeamData & SectionSpecificTeamData<AutoMovement, AutoClimb>;
   fullGame: SectionTeamData;
-  metrics: { epa: number; bps: number };
+  metrics: { epa: number; bps: number; coprs: TeamOPR | undefined };
 }
 
 export type GamePhase = "tele" | "auto" | "fullGame";
