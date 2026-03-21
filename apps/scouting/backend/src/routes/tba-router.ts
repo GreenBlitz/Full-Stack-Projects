@@ -9,6 +9,7 @@ import {
 } from "@repo/flow-utils";
 import { castItem, createTypeCheckingEndpointFlow } from "@repo/type-utils";
 import {
+  COPR_TO_TBA_COPR,
   eventOPRCodec,
   Match,
   matchesProps,
@@ -38,6 +39,7 @@ import {
   firstElement,
   getMax,
   isEmpty,
+  mapKeys,
   mapObject,
 } from "@repo/array-functions";
 import { fold as booleanFold } from "fp-ts/boolean";
@@ -146,6 +148,10 @@ const getMatches = flow(
 export const fetchCOPRS = (event: string) =>
   pipe(
     fetchTba(`/event/${event}/coprs`, eventOPRCodec),
+    map((coprs) => {
+      console.log(coprs);
+      return coprs;
+    }),
     map((coprs) =>
       Object.keys(firstElement(Object.values(coprs)) ?? {}) // gets all of the team strings (frc4590, frc1690)
         .map((teamString) => ({
@@ -153,7 +159,14 @@ export const fetchCOPRS = (event: string) =>
           teamNumber: parseInt(teamString.slice(3)),
         })),
     ),
-    map((item) => item satisfies TeamOPR[]),
+    map((teams) =>
+      teams.map((team) =>
+        mapKeys(team, (key) =>
+          key === "teamNumber" ? "teamNumber" : COPR_TO_TBA_COPR[key],
+        ),
+      ),
+    ),
+    map((item) => item as TeamOPR[]),
   );
 
 export const fetchTeamsCOPRs = <A extends object>(

@@ -1,6 +1,6 @@
 // בס"ד
 
-import { mapObject } from "@repo/array-functions";
+import { flipRecord, mapObject } from "@repo/array-functions";
 import * as t from "io-ts";
 
 export const COPR_TO_TBA_COPR = {
@@ -41,6 +41,8 @@ export const COPR_TO_TBA_COPR = {
   adjustPoints: "adjustPoints",
 } as const;
 
+export const TBA_COPR_TO_COPR = flipRecord(COPR_TO_TBA_COPR);
+
 export const teamOPRCodec = t.type({
   teamNumber: t.number,
   ...mapObject(COPR_TO_TBA_COPR, () => t.union([t.number, t.undefined])),
@@ -49,7 +51,7 @@ export const teamOPRCodec = t.type({
 const stringToNumberCodec = t.record(t.string, t.number);
 
 export const eventOPRCodec = t.type({
-  ...mapObject(COPR_TO_TBA_COPR, () =>
+  ...mapObject(TBA_COPR_TO_COPR, () =>
     t.union([t.undefined, stringToNumberCodec]),
   ),
 });

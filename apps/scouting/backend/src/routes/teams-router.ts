@@ -122,8 +122,6 @@ const processTeam = (
     })),
     bpses,
   );
-
-  console.log(coprs);
   return {
     tele,
     auto,
