@@ -98,7 +98,7 @@ export const DataModal: React.FC<DataModalProps> = ({
                 {key.replace(/([A-Z])/g, " $1")} {/* Add spaces to camelCase */}
               </span>
               <span className="text-[#e8d52e] font-black text-lg font-mono">
-                {value}
+                {value?.toFixed(2)}
               </span>
             </div>
           ))}
