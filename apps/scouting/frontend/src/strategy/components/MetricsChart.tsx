@@ -22,7 +22,7 @@ const Metric: FC<{ name: string; value: number; colors: string }> = ({
   </div>
 );
 
-export const MetricsChart: FC<TeamData["metrics"]> = ({ epa, bps }) => {
+export const MetricsChart: FC<TeamData["metrics"]> = ({ epa, bps, coprs }) => {
   return (
     <div className="grid grid-cols-2 gap-3 w-full max-w-md mx-auto p-2">
       <Metric
@@ -35,6 +35,13 @@ export const MetricsChart: FC<TeamData["metrics"]> = ({ epa, bps }) => {
         value={bps}
         colors="bg-purple-500/20 border-purple-500/50 text-purple-200"
       />
+      {coprs && (
+        <Metric
+          name="OPR"
+          value={coprs.totalPoints ?? 0}
+          colors="bg-orange-500/20 border-orange-500/50 text-orange-200"
+        />
+      )}
     </div>
   );
 };
