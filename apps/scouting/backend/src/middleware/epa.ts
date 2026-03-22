@@ -1,6 +1,13 @@
 // בס"ד
 
-import { bind, bindTo, map, TaskEither, tryCatch } from "fp-ts/lib/TaskEither";
+import {
+  bind,
+  bindTo,
+  fold,
+  map,
+  TaskEither,
+  tryCatch,
+} from "fp-ts/lib/TaskEither";
 import { getDb } from "./db";
 import { flow, pipe } from "fp-ts/lib/function";
 import { Type } from "io-ts";
@@ -54,7 +61,7 @@ const getEPACollection = flow(
   map((db) => db.collection<EPA>("epa")),
 );
 
-const STATBOTICS_URL = "https://api.statbotics.io/v3/";
+const STATBOTICS_URL = "https://api.statbotics.io/v3";
 const LOCATION = "country=Israel";
 const YEAR = 2026;
 
@@ -63,23 +70,23 @@ const fetchEPAs = (config?: AxiosRequestConfig) =>
     tryCatch(
       () =>
         axios
-          .get(`${STATBOTICS_URL}/teamYears?year=${YEAR}&${LOCATION}`, config)
+          .get(`${STATBOTICS_URL}/team_years?year=${YEAR}&${LOCATION}`, config)
           .then((response) => response.data as unknown),
       (error) => ({
         status: StatusCodes.INTERNAL_SERVER_ERROR,
-        reason: `Error Fetching From TBA: error ${String(error)}`,
+        reason: `Error Fetching From Statbotics: error ${String(error)}`,
       }),
     ),
     taskMap(
       createTypeCheckingEndpointFlow(teamsYear, (errors) => ({
         status: StatusCodes.INTERNAL_SERVER_ERROR,
-        reason: `Recieved incorrect response from the TBA. error: ${errors}`,
+        reason: `Recieved incorrect response from the Statbotics. error: ${errors}`,
       })),
     ),
   ) satisfies TaskEither<EndpointError, unknown>;
 
-const updateEPA = flow(
-  fetchEPAs,
+const updateEPA = pipe(
+  fetchEPAs(),
   map((teams) => teams.map(({ epa, team }) => ({ ...epa, team }))),
   bindTo("epas"),
   bind("collection", getEPACollection),
@@ -88,21 +95,23 @@ const updateEPA = flow(
       console.log("Updating EPAS...");
       await collection.deleteMany();
       await collection.insertMany(epas);
-      console.log("Updated EPAS!");
     },
     (error) => ({
       status: StatusCodes.INTERNAL_SERVER_ERROR,
       reason: `Error Deleting and inserting epas: ${error}`,
     }),
   ),
+  fold(
+    (error) => () => Promise.resolve(console.log(error)),
+    () => () => Promise.resolve(console.log("Updated EPAS!")),
+  ),
 );
-const startUpdating = () => {
-  updateEPA();
+export const startUpdatingEPAS = async () => {
+  await updateEPA();
 
-  const intervalMilliSeconds = 5000;
+  const intervalMilliSeconds = 5 * 60 * 1000;
   setInterval(updateEPA, intervalMilliSeconds);
 };
-startUpdating();
 
 export const getEPAs = flow(
   getEPACollection,
