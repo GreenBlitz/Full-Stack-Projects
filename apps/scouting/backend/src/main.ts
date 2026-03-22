@@ -1,6 +1,7 @@
 // בס"ד
 import express from "express";
 import { apiRouter } from "./routes";
+import { startUpdatingEPAS } from "./middleware/epa";
 
 const app = express();
 
@@ -10,6 +11,7 @@ const port = process.env.BACKEND_PORT ?? defaultPort;
 app.set("query parser", "extended");
 app.use(express.json());
 app.use("/api/v1", apiRouter);
+startUpdatingEPAS();
 
 app.listen(port, () => {
   console.log(`Production server running at http://localhost:${port}`);

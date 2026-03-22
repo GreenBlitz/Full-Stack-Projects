@@ -10,6 +10,7 @@ import type {
   TeleMovement,
 } from "../rebuilt";
 import { TeamOPR } from "../tba";
+import { EPA } from "../epa";
 
 export const teamsProps = t.type({
   teams: t.union([t.array(t.number), t.number]),
@@ -39,7 +40,7 @@ export interface TeamData {
   tele: SectionTeamData & SectionSpecificTeamData;
   auto: SectionTeamData & SectionSpecificTeamData<AutoMovement, AutoClimb>;
   fullGame: SectionTeamData;
-  metrics: { epa: number; bps: number; coprs: TeamOPR | undefined };
+  metrics: { epa: EPA | undefined; bps: number; coprs: TeamOPR | undefined };
 }
 
 export type GamePhase = "tele" | "auto" | "fullGame";
