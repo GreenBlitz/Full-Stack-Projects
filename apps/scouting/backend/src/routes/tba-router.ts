@@ -150,10 +150,6 @@ const getMatches = flow(
 export const fetchCOPRS = (event: string) =>
   pipe(
     fetchTba(`/event/${event}/coprs`, eventOPRCodec),
-    map((coprs) => {
-      console.log(coprs);
-      return coprs;
-    }),
     map((coprs) =>
       Object.keys(firstElement(Object.values(coprs)) ?? {}) // gets all of the team strings (frc4590, frc1690)
         .map((teamString) => ({
