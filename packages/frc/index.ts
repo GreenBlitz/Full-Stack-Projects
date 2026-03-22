@@ -643,3 +643,8 @@ export const FRC_TEAMS = [
 ];
 
 export const FRC_TEAM_NUMBERS = FRC_TEAMS.map((team) => team.teamNumber);
+
+export type TeamString<N extends number = number> = `frc${N}`
+export const teamStringToTeamNumber = <N extends number,S extends string = TeamString<N>>(
+  teamString: S,
+): N => Number(teamString.replace("frc", "")) as N;

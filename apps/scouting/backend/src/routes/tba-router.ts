@@ -46,6 +46,7 @@ import { fold as booleanFold } from "fp-ts/boolean";
 import { foldResponse } from "@repo/flow-utils";
 import { compareMatches, tbaMatchToRegularMatch } from "@repo/scouting_types";
 import { TeamOPR } from "@repo/scouting_types";
+import { teamStringToTeamNumber } from "@repo/frc";
 
 export const tbaRouter = Router();
 
@@ -145,6 +146,7 @@ const getMatches = flow(
   ),
 );
 
+
 export const fetchCOPRS = (event: string) =>
   pipe(
     fetchTba(`/event/${event}/coprs`, eventOPRCodec),
@@ -156,7 +158,7 @@ export const fetchCOPRS = (event: string) =>
       Object.keys(firstElement(Object.values(coprs)) ?? {}) // gets all of the team strings (frc4590, frc1690)
         .map((teamString) => ({
           ...mapObject(coprs, (coprTeams) => coprTeams?.[teamString]),
-          teamNumber: parseInt(teamString.slice(3)),
+          teamNumber: teamStringToTeamNumber(teamString),
         })),
     ),
     map((teams) =>
