@@ -26,26 +26,35 @@ const Metric: FC<{
 
 export const MetricsChart: FC<TeamData["metrics"]> = ({ epa, bps, coprs }) => {
   const [isCOPROpen, setCOPROpenness] = useState(false);
+  const [isEPAOpen, setEPAOpenness] = useState(false);
   return (
     <div className="grid grid-cols-3 gap-3 w-full max-w-md mx-auto p-2">
-      <Metric
-        name="EPA"
-        value={epa}
-        colors="bg-cyan-500/20 border-cyan-500/50 text-cyan-200"
-      />
       <Metric
         name="BPS"
         value={bps}
         colors="bg-purple-500/20 border-purple-500/50 text-purple-200"
       />
-      {coprs && (
-        <Metric
-          name="OPR"
-          value={coprs.totalPoints ?? 0}
-          colors="bg-orange-500/20 border-orange-500/50 text-orange-200"
-          onClick={() => setCOPROpenness(true)}
-        />
-      )}
+
+      <Metric
+        name="EPA"
+        value={epa?.total_points?.mean ?? 0}
+        colors="bg-cyan-500/20 border-cyan-500/50 text-cyan-200"
+        onClick={() => setEPAOpenness(true)}
+      />
+
+      <Metric
+        name="OPR"
+        value={coprs?.totalPoints ?? 0}
+        colors="bg-orange-500/20 border-orange-500/50 text-orange-200"
+        onClick={() => setCOPROpenness(true)}
+      />
+
+      <DataModal
+        isOpen={isEPAOpen}
+        onClose={() => setEPAOpenness(false)}
+        title="EPAs"
+        data={epa?.breakdown ?? {}}
+      />
       <DataModal
         isOpen={isCOPROpen}
         onClose={() => setCOPROpenness(false)}

@@ -17,7 +17,7 @@ import { StatusCodes } from "http-status-codes";
 import { map as taskMap } from "fp-ts/lib/Task";
 import { createTypeCheckingEndpointFlow } from "@repo/type-utils";
 import { EndpointError, flatTryCatch } from "@repo/flow-utils";
-import { EPA, teamsYear } from "@repo/scouting_types/epa";
+import { EPA, teamsYear } from "@repo/scouting_types";
 import { mapObject } from "@repo/array-functions";
 
 interface SavedEPA {

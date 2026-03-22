@@ -37,7 +37,7 @@ import { getTeamBPSes } from "./bps-router";
 import { foldResponse, flatTryCatch } from "@repo/flow-utils";
 import { compareMatches } from "@repo/scouting_types";
 import { fetchTeamsCOPRs } from "./tba-router";
-import { EPA } from "@repo/scouting_types/epa";
+import { EPA } from "@repo/scouting_types";
 import { getTeamsEPAs } from "../middleware/epa";
 
 export const teamsRouter = Router();
@@ -199,7 +199,7 @@ teamsRouter.get("/", async (req, res) => {
     flatMap(getTeamsEPAs),
     map((teams) =>
       mapObject(teams, (team) =>
-        processTeam(team.bpses, team.forms, team.coprs,team.epa),
+        processTeam(team.bpses, team.forms, team.coprs, team.epa),
       ),
     ),
     bindTo("teams"),
