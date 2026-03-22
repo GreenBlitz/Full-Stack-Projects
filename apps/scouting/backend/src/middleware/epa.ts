@@ -5,6 +5,7 @@ import {
   bindTo,
   fold,
   map,
+  right,
   TaskEither,
   tryCatch,
 } from "fp-ts/lib/TaskEither";
@@ -15,50 +16,17 @@ import axios, { AxiosRequestConfig } from "axios";
 import { StatusCodes } from "http-status-codes";
 import { map as taskMap } from "fp-ts/lib/Task";
 import { createTypeCheckingEndpointFlow } from "@repo/type-utils";
-import { EndpointError, flatTryCatch, foldResponse } from "@repo/flow-utils";
+import { EndpointError, flatTryCatch } from "@repo/flow-utils";
+import { EPA, teamsYear } from "@repo/scouting_types/epa";
+import { mapObject } from "@repo/array-functions";
 
-import * as t from "io-ts";
-
-const epaCodec = t.type({
-  total_points: t.type({
-    mean: t.number,
-    sd: t.number,
-  }),
-  unitless: t.number,
-  norm: t.number,
-  conf: t.tuple([t.number, t.number]),
-  breakdown: t.type({
-    total_points: t.number,
-    auto_points: t.number,
-    teleop_points: t.number,
-    endgame_points: t.number,
-    energized_rp: t.number,
-    supercharged_rp: t.number,
-    traversal_rp: t.number,
-    tiebreaker_points: t.number,
-    auto_fuel: t.number,
-    auto_tower: t.number,
-    transition_fuel: t.number,
-    first_shift_fuel: t.number,
-    second_shift_fuel: t.number,
-    teleop_fuel: t.number,
-    endgame_fuel: t.number,
-    endgame_tower: t.number,
-    total_fuel: t.number,
-    total_tower: t.number,
-    rp_1: t.number,
-    rp_2: t.number,
-    rp_3: t.number,
-  }),
-});
-
-const teamsYear = t.array(t.type({ epa: epaCodec, team: t.number }));
-
-type EPA = t.TypeOf<typeof epaCodec>;
-
+interface SavedEPA {
+  team: number;
+  epa: EPA;
+}
 const getEPACollection = flow(
   getDb,
-  map((db) => db.collection<EPA>("epa")),
+  map((db) => db.collection<SavedEPA>("epa")),
 );
 
 const STATBOTICS_URL = "https://api.statbotics.io/v3";
@@ -87,12 +55,11 @@ const fetchEPAs = (config?: AxiosRequestConfig) =>
 
 const updateEPA = pipe(
   fetchEPAs(),
-  map((teams) => teams.map(({ epa, team }) => ({ ...epa, team }))),
   bindTo("epas"),
   bind("collection", getEPACollection),
   flatTryCatch(
     async ({ epas, collection }) => {
-      console.log("Updating EPAS...");
+      console.log("Updating EPAs...");
       await collection.deleteMany();
       await collection.insertMany(epas);
     },
@@ -103,17 +70,17 @@ const updateEPA = pipe(
   ),
   fold(
     (error) => () => Promise.resolve(console.log(error)),
-    () => () => Promise.resolve(console.log("Updated EPAS!")),
+    () => () => Promise.resolve(console.log("Updated EPAs!")),
   ),
 );
 export const startUpdatingEPAS = async () => {
   await updateEPA();
 
-  const intervalMilliSeconds = 5 * 60 * 1000;
-  setInterval(updateEPA, intervalMilliSeconds);
+  const fiveMinutesInMilliseconds = 5 * 60 * 1000;
+  setInterval(updateEPA, fiveMinutesInMilliseconds);
 };
 
-export const getEPAs = flow(
+const getEPAs = flow(
   getEPACollection,
   flatTryCatch(
     (collection) => collection.find().toArray(),
@@ -123,3 +90,20 @@ export const getEPAs = flow(
     }),
   ),
 );
+
+export const getTeamsEPAs = <A extends object>(teams: Record<string, A>) =>
+  pipe(
+    getEPAs(),
+    map((epaTeams) =>
+      epaTeams.reduce<Record<string, EPA>>(
+        (acc, { team, epa }) => ({ ...acc, [team.toString()]: epa }),
+        {},
+      ),
+    ),
+    map((epaTeams) =>
+      mapObject(teams, (team, teamNumber) => ({
+        ...team,
+        epa: epaTeams[teamNumber],
+      })),
+    ),
+  );

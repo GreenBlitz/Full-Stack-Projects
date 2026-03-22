@@ -37,6 +37,8 @@ import { getTeamBPSes } from "./bps-router";
 import { foldResponse, flatTryCatch } from "@repo/flow-utils";
 import { compareMatches } from "@repo/scouting_types";
 import { fetchTeamsCOPRs } from "./tba-router";
+import { EPA } from "@repo/scouting_types/epa";
+import { getTeamsEPAs } from "../middleware/epa";
 
 export const teamsRouter = Router();
 
@@ -69,6 +71,7 @@ const processTeam = (
   bpses: BPS[],
   forms: ScoutingForm[],
   coprs?: TeamOPR,
+  epa?: EPA,
 ): TeamData => {
   const tele = {
     movement: {
@@ -126,7 +129,7 @@ const processTeam = (
     tele,
     auto,
     fullGame,
-    metrics: { epa: 0, bps: calculateAverageBPS(bpses), coprs },
+    metrics: { epa, bps: calculateAverageBPS(bpses), coprs },
   };
 };
 
@@ -192,10 +195,11 @@ teamsRouter.get("/", async (req, res) => {
       ),
     ),
     flatMap(getTeamBPSes),
-    flatMap((teams) => fetchTeamsCOPRs(teams)),
+    flatMap(fetchTeamsCOPRs),
+    flatMap(getTeamsEPAs),
     map((teams) =>
       mapObject(teams, (team) =>
-        processTeam(team.bpses, team.forms, team.coprs),
+        processTeam(team.bpses, team.forms, team.coprs,team.epa),
       ),
     ),
     bindTo("teams"),
