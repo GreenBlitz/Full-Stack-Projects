@@ -24,6 +24,7 @@ import type {
   SectionTeamData,
   Shift,
   TeamData,
+  TeamOPR,
 } from "@repo/scouting_types";
 import { ACCURACY_DISTANCES, teamsProps } from "@repo/scouting_types";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
@@ -33,8 +34,9 @@ import { splitByDistances } from "../fuel/distance-split";
 import { calculateFuelStatisticsOfShift } from "../fuel/fuel-general";
 import { calculateAverageBPS } from "../fuel/calculations/fuel-averaging";
 import { getTeamBPSes } from "./bps-router";
-import { foldResponse,flatTryCatch } from "@repo/flow-utils";
+import { foldResponse, flatTryCatch } from "@repo/flow-utils";
 import { compareMatches } from "@repo/scouting_types";
+import { fetchTeamsCOPRs } from "./tba-router";
 
 export const teamsRouter = Router();
 
@@ -60,13 +62,14 @@ const processFuelAndAccuracy = (
       ),
       ACCURACY_DISTANCES,
     ),
-
-    copr: 0,
-    cdpr: 0,
   };
 };
 
-const processTeam = (bpses: BPS[], forms: ScoutingForm[]): TeamData => {
+const processTeam = (
+  bpses: BPS[],
+  forms: ScoutingForm[],
+  coprs?: TeamOPR,
+): TeamData => {
   const tele = {
     movement: {
       bumpStuck: calculateSum(forms, (form) =>
@@ -123,10 +126,9 @@ const processTeam = (bpses: BPS[], forms: ScoutingForm[]): TeamData => {
     tele,
     auto,
     fullGame,
-    metrics: { epa: 0, bps: calculateAverageBPS(bpses) },
+    metrics: { epa: 0, bps: calculateAverageBPS(bpses), coprs },
   };
 };
-
 
 const compareForms = (form1: ScoutingForm, form2: ScoutingForm) =>
   compareMatches(form1.match, form2.match);
@@ -190,8 +192,11 @@ teamsRouter.get("/", async (req, res) => {
       ),
     ),
     flatMap(getTeamBPSes),
+    flatMap((teams) => fetchTeamsCOPRs(teams)),
     map((teams) =>
-      mapObject(teams, (team) => processTeam(team.bpses, team.forms)),
+      mapObject(teams, (team) =>
+        processTeam(team.bpses, team.forms, team.coprs),
+      ),
     ),
     bindTo("teams"),
     foldResponse(res),

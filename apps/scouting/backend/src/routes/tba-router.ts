@@ -7,15 +7,19 @@ import {
   flatTryCatch,
   type EndpointError,
 } from "@repo/flow-utils";
-import { createTypeCheckingEndpointFlow } from "@repo/type-utils";
+import { castItem, createTypeCheckingEndpointFlow } from "@repo/type-utils";
 import {
+  COPR_TO_TBA_COPR,
+  eventOPRCodec,
   Match,
   matchesProps,
+  oprPropsCodec,
   tbaMatches2026,
   TBAMatches2026,
+  teamOPRCodec,
   type TBAMatchesProps,
 } from "@repo/scouting_types";
-import { right } from "fp-ts/lib/Either";
+import { right as rightEither } from "fp-ts/lib/Either";
 import { StatusCodes } from "http-status-codes";
 import {
   flatMap,
@@ -25,24 +29,35 @@ import {
   map,
   chainFirstW,
   bindTo,
+  right,
 } from "fp-ts/lib/TaskEither";
 import { flow, pipe } from "fp-ts/lib/function";
 import { map as taskMap } from "fp-ts/lib/Task";
 import type { Type } from "io-ts";
 import { getDb } from "../middleware/db";
-import { getMax, isEmpty } from "@repo/array-functions";
+import {
+  firstElement,
+  getMax,
+  isEmpty,
+  mapKeys,
+  mapObject,
+} from "@repo/array-functions";
 import { fold as booleanFold } from "fp-ts/boolean";
 import { foldResponse } from "@repo/flow-utils";
 import { compareMatches, tbaMatchToRegularMatch } from "@repo/scouting_types";
+import { TeamOPR } from "@repo/scouting_types";
+import { teamStringToTeamNumber } from "@repo/frc";
 
 export const tbaRouter = Router();
 
 const TBA_KEY = process.env.TBA_API_KEY;
 const TBA_URL = "https://www.thebluealliance.com/api/v3";
 
-const getCollection = flow(
+const currentEvent = "2026cahal";
+
+const getMatchesCollection = flow(
   getDb,
-  map((db) => db.collection<TBAMatches2026[number]>("tba")),
+  map((db) => db.collection<TBAMatches2026[number]>("tba/matches")),
 );
 
 const fetchTba = <U>(
@@ -74,7 +89,7 @@ const fetchTba = <U>(
 
 const insertMatches = (matches: TBAMatches2026) =>
   pipe(
-    getCollection(),
+    getMatchesCollection(),
     flatTryCatch(
       (collection) => collection.insertMany(matches),
       (error) => ({
@@ -85,7 +100,7 @@ const insertMatches = (matches: TBAMatches2026) =>
   );
 
 const getStoredMatches = pipe(
-  getCollection(),
+  getMatchesCollection(),
   flatTryCatch(
     (collection) => collection.find().toArray(),
     (error) => ({
@@ -118,7 +133,7 @@ const getMatches = flow(
         DID_COMPARE_FAIL,
       booleanFold(
         // FALSE => already have enough stored
-        () => fromEither(right(currentMatches)),
+        () => fromEither(rightEither(currentMatches)),
 
         // TRUE => fetch more, store them, return fetched
         () =>
@@ -131,13 +146,68 @@ const getMatches = flow(
   ),
 );
 
+
+export const fetchCOPRS = (event: string) =>
+  pipe(
+    fetchTba(`/event/${event}/coprs`, eventOPRCodec),
+    map((coprs) => {
+      console.log(coprs);
+      return coprs;
+    }),
+    map((coprs) =>
+      Object.keys(firstElement(Object.values(coprs)) ?? {}) // gets all of the team strings (frc4590, frc1690)
+        .map((teamString) => ({
+          ...mapObject(coprs, (coprTeams) => coprTeams?.[teamString]),
+          teamNumber: teamStringToTeamNumber(teamString),
+        })),
+    ),
+    map((teams) =>
+      teams.map((team) =>
+        mapKeys(team, (key) =>
+          key === "teamNumber" ? "teamNumber" : COPR_TO_TBA_COPR[key],
+        ),
+      ),
+    ),
+    map((item) => item as TeamOPR[]),
+  );
+
+export const fetchTeamsCOPRs = <A extends object>(
+  teams: Record<string, A>,
+  event: string = currentEvent,
+) =>
+  pipe(
+    fetchCOPRS(event),
+    map((coprs) =>
+      mapObject(teams, (team, teamNumber) => ({
+        ...team,
+        coprs: coprs.find((copr) => copr.teamNumber === parseInt(teamNumber)),
+      })),
+    ),
+  );
+
 tbaRouter.post("/matches", async (req, res) => {
   await pipe(
-    right(req),
+    rightEither(req),
     createBodyVerificationPipe(matchesProps),
     fromEither,
     getMatches,
     bindTo("matches"),
+    foldResponse(res),
+  )();
+});
+
+tbaRouter.get("/copr", async (req, res) => {
+  await pipe(
+    req.query,
+    castItem,
+    rightEither,
+    createTypeCheckingEndpointFlow(oprPropsCodec, () => ({
+      status: StatusCodes.BAD_REQUEST,
+      reason: "Did not pass in event",
+    })),
+    fromEither,
+    flatMap(({ event }) => fetchCOPRS(event)),
+    bindTo("teams"),
     foldResponse(res),
   )();
 });
