@@ -58,14 +58,12 @@ export const readPriorityByTeamNumber = (
 ): TaskEither<EndpointError, TeamPriority> =>
   pipe(
     getPriorityCollection(),
-    flatMap((collection) =>
-      tryCatch(
-        () => collection.findOne({ teamNumber }),
-        (error): EndpointError => ({
-          status: StatusCodes.INTERNAL_SERVER_ERROR,
-          reason: `Error reading priority for team ${teamNumber}: ${String(error)}`,
-        }),
-      ),
+    flatTryCatch(
+      (collection) => collection.findOne({ teamNumber }),
+      (error): EndpointError => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `Error reading priority for team ${teamNumber}: ${String(error)}`,
+      }),
     ),
     flatMap((result) =>
       result
