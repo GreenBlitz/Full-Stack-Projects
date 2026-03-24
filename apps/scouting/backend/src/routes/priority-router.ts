@@ -14,6 +14,7 @@ import type { EndpointError } from "../middleware/verification";
 import type { TaskEither } from "fp-ts/lib/TaskEither";
 import { getDb } from "../middleware/db";
 import { left } from "fp-ts/lib/TaskEither";
+import { flatTryCatch } from "../../../../../packages/flow-utils";
 
 export const teamPriorityCodec = t.type({
   teamNumber: t.number,
@@ -37,14 +38,12 @@ export const readAllPriorities = (): TaskEither<
 > =>
   pipe(
     getPriorityCollection(),
-    flatMap((collection) =>
-      tryCatch(
-        () => collection.find({}).toArray(),
-        (error) => ({
-          status: StatusCodes.INTERNAL_SERVER_ERROR,
-          reason: `Error reading priorities: ${error}`,
-        }),
-      ),
+    flatTryCatch(
+      (collection) => collection.find({}).toArray(),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `Error reading priorities: ${error}`,
+      }),
     ),
     mapTask(
       createTypeCheckingEndpointFlow(teamPriorityArrayCodec, (errors) => ({
