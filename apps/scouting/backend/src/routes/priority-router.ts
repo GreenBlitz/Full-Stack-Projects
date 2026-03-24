@@ -87,19 +87,17 @@ export const upsertPriority = (
 ): TaskEither<EndpointError, void> =>
   pipe(
     getPriorityCollection(),
-    flatMap((collection) =>
-      tryCatch(
-        () =>
-          collection.updateOne(
-            { teamNumber: teamPriority.teamNumber },
-            { $set: { priority: teamPriority.priority } },
-            { upsert: true },
-          ),
-        (error) => ({
-          status: StatusCodes.INTERNAL_SERVER_ERROR,
-          reason: `Error writing priority: ${error}`,
-        }),
-      ),
+    flatTryCatch(
+      (collection) =>
+        collection.updateOne(
+          { teamNumber: teamPriority.teamNumber },
+          { $set: { priority: teamPriority.priority } },
+          { upsert: true },
+        ),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `Error writing priority: ${error}`,
+      }),
     ),
     map(() => undefined),
   );
