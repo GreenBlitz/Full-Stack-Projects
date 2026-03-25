@@ -18,6 +18,9 @@ import { useLocalStorage } from "@repo/local_storage_hook";
 import { PostMatchTab } from "./tabs/PostMatchTab";
 import { useNavigate } from "react-router-dom";
 import { PreMatchTab } from "./tabs/PreMatchTab";
+import { useMatchTimer } from "../hooks/useMatchTimer";
+import StartMatchLocallyButton from "../components/StartMatchLocallyButton";
+import { boolean } from "io-ts";
 export interface TabProps {
   setForm: Dispatch<SetStateAction<ScoutingForm>>;
   currentForm: ScoutingForm;
@@ -29,10 +32,17 @@ interface Tab {
   name: string;
   Component: FC<TabProps>;
 }
+
+const ITERATION_PERIOD_MS = 10;
+
 const TABS: Tab[] = [
   {
     name: "Pre",
     Component: PreMatchTab,
+  },
+  {
+    name: "Start Match",
+    Component: () => <StartMatchLocallyButton disabled={false} />,
   },
   {
     name: "Auto",
@@ -175,6 +185,16 @@ const SideBar: FC<SideBarProps> = ({
     </div>
   );
 };
+
+export type ShiftNumber = "Auto" | "Transition" | "Shift1" | "Shift2" | "Shift3" | "Shift4" | "Endgame";
+const AUTO_END = 20_000;
+const TRANSITION_END = 30_000;
+
+const SHIFT_1_END = 55_000;
+const SHIFT_2_END = 80_000;
+const SHIFT_3_END = 105_000;
+const SHIFT_4_END = 130_000;
+const MATCH_END = 160_000;
 export const createNewScoutingForm = (
   savedInfo?: Partial<ScoutingForm>,
 ): ScoutingForm => structuredClone({ ...defaultScoutForm, ...savedInfo });
@@ -183,13 +203,108 @@ export const ScoutMatch: FC = () => {
     "form",
     createNewScoutingForm(),
   );
+  const [backgroundColor, setBackgroundColor] = useState("bg-black/40");
   const [activeTabIndex, setActiveTab] = useState(STARTING_TAB_INDEX);
   const [alliance, setAlliance] = useState<Alliance>("red");
   const originTime = useMemo(() => Date.now(), []);
-  const CurrentTab = useMemo(
-    () => TABS[activeTabIndex].Component,
-    [activeTabIndex],
-  );
+  const CurrentTab = useMemo(() => {
+    return TABS[activeTabIndex]?.Component ?? PostMatchTab;
+  }, [activeTabIndex]);
+
+  const SHIFT_END_TIME_MS: Record<ShiftNumber, number> = {
+    Auto: AUTO_END,
+    Transition: TRANSITION_END,
+    Shift1: SHIFT_1_END,
+    Shift2: SHIFT_2_END,
+    Shift3: SHIFT_3_END,
+    Shift4: SHIFT_4_END,
+    Endgame: MATCH_END,
+  };
+
+  const MILLISECONDS_IN_FIVE_SECONDS = 5000;
+
+  const SHIFT_EXTRA_END_TIME_MS: Record<ShiftNumber, number> = {
+    Auto: AUTO_END + MILLISECONDS_IN_FIVE_SECONDS,
+    Transition: TRANSITION_END + MILLISECONDS_IN_FIVE_SECONDS,
+    Shift1: SHIFT_1_END + MILLISECONDS_IN_FIVE_SECONDS,
+    Shift2: SHIFT_2_END + MILLISECONDS_IN_FIVE_SECONDS,
+    Shift3: SHIFT_3_END + MILLISECONDS_IN_FIVE_SECONDS,
+    Shift4: SHIFT_4_END + MILLISECONDS_IN_FIVE_SECONDS,
+    Endgame: MATCH_END,
+  };
+
+  const hasShiftJustEnded = (elapsedMs: number): boolean => {
+    if (
+      SHIFT_END_TIME_MS.Auto <= elapsedMs &&
+      elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Auto
+    )
+      return true;
+    if (
+      SHIFT_END_TIME_MS.Transition <= elapsedMs &&
+      elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Transition
+    )
+      return true;
+    if (
+      SHIFT_END_TIME_MS.Shift1 <= elapsedMs &&
+      elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Shift1
+    )
+      return true;
+    if (
+      SHIFT_END_TIME_MS.Shift2 <= elapsedMs &&
+      elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Shift2
+    )
+      return true;
+    if (
+      SHIFT_END_TIME_MS.Shift3 <= elapsedMs &&
+      elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Shift3
+    )
+      return true;
+    if (
+      SHIFT_END_TIME_MS.Shift4 <= elapsedMs &&
+      elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Shift4
+    )
+      return true;
+    return false;
+  };
+  const { elapsedMs, isRunning } = useMatchTimer(ITERATION_PERIOD_MS);
+
+  const previousIsRunningRef = useRef(isRunning);
+
+  const getTabIndexFromElapsedMs = (elapsedMs: number): number => {
+    if (elapsedMs <= 0) return 2;
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Auto) return 2;
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Transition) return 3;
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Shift1) return 4;
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Shift2) return 5;
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Shift3) return 6;
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Shift4) return 7;
+    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Endgame) return 8;
+    return 9;
+  };
+
+  useEffect(() => {
+    setBackgroundColor(
+      hasShiftJustEnded(elapsedMs) ? "bg-amber-400/40" : "bg-black/40",
+    );
+
+    const hasJustStartedOrResumed = !previousIsRunningRef.current && isRunning;
+
+    const nextTab = getTabIndexFromElapsedMs(elapsedMs);
+
+    const shouldSyncFromTabOne =
+      activeTabIndex === 1 && hasJustStartedOrResumed;
+
+    const shouldSyncNormally = activeTabIndex !== 1 && elapsedMs > 0;
+
+    if (
+      (shouldSyncFromTabOne || shouldSyncNormally) &&
+      activeTabIndex !== nextTab
+    ) {
+      setActiveTab(nextTab);
+    }
+
+    previousIsRunningRef.current = isRunning;
+  }, [elapsedMs, isRunning, activeTabIndex, setActiveTab]);
   return (
     <div
       className="max-h-screen bg-black p-4 md:p-6 flex items-center justify-center
@@ -209,9 +324,9 @@ export const ScoutMatch: FC = () => {
         )}
         <div className="flex-1 flex flex-col overflow-hidden p-2 relative z-10">
           <div
-            className="flex-1 min-h-0 text-green-100 overflow-hidden pr-2
-           bg-black/40 rounded-xl p-3 sm:p-4 lg:p-6 border border-green-500/20 shadow-inner
-            animate-in fade-in slide-in-from-right-4 duration-300"
+            className={`flex-1 min-h-0 text-green-100 overflow-hidden pr-2
+            ${backgroundColor} rounded-xl p-3 sm:p-4 lg:p-6 border border-green-500/20 shadow-inner
+            animate-in fade-in slide-in-from-right-4 duration-300`}
           >
             <CurrentTab
               setForm={setScoutingForm}

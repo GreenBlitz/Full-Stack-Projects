@@ -9,10 +9,10 @@ import type {
   ShiftType,
 } from "@repo/scouting_types";
 import { MovementForm } from "../../components/MovementForm";
-import Stopwatch from "../../components/stopwatch";
 import { usePositionRecording } from "../../hooks/usePositionRecording";
 import { isEmpty } from "@repo/array-functions";
 import { ClimbSection } from "../../components/ClimbSection";
+import Stopwatch from "../../components/stopwatch";
 
 interface ShiftTabProps extends TabProps {
   tabIndex: number;
