@@ -9,7 +9,11 @@ let audioContext: AudioContext | null = null;
 
 function playClick(): void {
   try {
-    const Ctx = typeof window !== "undefined" && (window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext);
+    const Ctx =
+      typeof window !== "undefined" &&
+      (window.AudioContext ||
+        (window as unknown as { webkitAudioContext?: typeof AudioContext })
+          .webkitAudioContext);
     if (!Ctx) return;
     if (!audioContext) {
       audioContext = new Ctx();
@@ -28,7 +32,10 @@ function playClick(): void {
       osc.stop(ctx.currentTime + 0.04);
     };
     if (ctx.state === "suspended") {
-      ctx.resume().then(play).catch(() => {});
+      ctx
+        .resume()
+        .then(play)
+        .catch(() => {});
     } else {
       play();
     }

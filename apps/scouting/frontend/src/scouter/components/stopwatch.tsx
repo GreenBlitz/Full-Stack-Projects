@@ -33,11 +33,6 @@ const Stopwatch: React.FC<StopwatchProps> = ({
 
   const startTimeRef = useRef(INITIAL_TIME_MILLISECONDS);
   const startCurrentCycleTime = useRef<number>(INITIAL_TIME_MILLISECONDS);
-  const buttonRef = useRef<HTMLDivElement>(null);
-  const disabledRef = useRef(disabled);
-  const isRunningRef = useRef(isRunning);
-  disabledRef.current = disabled;
-  isRunningRef.current = isRunning;
 
   const calculateSeconds = () => {
     return Math.floor(
@@ -73,25 +68,11 @@ const Stopwatch: React.FC<StopwatchProps> = ({
     return () => clearInterval(intervalId);
   }, [isRunning]);
 
-  useEffect(() => {
-    const el = buttonRef.current;
-    if (!el) return;
-    const onGesture = () => {
-      if (disabledRef.current || isRunningRef.current) return;
-      playStartFeedback();
-    };
-    el.addEventListener("touchstart", onGesture, { capture: true });
-    el.addEventListener("mousedown", onGesture, { capture: true });
-    return () => {
-      el.removeEventListener("touchstart", onGesture, { capture: true });
-      el.removeEventListener("mousedown", onGesture, { capture: true });
-    };
-  }, []);
-
   const start = () => {
     if (isRunning || disabled) {
       return;
     }
+    playStartFeedback();
     const relativeTime = getCurrentRelativeTime();
     startCurrentCycleTime.current = relativeTime;
     startTimeRef.current = Date.now() - elapsedTime;
@@ -123,7 +104,6 @@ const Stopwatch: React.FC<StopwatchProps> = ({
       }`}
     >
       <div
-        ref={buttonRef}
         className={`
           select-none cursor-pointer rounded-2xl touch-none
           ${isCompact ? "px-2 py-1 text-xl sm:px-3 sm:py-2 sm:text-2xl" : "px-4 py-4 text-3xl"}
