@@ -14,8 +14,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@capacitor/core": "^8.2.0",
-    "@capacitor/haptics": "^8.0.1",
     "@tailwindcss/vite": "^4.1.16",
     "heatmap.js": "^2.0.5",
     "http-proxy-middleware": "^3.0.5",

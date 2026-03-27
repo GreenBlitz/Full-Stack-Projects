@@ -1,10 +1,7 @@
 /**
- * Plays start feedback: native haptics on Capacitor apps (iOS + Android),
- * otherwise vibration (Android) + short audio click (iOS + Android in browser).
+ * Browser feedback when a stopwatch cycle starts.
+ * Uses vibration when available and always attempts a short click sound.
  */
-import { Capacitor } from "@capacitor/core";
-import { Haptics, ImpactStyle } from "@capacitor/haptics";
-
 let audioContext: AudioContext | null = null;
 
 function playClick(): void {
@@ -48,17 +45,8 @@ export function playStartFeedback(): void {
   if (typeof window === "undefined") return;
 
   try {
-    if (Capacitor.isNativePlatform()) {
-      void Haptics.impact({ style: ImpactStyle.Medium });
-      return;
-    }
-  } catch {
-    /* not in Capacitor native app */
-  }
-
-  try {
     if (typeof navigator.vibrate === "function") {
-      navigator.vibrate(100);
+      navigator.vibrate([120, 40, 120]);
     }
   } catch {
     /* ignore */
