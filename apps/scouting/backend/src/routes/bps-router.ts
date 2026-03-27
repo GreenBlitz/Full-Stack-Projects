@@ -5,6 +5,7 @@ import {
   BPS,
   BPSBlueprint,
   bpsCodec,
+  excludeNoShowForms,
   Interval,
   Match,
   ScoutingForm,
@@ -35,9 +36,8 @@ import {
   EndpointError,
 } from "../middleware/verification";
 import { right as rightEither } from "fp-ts/lib/Either";
-import { mapWithIndex, sequence, traverse } from "fp-ts/lib/Record";
+import { mapWithIndex, sequence } from "fp-ts/lib/Record";
 import { sequenceS } from "fp-ts/lib/Apply";
-import { reduce } from "fp-ts/lib/ReadonlyArray";
 
 export const bpsRouter = Router();
 
@@ -68,7 +68,7 @@ bpsRouter.get("/matches", async (req, res) => {
     flatMap(({ formsCollection, bpsCollection }) =>
       tryCatch(
         async () => ({
-          forms: await formsCollection.find().toArray(),
+          forms: excludeNoShowForms(await formsCollection.find().toArray()),
           bpses: await bpsCollection.find().toArray(),
         }),
         (error) => ({
@@ -190,7 +190,7 @@ export const getTeamBPS = (team: number) =>
 
 export const getAllBPSes = (forms: ScoutingForm[]) =>
   pipe(
-    forms,
+    excludeNoShowForms(forms),
     groupBy((form) => form.teamNumber.toString()),
     mapWithIndex((teamStringedNumber, forms) =>
       sequenceS(ApplyPar)({
@@ -207,7 +207,7 @@ export const getAllBPSes = (forms: ScoutingForm[]) =>
 
 export const getTeamBPSes = (teams: Record<string, ScoutingForm[]>) =>
   pipe(
-    teams,
+    mapObject(teams, excludeNoShowForms),
     mapWithIndex((teamStringedNumber, forms) =>
       sequenceS(ApplyPar)({
         forms: right(forms),

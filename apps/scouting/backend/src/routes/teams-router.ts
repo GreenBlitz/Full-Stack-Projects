@@ -24,7 +24,11 @@ import type {
   Shift,
   TeamData,
 } from "@repo/scouting_types";
-import { ACCURACY_DISTANCES, teamsProps } from "@repo/scouting_types";
+import {
+  ACCURACY_DISTANCES,
+  excludeNoShowForms,
+  teamsProps,
+} from "@repo/scouting_types";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
 import { calculateSum, isEmpty, mapObject } from "@repo/array-functions";
 import { createFuelObject } from "../fuel/fuel-object";
@@ -167,9 +171,11 @@ teamsRouter.get("/", async (req, res) => {
       tryCatch(
         async () => ({
           recency,
-          forms: await collection
-            .find({ teamNumber: { $in: teams } })
-            .toArray(),
+          forms: excludeNoShowForms(
+            await collection
+              .find({ teamNumber: { $in: teams } })
+              .toArray(),
+          ),
         }),
         (error) => ({
           status: StatusCodes.INTERNAL_SERVER_ERROR,

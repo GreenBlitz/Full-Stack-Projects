@@ -1,10 +1,11 @@
 //בס"ד
 
-import type {
-  BPS,
-  ScoutingForm,
-  TeleClimbLevel,
-  TimesClimedToLevels,
+import {
+  excludeNoShowForms,
+  type BPS,
+  type ScoutingForm,
+  type TeleClimbLevel,
+  type TimesClimedToLevels,
 } from "@repo/scouting_types";
 import { Router } from "express";
 import { getFormsCollection } from "./forms-router";
@@ -22,7 +23,10 @@ import {
 import { mongofyQuery } from "../middleware/query";
 import { StatusCodes } from "http-status-codes";
 import { calculateSum, firstElement, isEmpty } from "@repo/array-functions";
-import { calcAverageGeneralFuelData, generalCalculateFuel } from "../fuel/fuel-general";
+import {
+  calcAverageGeneralFuelData,
+  generalCalculateFuel,
+} from "../fuel/fuel-general";
 import { getTeamBPS } from "./bps-router";
 
 export const compareRouter = Router();
@@ -112,13 +116,28 @@ compareRouter.get("/", async (req, res) => {
       ),
     ),
     flatMap((forms) => {
-      if (isEmpty(forms)) return right(forms);
+      if (isEmpty(forms)) {
+        return left({
+          status: StatusCodes.BAD_REQUEST,
+          reason:
+            "Compare Two Validation Error: No forms match the query.",
+        });
+      }
 
-      const firstTeam = firstElement(forms).teamNumber;
-      const isSameTeam = forms.every((f) => f.teamNumber === firstTeam);
+      const filtered = excludeNoShowForms(forms);
+      if (isEmpty(filtered)) {
+        return left({
+          status: StatusCodes.BAD_REQUEST,
+          reason:
+            "Compare Two Validation Error: No valid scouting data (all matches marked no-show).",
+        });
+      }
+
+      const firstTeam = firstElement(filtered).teamNumber;
+      const isSameTeam = filtered.every((f) => f.teamNumber === firstTeam);
 
       return isSameTeam
-        ? right(forms)
+        ? right(filtered)
         : left({
             status: StatusCodes.BAD_REQUEST,
             reason:

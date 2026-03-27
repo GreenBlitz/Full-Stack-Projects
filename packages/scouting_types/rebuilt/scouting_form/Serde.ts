@@ -10,7 +10,9 @@ import {
   serdeUnsignedInt,
 } from "@repo/serde";
 
+import type { BitArray } from "../../../serde/BitArray";
 import type { Match, ScoutingForm } from "./ScoutingForm";
+import type { Serde } from "../../../serde/types";
 import type { Interval } from "./Interval";
 import type { Point, ShootEvent } from "./ShootEvent";
 import type { AutoClimb, defaultAuto, defaultTele } from "./Segments";
@@ -90,6 +92,15 @@ export const serdeAuto = createRecordSerde<typeof defaultAuto>({
   climb: serdeClimbAuto,
 });
 
+const serdeNoShow = (): Serde<boolean | undefined> => ({
+  serializer(serializedData: BitArray, value: boolean | undefined) {
+    serdeBool().serializer(serializedData, value ?? false);
+  },
+  deserializer(serializedData: BitArray) {
+    return serdeBool().deserializer(serializedData);
+  },
+});
+
 const serdeFields = {
   scouterName: serdeString(),
   competition: serdeEnumedString(competitions),
@@ -102,6 +113,7 @@ const serdeFields = {
   auto: serdeAuto,
   tele: serdeTele,
   robotBroken: serdeBool(),
+  noShow: serdeNoShow(),
 } satisfies Record<keyof ScoutingForm, unknown>;
 
 export const scoutingFormSerde = createRecordSerde(serdeFields);

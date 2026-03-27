@@ -14,11 +14,12 @@ import {
 import { mongofyQuery } from "../middleware/query";
 import { StatusCodes } from "http-status-codes";
 
-import type {
-  BPS,
-  GeneralData,
-  ScoutingForm,
-  TeamNumberAndFuelData,
+import {
+  excludeNoShowForms,
+  type BPS,
+  type GeneralData,
+  type ScoutingForm,
+  type TeamNumberAndFuelData,
 } from "@repo/scouting_types";
 import { findMaxClimbLevel } from "../climb/calculations";
 import { calculateAverageClimbsScore } from "../climb/score";
@@ -28,7 +29,10 @@ import { isEmpty } from "@repo/array-functions";
 
 export const generalRouter = Router();
 
-const formsToGeneralData = (forms: ScoutingForm[], bpses: Record<string,BPS[]>) => {
+const formsToGeneralData = (
+  forms: ScoutingForm[],
+  bpses: Record<string, BPS[]>,
+) => {
   const calculatedFuel: TeamNumberAndFuelData = formsToFuelData(bpses)(forms);
 
   const allGeneralData: GeneralData[] = Object.entries(calculatedFuel).map(
@@ -71,6 +75,7 @@ generalRouter.get("/", async (req, res) => {
       ),
     ),
     bindTo("forms"),
+    map(({ forms }) => ({ forms: excludeNoShowForms(forms) })),
     bind("teamBpses", ({ forms }) => getAllBPSes(forms)),
     map(({ forms, teamBpses }) => ({
       forms: forms.filter((form) => !isEmpty(teamBpses[form.teamNumber])),
