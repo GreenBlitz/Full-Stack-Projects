@@ -16,7 +16,7 @@ export const matchCodec = t.type({
   type: matchType,
 });
 
-export const scoutingFormCodec = t.type({
+const scoutingFormRequiredCodec = t.type({
   scouterName: t.string,
   competition: competitionCodec,
   match: matchCodec,
@@ -26,6 +26,14 @@ export const scoutingFormCodec = t.type({
   comment: t.string,
   robotBroken: t.boolean,
 });
+
+export const scoutingFormCodec = t.intersection([
+  scoutingFormRequiredCodec,
+  t.partial({ noShow: t.boolean }),
+]);
+
+export type ScoutingForm = t.TypeOf<typeof scoutingFormCodec>;
+export type Match = t.TypeOf<typeof matchCodec>;
 
 export const defaultScoutForm: ScoutingForm = {
   scouterName: "",
@@ -39,7 +47,11 @@ export const defaultScoutForm: ScoutingForm = {
   tele: defaultTele,
   comment: "",
   robotBroken: false,
+  noShow: false,
 };
 
-export type ScoutingForm = t.TypeOf<typeof scoutingFormCodec>;
-export type Match = t.TypeOf<typeof matchCodec>;
+export const isNoShowForm = (form: ScoutingForm): boolean =>
+  form.noShow === true;
+
+export const excludeNoShowForms = (forms: ScoutingForm[]): ScoutingForm[] =>
+  forms.filter((f) => !isNoShowForm(f));

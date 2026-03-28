@@ -26,7 +26,11 @@ import type {
   TeamData,
   TeamOPR,
 } from "@repo/scouting_types";
-import { ACCURACY_DISTANCES, teamsProps } from "@repo/scouting_types";
+import {
+  ACCURACY_DISTANCES,
+  excludeNoShowForms,
+  teamsProps,
+} from "@repo/scouting_types";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
 import { calculateSum, isEmpty, mapObject } from "@repo/array-functions";
 import { createFuelObject } from "../fuel/fuel-object";

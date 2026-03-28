@@ -7,11 +7,12 @@ import { fold, map, bindTo, bind } from "fp-ts/lib/TaskEither";
 import { mongofyQuery, flatTryCatch } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
 
-import type {
-  BPS,
-  GeneralData,
-  ScoutingForm,
-  TeamNumberAndFuelData,
+import {
+  excludeNoShowForms,
+  type BPS,
+  type GeneralData,
+  type ScoutingForm,
+  type TeamNumberAndFuelData,
 } from "@repo/scouting_types";
 import { findMaxClimbLevel } from "../climb/calculations";
 import { calculateAverageClimbsScore } from "../climb/score";
@@ -66,6 +67,7 @@ generalRouter.get("/", async (req, res) => {
     ),
 
     bindTo("forms"),
+    map(({ forms }) => ({ forms: excludeNoShowForms(forms) })),
     bind("teamBpses", ({ forms }) => getAllBPSes(forms)),
     map(({ forms, teamBpses }) => ({
       forms: forms.filter((form) => !isEmpty(teamBpses[form.teamNumber])),

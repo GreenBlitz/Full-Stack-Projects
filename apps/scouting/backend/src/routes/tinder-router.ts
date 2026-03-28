@@ -5,15 +5,18 @@ import { pipe } from "fp-ts/lib/function";
 import { getFormsCollection } from "./forms-router";
 import {
   flatMap,
-  tryCatch,
   filterOrElse,
   map,
   fold,
   bindTo,
 } from "fp-ts/lib/TaskEither";
-import { mongofyQuery,foldResponse,flatTryCatch } from "@repo/flow-utils";
+import { flatTryCatch, foldResponse, mongofyQuery } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
-import type { BPS, ScoutingForm } from "@repo/scouting_types";
+import {
+  excludeNoShowForms,
+  type BPS,
+  type ScoutingForm,
+} from "@repo/scouting_types";
 import {
   calcAverageGeneralFuelData,
   formsToFuelData,
@@ -22,7 +25,7 @@ import { findMaxClimbLevel } from "../climb/calculations";
 import { findTimesStuckOnBump } from "../movement/stats";
 import { isSingleTeam } from "../verification/functions";
 import { getTeamBPSes } from "./bps-router";
-import { firstElement } from "@repo/array-functions";
+import { firstElement, isEmpty } from "@repo/array-functions";
 
 export const tinderRouter = Router();
 
@@ -38,7 +41,6 @@ const createTinder = (forms: ScoutingForm[], bpses: Record<string, BPS[]>) => ({
   },
 });
 
-// בס"ד
 tinderRouter.get("/", (req, res) =>
   pipe(
     getFormsCollection(),
@@ -49,18 +51,30 @@ tinderRouter.get("/", (req, res) =>
         reason: `DB Error: ${error}`,
       }),
     ),
+    filterOrElse((forms) => !isEmpty(forms), () => ({
+      status: StatusCodes.BAD_REQUEST,
+      reason: "Tinder Team Error: No forms match the query.",
+    })),
     filterOrElse(isSingleTeam, () => ({
       status: StatusCodes.BAD_REQUEST,
       reason:
         "Tinder Team Error: Forms contain data from multiple different teams.",
     })),
+
+    map(excludeNoShowForms),
+
+    filterOrElse((forms) => !isEmpty(forms), () => ({
+      status: StatusCodes.BAD_REQUEST,
+      reason:
+        "Tinder Team Error: No valid scouting data (all matches marked no-show).",
+    })),
+
     flatMap((forms) =>
       getTeamBPSes({ [firstElement(forms).teamNumber]: forms }),
     ),
     map((teams) => {
       const firstTeam = firstElement(Object.values(teams));
       const teamNumber = firstElement(firstTeam.forms).teamNumber;
-      
       return createTinder(firstTeam.forms, {
         [teamNumber]: firstTeam.bpses,
       });

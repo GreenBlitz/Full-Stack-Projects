@@ -6,6 +6,7 @@ import { createTypeCheckingEndpointFlow } from "@repo/type-utils";
 import {
   convertGeneralToAllianceData,
   defaultAllianceData,
+  excludeNoShowForms,
   type Forecast,
   forecastProps,
   type ScoutingForm,
@@ -71,9 +72,10 @@ forecastRouter.get("/", async (req, res) => {
       }),
     ),
     map((alliancesForms) =>
-      mapObject(
-        alliancesForms,
-        groupBy((form: ScoutingForm) => form.teamNumber.toString()),
+      mapObject(alliancesForms, (forms) =>
+        groupBy((form: ScoutingForm) => form.teamNumber.toString())(
+          excludeNoShowForms(forms),
+        ),
       ),
     ),
     map((alliancesForms) =>
