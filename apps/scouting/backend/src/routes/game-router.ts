@@ -1,16 +1,16 @@
 // בס"ד
 import { Router } from "express";
-import { join } from "path";
-import { fold, fromEither, map, tryCatch } from "fp-ts/lib/TaskEither";
-import { promises as fs } from "fs";
+import { bindTo, fold, fromEither, map, tryCatch } from "fp-ts/lib/TaskEither";
 import { StatusCodes } from "http-status-codes";
 import { flow, pipe } from "fp-ts/lib/function";
-import { flatMap, orElse, right, left } from "fp-ts/lib/TaskEither";
+import { flatMap } from "fp-ts/lib/TaskEither";
+import { createTypeCheckingEndpointFlow } from "@repo/type-utils";
 import {
   createBodyVerificationPipe,
-  createTypeCheckingEndpointFlow,
-} from "../middleware/verification";
-import type { EndpointError } from "../middleware/verification";
+  type EndpointError,
+  foldResponse,
+  flatTryCatch,
+} from "@repo/flow-utils";
 import type { TaskEither } from "fp-ts/lib/TaskEither";
 import { right as rightEither } from "fp-ts/lib/Either";
 import { map as mapTask } from "fp-ts/lib/Task";
@@ -31,14 +31,12 @@ const getGamesCollection = flow(
 export const readGames = (): TaskEither<EndpointError, GameData[]> =>
   pipe(
     getGamesCollection(),
-    flatMap((collection) =>
-      tryCatch(
-        () => collection.find({}).toArray(),
-        (error) => ({
-          status: StatusCodes.INTERNAL_SERVER_ERROR,
-          reason: `Error reading games file: ${error}`,
-        }),
-      ),
+    flatTryCatch(
+      (collection) => collection.find({}).toArray(),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `Error reading games file: ${error}`,
+      }),
     ),
     map((item) => {
       console.log(item);
@@ -55,27 +53,17 @@ export const readGames = (): TaskEither<EndpointError, GameData[]> =>
 export const writeGames = (games: GameData[]) =>
   pipe(
     getGamesCollection(),
-    flatMap((collection) =>
-      tryCatch(
-        () => collection.insertMany(games),
-        (error) => ({
-          status: StatusCodes.INTERNAL_SERVER_ERROR,
-          reason: `Error writing games file: ${error}`,
-        }),
-      ),
+    flatTryCatch(
+      (collection) => collection.insertMany(games),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `Error writing games file: ${error}`,
+      }),
     ),
   );
 
 gameRouter.get("/", async (req, res) => {
-  await pipe(
-    readGames(),
-    fold(
-      (error) => () =>
-        Promise.resolve(res.status(error.status).send(error.reason)),
-      (games) => () =>
-        Promise.resolve(res.status(StatusCodes.OK).json({ games })),
-    ),
-  )();
+  await pipe(readGames(), bindTo("games"), foldResponse(res))();
 });
 
 gameRouter.post("/", async (req, res) => {
@@ -84,13 +72,7 @@ gameRouter.post("/", async (req, res) => {
     createBodyVerificationPipe(gameDataCodec),
     fromEither,
     flatMap((game) => writeGames([game])),
-    fold(
-      (error) => () =>
-        Promise.resolve(res.status(error.status).send(error.reason)),
-      () => () =>
-        Promise.resolve(
-          res.status(StatusCodes.OK).json({ message: "Wrote Succefully" }),
-        ),
-    ),
+    map(() => ({ message: "Wrote Succefully" })),
+    foldResponse(res),
   )();
 });

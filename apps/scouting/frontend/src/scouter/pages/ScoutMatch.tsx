@@ -23,6 +23,7 @@ export interface TabProps {
   currentForm: ScoutingForm;
   alliance: Alliance;
   originTime: number;
+  setAlliance: Dispatch<SetStateAction<Alliance>>;
 }
 interface Tab {
   name: string;
@@ -81,11 +82,16 @@ const TABS: Tab[] = [
 interface SideBarProps {
   setActiveTab: Dispatch<SetStateAction<number>>;
   activeTabIndex: number;
+  teamNumber: number;
 }
 const ONE_ARRAY_ELEMENT = 1;
 const MOVEMENT_AMOUNT = 1;
 const STARTING_TAB_INDEX = 0;
-const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
+const SideBar: FC<SideBarProps> = ({
+  teamNumber,
+  setActiveTab,
+  activeTabIndex,
+}) => {
   const activeTabRef = useRef<HTMLButtonElement | null>(null);
   const navigate = useNavigate();
   const goToPrev = () => {
@@ -153,6 +159,7 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
           </button>
         ))}
       </nav>
+
       <button
         onClick={goToNext}
         disabled={activeTabIndex === TABS.length - ONE_ARRAY_ELEMENT}
@@ -160,6 +167,11 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
       >
         Next <br />⬇
       </button>
+      <div className="my-auto w-full bg-[#e8d52e] h-8 text-black rounded-md text-center font-bold tracking-wider flex items-center justify-center shadow-[0_0_15px_rgba(232,213,46,0.8)]">
+        <span className="drop-shadow-[0_1.2px_1.2px_rgba(255,255,255,0.8)]">
+          {teamNumber}
+        </span>
+      </div>
     </div>
   );
 };
@@ -172,7 +184,7 @@ export const ScoutMatch: FC = () => {
     createNewScoutingForm(),
   );
   const [activeTabIndex, setActiveTab] = useState(STARTING_TAB_INDEX);
-  const [alliance, _setAlliance] = useState<Alliance>("red");
+  const [alliance, setAlliance] = useState<Alliance>("red");
   const originTime = useMemo(() => Date.now(), []);
   const CurrentTab = useMemo(
     () => TABS[activeTabIndex].Component,
@@ -192,6 +204,7 @@ export const ScoutMatch: FC = () => {
           <SideBar
             setActiveTab={setActiveTab}
             activeTabIndex={activeTabIndex}
+            teamNumber={scoutingForm.teamNumber}
           />
         )}
         <div className="flex-1 flex flex-col overflow-hidden p-2 relative z-10">
@@ -205,6 +218,7 @@ export const ScoutMatch: FC = () => {
               currentForm={scoutingForm}
               alliance={alliance}
               originTime={originTime}
+              setAlliance={setAlliance}
             />
           </div>
         </div>
@@ -212,6 +226,7 @@ export const ScoutMatch: FC = () => {
           <SideBar
             setActiveTab={setActiveTab}
             activeTabIndex={activeTabIndex}
+            teamNumber={scoutingForm.teamNumber}
           />
         )}
       </div>

@@ -18,14 +18,12 @@ import {
   bind,
   bindTo,
   filterOrElse,
-  flatMap,
   fold,
   fromEither,
   map,
   orElse,
   right,
   TaskEither,
-  tryCatch,
 } from "fp-ts/lib/TaskEither";
 import { getFormsCollection } from "./forms-router";
 import { StatusCodes } from "http-status-codes";
@@ -34,7 +32,9 @@ import { groupBy } from "fp-ts/lib/NonEmptyArray";
 import {
   createBodyVerificationPipe,
   EndpointError,
-} from "../middleware/verification";
+  flatTryCatch,
+  foldResponse,
+} from "@repo/flow-utils";
 import { right as rightEither } from "fp-ts/lib/Either";
 import { mapWithIndex, sequence } from "fp-ts/lib/Record";
 import { sequenceS } from "fp-ts/lib/Apply";
@@ -65,17 +65,15 @@ bpsRouter.get("/matches", async (req, res) => {
     getFormsCollection(),
     bindTo("formsCollection"),
     bind("bpsCollection", getBPSCollection),
-    flatMap(({ formsCollection, bpsCollection }) =>
-      tryCatch(
-        async () => ({
-          forms: excludeNoShowForms(await formsCollection.find().toArray()),
-          bpses: await bpsCollection.find().toArray(),
-        }),
-        (error) => ({
-          status: StatusCodes.INTERNAL_SERVER_ERROR,
-          reason: `Error Getting Items From Collections ${error}`,
-        }),
-      ),
+    flatTryCatch(
+      async ({ formsCollection, bpsCollection }) => ({
+        forms: excludeNoShowForms(await formsCollection.find().toArray()),
+        bpses: await bpsCollection.find().toArray(),
+      }),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `Error Getting Items From Collections ${error}`,
+      }),
     ),
     map(({ forms, bpses }) => ({
       games: forms.map((form) => ({
@@ -113,14 +111,8 @@ bpsRouter.get("/matches", async (req, res) => {
       }),
     ),
     map(groupBy((game) => game.team.toString())),
-    fold(
-      (error) => () =>
-        Promise.resolve(res.status(error.status).send(error.reason)),
-      (teamGames) => () =>
-        Promise.resolve(
-          res.status(StatusCodes.OK).json({ teamGames } satisfies BPSBlueprint),
-        ),
-    ),
+    bindTo("teamGames"),
+    foldResponse(res),
   )();
 });
 
@@ -131,52 +123,44 @@ bpsRouter.post("/", async (req, res) => {
     fromEither,
     bindTo("bps"),
     bind("bpsCollection", getBPSCollection),
-    flatMap(({ bpsCollection, bps }) =>
-      tryCatch(
-        async () => {
-          const teamEntry = await bpsCollection.findOne({ team: bps.team });
-          if (!teamEntry) {
-            return await bpsCollection.insertOne({
-              bpses: [bps],
-              team: bps.team,
-            });
-          }
+    flatTryCatch(
+      async ({ bpsCollection, bps }) => {
+        const teamEntry = await bpsCollection.findOne({ team: bps.team });
+        if (!teamEntry) {
+          return await bpsCollection.insertOne({
+            bpses: [bps],
+            team: bps.team,
+          });
+        }
 
-          const newTeamEntry = {
-            team: teamEntry.team,
-            bpses: [...teamEntry.bpses, bps],
-          };
-          return await bpsCollection.replaceOne(
-            { _id: teamEntry._id },
-            newTeamEntry,
-          );
-        },
-        (error) => ({
-          status: StatusCodes.INTERNAL_SERVER_ERROR,
-          reason: `Error Replacing Team Value: ${error}`,
-        }),
-      ),
+        const newTeamEntry = {
+          team: teamEntry.team,
+          bpses: [...teamEntry.bpses, bps],
+        };
+        return await bpsCollection.replaceOne(
+          { _id: teamEntry._id },
+          newTeamEntry,
+        );
+      },
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `Error Replacing Team Value: ${error}`,
+      }),
     ),
-    fold(
-      (error) => () =>
-        Promise.resolve(res.status(error.status).send(error.reason)),
-      (result) => () =>
-        Promise.resolve(res.status(StatusCodes.OK).json({ result })),
-    ),
+    bindTo("result"),
+    foldResponse(res),
   )();
 });
 
 export const getTeamBPS = (team: number) =>
   pipe(
     getBPSCollection(),
-    flatMap((collection) =>
-      tryCatch(
-        async () => await collection.findOne({ team }),
-        (error) => ({
-          status: StatusCodes.INTERNAL_SERVER_ERROR,
-          reason: `Unable To get BPSes ${error}`,
-        }),
-      ),
+    flatTryCatch(
+      async (collection) => await collection.findOne({ team }),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `Unable To get BPSes ${error}`,
+      }),
     ),
     filterOrElse(
       (item) => item !== null,

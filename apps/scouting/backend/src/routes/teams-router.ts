@@ -3,7 +3,7 @@
 import { Router } from "express";
 import { right } from "fp-ts/lib/Either";
 import { pipe } from "fp-ts/lib/function";
-import { createTypeCheckingEndpointFlow } from "../middleware/verification";
+import { createTypeCheckingEndpointFlow } from "@repo/type-utils";
 import {
   flatMap,
   fold,
@@ -12,6 +12,7 @@ import {
   right as taskRight,
   map,
   tryCatch,
+  bindTo,
 } from "fp-ts/lib/TaskEither";
 import { getFormsCollection } from "./forms-router";
 import { StatusCodes } from "http-status-codes";
@@ -23,6 +24,7 @@ import type {
   SectionTeamData,
   Shift,
   TeamData,
+  TeamOPR,
 } from "@repo/scouting_types";
 import {
   ACCURACY_DISTANCES,
@@ -36,6 +38,11 @@ import { splitByDistances } from "../fuel/distance-split";
 import { calculateFuelStatisticsOfShift } from "../fuel/fuel-general";
 import { calculateAverageBPS } from "../fuel/calculations/fuel-averaging";
 import { getTeamBPSes } from "./bps-router";
+import { foldResponse, flatTryCatch } from "@repo/flow-utils";
+import { compareMatches } from "@repo/scouting_types";
+import { fetchTeamsCOPRs } from "./tba-router";
+import { EPA } from "@repo/scouting_types";
+import { getTeamsEPAs } from "../middleware/epa";
 
 export const teamsRouter = Router();
 
@@ -61,13 +68,15 @@ const processFuelAndAccuracy = (
       ),
       ACCURACY_DISTANCES,
     ),
-
-    copr: 0,
-    cdpr: 0,
   };
 };
 
-const processTeam = (bpses: BPS[], forms: ScoutingForm[]): TeamData => {
+const processTeam = (
+  bpses: BPS[],
+  forms: ScoutingForm[],
+  coprs?: TeamOPR,
+  epa?: EPA,
+): TeamData => {
   const tele = {
     movement: {
       bumpStuck: calculateSum(forms, (form) =>
@@ -124,25 +133,12 @@ const processTeam = (bpses: BPS[], forms: ScoutingForm[]): TeamData => {
     tele,
     auto,
     fullGame,
-    metrics: { epa: 0, bps: calculateAverageBPS(bpses) },
+    metrics: { epa, bps: calculateAverageBPS(bpses), coprs },
   };
 };
 
-const MATCH_TYPES_ORDER: Record<Match["type"], number> = {
-  practice: 0,
-  qualification: 1,
-  playoff: 2,
-};
-const compareForms = (form1: ScoutingForm, form2: ScoutingForm) => {
-  const isTypeSame = form1.match.type === form2.match.type;
-
-  if (!isTypeSame) {
-    return (
-      MATCH_TYPES_ORDER[form1.match.type] - MATCH_TYPES_ORDER[form2.match.type]
-    );
-  }
-  return form1.match.number - form2.match.number;
-};
+const compareForms = (form1: ScoutingForm, form2: ScoutingForm) =>
+  compareMatches(form1.match, form2.match);
 
 const NO_RECENCY_STARTING_INDEX = 0;
 
@@ -167,21 +163,15 @@ teamsRouter.get("/", async (req, res) => {
       teams: typeof teams === "number" ? [teams] : teams,
       recency,
     })),
-    flatMap(({ collection, teams, recency }) =>
-      tryCatch(
-        async () => ({
-          recency,
-          forms: excludeNoShowForms(
-            await collection
-              .find({ teamNumber: { $in: teams } })
-              .toArray(),
-          ),
-        }),
-        (error) => ({
-          status: StatusCodes.INTERNAL_SERVER_ERROR,
-          reason: `Error Getting Teams From DB: ${error}`,
-        }),
-      ),
+    flatTryCatch(
+      async ({ collection, teams, recency }) => ({
+        recency,
+        forms: await collection.find({ teamNumber: { $in: teams } }).toArray(),
+      }),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `Error Getting Teams From DB: ${error}`,
+      }),
     ),
     flatMap((item) =>
       isEmpty(item.forms)
@@ -209,14 +199,14 @@ teamsRouter.get("/", async (req, res) => {
       ),
     ),
     flatMap(getTeamBPSes),
+    flatMap(fetchTeamsCOPRs),
+    flatMap(getTeamsEPAs),
     map((teams) =>
-      mapObject(teams, (team) => processTeam(team.bpses, team.forms)),
+      mapObject(teams, (team) =>
+        processTeam(team.bpses, team.forms, team.coprs, team.epa),
+      ),
     ),
-    fold(
-      (error) => () =>
-        Promise.resolve(res.status(error.status).send(error.reason)),
-      (teams) => () =>
-        Promise.resolve(res.status(StatusCodes.OK).json({ teams })),
-    ),
+    bindTo("teams"),
+    foldResponse(res),
   )();
 });

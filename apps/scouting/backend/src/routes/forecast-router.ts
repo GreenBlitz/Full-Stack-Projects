@@ -2,7 +2,7 @@
 
 import { Router } from "express";
 import { pipe } from "fp-ts/lib/function";
-import { createTypeCheckingEndpointFlow } from "../middleware/verification";
+import { createTypeCheckingEndpointFlow } from "@repo/type-utils";
 import {
   convertGeneralToAllianceData,
   defaultAllianceData,
@@ -15,6 +15,7 @@ import { right } from "fp-ts/lib/Either";
 import { getFormsCollection } from "./forms-router";
 import {
   ApplicativePar,
+  bindTo,
   flatMap,
   fold,
   fromEither,
@@ -32,6 +33,7 @@ import { castItem } from "@repo/type-utils";
 import { calculateAverageClimbsScore } from "../climb/score";
 import { getTeamBPS } from "./bps-router";
 import { traverseWithIndex } from "fp-ts/lib/Record";
+import { foldResponse,flatTryCatch } from "@repo/flow-utils";
 
 export const forecastRouter = Router();
 
@@ -51,25 +53,23 @@ forecastRouter.get("/", async (req, res) => {
         map((collection) => ({ collection, query })),
       ),
     ),
-    flatMap(({ collection, query }) =>
-      tryCatch(
-        async () => ({
-          redAlliance: await collection
-            .find({
-              teamNumber: { $in: query.redAlliance },
-            })
-            .toArray(),
-          blueAlliance: await collection
-            .find({
-              teamNumber: { $in: query.blueAlliance },
-            })
-            .toArray(),
-        }),
-        (error) => ({
-          status: StatusCodes.INTERNAL_SERVER_ERROR,
-          reason: `Error getting teams from DB: ${error}`,
-        }),
-      ),
+    flatTryCatch(
+      async ({ collection, query }) => ({
+        redAlliance: await collection
+          .find({
+            teamNumber: { $in: query.redAlliance },
+          })
+          .toArray(),
+        blueAlliance: await collection
+          .find({
+            teamNumber: { $in: query.blueAlliance },
+          })
+          .toArray(),
+      }),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `Error getting teams from DB: ${error}`,
+      }),
     ),
     map((alliancesForms) =>
       mapObject(alliancesForms, (forms) =>
@@ -111,14 +111,8 @@ forecastRouter.get("/", async (req, res) => {
         ),
       ),
     ),
-    fold(
-      (error) => () =>
-        Promise.resolve(res.status(error.status).send(error.reason)),
-      (allianceData) => () =>
-        Promise.resolve(
-          res.status(StatusCodes.OK).json({ allianceData } satisfies Forecast),
-        ),
-    ),
+    bindTo("allianceData"),
+    foldResponse(res),
   )();
 });
 
