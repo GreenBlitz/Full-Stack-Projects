@@ -67,7 +67,8 @@ export const useManualShiftStats = (
       console.log("starting period", periodTime);
       const startTime = Date.now();
       intervalID.current = setInterval(() => {
-        const timeDifference = (Date.now() - startTime) / MILLISECONDS_IN_SECOND;
+        const timeDifference =
+          (Date.now() - startTime) / MILLISECONDS_IN_SECOND;
         setTimeLeft(periodTime - timeDifference);
       }, TIMER_UPDATE_INTERVAL_MS);
       setTimeout(() => {
@@ -107,12 +108,11 @@ const COLOR_BLINK = "bg-orange-300";
 const BLACKOUT_SECONDS = [0, 2, 107, 109, 82, 84, 57, 59];
 const BLACKOUT_WINNER_SECONDS = [132, 134];
 
-const AUTO_WAIT_TIME = 7;
-
 
 export const useTranslateToTimeAndColor = (
   timeLeft: number | null,
   isAuto: boolean | null,
+  breakTime: number,
   isWinner: boolean = true,
 ) => {
   const [waitingTimer, setWaitingTimer] = useState(0);
@@ -126,13 +126,14 @@ export const useTranslateToTimeAndColor = (
     const startingTime = Date.now();
 
     const intervalId = setInterval(() => {
-      const timeDifference = (Date.now() - startingTime) / MILLISECONDS_IN_SECOND;
+      const timeDifference =
+        (Date.now() - startingTime) / MILLISECONDS_IN_SECOND;
 
-      setWaitingTimer(AUTO_WAIT_TIME - timeDifference);
+      setWaitingTimer(breakTime - timeDifference);
     });
     setTimeout(() => {
       clearInterval(intervalId);
-    }, AUTO_WAIT_TIME * MILLISECONDS_IN_SECOND);
+    }, breakTime * MILLISECONDS_IN_SECOND);
     return () => {
       clearInterval(intervalId);
     };

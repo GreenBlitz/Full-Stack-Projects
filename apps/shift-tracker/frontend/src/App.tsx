@@ -13,8 +13,9 @@ const secondsToTime = (seconds: number) =>
 
 const App: FC = () => {
   const [isWinner, setIsWinner] = useState(true);
+  const [breakTime, setBreakTime] = useState(7);
 
-  const manualShiftStats = useManualShiftStats(7, isWinner);
+  const manualShiftStats = useManualShiftStats(breakTime, isWinner);
   const ntShiftStats = useNTShiftStats();
 
   const [isManual, setManual] = useState(true);
@@ -27,6 +28,7 @@ const App: FC = () => {
   const { time, color } = useTranslateToTimeAndColor(
     stats.timeLeft,
     stats.isAuto,
+    breakTime,
     stats.isWinner ?? true,
   );
 
@@ -52,6 +54,15 @@ const App: FC = () => {
         <button className="bg-red-900" onClick={manualShiftStats.restart}>
           Restart
         </button>
+        <input
+          type="number"
+          className="bg-gray-300 text-black w-64 mx-auto mt-1 border-2"
+          placeholder="Break Time"
+          defaultValue={breakTime}
+          onChange={(event) => {
+            setBreakTime(Number(event.currentTarget.value));
+          }}
+        />
       </div>
     </div>
   );
