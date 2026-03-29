@@ -95,7 +95,7 @@ export const useManualShiftStats = (
 };
 
 const COLOR_SHIFT = "bg-green-500";
-const COLOR_NO_SHIFT = "bg-gray-800";
+const COLOR_NO_SHIFT = "bg-blue-400";
 const COLOR_BLINK = "bg-orange-300";
 const COLOR_BREAK = "bg-orange-700";
 
@@ -191,13 +191,16 @@ export const useTranslateToTimeAndColor = (
     if (time < 55) {
       return time - 30;
     }
-    if (time < 90) {
+    if (time < 80) {
       return time - 55;
     }
-    if (time < 115) {
-      return time - 90;
+    if (time < 105) {
+      return time - 80;
     }
-    return time - 115;
+    if (time < 130) {
+      return time - 105;
+    }
+    return time - 130;
   };
 
   const remaining = isWaiting ? waitingTimer : remainingTime(time);
