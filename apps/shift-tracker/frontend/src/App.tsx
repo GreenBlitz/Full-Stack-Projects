@@ -56,7 +56,7 @@ const App: FC = () => {
         </button>
         <input
           type="number"
-          className="bg-gray-300 text-black w-64 mx-auto mt-1 border-2"
+          className="bg-gray-300 text-black w-64 mx-auto mt-1 border-2 text-center"
           placeholder="Break Time"
           defaultValue={breakTime}
           onChange={(event) => {

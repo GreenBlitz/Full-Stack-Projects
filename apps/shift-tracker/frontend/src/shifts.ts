@@ -108,7 +108,6 @@ const COLOR_BLINK = "bg-orange-300";
 const BLACKOUT_SECONDS = [0, 2, 107, 109, 82, 84, 57, 59];
 const BLACKOUT_WINNER_SECONDS = [132, 134];
 
-
 export const useTranslateToTimeAndColor = (
   timeLeft: number | null,
   isAuto: boolean | null,
