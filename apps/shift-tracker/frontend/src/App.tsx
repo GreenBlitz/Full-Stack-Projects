@@ -1,8 +1,8 @@
 // בס"ד
-import { useMemo, type FC } from "react";
+import { useEffect, useMemo, useState, type FC } from "react";
 import { useShiftStats } from "./useNetworkTables";
 
-const testStats = { timeLeft: 105, isAuto: false, isWinner: null };
+const testStats = { timeLeft: 140, isAuto: false, isWinner: null };
 
 const secondsToTime = (seconds: number) =>
   `${Math.floor(seconds / 60)}:${Math.floor(seconds % 60)
@@ -16,8 +16,34 @@ const COLOR_BLINK = "bg-orange-300";
 const BLACKOUT_SECONDS = [0, 2, 107, 109, 82, 84, 57, 59];
 const BLACKOUT_WINNER_SECONDS = [132, 134];
 
+const AUTO_WAIT_TIME = 7;
+
 const App: FC = () => {
   const { timeLeft, isAuto, isWinner } = testStats;
+
+  const [waitingTimer, setWaitingTimer] = useState(0);
+
+  useEffect(() => {
+    if (isAuto) {
+      return;
+    }
+
+    const startingTime = Date.now();
+
+    const intervalId = setInterval(() => {
+      const timeDifference = (Date.now() - startingTime) / 1000;
+
+      setWaitingTimer(AUTO_WAIT_TIME - timeDifference);
+    });
+    setTimeout(() => {
+      clearInterval(intervalId);
+    }, AUTO_WAIT_TIME * 1000);
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [isAuto]);
+
+  console.log(waitingTimer);
 
   const time = useMemo(() => timeLeft ?? 0, [timeLeft]);
 
@@ -59,17 +85,21 @@ const App: FC = () => {
   const isBlinking = BLACKOUT_SECONDS.concat(
     isWinner ? BLACKOUT_WINNER_SECONDS : [],
   ).includes(Math.floor(time));
+  const isWaiting = waitingTimer > 0;
 
-  const color = isBlinking
-    ? COLOR_BLINK
-    : isShiftOurs
-      ? COLOR_SHIFT
-      : COLOR_NO_SHIFT;
+  const color =
+    isBlinking || isWaiting
+      ? COLOR_BLINK
+      : isShiftOurs
+        ? COLOR_SHIFT
+        : COLOR_NO_SHIFT;
 
   return (
     <div className="w-screen h-screen">
       <div className={`flex w-full h-full  ${color}`}>
-        <h1 className="w-min mx-auto my-5">{secondsToTime(time)}</h1>
+        <h1 className="w-min mx-auto my-5">
+          {secondsToTime(isWaiting ? waitingTimer : time)}
+        </h1>
       </div>
     </div>
   );
