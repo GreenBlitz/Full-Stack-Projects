@@ -64,7 +64,7 @@ const TABS: Tab[] = [
     name: "Auto",
     Component: (props) => <ShiftTab shiftType="auto" tabIndex={0} {...props} />,
     ShiftEndTimeMs: AUTO_END,
-    ShiftExtraEndTimeMs: AUTO_END + MILLISECONDS_IN_FIVE_SECONDS,
+    ShiftExtraEndTimeMs: AUTO_END - MILLISECONDS_IN_FIVE_SECONDS,
   },
   {
     name: "Transition",
@@ -72,7 +72,7 @@ const TABS: Tab[] = [
       <ShiftTab shiftType={"transition"} tabIndex={0} {...props} />
     ),
     ShiftEndTimeMs: TRANSITION_END,
-    ShiftExtraEndTimeMs: TRANSITION_END + MILLISECONDS_IN_FIVE_SECONDS,
+    ShiftExtraEndTimeMs: TRANSITION_END - MILLISECONDS_IN_FIVE_SECONDS,
   },
   {
     name: "Shift1",
@@ -80,7 +80,7 @@ const TABS: Tab[] = [
       <ShiftTab shiftType={"teleop"} tabIndex={0} {...props} />
     ),
     ShiftEndTimeMs: SHIFT_1_END,
-    ShiftExtraEndTimeMs: SHIFT_1_END + TRANSITION_END,
+    ShiftExtraEndTimeMs: SHIFT_1_END - MILLISECONDS_IN_FIVE_SECONDS,
   },
   {
     name: "Shift2",
@@ -88,7 +88,7 @@ const TABS: Tab[] = [
       <ShiftTab shiftType={"teleop"} tabIndex={1} {...props} />
     ),
     ShiftEndTimeMs: SHIFT_2_END,
-    ShiftExtraEndTimeMs: SHIFT_2_END + TRANSITION_END,
+    ShiftExtraEndTimeMs: SHIFT_2_END - MILLISECONDS_IN_FIVE_SECONDS,
   },
   {
     name: "Shift3",
@@ -96,7 +96,7 @@ const TABS: Tab[] = [
       <ShiftTab shiftType={"teleop"} tabIndex={2} {...props} />
     ),
     ShiftEndTimeMs: SHIFT_3_END,
-    ShiftExtraEndTimeMs: SHIFT_3_END + TRANSITION_END,
+    ShiftExtraEndTimeMs: SHIFT_3_END - MILLISECONDS_IN_FIVE_SECONDS,
   },
   {
     name: "Shift4",
@@ -104,7 +104,7 @@ const TABS: Tab[] = [
       <ShiftTab shiftType={"teleop"} tabIndex={3} {...props} />
     ),
     ShiftEndTimeMs: SHIFT_4_END,
-    ShiftExtraEndTimeMs: SHIFT_4_END + TRANSITION_END,
+    ShiftExtraEndTimeMs: SHIFT_4_END - MILLISECONDS_IN_FIVE_SECONDS,
   },
   {
     name: "Endgame",
@@ -232,33 +232,33 @@ export const ScoutMatch: FC = () => {
 
   const hasShiftJustEnded = (elapsedMs: number): boolean => {
     if (
-      TABS[TAB_NAME_TO_INDEX["Auto"]].ShiftEndTimeMs <= elapsedMs &&
-      elapsedMs <= TABS[TAB_NAME_TO_INDEX["Auto"]].ShiftExtraEndTimeMs
+      TABS[TAB_NAME_TO_INDEX["Auto"]].ShiftEndTimeMs >= elapsedMs &&
+      elapsedMs >= TABS[TAB_NAME_TO_INDEX["Auto"]].ShiftExtraEndTimeMs
     )
       return true;
     if (
-      TABS[TAB_NAME_TO_INDEX["Transition"]].ShiftEndTimeMs <= elapsedMs &&
-      elapsedMs <= TABS[TAB_NAME_TO_INDEX["Transition"]].ShiftExtraEndTimeMs
+      TABS[TAB_NAME_TO_INDEX["Transition"]].ShiftEndTimeMs >= elapsedMs &&
+      elapsedMs >= TABS[TAB_NAME_TO_INDEX["Transition"]].ShiftExtraEndTimeMs
     )
       return true;
     if (
-      TABS[TAB_NAME_TO_INDEX["Shift1"]].ShiftEndTimeMs <= elapsedMs &&
-      elapsedMs <= TABS[TAB_NAME_TO_INDEX["Shift1"]].ShiftExtraEndTimeMs
+      TABS[TAB_NAME_TO_INDEX["Shift1"]].ShiftEndTimeMs >= elapsedMs &&
+      elapsedMs >= TABS[TAB_NAME_TO_INDEX["Shift1"]].ShiftExtraEndTimeMs
     )
       return true;
     if (
-      TABS[TAB_NAME_TO_INDEX["Shift2"]].ShiftEndTimeMs <= elapsedMs &&
-      elapsedMs <= TABS[TAB_NAME_TO_INDEX["Shift2"]].ShiftExtraEndTimeMs
+      TABS[TAB_NAME_TO_INDEX["Shift2"]].ShiftEndTimeMs >= elapsedMs &&
+      elapsedMs >= TABS[TAB_NAME_TO_INDEX["Shift2"]].ShiftExtraEndTimeMs
     )
       return true;
     if (
-      TABS[TAB_NAME_TO_INDEX["Shift3"]].ShiftEndTimeMs <= elapsedMs &&
-      elapsedMs <= TABS[TAB_NAME_TO_INDEX["Shift3"]].ShiftExtraEndTimeMs
+      TABS[TAB_NAME_TO_INDEX["Shift3"]].ShiftEndTimeMs >= elapsedMs &&
+      elapsedMs >= TABS[TAB_NAME_TO_INDEX["Shift3"]].ShiftExtraEndTimeMs
     )
       return true;
     if (
-      TABS[TAB_NAME_TO_INDEX["Shift4"]].ShiftEndTimeMs <= elapsedMs &&
-      elapsedMs <= TABS[TAB_NAME_TO_INDEX["Shift4"]].ShiftExtraEndTimeMs
+      TABS[TAB_NAME_TO_INDEX["Shift4"]].ShiftEndTimeMs >= elapsedMs &&
+      elapsedMs >= TABS[TAB_NAME_TO_INDEX["Shift4"]].ShiftExtraEndTimeMs
     )
       return true;
     return false;
