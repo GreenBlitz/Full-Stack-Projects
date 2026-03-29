@@ -1,5 +1,5 @@
 // בס"ד
-import { useEffect, useMemo, useState, type FC } from "react";
+import { useMemo, type FC } from "react";
 import { useShiftStats } from "./useNetworkTables";
 
 const testStats = { timeLeft: 3, isAuto: true, isWinner: null };
@@ -17,41 +17,43 @@ const BLACKOUT_SECONDS = [0, 2, 132, 134, 107, 109, 82, 84, 57, 59];
 const App: FC = () => {
   const { timeLeft, isAuto, isWinner } = useShiftStats();
 
+  const time = useMemo(() => timeLeft ?? 0, [timeLeft]);
+
   const isShiftOurs = useMemo(() => {
     if (isAuto ?? true) {
       return true;
     }
 
     //transition
-    if (timeLeft > 130) {
+    if (time > 130) {
       return true;
     }
 
     //endgame
-    if (timeLeft < 30) {
+    if (time < 30) {
       return true;
     }
 
     //shift1
-    if (timeLeft > 105) {
+    if (time > 105) {
       return !isWinner;
     }
 
     //shift2
-    if (timeLeft > 80) {
+    if (time > 80) {
       return isWinner;
     }
 
     //shift3
-    if (timeLeft > 55) {
+    if (time > 55) {
       return !isWinner;
     }
 
     //shift 4
     return isWinner;
-  }, [timeLeft, isAuto, isWinner]);
+  }, [time, isAuto, isWinner]);
 
-  const isBlinking = BLACKOUT_SECONDS.includes(Math.floor(timeLeft));
+  const isBlinking = BLACKOUT_SECONDS.includes(Math.floor(time));
   const showColor = isShiftOurs ? !isBlinking : isBlinking;
 
   return (
@@ -59,7 +61,7 @@ const App: FC = () => {
       <div
         className={`flex w-full h-full  ${showColor ? COLOR_SHIFT : COLOR_NO_SHIFT}`}
       >
-        <h1 className="w-min mx-auto my-5">{secondsToTime(timeLeft)}</h1>
+        <h1 className="w-min mx-auto my-5">{secondsToTime(time)}</h1>
       </div>
     </div>
   );
