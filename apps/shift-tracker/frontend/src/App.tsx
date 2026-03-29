@@ -33,7 +33,7 @@ const App: FC = () => {
   );
 
   return (
-    <div className="w-screen h-screen">
+    <div className="w-screen h-screen text-white">
       <div className={`flex flex-col w-full h-full  ${color}`}>
         <h1 className="w-min mx-auto my-5">{secondsToTime(time)}</h1>
         <button className="bg-violet-800" onClick={stats.start}>
