@@ -105,7 +105,8 @@ export const upsertPriority = (
 priorityRouter.get("/", async (_req, res) => {
   await pipe(
     readAllPriorities(),
-    foldResponse(res, (priorities) => ({ priorities })),
+    map((priorities) => ({ priorities })),
+    foldResponse(res),
   )();
 });
 
