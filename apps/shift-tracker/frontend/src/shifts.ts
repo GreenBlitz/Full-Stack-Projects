@@ -4,8 +4,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 const MILLISECONDS_IN_SECOND = 1000;
 
 const TEAM_NUMBER = 4590;
-const TIME_PATH = "FMSInfo/MatchTime";
-const AUTO_WIN_PATH = "AdvantageKit/Tuning/Tunable/isOurHubActive";
+const TIME_PATH = "AdvantageKit/DriverStation/MatchTime";
+const AUTO_WIN_PATH = "Tunable/isOurHubActive";
 
 const IS_AUTO_PATH = "AdvantageKit/DriverStation/Autonomous";
 
@@ -119,7 +119,7 @@ export const useTranslateToTimeAndColor = (
   const [waitingTimer, setWaitingTimer] = useState(0);
 
   useEffect(() => {
-    if (isAuto) {
+    if (isAuto || !timeLeft) {
       setWaitingTimer(0);
       return;
     }
