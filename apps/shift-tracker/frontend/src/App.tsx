@@ -29,7 +29,7 @@ const App: FC = () => {
     stats.timeLeft,
     stats.isAuto,
     breakTime,
-    stats.isWinner ?? true,
+    isWinner,
   );
 
   return (
