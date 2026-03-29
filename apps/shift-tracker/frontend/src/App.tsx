@@ -2,7 +2,7 @@
 import { useMemo, type FC } from "react";
 import { useShiftStats } from "./useNetworkTables";
 
-const testStats = { timeLeft: 3, isAuto: true, isWinner: null };
+const testStats = { timeLeft: 105, isAuto: false, isWinner: null };
 
 const secondsToTime = (seconds: number) =>
   `${Math.floor(seconds / 60)}:${Math.floor(seconds % 60)
@@ -11,11 +11,13 @@ const secondsToTime = (seconds: number) =>
 
 const COLOR_SHIFT = "bg-green-500";
 const COLOR_NO_SHIFT = "bg-gray-800";
+const COLOR_BLINK = "bg-orange-300";
 
-const BLACKOUT_SECONDS = [0, 2, 132, 134, 107, 109, 82, 84, 57, 59];
+const BLACKOUT_SECONDS = [0, 2, 107, 109, 82, 84, 57, 59];
+const BLACKOUT_WINNER_SECONDS = [132, 134];
 
 const App: FC = () => {
-  const { timeLeft, isAuto, isWinner } = useShiftStats();
+  const { timeLeft, isAuto, isWinner } = testStats;
 
   const time = useMemo(() => timeLeft ?? 0, [timeLeft]);
 
@@ -41,7 +43,7 @@ const App: FC = () => {
 
     //shift2
     if (time > 80) {
-      return isWinner;
+      return Boolean(isWinner);
     }
 
     //shift3
@@ -50,17 +52,23 @@ const App: FC = () => {
     }
 
     //shift 4
-    return isWinner;
+    return Boolean(isWinner);
   }, [time, isAuto, isWinner]);
 
-  const isBlinking = BLACKOUT_SECONDS.includes(Math.floor(time));
-  const showColor = isShiftOurs ? !isBlinking : isBlinking;
+  console.log(isShiftOurs);
+  const isBlinking = BLACKOUT_SECONDS.concat(
+    isWinner ? BLACKOUT_WINNER_SECONDS : [],
+  ).includes(Math.floor(time));
+
+  const color = isBlinking
+    ? COLOR_BLINK
+    : isShiftOurs
+      ? COLOR_SHIFT
+      : COLOR_NO_SHIFT;
 
   return (
     <div className="w-screen h-screen">
-      <div
-        className={`flex w-full h-full  ${showColor ? COLOR_SHIFT : COLOR_NO_SHIFT}`}
-      >
+      <div className={`flex w-full h-full  ${color}`}>
         <h1 className="w-min mx-auto my-5">{secondsToTime(time)}</h1>
       </div>
     </div>
