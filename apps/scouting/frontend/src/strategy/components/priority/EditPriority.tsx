@@ -1,3 +1,4 @@
+import { useLocalStorage } from "@repo/local_storage_hook";
 import React, { useEffect, useState } from "react";
 
 export interface TeamPriority {
@@ -60,7 +61,7 @@ const PRIORITY_STORAGE_KEY = "priority";
 
 interface EditPriorityProps {
   teamNumber: number;
-  initialPriority?: number | null;
+  initialPriority?: number | undefined;
   onSaved?: (savedPriority: TeamPriority) => void;
   onCancel?: () => void;
 }
@@ -71,43 +72,16 @@ export const EditPriority: React.FC<EditPriorityProps> = ({
   onSaved,
   onCancel,
 }) => {
-  const [priority, setPriority] = useState<number>();
+  const storageKey = `${PRIORITY_STORAGE_KEY}-${teamNumber}`;
+
+  // The hook handles initial loading and persistent updates automatically
+  const [priority, setPriority] = useLocalStorage<number | undefined>(
+    storageKey,
+    initialPriority,
+  );
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState<string>("");
-
-  useEffect(() => {
-    if (typeof initialPriority === "number") {
-      setPriority(initialPriority);
-      return;
-    }
-
-    const savedValue = localStorage.getItem(
-      `${PRIORITY_STORAGE_KEY}-${teamNumber}`,
-    );
-
-    if (!savedValue) {
-      return;
-    }
-
-    const parsed = Number(savedValue);
-    if (!Number.isNaN(parsed)) {
-      setPriority(parsed);
-    }
-  }, [teamNumber, initialPriority]);
-
-  useEffect(() => {
-    if (!Number.isFinite(teamNumber)) return;
-
-    const storageKey = `${PRIORITY_STORAGE_KEY}-${teamNumber}`;
-
-    if (priority === undefined) {
-      localStorage.removeItem(storageKey);
-      return;
-    }
-
-    localStorage.setItem(storageKey, String(priority));
-  }, [priority, teamNumber]);
-
 
   const handleSubmit = async () => {
     if (!Number.isFinite(teamNumber)) {
