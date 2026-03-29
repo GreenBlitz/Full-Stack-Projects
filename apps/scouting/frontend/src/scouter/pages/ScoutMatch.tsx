@@ -47,26 +47,6 @@ const MATCH_END = 160_000;
 
 const MILLISECONDS_IN_FIVE_SECONDS = 5000;
 
-const SHIFT_END_TIME_MS: Record<ShiftNumber, number> = {
-  Auto: AUTO_END,
-  Transition: TRANSITION_END,
-  Shift1: SHIFT_1_END,
-  Shift2: SHIFT_2_END,
-  Shift3: SHIFT_3_END,
-  Shift4: SHIFT_4_END,
-  Endgame: MATCH_END,
-};
-
-const SHIFT_EXTRA_END_TIME_MS: Record<ShiftNumber, number> = {
-  Auto: AUTO_END + MILLISECONDS_IN_FIVE_SECONDS,
-  Transition: TRANSITION_END + MILLISECONDS_IN_FIVE_SECONDS,
-  Shift1: SHIFT_1_END + MILLISECONDS_IN_FIVE_SECONDS,
-  Shift2: SHIFT_2_END + MILLISECONDS_IN_FIVE_SECONDS,
-  Shift3: SHIFT_3_END + MILLISECONDS_IN_FIVE_SECONDS,
-  Shift4: SHIFT_4_END + MILLISECONDS_IN_FIVE_SECONDS,
-  Endgame: MATCH_END,
-};
-
 const TABS: Tab[] = [
   {
     name: "Pre",
@@ -141,6 +121,13 @@ const TABS: Tab[] = [
     ShiftExtraEndTimeMs: 0,
   },
 ];
+
+type TabName = (typeof TABS)[number]["name"];
+
+const TAB_NAME_TO_INDEX: Record<TabName, number> = Object.fromEntries(
+  TABS.map((tab, index) => [tab.name, index]),
+);
+
 interface SideBarProps {
   setActiveTab: Dispatch<SetStateAction<number>>;
   activeTabIndex: number;
@@ -227,15 +214,6 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
   );
 };
 
-export type ShiftNumber =
-  | "Auto"
-  | "Transition"
-  | "Shift1"
-  | "Shift2"
-  | "Shift3"
-  | "Shift4"
-  | "Endgame";
-
 export const createNewScoutingForm = (
   savedInfo?: Partial<ScoutingForm>,
 ): ScoutingForm => structuredClone({ ...defaultScoutForm, ...savedInfo });
@@ -254,33 +232,33 @@ export const ScoutMatch: FC = () => {
 
   const hasShiftJustEnded = (elapsedMs: number): boolean => {
     if (
-      TABS[2].ShiftEndTimeMs <= elapsedMs &&
-      elapsedMs <= TABS[2].ShiftExtraEndTimeMs
+      TABS[TAB_NAME_TO_INDEX["Auto"]].ShiftEndTimeMs <= elapsedMs &&
+      elapsedMs <= TABS[TAB_NAME_TO_INDEX["Auto"]].ShiftExtraEndTimeMs
     )
       return true;
     if (
-      TABS[3].ShiftEndTimeMs <= elapsedMs &&
-      elapsedMs <= TABS[3].ShiftExtraEndTimeMs
+      TABS[TAB_NAME_TO_INDEX["Transition"]].ShiftEndTimeMs <= elapsedMs &&
+      elapsedMs <= TABS[TAB_NAME_TO_INDEX["Transition"]].ShiftExtraEndTimeMs
     )
       return true;
     if (
-      TABS[4].ShiftEndTimeMs <= elapsedMs &&
-      elapsedMs <= TABS[4].ShiftExtraEndTimeMs
+      TABS[TAB_NAME_TO_INDEX["Shift1"]].ShiftEndTimeMs <= elapsedMs &&
+      elapsedMs <= TABS[TAB_NAME_TO_INDEX["Shift1"]].ShiftExtraEndTimeMs
     )
       return true;
     if (
-      TABS[5].ShiftEndTimeMs <= elapsedMs &&
-      elapsedMs <= TABS[5].ShiftExtraEndTimeMs
+      TABS[TAB_NAME_TO_INDEX["Shift2"]].ShiftEndTimeMs <= elapsedMs &&
+      elapsedMs <= TABS[TAB_NAME_TO_INDEX["Shift2"]].ShiftExtraEndTimeMs
     )
       return true;
     if (
-      TABS[6].ShiftEndTimeMs <= elapsedMs &&
-      elapsedMs <= TABS[6].ShiftExtraEndTimeMs
+      TABS[TAB_NAME_TO_INDEX["Shift3"]].ShiftEndTimeMs <= elapsedMs &&
+      elapsedMs <= TABS[TAB_NAME_TO_INDEX["Shift3"]].ShiftExtraEndTimeMs
     )
       return true;
     if (
-      TABS[7].ShiftEndTimeMs <= elapsedMs &&
-      elapsedMs <= TABS[7].ShiftExtraEndTimeMs
+      TABS[TAB_NAME_TO_INDEX["Shift4"]].ShiftEndTimeMs <= elapsedMs &&
+      elapsedMs <= TABS[TAB_NAME_TO_INDEX["Shift4"]].ShiftExtraEndTimeMs
     )
       return true;
     return false;
@@ -291,13 +269,15 @@ export const ScoutMatch: FC = () => {
 
   const getTabIndexFromElapsedMs = (elapsedMs: number): number => {
     if (elapsedMs <= 0) return 2;
-    if (elapsedMs <= TABS[2].ShiftEndTimeMs) return 2;
-    if (elapsedMs <= TABS[3].ShiftEndTimeMs) return 3;
-    if (elapsedMs <= TABS[4].ShiftEndTimeMs) return 4;
-    if (elapsedMs <= TABS[5].ShiftEndTimeMs) return 5;
-    if (elapsedMs <= TABS[6].ShiftEndTimeMs) return 6;
-    if (elapsedMs <= TABS[7].ShiftEndTimeMs) return 7;
-    if (elapsedMs <= TABS[8].ShiftEndTimeMs) return 8;
+    if (elapsedMs <= TABS[TAB_NAME_TO_INDEX["Auto"]].ShiftEndTimeMs) return 2;
+    if (elapsedMs <= TABS[TAB_NAME_TO_INDEX["Transition"]].ShiftEndTimeMs)
+      return 3;
+    if (elapsedMs <= TABS[TAB_NAME_TO_INDEX["Shift1"]].ShiftEndTimeMs) return 4;
+    if (elapsedMs <= TABS[TAB_NAME_TO_INDEX["Shift2"]].ShiftEndTimeMs) return 5;
+    if (elapsedMs <= TABS[TAB_NAME_TO_INDEX["Shift3"]].ShiftEndTimeMs) return 6;
+    if (elapsedMs <= TABS[TAB_NAME_TO_INDEX["Shift4"]].ShiftEndTimeMs) return 7;
+    if (elapsedMs <= TABS[TAB_NAME_TO_INDEX["Endgame"]].ShiftEndTimeMs)
+      return 8;
     return 9;
   };
 
