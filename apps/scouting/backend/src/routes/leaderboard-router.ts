@@ -7,14 +7,13 @@ import {
   fold,
   filterOrElse,
 } from "fp-ts/lib/TaskEither";
-import { mongofyQuery,flatTryCatch } from "@repo/flow-utils";
+import { mongofyQuery, flatTryCatch } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
 import { pipe } from "fp-ts/lib/function";
-import {
-  excludeNoShowForms,
-  type CompetitionLeaderboard,
-  type Scouter,
-  type ScoutingForm,
+import type {
+  CompetitionLeaderboard,
+  Scouter,
+  ScoutingForm,
 } from "@repo/scouting_types";
 import { firstElement, isEmpty } from "@repo/array-functions";
 import { isSingleCompetition } from "../verification/functions";
@@ -66,8 +65,6 @@ leaderboardRouter.get("/", (req, res) =>
         reason: `DB Error: ${error}`,
       }),
     ),
-
-    map(excludeNoShowForms),
 
     filterOrElse(isSingleCompetition, () => ({
       status: StatusCodes.BAD_REQUEST,

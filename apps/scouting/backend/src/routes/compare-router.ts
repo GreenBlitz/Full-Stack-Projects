@@ -11,13 +11,11 @@ import { Router } from "express";
 import { getFormsCollection } from "./forms-router";
 import { pipe } from "fp-ts/lib/function";
 import {
-  flatMap,
-  left,
-  map,
-  right,
-  fold,
-  bindTo,
   bind,
+  bindTo,
+  filterOrElse,
+  fold,
+  map,
 } from "fp-ts/lib/TaskEither";
 import { mongofyQuery, flatTryCatch } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
@@ -27,6 +25,7 @@ import {
   generalCalculateFuel,
 } from "../fuel/fuel-general";
 import { getTeamBPS } from "./bps-router";
+import { isSingleTeam } from "../verification/functions";
 
 export const compareRouter = Router();
 
@@ -45,12 +44,6 @@ const calculateAverageScoredFuel = (
     generalCalculateFuel(form, bpses),
   );
   const averagedFuelData = calcAverageGeneralFuelData(generalFuelData);
-  console.log(
-    `auto fuel: ${averagedFuelData.auto.scored.toFixed(DIGITS_AFTER_DECIMAL_DOT)}`,
-  );
-  console.log(
-    `fullGame fuel: ${averagedFuelData.fullGame.scored.toFixed(DIGITS_AFTER_DECIMAL_DOT)}`,
-  );
 
   return parseFloat(
     averagedFuelData[gamePeriod].scored.toFixed(DIGITS_AFTER_DECIMAL_DOT),
@@ -112,35 +105,22 @@ compareRouter.get("/", async (req, res) => {
         reason: `DB Error: ${error}`,
       }),
     ),
-    flatMap((forms) => {
-      if (isEmpty(forms)) {
-        return left({
-          status: StatusCodes.BAD_REQUEST,
-          reason:
-            "Compare Two Validation Error: No forms match the query.",
-        });
-      }
-
-      const filtered = excludeNoShowForms(forms);
-      if (isEmpty(filtered)) {
-        return left({
-          status: StatusCodes.BAD_REQUEST,
-          reason:
-            "Compare Two Validation Error: No valid scouting data (all matches marked no-show).",
-        });
-      }
-
-      const firstTeam = firstElement(filtered).teamNumber;
-      const isSameTeam = filtered.every((f) => f.teamNumber === firstTeam);
-
-      return isSameTeam
-        ? right(filtered)
-        : left({
-            status: StatusCodes.BAD_REQUEST,
-            reason:
-              "Compare Two Validation Error: Forms contain data from multiple different teams.",
-          });
-    }),
+    filterOrElse((forms) => !isEmpty(forms), () => ({
+      status: StatusCodes.BAD_REQUEST,
+      reason:
+        "Compare Two Validation Error: No forms match the query.",
+    })),
+    map(excludeNoShowForms),
+    filterOrElse((forms) => !isEmpty(forms), () => ({
+      status: StatusCodes.BAD_REQUEST,
+      reason:
+        "Compare Two Validation Error: No valid scouting data (all matches marked no-show).",
+    })),
+    filterOrElse(isSingleTeam, () => ({
+      status: StatusCodes.BAD_REQUEST,
+      reason:
+        "Compare Two Validation Error: Forms contain data from multiple different teams.",
+    })),
     bindTo("teamForms"),
     bind("bpses", ({ teamForms }) =>
       getTeamBPS(firstElement(teamForms).teamNumber),

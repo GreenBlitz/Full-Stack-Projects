@@ -191,7 +191,7 @@ export const getAllBPSes = (forms: ScoutingForm[]) =>
 
 export const getTeamBPSes = (teams: Record<string, ScoutingForm[]>) =>
   pipe(
-    mapObject(teams, excludeNoShowForms),
+    teams,
     mapWithIndex((teamStringedNumber, forms) =>
       sequenceS(ApplyPar)({
         forms: right(forms),

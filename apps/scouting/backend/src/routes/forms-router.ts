@@ -15,7 +15,11 @@ import {
   tap,
   tryCatch,
 } from "fp-ts/lib/TaskEither";
-import { scoutingFormCodec, type ScoutingForm } from "@repo/scouting_types";
+import {
+  normalizeScoutingForm,
+  scoutingFormIncomingPostCodec,
+  type ScoutingForm,
+} from "@repo/scouting_types";
 import { StatusCodes } from "http-status-codes";
 import {
   createBodyVerificationPipe,
@@ -47,15 +51,20 @@ formsRouter.get("/", async (req, res) => {
   )();
 });
 
-const combinedCodec = t.union([scoutingFormCodec, t.array(scoutingFormCodec)]);
+const combinedPostCodec = t.union([
+  scoutingFormIncomingPostCodec,
+  t.array(scoutingFormIncomingPostCodec),
+]);
 
 formsRouter.post("/", async (req, res) => {
   await pipe(
     rightEither(req),
-    createBodyVerificationPipe(combinedCodec),
+    createBodyVerificationPipe(combinedPostCodec),
     fromEither,
     map((combinedBody) =>
-      Array.isArray(combinedBody) ? combinedBody : [combinedBody],
+      (Array.isArray(combinedBody) ? combinedBody : [combinedBody]).map(
+        normalizeScoutingForm,
+      ),
     ),
     filterOrElse(
       (forms) => !isEmpty(forms),
