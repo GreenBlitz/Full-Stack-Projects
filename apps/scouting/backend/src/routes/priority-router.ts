@@ -14,7 +14,7 @@ import type { EndpointError } from "../middleware/verification";
 import type { TaskEither } from "fp-ts/lib/TaskEither";
 import { getDb } from "../middleware/db";
 import { left } from "fp-ts/lib/TaskEither";
-import { flatTryCatch } from "../../../../../packages/flow-utils";
+import { flatTryCatch, foldResponse } from "../../../../../packages/flow-utils";
 
 export const teamPriorityCodec = t.type({
   teamNumber: t.number,
@@ -105,12 +105,7 @@ export const upsertPriority = (
 priorityRouter.get("/", async (_req, res) => {
   await pipe(
     readAllPriorities(),
-    fold(
-      (error) => () =>
-        Promise.resolve(res.status(error.status).send(error.reason)),
-      (priorities) => () =>
-        Promise.resolve(res.status(StatusCodes.OK).json({ priorities })),
-    ),
+    foldResponse(res, (priorities) => ({ priorities })),
   )();
 });
 
