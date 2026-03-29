@@ -5,7 +5,6 @@ const MILLISECONDS_IN_SECOND = 1000;
 
 const TEAM_NUMBER = 4590;
 const TIME_PATH = "AdvantageKit/DriverStation/MatchTime";
-const AUTO_WIN_PATH = "Tunable/isOurHubActive";
 
 const IS_AUTO_PATH = "AdvantageKit/DriverStation/Autonomous";
 
@@ -21,7 +20,6 @@ export const useNTShiftStats = (): ShiftStats => {
   const [isAuto, setIsAuto] = useState<boolean | null>(null);
 
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
-  const [isWinner, setIsWinner] = useState<boolean | null>(null);
 
   const start = useCallback(() => {
     const ntcore = NetworkTables.getInstanceByTeam(TEAM_NUMBER);
@@ -30,10 +28,6 @@ export const useNTShiftStats = (): ShiftStats => {
       TIME_PATH,
       NetworkTablesTypeInfos.kDouble,
     );
-    const isAutoWinner = ntcore.createTopic<boolean>(
-      AUTO_WIN_PATH,
-      NetworkTablesTypeInfos.kBoolean,
-    );
     const auto = ntcore.createTopic<boolean>(
       IS_AUTO_PATH,
       NetworkTablesTypeInfos.kBoolean,
@@ -41,10 +35,9 @@ export const useNTShiftStats = (): ShiftStats => {
 
     auto.subscribe(setIsAuto);
     currentTime.subscribe(setTimeLeft);
-    isAutoWinner.subscribe(setIsWinner);
   }, []);
 
-  return { start, restart: () => {}, isAuto, timeLeft, isWinner };
+  return { start, restart: () => {}, isAuto, timeLeft, isWinner: true };
 };
 
 const AUTO_START_TIME = 20;
