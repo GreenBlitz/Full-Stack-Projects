@@ -25,7 +25,7 @@ const App: FC = () => {
     [manualShiftStats, ntShiftStats],
   );
 
-  const { time, color } = useTranslateToTimeAndColor(
+  const { time, color, remaining } = useTranslateToTimeAndColor(
     stats.timeLeft,
     stats.isAuto,
     breakTime,
@@ -35,7 +35,11 @@ const App: FC = () => {
   return (
     <div className="w-screen h-screen text-white">
       <div className={`flex flex-col w-full h-full  ${color}`}>
-        <h1 className="w-min mx-auto my-5">{secondsToTime(time)}</h1>
+        <div className="w-min mx-auto text-2xl my-5">{secondsToTime(time)}</div>
+        <div className="w-min mx-auto text-8xl my-5">
+          {Math.floor(remaining)}
+        </div>
+
         <button className="bg-violet-800" onClick={stats.start}>
           Start
         </button>

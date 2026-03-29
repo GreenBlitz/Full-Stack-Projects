@@ -184,5 +184,23 @@ export const useTranslateToTimeAndColor = (
         ? COLOR_SHIFT
         : COLOR_NO_SHIFT;
 
-  return { color, time: shownTime };
+  const remainingTime = (time: number) => {
+    if (time < 30) {
+      return time;
+    }
+    if (time < 55) {
+      return time - 30;
+    }
+    if (time < 90) {
+      return time - 55;
+    }
+    if (time < 115) {
+      return time - 90;
+    }
+    return time - 115;
+  };
+
+  const remaining = isWaiting ? waitingTimer : remainingTime(time);
+
+  return { color, time: shownTime, remaining };
 };
