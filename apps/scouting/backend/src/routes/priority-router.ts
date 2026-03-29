@@ -122,12 +122,8 @@ priorityRouter.get("/:teamNumber", async (req, res) => {
 
   await pipe(
     readPriorityByTeamNumber(teamNumber),
-    fold(
-      (error) => () =>
-        Promise.resolve(res.status(error.status).send(error.reason)),
-      (teamPriority) => () =>
-        Promise.resolve(res.status(StatusCodes.OK).json({ teamPriority })),
-    ),
+    map((teamPriority) => ({ teamPriority })),
+    foldResponse(res),
   )();
 });
 
