@@ -30,62 +30,115 @@ export interface TabProps {
 interface Tab {
   name: string;
   Component: FC<TabProps>;
+  ShiftEndTimeMs: number;
+  ShiftExtraEndTimeMs: number;
 }
 
 const ITERATION_PERIOD_MS = 10;
+
+const AUTO_END = 20_000;
+const TRANSITION_END = 30_000;
+
+const SHIFT_1_END = 55_000;
+const SHIFT_2_END = 80_000;
+const SHIFT_3_END = 105_000;
+const SHIFT_4_END = 130_000;
+const MATCH_END = 160_000;
+
+const MILLISECONDS_IN_FIVE_SECONDS = 5000;
+
+const SHIFT_END_TIME_MS: Record<ShiftNumber, number> = {
+  Auto: AUTO_END,
+  Transition: TRANSITION_END,
+  Shift1: SHIFT_1_END,
+  Shift2: SHIFT_2_END,
+  Shift3: SHIFT_3_END,
+  Shift4: SHIFT_4_END,
+  Endgame: MATCH_END,
+};
+
+const SHIFT_EXTRA_END_TIME_MS: Record<ShiftNumber, number> = {
+  Auto: AUTO_END + MILLISECONDS_IN_FIVE_SECONDS,
+  Transition: TRANSITION_END + MILLISECONDS_IN_FIVE_SECONDS,
+  Shift1: SHIFT_1_END + MILLISECONDS_IN_FIVE_SECONDS,
+  Shift2: SHIFT_2_END + MILLISECONDS_IN_FIVE_SECONDS,
+  Shift3: SHIFT_3_END + MILLISECONDS_IN_FIVE_SECONDS,
+  Shift4: SHIFT_4_END + MILLISECONDS_IN_FIVE_SECONDS,
+  Endgame: MATCH_END,
+};
 
 const TABS: Tab[] = [
   {
     name: "Pre",
     Component: PreMatchTab,
+    ShiftEndTimeMs: 0,
+    ShiftExtraEndTimeMs: 0,
   },
   {
     name: "Start Match",
     Component: () => <StartMatchLocallyButton disabled={false} />,
+    ShiftEndTimeMs: 0,
+    ShiftExtraEndTimeMs: 0,
   },
   {
     name: "Auto",
     Component: (props) => <ShiftTab shiftType="auto" tabIndex={0} {...props} />,
+    ShiftEndTimeMs: AUTO_END,
+    ShiftExtraEndTimeMs: AUTO_END + MILLISECONDS_IN_FIVE_SECONDS,
   },
   {
     name: "Transition",
     Component: (props) => (
       <ShiftTab shiftType={"transition"} tabIndex={0} {...props} />
     ),
+    ShiftEndTimeMs: TRANSITION_END,
+    ShiftExtraEndTimeMs: TRANSITION_END + MILLISECONDS_IN_FIVE_SECONDS,
   },
   {
     name: "Shift1",
     Component: (props) => (
       <ShiftTab shiftType={"teleop"} tabIndex={0} {...props} />
     ),
+    ShiftEndTimeMs: SHIFT_1_END,
+    ShiftExtraEndTimeMs: SHIFT_1_END + TRANSITION_END,
   },
   {
     name: "Shift2",
     Component: (props) => (
       <ShiftTab shiftType={"teleop"} tabIndex={1} {...props} />
     ),
+    ShiftEndTimeMs: SHIFT_2_END,
+    ShiftExtraEndTimeMs: SHIFT_2_END + TRANSITION_END,
   },
   {
     name: "Shift3",
     Component: (props) => (
       <ShiftTab shiftType={"teleop"} tabIndex={2} {...props} />
     ),
+    ShiftEndTimeMs: SHIFT_3_END,
+    ShiftExtraEndTimeMs: SHIFT_3_END + TRANSITION_END,
   },
   {
     name: "Shift4",
     Component: (props) => (
       <ShiftTab shiftType={"teleop"} tabIndex={3} {...props} />
     ),
+    ShiftEndTimeMs: SHIFT_4_END,
+    ShiftExtraEndTimeMs: SHIFT_4_END + TRANSITION_END,
   },
   {
     name: "Endgame",
     Component: (props) => (
       <ShiftTab shiftType={"endgame"} tabIndex={0} {...props} />
     ),
+    ShiftEndTimeMs: MATCH_END,
+    ShiftExtraEndTimeMs: MATCH_END,
   },
   {
     name: "Post",
     Component: PostMatchTab,
+    ShiftEndTimeMs: 0,
+    ShiftExtraEndTimeMs: 0,
   },
 ];
 interface SideBarProps {
@@ -174,15 +227,15 @@ const SideBar: FC<SideBarProps> = ({ setActiveTab, activeTabIndex }) => {
   );
 };
 
-export type ShiftNumber = "Auto" | "Transition" | "Shift1" | "Shift2" | "Shift3" | "Shift4" | "Endgame";
-const AUTO_END = 20_000;
-const TRANSITION_END = 30_000;
+export type ShiftNumber =
+  | "Auto"
+  | "Transition"
+  | "Shift1"
+  | "Shift2"
+  | "Shift3"
+  | "Shift4"
+  | "Endgame";
 
-const SHIFT_1_END = 55_000;
-const SHIFT_2_END = 80_000;
-const SHIFT_3_END = 105_000;
-const SHIFT_4_END = 130_000;
-const MATCH_END = 160_000;
 export const createNewScoutingForm = (
   savedInfo?: Partial<ScoutingForm>,
 ): ScoutingForm => structuredClone({ ...defaultScoutForm, ...savedInfo });
@@ -199,57 +252,35 @@ export const ScoutMatch: FC = () => {
     return TABS[activeTabIndex]?.Component ?? PostMatchTab;
   }, [activeTabIndex]);
 
-  const SHIFT_END_TIME_MS: Record<ShiftNumber, number> = {
-    Auto: AUTO_END,
-    Transition: TRANSITION_END,
-    Shift1: SHIFT_1_END,
-    Shift2: SHIFT_2_END,
-    Shift3: SHIFT_3_END,
-    Shift4: SHIFT_4_END,
-    Endgame: MATCH_END,
-  };
-
-  const MILLISECONDS_IN_FIVE_SECONDS = 5000;
-
-  const SHIFT_EXTRA_END_TIME_MS: Record<ShiftNumber, number> = {
-    Auto: AUTO_END + MILLISECONDS_IN_FIVE_SECONDS,
-    Transition: TRANSITION_END + MILLISECONDS_IN_FIVE_SECONDS,
-    Shift1: SHIFT_1_END + MILLISECONDS_IN_FIVE_SECONDS,
-    Shift2: SHIFT_2_END + MILLISECONDS_IN_FIVE_SECONDS,
-    Shift3: SHIFT_3_END + MILLISECONDS_IN_FIVE_SECONDS,
-    Shift4: SHIFT_4_END + MILLISECONDS_IN_FIVE_SECONDS,
-    Endgame: MATCH_END,
-  };
-
   const hasShiftJustEnded = (elapsedMs: number): boolean => {
     if (
-      SHIFT_END_TIME_MS.Auto <= elapsedMs &&
-      elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Auto
+      TABS[2].ShiftEndTimeMs <= elapsedMs &&
+      elapsedMs <= TABS[2].ShiftExtraEndTimeMs
     )
       return true;
     if (
-      SHIFT_END_TIME_MS.Transition <= elapsedMs &&
-      elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Transition
+      TABS[3].ShiftEndTimeMs <= elapsedMs &&
+      elapsedMs <= TABS[3].ShiftExtraEndTimeMs
     )
       return true;
     if (
-      SHIFT_END_TIME_MS.Shift1 <= elapsedMs &&
-      elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Shift1
+      TABS[4].ShiftEndTimeMs <= elapsedMs &&
+      elapsedMs <= TABS[4].ShiftExtraEndTimeMs
     )
       return true;
     if (
-      SHIFT_END_TIME_MS.Shift2 <= elapsedMs &&
-      elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Shift2
+      TABS[5].ShiftEndTimeMs <= elapsedMs &&
+      elapsedMs <= TABS[5].ShiftExtraEndTimeMs
     )
       return true;
     if (
-      SHIFT_END_TIME_MS.Shift3 <= elapsedMs &&
-      elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Shift3
+      TABS[6].ShiftEndTimeMs <= elapsedMs &&
+      elapsedMs <= TABS[6].ShiftExtraEndTimeMs
     )
       return true;
     if (
-      SHIFT_END_TIME_MS.Shift4 <= elapsedMs &&
-      elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Shift4
+      TABS[7].ShiftEndTimeMs <= elapsedMs &&
+      elapsedMs <= TABS[7].ShiftExtraEndTimeMs
     )
       return true;
     return false;
@@ -260,13 +291,13 @@ export const ScoutMatch: FC = () => {
 
   const getTabIndexFromElapsedMs = (elapsedMs: number): number => {
     if (elapsedMs <= 0) return 2;
-    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Auto) return 2;
-    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Transition) return 3;
-    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Shift1) return 4;
-    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Shift2) return 5;
-    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Shift3) return 6;
-    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Shift4) return 7;
-    if (elapsedMs <= SHIFT_EXTRA_END_TIME_MS.Endgame) return 8;
+    if (elapsedMs <= TABS[2].ShiftEndTimeMs) return 2;
+    if (elapsedMs <= TABS[3].ShiftEndTimeMs) return 3;
+    if (elapsedMs <= TABS[4].ShiftEndTimeMs) return 4;
+    if (elapsedMs <= TABS[5].ShiftEndTimeMs) return 5;
+    if (elapsedMs <= TABS[6].ShiftEndTimeMs) return 6;
+    if (elapsedMs <= TABS[7].ShiftEndTimeMs) return 7;
+    if (elapsedMs <= TABS[8].ShiftEndTimeMs) return 8;
     return 9;
   };
 
