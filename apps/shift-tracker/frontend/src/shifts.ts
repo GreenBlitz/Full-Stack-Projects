@@ -61,21 +61,20 @@ export const useManualShiftStats = (
   const [timeLeft, setTimeLeft] = useState<number>(AUTO_START_TIME);
 
   const intervalID = useRef<number>(null);
+  const timeoutID = useRef<number>(null);
 
   const startPeriod = useCallback(
     (periodTime: number, onEnd?: () => void) => {
-      console.log("starting period", periodTime);
       const startTime = Date.now();
       intervalID.current = setInterval(() => {
         const timeDifference =
           (Date.now() - startTime) / MILLISECONDS_IN_SECOND;
         setTimeLeft(periodTime - timeDifference);
       }, TIMER_UPDATE_INTERVAL_MS);
-      setTimeout(() => {
+      timeoutID.current = setTimeout(() => {
         if (!intervalID.current) {
           return;
         }
-        console.log("cleared ID", intervalID.current);
 
         clearInterval(intervalID.current);
         setIsAuto(false);
@@ -94,6 +93,7 @@ export const useManualShiftStats = (
 
   const restart = useCallback(() => {
     clearInterval(intervalID.current ?? undefined);
+    clearTimeout(timeoutID.current ?? undefined);
     setTimeLeft(AUTO_START_TIME);
     setIsAuto(true);
   }, []);
@@ -104,9 +104,11 @@ export const useManualShiftStats = (
 const COLOR_SHIFT = "bg-green-500";
 const COLOR_NO_SHIFT = "bg-gray-800";
 const COLOR_BLINK = "bg-orange-300";
+const COLOR_BREAK = "bg-orange-700";
 
-const BLACKOUT_SECONDS = [0, 2, 107, 109, 82, 84, 57, 59];
-const BLACKOUT_WINNER_SECONDS = [132, 134];
+const BLACKOUT_SECONDS = [1, 2, 3, 106, 107, 108, 81, 82, 83, 56, 57, 58];
+const BLACKOUT_WINNER_SECONDS = [131, 132, 133];
+const BLACKOUT_LOSER_SECONDS = [31, 32, 33];
 
 export const useTranslateToTimeAndColor = (
   timeLeft: number | null,
@@ -175,15 +177,16 @@ export const useTranslateToTimeAndColor = (
   }, [time, isAuto, isWinner]);
 
   const isBlinking = BLACKOUT_SECONDS.concat(
-    isWinner ? BLACKOUT_WINNER_SECONDS : [],
-  ).includes(Math.floor(time));
+    isWinner ? BLACKOUT_WINNER_SECONDS : BLACKOUT_LOSER_SECONDS,
+  ).includes(Math.floor(time * 2) / 2);
   const isWaiting = waitingTimer > 0;
 
   const shownTime = isWaiting ? waitingTimer : time;
 
-  const color =
-    isBlinking || isWaiting
-      ? COLOR_BLINK
+  const color = isBlinking
+    ? COLOR_BLINK
+    : isWaiting
+      ? COLOR_BREAK
       : isShiftOurs
         ? COLOR_SHIFT
         : COLOR_NO_SHIFT;

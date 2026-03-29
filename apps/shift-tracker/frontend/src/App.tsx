@@ -13,7 +13,7 @@ const secondsToTime = (seconds: number) =>
 
 const App: FC = () => {
   const [isWinner, setIsWinner] = useState(true);
-  const [breakTime, setBreakTime] = useState(7);
+  const [breakTime, setBreakTime] = useState(5);
 
   const manualShiftStats = useManualShiftStats(breakTime, isWinner);
   const ntShiftStats = useNTShiftStats();
