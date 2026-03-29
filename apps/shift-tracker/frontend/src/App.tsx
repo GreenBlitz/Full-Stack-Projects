@@ -1,5 +1,5 @@
 // בס"ד
-import { useCallback, useEffect, useMemo, useState, type FC } from "react";
+import { useMemo, useState, type FC } from "react";
 import {
   useTranslateToTimeAndColor,
   useManualShiftStats,
@@ -30,19 +30,27 @@ const App: FC = () => {
     stats.isWinner ?? true,
   );
 
-  console.log("isManual", isManual, " time:", stats.timeLeft);
-
   return (
     <div className="w-screen h-screen">
       <div className={`flex flex-col w-full h-full  ${color}`}>
         <h1 className="w-min mx-auto my-5">{secondsToTime(time)}</h1>
-        <button onClick={manualShiftStats.restart}>Restart</button>
-        <button onClick={stats.start}>Start</button>
-        <button onClick={() => setManual((prev) => !prev)}>
+        <button className="bg-violet-800" onClick={stats.start}>
+          Start
+        </button>
+        <button
+          className="bg-blue-900"
+          onClick={() => setManual((prev) => !prev)}
+        >
           {isManual ? "Manual" : "Driver"}
         </button>
-        <button onClick={() => setIsWinner((prev) => !prev)}>
+        <button
+          className="bg-sky-700"
+          onClick={() => setIsWinner((prev) => !prev)}
+        >
           {isWinner ? "Auto✅" : "Auto ❌"}
+        </button>
+        <button className="bg-red-900" onClick={manualShiftStats.restart}>
+          Restart
         </button>
       </div>
     </div>

@@ -74,9 +74,12 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
+  width: 30%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 4px;
 }
 button:hover {
   border-color: #646cff;

@@ -1,6 +1,8 @@
 import { NetworkTables, NetworkTablesTypeInfos } from "ntcore-ts-client";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+const MILLISECONDS_IN_SECOND = 1000;
+
 const TEAM_NUMBER = 4590;
 const TIME_PATH = "FMSInfo/MatchTime";
 const AUTO_WIN_PATH = "AdvantageKit/Tuning/Tunable/isOurHubActive";
@@ -65,7 +67,7 @@ export const useManualShiftStats = (
       console.log("starting period", periodTime);
       const startTime = Date.now();
       intervalID.current = setInterval(() => {
-        const timeDifference = (Date.now() - startTime) / 1000;
+        const timeDifference = (Date.now() - startTime) / MILLISECONDS_IN_SECOND;
         setTimeLeft(periodTime - timeDifference);
       }, TIMER_UPDATE_INTERVAL_MS);
       setTimeout(() => {
@@ -77,7 +79,7 @@ export const useManualShiftStats = (
         clearInterval(intervalID.current);
         setIsAuto(false);
         onEnd?.();
-      }, periodTime * 1000);
+      }, periodTime * MILLISECONDS_IN_SECOND);
     },
     [breakTime],
   );
@@ -107,6 +109,7 @@ const BLACKOUT_WINNER_SECONDS = [132, 134];
 
 const AUTO_WAIT_TIME = 7;
 
+
 export const useTranslateToTimeAndColor = (
   timeLeft: number | null,
   isAuto: boolean | null,
@@ -123,13 +126,13 @@ export const useTranslateToTimeAndColor = (
     const startingTime = Date.now();
 
     const intervalId = setInterval(() => {
-      const timeDifference = (Date.now() - startingTime) / 1000;
+      const timeDifference = (Date.now() - startingTime) / MILLISECONDS_IN_SECOND;
 
       setWaitingTimer(AUTO_WAIT_TIME - timeDifference);
     });
     setTimeout(() => {
       clearInterval(intervalId);
-    }, AUTO_WAIT_TIME * 1000);
+    }, AUTO_WAIT_TIME * MILLISECONDS_IN_SECOND);
     return () => {
       clearInterval(intervalId);
     };
