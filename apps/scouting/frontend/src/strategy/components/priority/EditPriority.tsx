@@ -129,9 +129,8 @@ export const EditPriority: React.FC<EditPriorityProps> = ({
         priority,
       });
 
-      const savedPriority = { teamNumber, priority };
       setFeedbackMessage("Priority saved successfully.");
-      onSaved?.(savedPriority);
+      onSaved?.({ teamNumber, priority });
     } catch (error) {
       console.error(error);
       setFeedbackMessage("Error saving priority.");
