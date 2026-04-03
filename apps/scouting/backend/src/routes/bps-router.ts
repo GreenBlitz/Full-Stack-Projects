@@ -114,6 +114,21 @@ bpsRouter.get("/matches", async (req, res) => {
   )();
 });
 
+bpsRouter.get("/", async (req, res) => {
+  await pipe(
+    getBPSCollection(),
+    flatTryCatch(
+      (collection) => collection.find().toArray(),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `Recieved Error: ${String(error)}`,
+      }),
+    ),
+    bindTo("bpses"),
+    foldResponse(res),
+  )();
+});
+
 bpsRouter.post("/", async (req, res) => {
   await pipe(
     rightEither(req),

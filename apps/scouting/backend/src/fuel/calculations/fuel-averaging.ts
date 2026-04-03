@@ -17,7 +17,7 @@ import { convertPixelToCentimeters, distanceFromHub } from "@repo/rebuilt_map";
 import { interpolateQuadratic } from "./interpolation";
 
 interface ShotStats {
-  durationMilliseconds: number;
+  durationSeconds: number;
   hubDistanceCentimeters: number;
 }
 
@@ -27,7 +27,7 @@ const NO_FUEL_COLLECTED = 0;
 const FIRST_SECTION_AMOUNT = 1;
 const ONE_SECTION_ONLY_LENGTH = 1;
 
-/** 
+/**
  * @param sections consists of sections that contains a list of timestamps in ms
  * @returns mean ball amount
  * Recursively calculates mean ball amount from timestamp sections. */
@@ -98,15 +98,17 @@ const calculateAccuracies = (sections: BPS["events"], shotDuration: number) => {
     (accuracy1, accuracy2) => accuracy1.distance - accuracy2.distance,
   );
 
+  console.log(durationedSections);
   return sortedAccuracies;
 };
 
 const compareSections = (section1: number[], section2: number[]) =>
   lastElement(section1) - lastElement(section2);
 
-const correctSectionToTimeFromEnd = (sections: number[]) => {
-  const endTimestamp = lastElement(sections);
-  return sections.map((timestamp) => endTimestamp - timestamp).reverse();
+const correctSectionToTimeFromEnd = (section: number[]) => {
+  const sortedSection = section.sort();
+  const endTimestamp = lastElement(sortedSection);
+  return sortedSection.map((timestamp) => endTimestamp - timestamp).reverse();
 };
 
 const formatSections = (sections: BPS["events"]) =>
@@ -119,8 +121,6 @@ const formatSections = (sections: BPS["events"]) =>
     .sort((formattedSection1, formattedSection2) =>
       compareSections(formattedSection1.shoot, formattedSection2.shoot),
     );
-
-const MILLISECONDS_IN_SECONDS = 1000;
 
 export const calculateAverageBPS = (bpses: BPS[]) => {
   const formattedSections = formatSections(bpses.flatMap((bps) => bps.events));
@@ -136,8 +136,10 @@ export const calculateAverageBPS = (bpses: BPS[]) => {
     longestSectionDuration,
   );
 
-  return (shotAmount * MILLISECONDS_IN_SECONDS) / longestSectionDuration;
+  return shotAmount / longestSectionDuration;
 };
+
+const MILLISECONDS_IN_SECOND = 1000;
 
 /** Calculates fuel statistics by averaging across multiple matches. */
 export const calculateFuelByAveraging = (
@@ -146,7 +148,8 @@ export const calculateFuelByAveraging = (
   sections: BPSEvent[],
 ): Partial<FuelObject> => {
   const shotStats: ShotStats = {
-    durationMilliseconds: shot.interval.end - shot.interval.start,
+    durationSeconds:
+      (shot.interval.end - shot.interval.start) / MILLISECONDS_IN_SECOND,
     hubDistanceCentimeters: distanceFromHub(
       convertPixelToCentimeters(firstElement(shot.positions)),
     ),
@@ -156,7 +159,7 @@ export const calculateFuelByAveraging = (
 
   const shotAmount = calculateBallAmount(
     formattedSections.map((section) => section.shoot),
-    shotStats.durationMilliseconds,
+    shotStats.durationSeconds,
   );
 
   if (isPass) {
@@ -166,9 +169,10 @@ export const calculateFuelByAveraging = (
       positions: shot.positions,
     };
   }
+
   const scoredAccuracy = interpolateQuadratic(
     shotStats.hubDistanceCentimeters,
-    calculateAccuracies(formattedSections, shotStats.durationMilliseconds).map(
+    calculateAccuracies(formattedSections, shotStats.durationSeconds).map(
       ({ distance, accuracy }) => ({ x: distance, y: accuracy }),
     ),
   );

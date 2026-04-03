@@ -29,19 +29,21 @@ const putDefaultsInFuel = (fuel: Partial<FuelObject>) => ({
 
 export const createFuelObject = (
   shot: ShootEvent,
-  match: Match,
+  _match: Match,
   bpses: BPS[],
 ): FuelObject => {
-  const sameMatch = bpses.find(
-    (value) =>
-      value.match.number === match.number && value.match.type === match.type,
-  );
+  // const sameMatch = bpses.find(
+  //   (value) =>
+  //     value.match.number === match.number && value.match.type === match.type,
+  // );
 
   const isPass = isShotPass(shot.positions);
 
-  const partialFuel = sameMatch
-    ? calculateFuelByMatch(shot, isPass, sameMatch)
-    : calculateFuelByAveraging(
+  const partialFuel = 
+  // sameMatch
+  //   ? calculateFuelByMatch(shot, isPass, sameMatch)
+  //   : 
+    calculateFuelByAveraging(
         shot,
         isPass,
         bpses.flatMap((bps) => bps.events),
