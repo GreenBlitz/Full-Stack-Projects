@@ -57,7 +57,7 @@ const combinedPostCodec = t.union([
 ]);
 
 formsRouter.post("/", async (req, res) => {
-  await pipe(
+  const task = pipe(
     rightEither(req),
     createBodyVerificationPipe(combinedPostCodec),
     fromEither,
@@ -94,7 +94,9 @@ formsRouter.post("/", async (req, res) => {
     ),
     bindTo("result"),
     foldResponse(res),
-  )();
+  );
+
+  await task();
 });
 
 formsRouter.get("/teams", async (req, res) => {
