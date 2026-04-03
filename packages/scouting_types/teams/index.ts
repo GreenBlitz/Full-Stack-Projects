@@ -9,8 +9,8 @@ import type {
   TeleClimb,
   TeleMovement,
 } from "../rebuilt";
-import { TeamOPR } from "../tba";
-import { EPA } from "../epa";
+import type { TeamOPR } from "../tba";
+import type { EPA } from "../epa";
 
 export const teamsProps = t.type({
   teams: t.union([t.array(t.number), t.number]),
