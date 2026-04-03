@@ -32,21 +32,26 @@ export const createFuelObject = (
   _match: Match,
   bpses: BPS[],
 ): FuelObject => {
-  // const sameMatch = bpses.find(
+  const nonEmptyBPSes = bpses.map((bps) => ({
+    ...bps,
+    events: bps.events.filter((event) => event.shoot.length > 0),
+  }));
+
+  // const sameMatch = nonEmptyBPSes.find(
   //   (value) =>
   //     value.match.number === match.number && value.match.type === match.type,
   // );
 
   const isPass = isShotPass(shot.positions);
 
-  const partialFuel = 
-  // sameMatch
-  //   ? calculateFuelByMatch(shot, isPass, sameMatch)
-  //   : 
+  const partialFuel =
+    // sameMatch
+    //   ? calculateFuelByMatch(shot, isPass, sameMatch)
+    //   :
     calculateFuelByAveraging(
-        shot,
-        isPass,
-        bpses.flatMap((bps) => bps.events),
-      );
+      shot,
+      isPass,
+      nonEmptyBPSes.flatMap((bps) => bps.events),
+    );
   return putDefaultsInFuel(partialFuel);
 };
