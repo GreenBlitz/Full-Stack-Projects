@@ -30,6 +30,7 @@ function App() {
           <Video source={videoSource} playerRef={playerRef} />
         </div>
         <Counter playerRef={playerRef} />
+        
       </div>
     </div>
   );

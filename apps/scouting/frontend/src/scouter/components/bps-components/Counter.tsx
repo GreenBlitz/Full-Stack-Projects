@@ -2,6 +2,7 @@
 import React from "react";
 import Burst from "./Burst";
 import type { VideoPlayerHandle } from "@repo/video-utils";
+import type { BPS } from "@repo/scouting_types";
 
 interface CounterProps {
   playerRef?: React.RefObject<VideoPlayerHandle | null>;
@@ -29,8 +30,12 @@ const Counter: React.FC<CounterProps> = ({ playerRef }) => {
     },
   ]);
 
-  const [currentBurstIndex, setCurrentBurstIndex] =
-    React.useState<number>(COUNTER_STARTING_VALUE);
+  const [team, setTeam] = React.useState<number>(0);
+  const [match, setMatch] = React.useState<number>(0);
+
+  const [currentBurstIndex, setCurrentBurstIndex] = React.useState<number>(
+    COUNTER_STARTING_VALUE,
+  );
 
   const updateCurrentBurst = (updatedBurst: BurstData) => {
     const copy = [...burstsArray];
@@ -89,6 +94,51 @@ const Counter: React.FC<CounterProps> = ({ playerRef }) => {
             onClick={goForward}
           >
             {">>>"}
+          </button>
+          <input
+            type="number"
+            onChange={(event) => {
+              setTeam(Number(event.currentTarget.value));
+            }}
+            placeholder="Enter Team"
+          ></input>
+          <input
+            type="number"
+            onChange={(event) => {
+              setMatch(Number(event.currentTarget.value));
+            }}
+            placeholder="Enter Match"
+          ></input>
+          <button
+            onClick={async () => {
+              const bps: BPS = {
+                team,
+                match: {
+                  type: "qualification",
+                  number: match,
+                },
+                events: burstsArray.map((burst) => ({
+                  shoot: burst.thrownArray,
+                  score: burst.scoredArray,
+                  positions: [],
+                })),
+              };
+              try {
+                const response = await fetch("/api/v1/bps", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(bps),
+                });
+                alert(await response.json());
+              } catch (error: unknown) {
+                alert(error);
+              }
+            }}
+            className="bg-green-800 p-4"
+          >
+            Submit
           </button>
         </div>
       </div>
