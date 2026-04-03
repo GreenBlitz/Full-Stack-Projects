@@ -94,11 +94,11 @@ const calculateAccuracies = (sections: BPS["events"], shotDuration: number) => {
     ),
     accuracy: section.score.length / section.shoot.length,
   }));
+
   const sortedAccuracies = accuracies.sort(
     (accuracy1, accuracy2) => accuracy1.distance - accuracy2.distance,
   );
 
-  console.log(durationedSections);
   return sortedAccuracies;
 };
 
@@ -170,14 +170,19 @@ export const calculateFuelByAveraging = (
     };
   }
 
-  const scoredAccuracy = interpolateQuadratic(
-    shotStats.hubDistanceCentimeters,
-    calculateAccuracies(formattedSections, shotStats.durationSeconds).map(
-      ({ distance, accuracy }) => ({ x: distance, y: accuracy }),
-    ),
+  const averageAccuracy = calculateAverage(
+    calculateAccuracies(formattedSections, shotStats.durationSeconds),
+    ({ accuracy }) => accuracy,
   );
 
-  const scoredAmount = shotAmount * scoredAccuracy;
+  // const scoredAccuracy = interpolateQuadratic(
+  //   shotStats.hubDistanceCentimeters,
+  //   calculateAccuracies(formattedSections, shotStats.durationSeconds).map(
+  //     ({ distance, accuracy }) => ({ x: distance, y: accuracy }),
+  //   ),
+  // );
+
+  const scoredAmount = shotAmount * averageAccuracy;
 
   return {
     scored: scoredAmount,
