@@ -42,7 +42,7 @@ const writeState = (next: TimerState) => {
   window.dispatchEvent(new Event("match-timer-updated"));
 };
 
-const ITERATION_PERIOD_MS = 10;
+const ITERATION_PERIOD_MS = 50;
 
 export const useMatchTimer = (tickMs = ITERATION_PERIOD_MS) => {
   const [timeState, setTimeState] = useState<TimerState>(() => readState());

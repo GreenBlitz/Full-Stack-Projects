@@ -20,12 +20,12 @@ import { useNavigate } from "react-router-dom";
 import { PreMatchTab } from "./tabs/PreMatchTab";
 import { useMatchTimer } from "../hooks/useMatchTimer";
 import StartMatchLocallyButton from "../components/StartMatchLocallyButton";
-import { boolean } from "io-ts";
 export interface TabProps {
   setForm: Dispatch<SetStateAction<ScoutingForm>>;
   currentForm: ScoutingForm;
   alliance: Alliance;
   originTime: number;
+  resetTime: () => void;
 }
 interface Tab {
   name: string;
@@ -37,13 +37,13 @@ interface Tab {
 const ITERATION_PERIOD_MS = 10;
 
 const AUTO_END = 20_000;
-const TRANSITION_END = 30_000;
+const TRANSITION_END = 35_000;
 
-const SHIFT_1_END = 55_000;
-const SHIFT_2_END = 80_000;
-const SHIFT_3_END = 105_000;
-const SHIFT_4_END = 130_000;
-const MATCH_END = 160_000;
+const SHIFT_1_END = 60_000;
+const SHIFT_2_END = 85_000;
+const SHIFT_3_END = 110_000;
+const SHIFT_4_END = 135_000;
+const MATCH_END = 165_000;
 
 const MILLISECONDS_IN_FIVE_SECONDS = 5000;
 
@@ -263,7 +263,7 @@ export const ScoutMatch: FC = () => {
       return true;
     return false;
   };
-  const { elapsedMs, isRunning } = useMatchTimer(ITERATION_PERIOD_MS);
+  const { elapsedMs, isRunning,reset } = useMatchTimer(ITERATION_PERIOD_MS);
 
   const previousIsRunningRef = useRef(isRunning);
 
@@ -331,6 +331,7 @@ export const ScoutMatch: FC = () => {
               currentForm={scoutingForm}
               alliance={alliance}
               originTime={originTime}
+              resetTime={reset}
             />
           </div>
         </div>

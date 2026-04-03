@@ -12,7 +12,11 @@ const BUTTON_STYLES = `px-8 py-3 text-base font-bold text-black
             active:scale-95 border rounded-xl
             bg-linear-to-r`;
 
-export const PostMatchTab: FC<TabProps> = ({ setForm, currentForm }) => {
+export const PostMatchTab: FC<TabProps> = ({
+  setForm,
+  currentForm,
+  resetTime,
+}) => {
   const [_scoutingForms, setScoutingForms] = useLocalStorage<ScoutingForm[]>(
     "scouted_forms",
     [],
@@ -21,6 +25,7 @@ export const PostMatchTab: FC<TabProps> = ({ setForm, currentForm }) => {
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
+    resetTime();
     setForm(createNewScoutingForm({ scouterName: currentForm.scouterName }));
     setScoutingForms((prev) => [...prev, currentForm]);
     await navigate("/");
@@ -91,6 +96,7 @@ export const PostMatchTab: FC<TabProps> = ({ setForm, currentForm }) => {
       {isPopUpVisible && (
         <ConfirmDeletePopup
           onDelete={() => {
+            resetTime();
             setForm(
               createNewScoutingForm({ scouterName: currentForm.scouterName }),
             );
