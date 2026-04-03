@@ -1,0 +1,6075 @@
+{
+  "forms": [
+    {
+      "_id": "69cf68042bc918b8c95b12a1",
+      "scouterName": "Yoni",
+      "competition": "TESTING",
+      "match": {
+        "number": 3,
+        "type": "qualification"
+      },
+      "teamNumber": 3075,
+      "auto": {
+        "movement": {
+          "trenchPass": false,
+          "bumpPass": false,
+          "bumpStuck": false
+        },
+        "chosenAuto": "trenchFuelMiddle",
+        "climb": {
+          "climbTime": {
+            "L1": null
+          },
+          "climbSide": {
+            "middle": false,
+            "side": false,
+            "support": false
+          },
+          "level": "L0"
+        },
+        "shootEvents": [
+          {
+            "interval": {
+              "start": 157926,
+              "end": 158302
+            },
+            "positions": [
+              {
+                "x": 220,
+                "y": 302
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 246624,
+              "end": 249079
+            },
+            "positions": [
+              {
+                "x": 245,
+                "y": 259
+              },
+              {
+                "x": 245,
+                "y": 259
+              },
+              {
+                "x": 245,
+                "y": 259
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 249427,
+              "end": 250270
+            },
+            "positions": [
+              {
+                "x": 246,
+                "y": 262
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 255407,
+              "end": 259209
+            },
+            "positions": [
+              {
+                "x": 169,
+                "y": 227
+              },
+              {
+                "x": 169,
+                "y": 227
+              },
+              {
+                "x": 169,
+                "y": 227
+              },
+              {
+                "x": 169,
+                "y": 227
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 263739,
+              "end": 264174
+            },
+            "positions": [
+              {
+                "x": 221,
+                "y": 335
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 292831,
+              "end": 294551
+            },
+            "positions": [
+              {
+                "x": 242,
+                "y": 210
+              },
+              {
+                "x": 242,
+                "y": 210
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 294656,
+              "end": 295723
+            },
+            "positions": [
+              {
+                "x": 242,
+                "y": 211
+              },
+              {
+                "x": 242,
+                "y": 211
+              }
+            ]
+          }
+        ]
+      },
+      "tele": {
+        "transitionShift": {
+          "shootEvents": [
+            {
+              "interval": {
+                "start": 157926,
+                "end": 158302
+              },
+              "positions": [
+                {
+                  "x": 220,
+                  "y": 302
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 246624,
+                "end": 249079
+              },
+              "positions": [
+                {
+                  "x": 245,
+                  "y": 259
+                },
+                {
+                  "x": 245,
+                  "y": 259
+                },
+                {
+                  "x": 245,
+                  "y": 259
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 249427,
+                "end": 250270
+              },
+              "positions": [
+                {
+                  "x": 246,
+                  "y": 262
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 255407,
+                "end": 259209
+              },
+              "positions": [
+                {
+                  "x": 169,
+                  "y": 227
+                },
+                {
+                  "x": 169,
+                  "y": 227
+                },
+                {
+                  "x": 169,
+                  "y": 227
+                },
+                {
+                  "x": 169,
+                  "y": 227
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 263739,
+                "end": 264174
+              },
+              "positions": [
+                {
+                  "x": 221,
+                  "y": 335
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 292831,
+                "end": 294551
+              },
+              "positions": [
+                {
+                  "x": 242,
+                  "y": 210
+                },
+                {
+                  "x": 242,
+                  "y": 210
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 294656,
+                "end": 295723
+              },
+              "positions": [
+                {
+                  "x": 242,
+                  "y": 211
+                },
+                {
+                  "x": 242,
+                  "y": 211
+                }
+              ]
+            }
+          ]
+        },
+        "shifts": [
+          {
+            "shootEvents": [
+              {
+                "interval": {
+                  "start": 157926,
+                  "end": 158302
+                },
+                "positions": [
+                  {
+                    "x": 220,
+                    "y": 302
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 246624,
+                  "end": 249079
+                },
+                "positions": [
+                  {
+                    "x": 245,
+                    "y": 259
+                  },
+                  {
+                    "x": 245,
+                    "y": 259
+                  },
+                  {
+                    "x": 245,
+                    "y": 259
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 249427,
+                  "end": 250270
+                },
+                "positions": [
+                  {
+                    "x": 246,
+                    "y": 262
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 255407,
+                  "end": 259209
+                },
+                "positions": [
+                  {
+                    "x": 169,
+                    "y": 227
+                  },
+                  {
+                    "x": 169,
+                    "y": 227
+                  },
+                  {
+                    "x": 169,
+                    "y": 227
+                  },
+                  {
+                    "x": 169,
+                    "y": 227
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 263739,
+                  "end": 264174
+                },
+                "positions": [
+                  {
+                    "x": 221,
+                    "y": 335
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 292831,
+                  "end": 294551
+                },
+                "positions": [
+                  {
+                    "x": 242,
+                    "y": 210
+                  },
+                  {
+                    "x": 242,
+                    "y": 210
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 294656,
+                  "end": 295723
+                },
+                "positions": [
+                  {
+                    "x": 242,
+                    "y": 211
+                  },
+                  {
+                    "x": 242,
+                    "y": 211
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "shootEvents": [
+              {
+                "interval": {
+                  "start": 157926,
+                  "end": 158302
+                },
+                "positions": [
+                  {
+                    "x": 220,
+                    "y": 302
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 246624,
+                  "end": 249079
+                },
+                "positions": [
+                  {
+                    "x": 245,
+                    "y": 259
+                  },
+                  {
+                    "x": 245,
+                    "y": 259
+                  },
+                  {
+                    "x": 245,
+                    "y": 259
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 249427,
+                  "end": 250270
+                },
+                "positions": [
+                  {
+                    "x": 246,
+                    "y": 262
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 255407,
+                  "end": 259209
+                },
+                "positions": [
+                  {
+                    "x": 169,
+                    "y": 227
+                  },
+                  {
+                    "x": 169,
+                    "y": 227
+                  },
+                  {
+                    "x": 169,
+                    "y": 227
+                  },
+                  {
+                    "x": 169,
+                    "y": 227
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 263739,
+                  "end": 264174
+                },
+                "positions": [
+                  {
+                    "x": 221,
+                    "y": 335
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 292831,
+                  "end": 294551
+                },
+                "positions": [
+                  {
+                    "x": 242,
+                    "y": 210
+                  },
+                  {
+                    "x": 242,
+                    "y": 210
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 294656,
+                  "end": 295723
+                },
+                "positions": [
+                  {
+                    "x": 242,
+                    "y": 211
+                  },
+                  {
+                    "x": 242,
+                    "y": 211
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "shootEvents": [
+              {
+                "interval": {
+                  "start": 157926,
+                  "end": 158302
+                },
+                "positions": [
+                  {
+                    "x": 220,
+                    "y": 302
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 246624,
+                  "end": 249079
+                },
+                "positions": [
+                  {
+                    "x": 245,
+                    "y": 259
+                  },
+                  {
+                    "x": 245,
+                    "y": 259
+                  },
+                  {
+                    "x": 245,
+                    "y": 259
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 249427,
+                  "end": 250270
+                },
+                "positions": [
+                  {
+                    "x": 246,
+                    "y": 262
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 255407,
+                  "end": 259209
+                },
+                "positions": [
+                  {
+                    "x": 169,
+                    "y": 227
+                  },
+                  {
+                    "x": 169,
+                    "y": 227
+                  },
+                  {
+                    "x": 169,
+                    "y": 227
+                  },
+                  {
+                    "x": 169,
+                    "y": 227
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 263739,
+                  "end": 264174
+                },
+                "positions": [
+                  {
+                    "x": 221,
+                    "y": 335
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 292831,
+                  "end": 294551
+                },
+                "positions": [
+                  {
+                    "x": 242,
+                    "y": 210
+                  },
+                  {
+                    "x": 242,
+                    "y": 210
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 294656,
+                  "end": 295723
+                },
+                "positions": [
+                  {
+                    "x": 242,
+                    "y": 211
+                  },
+                  {
+                    "x": 242,
+                    "y": 211
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "shootEvents": [
+              {
+                "interval": {
+                  "start": 157926,
+                  "end": 158302
+                },
+                "positions": [
+                  {
+                    "x": 220,
+                    "y": 302
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 246624,
+                  "end": 249079
+                },
+                "positions": [
+                  {
+                    "x": 245,
+                    "y": 259
+                  },
+                  {
+                    "x": 245,
+                    "y": 259
+                  },
+                  {
+                    "x": 245,
+                    "y": 259
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 249427,
+                  "end": 250270
+                },
+                "positions": [
+                  {
+                    "x": 246,
+                    "y": 262
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 255407,
+                  "end": 259209
+                },
+                "positions": [
+                  {
+                    "x": 169,
+                    "y": 227
+                  },
+                  {
+                    "x": 169,
+                    "y": 227
+                  },
+                  {
+                    "x": 169,
+                    "y": 227
+                  },
+                  {
+                    "x": 169,
+                    "y": 227
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 263739,
+                  "end": 264174
+                },
+                "positions": [
+                  {
+                    "x": 221,
+                    "y": 335
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 292831,
+                  "end": 294551
+                },
+                "positions": [
+                  {
+                    "x": 242,
+                    "y": 210
+                  },
+                  {
+                    "x": 242,
+                    "y": 210
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 294656,
+                  "end": 295723
+                },
+                "positions": [
+                  {
+                    "x": 242,
+                    "y": 211
+                  },
+                  {
+                    "x": 242,
+                    "y": 211
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "endgameShift": {
+          "shootEvents": [
+            {
+              "interval": {
+                "start": 157926,
+                "end": 158302
+              },
+              "positions": [
+                {
+                  "x": 220,
+                  "y": 302
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 246624,
+                "end": 249079
+              },
+              "positions": [
+                {
+                  "x": 245,
+                  "y": 259
+                },
+                {
+                  "x": 245,
+                  "y": 259
+                },
+                {
+                  "x": 245,
+                  "y": 259
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 249427,
+                "end": 250270
+              },
+              "positions": [
+                {
+                  "x": 246,
+                  "y": 262
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 255407,
+                "end": 259209
+              },
+              "positions": [
+                {
+                  "x": 169,
+                  "y": 227
+                },
+                {
+                  "x": 169,
+                  "y": 227
+                },
+                {
+                  "x": 169,
+                  "y": 227
+                },
+                {
+                  "x": 169,
+                  "y": 227
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 263739,
+                "end": 264174
+              },
+              "positions": [
+                {
+                  "x": 221,
+                  "y": 335
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 292831,
+                "end": 294551
+              },
+              "positions": [
+                {
+                  "x": 242,
+                  "y": 210
+                },
+                {
+                  "x": 242,
+                  "y": 210
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 294656,
+                "end": 295723
+              },
+              "positions": [
+                {
+                  "x": 242,
+                  "y": 211
+                },
+                {
+                  "x": 242,
+                  "y": 211
+                }
+              ]
+            }
+          ]
+        },
+        "movement": {
+          "bumpStuck": false
+        },
+        "climb": {
+          "climbTime": {
+            "L1": null,
+            "L2": null,
+            "L3": null
+          },
+          "climbSide": {
+            "middle": false,
+            "side": false,
+            "support": false
+          },
+          "level": "L0"
+        }
+      },
+      "comment": "",
+      "robotBroken": false
+    },
+    {
+      "_id": "69cf6d2b4c028e7af844868f",
+      "scouterName": "Yoni",
+      "competition": "TESTING",
+      "match": {
+        "type": "qualification",
+        "number": 7
+      },
+      "teamNumber": 10935,
+      "auto": {
+        "movement": {
+          "trenchPass": false,
+          "bumpPass": false,
+          "bumpStuck": false
+        },
+        "chosenAuto": "trenchFuelMiddle",
+        "climb": {
+          "climbTime": {
+            "L1": null
+          },
+          "climbSide": {
+            "middle": false,
+            "side": false,
+            "support": false
+          },
+          "level": "L0"
+        },
+        "shootEvents": [
+          {
+            "interval": {
+              "start": 35760,
+              "end": 38824
+            },
+            "positions": [
+              {
+                "x": 147,
+                "y": 273
+              },
+              {
+                "x": 147,
+                "y": 273
+              },
+              {
+                "x": 147,
+                "y": 273
+              },
+              {
+                "x": 147,
+                "y": 273
+              }
+            ]
+          }
+        ]
+      },
+      "tele": {
+        "transitionShift": {
+          "shootEvents": []
+        },
+        "shifts": [
+          {
+            "shootEvents": [
+              {
+                "interval": {
+                  "start": 64709,
+                  "end": 68538
+                },
+                "positions": [
+                  {
+                    "x": 242,
+                    "y": 320
+                  },
+                  {
+                    "x": 242,
+                    "y": 320
+                  },
+                  {
+                    "x": 242,
+                    "y": 319
+                  },
+                  {
+                    "x": 242,
+                    "y": 318
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 69275,
+                  "end": 69726
+                },
+                "positions": [
+                  {
+                    "x": 242,
+                    "y": 310
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 70661,
+                  "end": 70729
+                },
+                "positions": [
+                  {
+                    "x": 242,
+                    "y": 310
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "shootEvents": []
+          },
+          {
+            "shootEvents": []
+          },
+          {
+            "shootEvents": []
+          }
+        ],
+        "endgameShift": {
+          "shootEvents": []
+        },
+        "movement": {
+          "bumpStuck": false
+        },
+        "climb": {
+          "climbTime": {
+            "L1": null,
+            "L2": null,
+            "L3": null
+          },
+          "climbSide": {
+            "middle": false,
+            "side": false,
+            "support": false
+          },
+          "level": "L0"
+        }
+      },
+      "comment": "",
+      "robotBroken": false
+    },
+    {
+      "_id": "69cf81946a986d5305575c80",
+      "scouterName": "Dror",
+      "competition": "TESTING",
+      "match": {
+        "number": 700,
+        "type": "qualification"
+      },
+      "teamNumber": 0,
+      "auto": {
+        "movement": {
+          "trenchPass": false,
+          "bumpPass": true,
+          "bumpStuck": true
+        },
+        "chosenAuto": "trenchFuelMiddle",
+        "climb": {
+          "climbTime": {
+            "L1": {
+              "start": 76269,
+              "end": 77222
+            }
+          },
+          "climbSide": {
+            "middle": false,
+            "side": true,
+            "support": false
+          },
+          "level": "L1"
+        },
+        "shootEvents": []
+      },
+      "tele": {
+        "transitionShift": {
+          "shootEvents": [
+            {
+              "interval": {
+                "start": 97759,
+                "end": 97800
+              },
+              "positions": [
+                {
+                  "x": 223,
+                  "y": 181
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 97807,
+                "end": 97808
+              },
+              "positions": [
+                {
+                  "x": 223,
+                  "y": 181
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 98883,
+                "end": 99010
+              },
+              "positions": [
+                {
+                  "x": 223,
+                  "y": 181
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 99017,
+                "end": 99019
+              },
+              "positions": [
+                {
+                  "x": 223,
+                  "y": 181
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 99468,
+                "end": 100065
+              },
+              "positions": [
+                {
+                  "x": 223,
+                  "y": 181
+                }
+              ]
+            }
+          ]
+        },
+        "shifts": [
+          {
+            "shootEvents": [
+              {
+                "interval": {
+                  "start": 106788,
+                  "end": 113918
+                },
+                "positions": [
+                  {
+                    "x": 193,
+                    "y": 348
+                  },
+                  {
+                    "x": 193,
+                    "y": 348
+                  },
+                  {
+                    "x": 193,
+                    "y": 348
+                  },
+                  {
+                    "x": 193,
+                    "y": 348
+                  },
+                  {
+                    "x": 193,
+                    "y": 348
+                  },
+                  {
+                    "x": 193,
+                    "y": 348
+                  },
+                  {
+                    "x": 193,
+                    "y": 348
+                  },
+                  {
+                    "x": 193,
+                    "y": 348
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 114438,
+                  "end": 116283
+                },
+                "positions": [
+                  {
+                    "x": 281,
+                    "y": 168
+                  },
+                  {
+                    "x": 281,
+                    "y": 168
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "shootEvents": []
+          },
+          {
+            "shootEvents": []
+          },
+          {
+            "shootEvents": []
+          }
+        ],
+        "endgameShift": {
+          "shootEvents": []
+        },
+        "movement": {
+          "bumpStuck": false
+        },
+        "climb": {
+          "climbTime": {
+            "L1": null,
+            "L2": null,
+            "L3": null
+          },
+          "climbSide": {
+            "middle": false,
+            "side": false,
+            "support": false
+          },
+          "level": "L0"
+        }
+      },
+      "comment": "",
+      "robotBroken": true
+    },
+    {
+      "_id": "69cf81d96a986d5305575cc7",
+      "scouterName": "Karni",
+      "competition": "TESTING",
+      "match": {
+        "number": 13,
+        "type": "qualification"
+      },
+      "teamNumber": 5614,
+      "auto": {
+        "movement": {
+          "trenchPass": false,
+          "bumpPass": false,
+          "bumpStuck": false
+        },
+        "chosenAuto": "trenchFuelMiddle",
+        "climb": {
+          "climbTime": {
+            "L1": null
+          },
+          "climbSide": {
+            "middle": false,
+            "side": false,
+            "support": false
+          },
+          "level": "L0"
+        },
+        "shootEvents": [
+          {
+            "interval": {
+              "start": 51354,
+              "end": 52769
+            },
+            "positions": [
+              {
+                "x": 290,
+                "y": 581
+              },
+              {
+                "x": 290,
+                "y": 581
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 294354,
+              "end": 295535
+            },
+            "positions": [
+              {
+                "x": 239,
+                "y": 572
+              },
+              {
+                "x": 239,
+                "y": 572
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 303505,
+              "end": 304256
+            },
+            "positions": [
+              {
+                "x": 191,
+                "y": 603
+              }
+            ]
+          }
+        ]
+      },
+      "tele": {
+        "transitionShift": {
+          "shootEvents": [
+            {
+              "interval": {
+                "start": 75104,
+                "end": 76640
+              },
+              "positions": [
+                {
+                  "x": 230,
+                  "y": 222
+                },
+                {
+                  "x": 230,
+                  "y": 222
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 317444,
+                "end": 318570
+              },
+              "positions": [
+                {
+                  "x": 236,
+                  "y": 159
+                },
+                {
+                  "x": 236,
+                  "y": 159
+                }
+              ]
+            }
+          ]
+        },
+        "shifts": [
+          {
+            "shootEvents": []
+          },
+          {
+            "shootEvents": [
+              {
+                "interval": {
+                  "start": 107649,
+                  "end": 108243
+                },
+                "positions": [
+                  {
+                    "x": 289,
+                    "y": 108
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 108245,
+                  "end": 108247
+                },
+                "positions": [
+                  {
+                    "x": 289,
+                    "y": 108
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 349328,
+                  "end": 349987
+                },
+                "positions": [
+                  {
+                    "x": 219,
+                    "y": 106
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 349993,
+                  "end": 349997
+                },
+                "positions": [
+                  {
+                    "x": 219,
+                    "y": 106
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 362456,
+                  "end": 364232
+                },
+                "positions": [
+                  {
+                    "x": 142,
+                    "y": 148
+                  },
+                  {
+                    "x": 142,
+                    "y": 148
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "shootEvents": []
+          },
+          {
+            "shootEvents": [
+              {
+                "interval": {
+                  "start": 414809,
+                  "end": 415650
+                },
+                "positions": [
+                  {
+                    "x": 159,
+                    "y": 165
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "endgameShift": {
+          "shootEvents": [
+            {
+              "interval": {
+                "start": 430117,
+                "end": 431221
+              },
+              "positions": [
+                {
+                  "x": 80,
+                  "y": 260
+                },
+                {
+                  "x": 80,
+                  "y": 260
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 443254,
+                "end": 444885
+              },
+              "positions": [
+                {
+                  "x": 243,
+                  "y": 79
+                },
+                {
+                  "x": 243,
+                  "y": 79
+                }
+              ]
+            }
+          ]
+        },
+        "movement": {
+          "bumpStuck": false
+        },
+        "climb": {
+          "climbTime": {
+            "L1": null,
+            "L2": null,
+            "L3": null
+          },
+          "climbSide": {
+            "middle": false,
+            "side": false,
+            "support": false
+          },
+          "level": "L0"
+        }
+      },
+      "comment": "",
+      "robotBroken": false
+    },
+    {
+      "_id": "69cf8d490c7206197dfb1dff",
+      "scouterName": "Big yoni",
+      "competition": "TESTING",
+      "match": {
+        "number": 9,
+        "type": "qualification"
+      },
+      "teamNumber": 1577,
+      "auto": {
+        "movement": {
+          "trenchPass": true,
+          "bumpPass": false,
+          "bumpStuck": true
+        },
+        "chosenAuto": "trenchFuelMiddle",
+        "climb": {
+          "climbTime": {
+            "L1": null
+          },
+          "climbSide": {
+            "middle": false,
+            "side": false,
+            "support": false
+          },
+          "level": "L0"
+        },
+        "shootEvents": [
+          {
+            "interval": {
+              "start": 28676,
+              "end": 31566
+            },
+            "positions": [
+              {
+                "x": 190,
+                "y": 503
+              },
+              {
+                "x": 235,
+                "y": 505
+              },
+              {
+                "x": 214,
+                "y": 521
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 32347,
+              "end": 33176
+            },
+            "positions": [
+              {
+                "x": 192,
+                "y": 269
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 35282,
+              "end": 42482
+            },
+            "positions": [
+              {
+                "x": 481,
+                "y": 484
+              },
+              {
+                "x": 565,
+                "y": 435
+              },
+              {
+                "x": 195,
+                "y": 388
+              },
+              {
+                "x": 224,
+                "y": 477
+              },
+              {
+                "x": 288,
+                "y": 430
+              },
+              {
+                "x": 165,
+                "y": 298
+              },
+              {
+                "x": 224,
+                "y": 373
+              },
+              {
+                "x": 210,
+                "y": 291
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 48939,
+              "end": 51837
+            },
+            "positions": [
+              {
+                "x": 169,
+                "y": 296
+              },
+              {
+                "x": 199,
+                "y": 313
+              },
+              {
+                "x": 232,
+                "y": 275
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 53320,
+              "end": 53986
+            },
+            "positions": [
+              {
+                "x": 896,
+                "y": 116
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 55099,
+              "end": 57261
+            },
+            "positions": [
+              {
+                "x": 205,
+                "y": 300
+              },
+              {
+                "x": 222,
+                "y": 345
+              },
+              {
+                "x": 209,
+                "y": 266
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 63638,
+              "end": 68218
+            },
+            "positions": [
+              {
+                "x": 266,
+                "y": 288
+              },
+              {
+                "x": 242,
+                "y": 291
+              },
+              {
+                "x": 199,
+                "y": 198
+              },
+              {
+                "x": 223,
+                "y": 145
+              },
+              {
+                "x": 235,
+                "y": 383
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 68821,
+              "end": 73197
+            },
+            "positions": [
+              {
+                "x": 201,
+                "y": 212
+              },
+              {
+                "x": 138,
+                "y": 551
+              },
+              {
+                "x": 45,
+                "y": 345
+              },
+              {
+                "x": 78,
+                "y": 178
+              },
+              {
+                "x": 258,
+                "y": 314
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 75636,
+              "end": 75724
+            },
+            "positions": [
+              {
+                "x": 186,
+                "y": 483
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 76413,
+              "end": 76722
+            },
+            "positions": [
+              {
+                "x": 174,
+                "y": 309
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 77182,
+              "end": 77543
+            },
+            "positions": [
+              {
+                "x": 253,
+                "y": 584
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 77960,
+              "end": 78261
+            },
+            "positions": [
+              {
+                "x": 187,
+                "y": 264
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 78715,
+              "end": 79066
+            },
+            "positions": [
+              {
+                "x": 268,
+                "y": 581
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 79350,
+              "end": 79636
+            },
+            "positions": [
+              {
+                "x": 194,
+                "y": 260
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 90949,
+              "end": 93071
+            },
+            "positions": [
+              {
+                "x": 240,
+                "y": 393
+              },
+              {
+                "x": 187,
+                "y": 272
+              },
+              {
+                "x": 226,
+                "y": 533
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 93417,
+              "end": 97492
+            },
+            "positions": [
+              {
+                "x": 225,
+                "y": 346
+              },
+              {
+                "x": 228,
+                "y": 262
+              },
+              {
+                "x": 133,
+                "y": 479
+              },
+              {
+                "x": 158,
+                "y": 250
+              },
+              {
+                "x": 307,
+                "y": 336
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 97952,
+              "end": 98713
+            },
+            "positions": [
+              {
+                "x": 230,
+                "y": 589
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 98892,
+              "end": 99710
+            },
+            "positions": [
+              {
+                "x": 255,
+                "y": 274
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 99956,
+              "end": 100901
+            },
+            "positions": [
+              {
+                "x": 233,
+                "y": 475
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 75716,
+              "end": 76905
+            },
+            "positions": [
+              {
+                "x": 236,
+                "y": 486
+              },
+              {
+                "x": 225,
+                "y": 415
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 77403,
+              "end": 78194
+            },
+            "positions": [
+              {
+                "x": 127,
+                "y": 243
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 79022,
+              "end": 79902
+            },
+            "positions": [
+              {
+                "x": 132,
+                "y": 480
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 80450,
+              "end": 82630
+            },
+            "positions": [
+              {
+                "x": 248,
+                "y": 121
+              },
+              {
+                "x": 111,
+                "y": 216
+              },
+              {
+                "x": 139,
+                "y": 468
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 84103,
+              "end": 84916
+            },
+            "positions": [
+              {
+                "x": 143,
+                "y": 244
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 85514,
+              "end": 86949
+            },
+            "positions": [
+              {
+                "x": 245,
+                "y": 545
+              },
+              {
+                "x": 245,
+                "y": 545
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 87932,
+              "end": 88818
+            },
+            "positions": [
+              {
+                "x": 226,
+                "y": 232
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 92049,
+              "end": 93499
+            },
+            "positions": [
+              {
+                "x": 206,
+                "y": 262
+              },
+              {
+                "x": 206,
+                "y": 262
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 725104,
+              "end": 725420
+            },
+            "positions": [
+              {
+                "x": 520,
+                "y": 564
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 727322,
+              "end": 728224
+            },
+            "positions": [
+              {
+                "x": 285,
+                "y": 404
+              }
+            ]
+          }
+        ]
+      },
+      "tele": {
+        "transitionShift": {
+          "shootEvents": [
+            {
+              "interval": {
+                "start": 28676,
+                "end": 31566
+              },
+              "positions": [
+                {
+                  "x": 190,
+                  "y": 503
+                },
+                {
+                  "x": 235,
+                  "y": 505
+                },
+                {
+                  "x": 214,
+                  "y": 521
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 32347,
+                "end": 33176
+              },
+              "positions": [
+                {
+                  "x": 192,
+                  "y": 269
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 35282,
+                "end": 42482
+              },
+              "positions": [
+                {
+                  "x": 481,
+                  "y": 484
+                },
+                {
+                  "x": 565,
+                  "y": 435
+                },
+                {
+                  "x": 195,
+                  "y": 388
+                },
+                {
+                  "x": 224,
+                  "y": 477
+                },
+                {
+                  "x": 288,
+                  "y": 430
+                },
+                {
+                  "x": 165,
+                  "y": 298
+                },
+                {
+                  "x": 224,
+                  "y": 373
+                },
+                {
+                  "x": 210,
+                  "y": 291
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 48939,
+                "end": 51837
+              },
+              "positions": [
+                {
+                  "x": 169,
+                  "y": 296
+                },
+                {
+                  "x": 199,
+                  "y": 313
+                },
+                {
+                  "x": 232,
+                  "y": 275
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 53320,
+                "end": 53986
+              },
+              "positions": [
+                {
+                  "x": 896,
+                  "y": 116
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 55099,
+                "end": 57261
+              },
+              "positions": [
+                {
+                  "x": 205,
+                  "y": 300
+                },
+                {
+                  "x": 222,
+                  "y": 345
+                },
+                {
+                  "x": 209,
+                  "y": 266
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 63638,
+                "end": 68218
+              },
+              "positions": [
+                {
+                  "x": 266,
+                  "y": 288
+                },
+                {
+                  "x": 242,
+                  "y": 291
+                },
+                {
+                  "x": 199,
+                  "y": 198
+                },
+                {
+                  "x": 223,
+                  "y": 145
+                },
+                {
+                  "x": 235,
+                  "y": 383
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 68821,
+                "end": 73197
+              },
+              "positions": [
+                {
+                  "x": 201,
+                  "y": 212
+                },
+                {
+                  "x": 138,
+                  "y": 551
+                },
+                {
+                  "x": 45,
+                  "y": 345
+                },
+                {
+                  "x": 78,
+                  "y": 178
+                },
+                {
+                  "x": 258,
+                  "y": 314
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 75636,
+                "end": 75724
+              },
+              "positions": [
+                {
+                  "x": 186,
+                  "y": 483
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 76413,
+                "end": 76722
+              },
+              "positions": [
+                {
+                  "x": 174,
+                  "y": 309
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 77182,
+                "end": 77543
+              },
+              "positions": [
+                {
+                  "x": 253,
+                  "y": 584
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 77960,
+                "end": 78261
+              },
+              "positions": [
+                {
+                  "x": 187,
+                  "y": 264
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 78715,
+                "end": 79066
+              },
+              "positions": [
+                {
+                  "x": 268,
+                  "y": 581
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 79350,
+                "end": 79636
+              },
+              "positions": [
+                {
+                  "x": 194,
+                  "y": 260
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 90949,
+                "end": 93071
+              },
+              "positions": [
+                {
+                  "x": 240,
+                  "y": 393
+                },
+                {
+                  "x": 187,
+                  "y": 272
+                },
+                {
+                  "x": 226,
+                  "y": 533
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 93417,
+                "end": 97492
+              },
+              "positions": [
+                {
+                  "x": 225,
+                  "y": 346
+                },
+                {
+                  "x": 228,
+                  "y": 262
+                },
+                {
+                  "x": 133,
+                  "y": 479
+                },
+                {
+                  "x": 158,
+                  "y": 250
+                },
+                {
+                  "x": 307,
+                  "y": 336
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 97952,
+                "end": 98713
+              },
+              "positions": [
+                {
+                  "x": 230,
+                  "y": 589
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 98892,
+                "end": 99710
+              },
+              "positions": [
+                {
+                  "x": 255,
+                  "y": 274
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 99956,
+                "end": 100901
+              },
+              "positions": [
+                {
+                  "x": 233,
+                  "y": 475
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 97793,
+                "end": 100014
+              },
+              "positions": [
+                {
+                  "x": 218,
+                  "y": 352
+                },
+                {
+                  "x": 217,
+                  "y": 244
+                },
+                {
+                  "x": 217,
+                  "y": 244
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 103948,
+                "end": 105728
+              },
+              "positions": [
+                {
+                  "x": 188,
+                  "y": 176
+                },
+                {
+                  "x": 188,
+                  "y": 176
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 107666,
+                "end": 108657
+              },
+              "positions": [
+                {
+                  "x": 229,
+                  "y": 409
+                }
+              ]
+            }
+          ]
+        },
+        "shifts": [
+          {
+            "shootEvents": [
+              {
+                "interval": {
+                  "start": 28676,
+                  "end": 31566
+                },
+                "positions": [
+                  {
+                    "x": 190,
+                    "y": 503
+                  },
+                  {
+                    "x": 235,
+                    "y": 505
+                  },
+                  {
+                    "x": 214,
+                    "y": 521
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 32347,
+                  "end": 33176
+                },
+                "positions": [
+                  {
+                    "x": 192,
+                    "y": 269
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 35282,
+                  "end": 42482
+                },
+                "positions": [
+                  {
+                    "x": 481,
+                    "y": 484
+                  },
+                  {
+                    "x": 565,
+                    "y": 435
+                  },
+                  {
+                    "x": 195,
+                    "y": 388
+                  },
+                  {
+                    "x": 224,
+                    "y": 477
+                  },
+                  {
+                    "x": 288,
+                    "y": 430
+                  },
+                  {
+                    "x": 165,
+                    "y": 298
+                  },
+                  {
+                    "x": 224,
+                    "y": 373
+                  },
+                  {
+                    "x": 210,
+                    "y": 291
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 48939,
+                  "end": 51837
+                },
+                "positions": [
+                  {
+                    "x": 169,
+                    "y": 296
+                  },
+                  {
+                    "x": 199,
+                    "y": 313
+                  },
+                  {
+                    "x": 232,
+                    "y": 275
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 53320,
+                  "end": 53986
+                },
+                "positions": [
+                  {
+                    "x": 896,
+                    "y": 116
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 55099,
+                  "end": 57261
+                },
+                "positions": [
+                  {
+                    "x": 205,
+                    "y": 300
+                  },
+                  {
+                    "x": 222,
+                    "y": 345
+                  },
+                  {
+                    "x": 209,
+                    "y": 266
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 63638,
+                  "end": 68218
+                },
+                "positions": [
+                  {
+                    "x": 266,
+                    "y": 288
+                  },
+                  {
+                    "x": 242,
+                    "y": 291
+                  },
+                  {
+                    "x": 199,
+                    "y": 198
+                  },
+                  {
+                    "x": 223,
+                    "y": 145
+                  },
+                  {
+                    "x": 235,
+                    "y": 383
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 68821,
+                  "end": 73197
+                },
+                "positions": [
+                  {
+                    "x": 201,
+                    "y": 212
+                  },
+                  {
+                    "x": 138,
+                    "y": 551
+                  },
+                  {
+                    "x": 45,
+                    "y": 345
+                  },
+                  {
+                    "x": 78,
+                    "y": 178
+                  },
+                  {
+                    "x": 258,
+                    "y": 314
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 75636,
+                  "end": 75724
+                },
+                "positions": [
+                  {
+                    "x": 186,
+                    "y": 483
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 76413,
+                  "end": 76722
+                },
+                "positions": [
+                  {
+                    "x": 174,
+                    "y": 309
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 77182,
+                  "end": 77543
+                },
+                "positions": [
+                  {
+                    "x": 253,
+                    "y": 584
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 77960,
+                  "end": 78261
+                },
+                "positions": [
+                  {
+                    "x": 187,
+                    "y": 264
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 78715,
+                  "end": 79066
+                },
+                "positions": [
+                  {
+                    "x": 268,
+                    "y": 581
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 79350,
+                  "end": 79636
+                },
+                "positions": [
+                  {
+                    "x": 194,
+                    "y": 260
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 90949,
+                  "end": 93071
+                },
+                "positions": [
+                  {
+                    "x": 240,
+                    "y": 393
+                  },
+                  {
+                    "x": 187,
+                    "y": 272
+                  },
+                  {
+                    "x": 226,
+                    "y": 533
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 93417,
+                  "end": 97492
+                },
+                "positions": [
+                  {
+                    "x": 225,
+                    "y": 346
+                  },
+                  {
+                    "x": 228,
+                    "y": 262
+                  },
+                  {
+                    "x": 133,
+                    "y": 479
+                  },
+                  {
+                    "x": 158,
+                    "y": 250
+                  },
+                  {
+                    "x": 307,
+                    "y": 336
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 97952,
+                  "end": 98713
+                },
+                "positions": [
+                  {
+                    "x": 230,
+                    "y": 589
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 98892,
+                  "end": 99710
+                },
+                "positions": [
+                  {
+                    "x": 255,
+                    "y": 274
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 99956,
+                  "end": 100901
+                },
+                "positions": [
+                  {
+                    "x": 233,
+                    "y": 475
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 110978,
+                  "end": 118742
+                },
+                "positions": [
+                  {
+                    "x": 243,
+                    "y": 374
+                  },
+                  {
+                    "x": 204,
+                    "y": 301
+                  },
+                  {
+                    "x": 206,
+                    "y": 290
+                  },
+                  {
+                    "x": 199,
+                    "y": 487
+                  },
+                  {
+                    "x": 211,
+                    "y": 256
+                  },
+                  {
+                    "x": 292,
+                    "y": 205
+                  },
+                  {
+                    "x": 127,
+                    "y": 372
+                  },
+                  {
+                    "x": 142,
+                    "y": 480
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 122719,
+                  "end": 130609
+                },
+                "positions": [
+                  {
+                    "x": 212,
+                    "y": 391
+                  },
+                  {
+                    "x": 187,
+                    "y": 293
+                  },
+                  {
+                    "x": 216,
+                    "y": 227
+                  },
+                  {
+                    "x": 243,
+                    "y": 200
+                  },
+                  {
+                    "x": 312,
+                    "y": 164
+                  },
+                  {
+                    "x": 402,
+                    "y": 88
+                  },
+                  {
+                    "x": 613,
+                    "y": 310
+                  },
+                  {
+                    "x": 466,
+                    "y": 602
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 812780,
+                  "end": 814455
+                },
+                "positions": [
+                  {
+                    "x": 611,
+                    "y": 480
+                  },
+                  {
+                    "x": 604,
+                    "y": 480
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 823121,
+                  "end": 826381
+                },
+                "positions": [
+                  {
+                    "x": 271,
+                    "y": 352
+                  },
+                  {
+                    "x": 271,
+                    "y": 352
+                  },
+                  {
+                    "x": 271,
+                    "y": 352
+                  },
+                  {
+                    "x": 271,
+                    "y": 352
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "shootEvents": [
+              {
+                "interval": {
+                  "start": 28676,
+                  "end": 31566
+                },
+                "positions": [
+                  {
+                    "x": 190,
+                    "y": 503
+                  },
+                  {
+                    "x": 235,
+                    "y": 505
+                  },
+                  {
+                    "x": 214,
+                    "y": 521
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 32347,
+                  "end": 33176
+                },
+                "positions": [
+                  {
+                    "x": 192,
+                    "y": 269
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 35282,
+                  "end": 42482
+                },
+                "positions": [
+                  {
+                    "x": 481,
+                    "y": 484
+                  },
+                  {
+                    "x": 565,
+                    "y": 435
+                  },
+                  {
+                    "x": 195,
+                    "y": 388
+                  },
+                  {
+                    "x": 224,
+                    "y": 477
+                  },
+                  {
+                    "x": 288,
+                    "y": 430
+                  },
+                  {
+                    "x": 165,
+                    "y": 298
+                  },
+                  {
+                    "x": 224,
+                    "y": 373
+                  },
+                  {
+                    "x": 210,
+                    "y": 291
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 48939,
+                  "end": 51837
+                },
+                "positions": [
+                  {
+                    "x": 169,
+                    "y": 296
+                  },
+                  {
+                    "x": 199,
+                    "y": 313
+                  },
+                  {
+                    "x": 232,
+                    "y": 275
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 53320,
+                  "end": 53986
+                },
+                "positions": [
+                  {
+                    "x": 896,
+                    "y": 116
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 55099,
+                  "end": 57261
+                },
+                "positions": [
+                  {
+                    "x": 205,
+                    "y": 300
+                  },
+                  {
+                    "x": 222,
+                    "y": 345
+                  },
+                  {
+                    "x": 209,
+                    "y": 266
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 63638,
+                  "end": 68218
+                },
+                "positions": [
+                  {
+                    "x": 266,
+                    "y": 288
+                  },
+                  {
+                    "x": 242,
+                    "y": 291
+                  },
+                  {
+                    "x": 199,
+                    "y": 198
+                  },
+                  {
+                    "x": 223,
+                    "y": 145
+                  },
+                  {
+                    "x": 235,
+                    "y": 383
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 68821,
+                  "end": 73197
+                },
+                "positions": [
+                  {
+                    "x": 201,
+                    "y": 212
+                  },
+                  {
+                    "x": 138,
+                    "y": 551
+                  },
+                  {
+                    "x": 45,
+                    "y": 345
+                  },
+                  {
+                    "x": 78,
+                    "y": 178
+                  },
+                  {
+                    "x": 258,
+                    "y": 314
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 75636,
+                  "end": 75724
+                },
+                "positions": [
+                  {
+                    "x": 186,
+                    "y": 483
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 76413,
+                  "end": 76722
+                },
+                "positions": [
+                  {
+                    "x": 174,
+                    "y": 309
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 77182,
+                  "end": 77543
+                },
+                "positions": [
+                  {
+                    "x": 253,
+                    "y": 584
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 77960,
+                  "end": 78261
+                },
+                "positions": [
+                  {
+                    "x": 187,
+                    "y": 264
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 78715,
+                  "end": 79066
+                },
+                "positions": [
+                  {
+                    "x": 268,
+                    "y": 581
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 79350,
+                  "end": 79636
+                },
+                "positions": [
+                  {
+                    "x": 194,
+                    "y": 260
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 90949,
+                  "end": 93071
+                },
+                "positions": [
+                  {
+                    "x": 240,
+                    "y": 393
+                  },
+                  {
+                    "x": 187,
+                    "y": 272
+                  },
+                  {
+                    "x": 226,
+                    "y": 533
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 93417,
+                  "end": 97492
+                },
+                "positions": [
+                  {
+                    "x": 225,
+                    "y": 346
+                  },
+                  {
+                    "x": 228,
+                    "y": 262
+                  },
+                  {
+                    "x": 133,
+                    "y": 479
+                  },
+                  {
+                    "x": 158,
+                    "y": 250
+                  },
+                  {
+                    "x": 307,
+                    "y": 336
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 97952,
+                  "end": 98713
+                },
+                "positions": [
+                  {
+                    "x": 230,
+                    "y": 589
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 98892,
+                  "end": 99710
+                },
+                "positions": [
+                  {
+                    "x": 255,
+                    "y": 274
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 99956,
+                  "end": 100901
+                },
+                "positions": [
+                  {
+                    "x": 233,
+                    "y": 475
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 134985,
+                  "end": 143947
+                },
+                "positions": [
+                  {
+                    "x": 204,
+                    "y": 521
+                  },
+                  {
+                    "x": 134,
+                    "y": 424
+                  },
+                  {
+                    "x": 77,
+                    "y": 484
+                  },
+                  {
+                    "x": 872,
+                    "y": 427
+                  },
+                  {
+                    "x": 961,
+                    "y": 240
+                  },
+                  {
+                    "x": 982,
+                    "y": 502
+                  },
+                  {
+                    "x": 121,
+                    "y": 426
+                  },
+                  {
+                    "x": 107,
+                    "y": 176
+                  },
+                  {
+                    "x": 211,
+                    "y": 166
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 145280,
+                  "end": 145351
+                },
+                "positions": [
+                  {
+                    "x": 234,
+                    "y": 481
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 145694,
+                  "end": 145797
+                },
+                "positions": [
+                  {
+                    "x": 246,
+                    "y": 464
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 145930,
+                  "end": 146070
+                },
+                "positions": [
+                  {
+                    "x": 242,
+                    "y": 466
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 146152,
+                  "end": 146433
+                },
+                "positions": [
+                  {
+                    "x": 241,
+                    "y": 473
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 146591,
+                  "end": 146729
+                },
+                "positions": [
+                  {
+                    "x": 241,
+                    "y": 468
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 146848,
+                  "end": 146972
+                },
+                "positions": [
+                  {
+                    "x": 241,
+                    "y": 470
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 147061,
+                  "end": 147194
+                },
+                "positions": [
+                  {
+                    "x": 240,
+                    "y": 475
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 147269,
+                  "end": 147372
+                },
+                "positions": [
+                  {
+                    "x": 244,
+                    "y": 478
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 147461,
+                  "end": 147565
+                },
+                "positions": [
+                  {
+                    "x": 244,
+                    "y": 473
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 147655,
+                  "end": 147758
+                },
+                "positions": [
+                  {
+                    "x": 244,
+                    "y": 473
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 147854,
+                  "end": 147934
+                },
+                "positions": [
+                  {
+                    "x": 243,
+                    "y": 474
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 148055,
+                  "end": 148126
+                },
+                "positions": [
+                  {
+                    "x": 242,
+                    "y": 475
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 148254,
+                  "end": 148312
+                },
+                "positions": [
+                  {
+                    "x": 241,
+                    "y": 476
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 148436,
+                  "end": 148516
+                },
+                "positions": [
+                  {
+                    "x": 240,
+                    "y": 478
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 148638,
+                  "end": 148733
+                },
+                "positions": [
+                  {
+                    "x": 237,
+                    "y": 481
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 148861,
+                  "end": 148925
+                },
+                "positions": [
+                  {
+                    "x": 239,
+                    "y": 483
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 149036,
+                  "end": 149132
+                },
+                "positions": [
+                  {
+                    "x": 240,
+                    "y": 483
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 149252,
+                  "end": 149323
+                },
+                "positions": [
+                  {
+                    "x": 240,
+                    "y": 483
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 149453,
+                  "end": 149522
+                },
+                "positions": [
+                  {
+                    "x": 240,
+                    "y": 483
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 149646,
+                  "end": 149722
+                },
+                "positions": [
+                  {
+                    "x": 240,
+                    "y": 486
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 149843,
+                  "end": 149914
+                },
+                "positions": [
+                  {
+                    "x": 240,
+                    "y": 486
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 150042,
+                  "end": 150130
+                },
+                "positions": [
+                  {
+                    "x": 241,
+                    "y": 485
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 150242,
+                  "end": 154440
+                },
+                "positions": [
+                  {
+                    "x": 241,
+                    "y": 485
+                  },
+                  {
+                    "x": 93,
+                    "y": 378
+                  },
+                  {
+                    "x": 238,
+                    "y": 490
+                  },
+                  {
+                    "x": 207,
+                    "y": 602
+                  },
+                  {
+                    "x": 176,
+                    "y": 562
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 155094,
+                  "end": 155156
+                },
+                "positions": [
+                  {
+                    "x": 197,
+                    "y": 461
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 155160,
+                  "end": 155161
+                },
+                "positions": [
+                  {
+                    "x": 197,
+                    "y": 461
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 155267,
+                  "end": 155350
+                },
+                "positions": [
+                  {
+                    "x": 197,
+                    "y": 461
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 155353,
+                  "end": 155353
+                },
+                "positions": [
+                  {
+                    "x": 197,
+                    "y": 461
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 155439,
+                  "end": 155535
+                },
+                "positions": [
+                  {
+                    "x": 197,
+                    "y": 461
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 155538,
+                  "end": 155539
+                },
+                "positions": [
+                  {
+                    "x": 197,
+                    "y": 461
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 155662,
+                  "end": 155762
+                },
+                "positions": [
+                  {
+                    "x": 197,
+                    "y": 461
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 155764,
+                  "end": 155765
+                },
+                "positions": [
+                  {
+                    "x": 197,
+                    "y": 461
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 155853,
+                  "end": 155956
+                },
+                "positions": [
+                  {
+                    "x": 197,
+                    "y": 461
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 155959,
+                  "end": 155960
+                },
+                "positions": [
+                  {
+                    "x": 197,
+                    "y": 461
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 156078,
+                  "end": 156182
+                },
+                "positions": [
+                  {
+                    "x": 197,
+                    "y": 461
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 156186,
+                  "end": 156187
+                },
+                "positions": [
+                  {
+                    "x": 197,
+                    "y": 461
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 156253,
+                  "end": 156377
+                },
+                "positions": [
+                  {
+                    "x": 197,
+                    "y": 461
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 156380,
+                  "end": 156381
+                },
+                "positions": [
+                  {
+                    "x": 197,
+                    "y": 461
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 156481,
+                  "end": 156598
+                },
+                "positions": [
+                  {
+                    "x": 197,
+                    "y": 461
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 156600,
+                  "end": 156601
+                },
+                "positions": [
+                  {
+                    "x": 197,
+                    "y": 461
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 156681,
+                  "end": 157516
+                },
+                "positions": [
+                  {
+                    "x": 197,
+                    "y": 461
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "shootEvents": [
+              {
+                "interval": {
+                  "start": 28676,
+                  "end": 31566
+                },
+                "positions": [
+                  {
+                    "x": 190,
+                    "y": 503
+                  },
+                  {
+                    "x": 235,
+                    "y": 505
+                  },
+                  {
+                    "x": 214,
+                    "y": 521
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 32347,
+                  "end": 33176
+                },
+                "positions": [
+                  {
+                    "x": 192,
+                    "y": 269
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 35282,
+                  "end": 42482
+                },
+                "positions": [
+                  {
+                    "x": 481,
+                    "y": 484
+                  },
+                  {
+                    "x": 565,
+                    "y": 435
+                  },
+                  {
+                    "x": 195,
+                    "y": 388
+                  },
+                  {
+                    "x": 224,
+                    "y": 477
+                  },
+                  {
+                    "x": 288,
+                    "y": 430
+                  },
+                  {
+                    "x": 165,
+                    "y": 298
+                  },
+                  {
+                    "x": 224,
+                    "y": 373
+                  },
+                  {
+                    "x": 210,
+                    "y": 291
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 48939,
+                  "end": 51837
+                },
+                "positions": [
+                  {
+                    "x": 169,
+                    "y": 296
+                  },
+                  {
+                    "x": 199,
+                    "y": 313
+                  },
+                  {
+                    "x": 232,
+                    "y": 275
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 53320,
+                  "end": 53986
+                },
+                "positions": [
+                  {
+                    "x": 896,
+                    "y": 116
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 55099,
+                  "end": 57261
+                },
+                "positions": [
+                  {
+                    "x": 205,
+                    "y": 300
+                  },
+                  {
+                    "x": 222,
+                    "y": 345
+                  },
+                  {
+                    "x": 209,
+                    "y": 266
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 63638,
+                  "end": 68218
+                },
+                "positions": [
+                  {
+                    "x": 266,
+                    "y": 288
+                  },
+                  {
+                    "x": 242,
+                    "y": 291
+                  },
+                  {
+                    "x": 199,
+                    "y": 198
+                  },
+                  {
+                    "x": 223,
+                    "y": 145
+                  },
+                  {
+                    "x": 235,
+                    "y": 383
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 68821,
+                  "end": 73197
+                },
+                "positions": [
+                  {
+                    "x": 201,
+                    "y": 212
+                  },
+                  {
+                    "x": 138,
+                    "y": 551
+                  },
+                  {
+                    "x": 45,
+                    "y": 345
+                  },
+                  {
+                    "x": 78,
+                    "y": 178
+                  },
+                  {
+                    "x": 258,
+                    "y": 314
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 75636,
+                  "end": 75724
+                },
+                "positions": [
+                  {
+                    "x": 186,
+                    "y": 483
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 76413,
+                  "end": 76722
+                },
+                "positions": [
+                  {
+                    "x": 174,
+                    "y": 309
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 77182,
+                  "end": 77543
+                },
+                "positions": [
+                  {
+                    "x": 253,
+                    "y": 584
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 77960,
+                  "end": 78261
+                },
+                "positions": [
+                  {
+                    "x": 187,
+                    "y": 264
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 78715,
+                  "end": 79066
+                },
+                "positions": [
+                  {
+                    "x": 268,
+                    "y": 581
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 79350,
+                  "end": 79636
+                },
+                "positions": [
+                  {
+                    "x": 194,
+                    "y": 260
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 90949,
+                  "end": 93071
+                },
+                "positions": [
+                  {
+                    "x": 240,
+                    "y": 393
+                  },
+                  {
+                    "x": 187,
+                    "y": 272
+                  },
+                  {
+                    "x": 226,
+                    "y": 533
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 93417,
+                  "end": 97492
+                },
+                "positions": [
+                  {
+                    "x": 225,
+                    "y": 346
+                  },
+                  {
+                    "x": 228,
+                    "y": 262
+                  },
+                  {
+                    "x": 133,
+                    "y": 479
+                  },
+                  {
+                    "x": 158,
+                    "y": 250
+                  },
+                  {
+                    "x": 307,
+                    "y": 336
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 97952,
+                  "end": 98713
+                },
+                "positions": [
+                  {
+                    "x": 230,
+                    "y": 589
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 98892,
+                  "end": 99710
+                },
+                "positions": [
+                  {
+                    "x": 255,
+                    "y": 274
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 99956,
+                  "end": 100901
+                },
+                "positions": [
+                  {
+                    "x": 233,
+                    "y": 475
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 161347,
+                  "end": 168129
+                },
+                "positions": [
+                  {
+                    "x": 229,
+                    "y": 394
+                  },
+                  {
+                    "x": 193,
+                    "y": 320
+                  },
+                  {
+                    "x": 227,
+                    "y": 306
+                  },
+                  {
+                    "x": 235,
+                    "y": 260
+                  },
+                  {
+                    "x": 201,
+                    "y": 543
+                  },
+                  {
+                    "x": 222,
+                    "y": 505
+                  },
+                  {
+                    "x": 216,
+                    "y": 338
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 169122,
+                  "end": 170597
+                },
+                "positions": [
+                  {
+                    "x": 257,
+                    "y": 220
+                  },
+                  {
+                    "x": 252,
+                    "y": 151
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 171560,
+                  "end": 171800
+                },
+                "positions": [
+                  {
+                    "x": 225,
+                    "y": 441
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 860938,
+                  "end": 862071
+                },
+                "positions": [
+                  {
+                    "x": 1184,
+                    "y": 568
+                  },
+                  {
+                    "x": 1164,
+                    "y": 555
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "shootEvents": [
+              {
+                "interval": {
+                  "start": 28676,
+                  "end": 31566
+                },
+                "positions": [
+                  {
+                    "x": 190,
+                    "y": 503
+                  },
+                  {
+                    "x": 235,
+                    "y": 505
+                  },
+                  {
+                    "x": 214,
+                    "y": 521
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 32347,
+                  "end": 33176
+                },
+                "positions": [
+                  {
+                    "x": 192,
+                    "y": 269
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 35282,
+                  "end": 42482
+                },
+                "positions": [
+                  {
+                    "x": 481,
+                    "y": 484
+                  },
+                  {
+                    "x": 565,
+                    "y": 435
+                  },
+                  {
+                    "x": 195,
+                    "y": 388
+                  },
+                  {
+                    "x": 224,
+                    "y": 477
+                  },
+                  {
+                    "x": 288,
+                    "y": 430
+                  },
+                  {
+                    "x": 165,
+                    "y": 298
+                  },
+                  {
+                    "x": 224,
+                    "y": 373
+                  },
+                  {
+                    "x": 210,
+                    "y": 291
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 48939,
+                  "end": 51837
+                },
+                "positions": [
+                  {
+                    "x": 169,
+                    "y": 296
+                  },
+                  {
+                    "x": 199,
+                    "y": 313
+                  },
+                  {
+                    "x": 232,
+                    "y": 275
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 53320,
+                  "end": 53986
+                },
+                "positions": [
+                  {
+                    "x": 896,
+                    "y": 116
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 55099,
+                  "end": 57261
+                },
+                "positions": [
+                  {
+                    "x": 205,
+                    "y": 300
+                  },
+                  {
+                    "x": 222,
+                    "y": 345
+                  },
+                  {
+                    "x": 209,
+                    "y": 266
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 63638,
+                  "end": 68218
+                },
+                "positions": [
+                  {
+                    "x": 266,
+                    "y": 288
+                  },
+                  {
+                    "x": 242,
+                    "y": 291
+                  },
+                  {
+                    "x": 199,
+                    "y": 198
+                  },
+                  {
+                    "x": 223,
+                    "y": 145
+                  },
+                  {
+                    "x": 235,
+                    "y": 383
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 68821,
+                  "end": 73197
+                },
+                "positions": [
+                  {
+                    "x": 201,
+                    "y": 212
+                  },
+                  {
+                    "x": 138,
+                    "y": 551
+                  },
+                  {
+                    "x": 45,
+                    "y": 345
+                  },
+                  {
+                    "x": 78,
+                    "y": 178
+                  },
+                  {
+                    "x": 258,
+                    "y": 314
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 75636,
+                  "end": 75724
+                },
+                "positions": [
+                  {
+                    "x": 186,
+                    "y": 483
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 76413,
+                  "end": 76722
+                },
+                "positions": [
+                  {
+                    "x": 174,
+                    "y": 309
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 77182,
+                  "end": 77543
+                },
+                "positions": [
+                  {
+                    "x": 253,
+                    "y": 584
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 77960,
+                  "end": 78261
+                },
+                "positions": [
+                  {
+                    "x": 187,
+                    "y": 264
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 78715,
+                  "end": 79066
+                },
+                "positions": [
+                  {
+                    "x": 268,
+                    "y": 581
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 79350,
+                  "end": 79636
+                },
+                "positions": [
+                  {
+                    "x": 194,
+                    "y": 260
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 90949,
+                  "end": 93071
+                },
+                "positions": [
+                  {
+                    "x": 240,
+                    "y": 393
+                  },
+                  {
+                    "x": 187,
+                    "y": 272
+                  },
+                  {
+                    "x": 226,
+                    "y": 533
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 93417,
+                  "end": 97492
+                },
+                "positions": [
+                  {
+                    "x": 225,
+                    "y": 346
+                  },
+                  {
+                    "x": 228,
+                    "y": 262
+                  },
+                  {
+                    "x": 133,
+                    "y": 479
+                  },
+                  {
+                    "x": 158,
+                    "y": 250
+                  },
+                  {
+                    "x": 307,
+                    "y": 336
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 97952,
+                  "end": 98713
+                },
+                "positions": [
+                  {
+                    "x": 230,
+                    "y": 589
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 98892,
+                  "end": 99710
+                },
+                "positions": [
+                  {
+                    "x": 255,
+                    "y": 274
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 99956,
+                  "end": 100901
+                },
+                "positions": [
+                  {
+                    "x": 233,
+                    "y": 475
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "endgameShift": {
+          "shootEvents": [
+            {
+              "interval": {
+                "start": 28676,
+                "end": 31566
+              },
+              "positions": [
+                {
+                  "x": 190,
+                  "y": 503
+                },
+                {
+                  "x": 235,
+                  "y": 505
+                },
+                {
+                  "x": 214,
+                  "y": 521
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 32347,
+                "end": 33176
+              },
+              "positions": [
+                {
+                  "x": 192,
+                  "y": 269
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 35282,
+                "end": 42482
+              },
+              "positions": [
+                {
+                  "x": 481,
+                  "y": 484
+                },
+                {
+                  "x": 565,
+                  "y": 435
+                },
+                {
+                  "x": 195,
+                  "y": 388
+                },
+                {
+                  "x": 224,
+                  "y": 477
+                },
+                {
+                  "x": 288,
+                  "y": 430
+                },
+                {
+                  "x": 165,
+                  "y": 298
+                },
+                {
+                  "x": 224,
+                  "y": 373
+                },
+                {
+                  "x": 210,
+                  "y": 291
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 48939,
+                "end": 51837
+              },
+              "positions": [
+                {
+                  "x": 169,
+                  "y": 296
+                },
+                {
+                  "x": 199,
+                  "y": 313
+                },
+                {
+                  "x": 232,
+                  "y": 275
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 53320,
+                "end": 53986
+              },
+              "positions": [
+                {
+                  "x": 896,
+                  "y": 116
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 55099,
+                "end": 57261
+              },
+              "positions": [
+                {
+                  "x": 205,
+                  "y": 300
+                },
+                {
+                  "x": 222,
+                  "y": 345
+                },
+                {
+                  "x": 209,
+                  "y": 266
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 63638,
+                "end": 68218
+              },
+              "positions": [
+                {
+                  "x": 266,
+                  "y": 288
+                },
+                {
+                  "x": 242,
+                  "y": 291
+                },
+                {
+                  "x": 199,
+                  "y": 198
+                },
+                {
+                  "x": 223,
+                  "y": 145
+                },
+                {
+                  "x": 235,
+                  "y": 383
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 68821,
+                "end": 73197
+              },
+              "positions": [
+                {
+                  "x": 201,
+                  "y": 212
+                },
+                {
+                  "x": 138,
+                  "y": 551
+                },
+                {
+                  "x": 45,
+                  "y": 345
+                },
+                {
+                  "x": 78,
+                  "y": 178
+                },
+                {
+                  "x": 258,
+                  "y": 314
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 75636,
+                "end": 75724
+              },
+              "positions": [
+                {
+                  "x": 186,
+                  "y": 483
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 76413,
+                "end": 76722
+              },
+              "positions": [
+                {
+                  "x": 174,
+                  "y": 309
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 77182,
+                "end": 77543
+              },
+              "positions": [
+                {
+                  "x": 253,
+                  "y": 584
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 77960,
+                "end": 78261
+              },
+              "positions": [
+                {
+                  "x": 187,
+                  "y": 264
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 78715,
+                "end": 79066
+              },
+              "positions": [
+                {
+                  "x": 268,
+                  "y": 581
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 79350,
+                "end": 79636
+              },
+              "positions": [
+                {
+                  "x": 194,
+                  "y": 260
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 90949,
+                "end": 93071
+              },
+              "positions": [
+                {
+                  "x": 240,
+                  "y": 393
+                },
+                {
+                  "x": 187,
+                  "y": 272
+                },
+                {
+                  "x": 226,
+                  "y": 533
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 93417,
+                "end": 97492
+              },
+              "positions": [
+                {
+                  "x": 225,
+                  "y": 346
+                },
+                {
+                  "x": 228,
+                  "y": 262
+                },
+                {
+                  "x": 133,
+                  "y": 479
+                },
+                {
+                  "x": 158,
+                  "y": 250
+                },
+                {
+                  "x": 307,
+                  "y": 336
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 97952,
+                "end": 98713
+              },
+              "positions": [
+                {
+                  "x": 230,
+                  "y": 589
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 98892,
+                "end": 99710
+              },
+              "positions": [
+                {
+                  "x": 255,
+                  "y": 274
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 99956,
+                "end": 100901
+              },
+              "positions": [
+                {
+                  "x": 233,
+                  "y": 475
+                }
+              ]
+            }
+          ]
+        },
+        "movement": {
+          "bumpStuck": false
+        },
+        "climb": {
+          "climbTime": {
+            "L1": null,
+            "L2": null,
+            "L3": null
+          },
+          "climbSide": {
+            "middle": false,
+            "side": false,
+            "support": false
+          },
+          "level": "L0"
+        }
+      },
+      "comment": "No intake from a specific point\n",
+      "robotBroken": false
+    },
+    {
+      "_id": "69cf8d490c7206197dfb1e00",
+      "scouterName": "Big yoni",
+      "competition": "TESTING",
+      "match": {
+        "type": "qualification",
+        "number": 9
+      },
+      "teamNumber": 4590,
+      "auto": {
+        "movement": {
+          "trenchPass": false,
+          "bumpPass": false,
+          "bumpStuck": true
+        },
+        "chosenAuto": "trenchFuelMiddle",
+        "climb": {
+          "climbTime": {
+            "L1": null
+          },
+          "climbSide": {
+            "middle": false,
+            "side": false,
+            "support": false
+          },
+          "level": "L0"
+        },
+        "shootEvents": [
+          {
+            "interval": {
+              "start": 95514,
+              "end": 96432
+            },
+            "positions": [
+              {
+                "x": 447,
+                "y": 279
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 97549,
+              "end": 99945
+            },
+            "positions": [
+              {
+                "x": 387,
+                "y": 208
+              },
+              {
+                "x": 387,
+                "y": 208
+              },
+              {
+                "x": 387,
+                "y": 208
+              }
+            ]
+          }
+        ]
+      },
+      "tele": {
+        "transitionShift": {
+          "shootEvents": []
+        },
+        "shifts": [
+          {
+            "shootEvents": [
+              {
+                "interval": {
+                  "start": 131051,
+                  "end": 133620
+                },
+                "positions": [
+                  {
+                    "x": 305,
+                    "y": 347
+                  },
+                  {
+                    "x": 305,
+                    "y": 347
+                  },
+                  {
+                    "x": 305,
+                    "y": 347
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 133959,
+                  "end": 141705
+                },
+                "positions": [
+                  {
+                    "x": 305,
+                    "y": 347
+                  },
+                  {
+                    "x": 305,
+                    "y": 347
+                  },
+                  {
+                    "x": 305,
+                    "y": 347
+                  },
+                  {
+                    "x": 248,
+                    "y": 403
+                  },
+                  {
+                    "x": 179,
+                    "y": 518
+                  },
+                  {
+                    "x": 133,
+                    "y": 574
+                  },
+                  {
+                    "x": 197,
+                    "y": 524
+                  },
+                  {
+                    "x": 199,
+                    "y": 506
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 142657,
+                  "end": 144179
+                },
+                "positions": [
+                  {
+                    "x": 197,
+                    "y": 504
+                  },
+                  {
+                    "x": 197,
+                    "y": 504
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "shootEvents": [
+              {
+                "interval": {
+                  "start": 161290,
+                  "end": 166388
+                },
+                "positions": [
+                  {
+                    "x": 497,
+                    "y": 464
+                  },
+                  {
+                    "x": 748,
+                    "y": 477
+                  },
+                  {
+                    "x": 740,
+                    "y": 573
+                  },
+                  {
+                    "x": 787,
+                    "y": 566
+                  },
+                  {
+                    "x": 768,
+                    "y": 561
+                  },
+                  {
+                    "x": 768,
+                    "y": 452
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 166930,
+                  "end": 167801
+                },
+                "positions": [
+                  {
+                    "x": 750,
+                    "y": 533
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "shootEvents": [
+              {
+                "interval": {
+                  "start": 172557,
+                  "end": 182371
+                },
+                "positions": [
+                  {
+                    "x": 182,
+                    "y": 487
+                  },
+                  {
+                    "x": 189,
+                    "y": 517
+                  },
+                  {
+                    "x": 236,
+                    "y": 481
+                  },
+                  {
+                    "x": 210,
+                    "y": 492
+                  },
+                  {
+                    "x": 232,
+                    "y": 512
+                  },
+                  {
+                    "x": 225,
+                    "y": 491
+                  },
+                  {
+                    "x": 273,
+                    "y": 527
+                  },
+                  {
+                    "x": 237,
+                    "y": 519
+                  },
+                  {
+                    "x": 274,
+                    "y": 525
+                  },
+                  {
+                    "x": 307,
+                    "y": 476
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 188387,
+                  "end": 189411
+                },
+                "positions": [
+                  {
+                    "x": 136,
+                    "y": 585
+                  },
+                  {
+                    "x": 239,
+                    "y": 444
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 189478,
+                  "end": 195838
+                },
+                "positions": [
+                  {
+                    "x": 259,
+                    "y": 446
+                  },
+                  {
+                    "x": 297,
+                    "y": 406
+                  },
+                  {
+                    "x": 260,
+                    "y": 510
+                  },
+                  {
+                    "x": 238,
+                    "y": 579
+                  },
+                  {
+                    "x": 285,
+                    "y": 611
+                  },
+                  {
+                    "x": 158,
+                    "y": 591
+                  },
+                  {
+                    "x": 164,
+                    "y": 517
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "shootEvents": []
+          }
+        ],
+        "endgameShift": {
+          "shootEvents": [
+            {
+              "interval": {
+                "start": 225291,
+                "end": 231230
+              },
+              "positions": [
+                {
+                  "x": 164,
+                  "y": 420
+                },
+                {
+                  "x": 202,
+                  "y": 383
+                },
+                {
+                  "x": 241,
+                  "y": 304
+                },
+                {
+                  "x": 234,
+                  "y": 344
+                },
+                {
+                  "x": 234,
+                  "y": 344
+                },
+                {
+                  "x": 234,
+                  "y": 344
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 234861,
+                "end": 237418
+              },
+              "positions": [
+                {
+                  "x": 154,
+                  "y": 486
+                },
+                {
+                  "x": 77,
+                  "y": 320
+                },
+                {
+                  "x": 78,
+                  "y": 313
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 237997,
+                "end": 240768
+              },
+              "positions": [
+                {
+                  "x": 169,
+                  "y": 344
+                },
+                {
+                  "x": 138,
+                  "y": 311
+                },
+                {
+                  "x": 149,
+                  "y": 343
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 241174,
+                "end": 241448
+              },
+              "positions": [
+                {
+                  "x": 212,
+                  "y": 449
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 242021,
+                "end": 243638
+              },
+              "positions": [
+                {
+                  "x": 154,
+                  "y": 494
+                },
+                {
+                  "x": 91,
+                  "y": 471
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 244615,
+                "end": 246701
+              },
+              "positions": [
+                {
+                  "x": 155,
+                  "y": 519
+                },
+                {
+                  "x": 142,
+                  "y": 571
+                },
+                {
+                  "x": 103,
+                  "y": 567
+                }
+              ]
+            }
+          ]
+        },
+        "movement": {
+          "bumpStuck": false
+        },
+        "climb": {
+          "climbTime": {
+            "L1": null,
+            "L2": null,
+            "L3": null
+          },
+          "climbSide": {
+            "middle": false,
+            "side": false,
+            "support": false
+          },
+          "level": "L0"
+        }
+      },
+      "comment": "W game play ",
+      "robotBroken": false
+    },
+    {
+      "_id": "69cf8d490c7206197dfb1e01",
+      "scouterName": "Big yoni",
+      "competition": "TESTING",
+      "match": {
+        "type": "qualification",
+        "number": 2
+      },
+      "teamNumber": 4590,
+      "auto": {
+        "movement": {
+          "trenchPass": false,
+          "bumpPass": false,
+          "bumpStuck": false
+        },
+        "chosenAuto": "trenchFuelMiddle",
+        "climb": {
+          "climbTime": {
+            "L1": null
+          },
+          "climbSide": {
+            "middle": false,
+            "side": false,
+            "support": false
+          },
+          "level": "L0"
+        },
+        "shootEvents": [
+          {
+            "interval": {
+              "start": 82167,
+              "end": 83349
+            },
+            "positions": [
+              {
+                "x": 246,
+                "y": 454
+              },
+              {
+                "x": 265,
+                "y": 423
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 89123,
+              "end": 89732
+            },
+            "positions": [
+              {
+                "x": 48,
+                "y": 571
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 90303,
+              "end": 91002
+            },
+            "positions": [
+              {
+                "x": 59,
+                "y": 570
+              }
+            ]
+          },
+          {
+            "interval": {
+              "start": 94516,
+              "end": 94711
+            },
+            "positions": [
+              {
+                "x": 305,
+                "y": 446
+              }
+            ]
+          }
+        ]
+      },
+      "tele": {
+        "transitionShift": {
+          "shootEvents": []
+        },
+        "shifts": [
+          {
+            "shootEvents": [
+              {
+                "interval": {
+                  "start": 117489,
+                  "end": 122948
+                },
+                "positions": [
+                  {
+                    "x": 243,
+                    "y": 439
+                  },
+                  {
+                    "x": 259,
+                    "y": 465
+                  },
+                  {
+                    "x": 261,
+                    "y": 466
+                  },
+                  {
+                    "x": 259,
+                    "y": 473
+                  },
+                  {
+                    "x": 259,
+                    "y": 473
+                  },
+                  {
+                    "x": 259,
+                    "y": 473
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "shootEvents": [
+              {
+                "interval": {
+                  "start": 161248,
+                  "end": 162091
+                },
+                "positions": [
+                  {
+                    "x": 699,
+                    "y": 193
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 162718,
+                  "end": 163407
+                },
+                "positions": [
+                  {
+                    "x": 781,
+                    "y": 163
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "shootEvents": [
+              {
+                "interval": {
+                  "start": 166705,
+                  "end": 169333
+                },
+                "positions": [
+                  {
+                    "x": 763,
+                    "y": 130
+                  },
+                  {
+                    "x": 791,
+                    "y": 125
+                  },
+                  {
+                    "x": 791,
+                    "y": 130
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 170032,
+                  "end": 172738
+                },
+                "positions": [
+                  {
+                    "x": 789,
+                    "y": 144
+                  },
+                  {
+                    "x": 789,
+                    "y": 144
+                  },
+                  {
+                    "x": 789,
+                    "y": 144
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 173657,
+                  "end": 174567
+                },
+                "positions": [
+                  {
+                    "x": 789,
+                    "y": 144
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 174817,
+                  "end": 175347
+                },
+                "positions": [
+                  {
+                    "x": 789,
+                    "y": 144
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 175477,
+                  "end": 176303
+                },
+                "positions": [
+                  {
+                    "x": 789,
+                    "y": 144
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 176469,
+                  "end": 177246
+                },
+                "positions": [
+                  {
+                    "x": 789,
+                    "y": 144
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 177410,
+                  "end": 178769
+                },
+                "positions": [
+                  {
+                    "x": 789,
+                    "y": 144
+                  },
+                  {
+                    "x": 789,
+                    "y": 144
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 181373,
+                  "end": 183147
+                },
+                "positions": [
+                  {
+                    "x": 780,
+                    "y": 135
+                  },
+                  {
+                    "x": 797,
+                    "y": 118
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "shootEvents": [
+              {
+                "interval": {
+                  "start": 199619,
+                  "end": 200557
+                },
+                "positions": [
+                  {
+                    "x": 1296,
+                    "y": 101
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 204346,
+                  "end": 205504
+                },
+                "positions": [
+                  {
+                    "x": 835,
+                    "y": 192
+                  },
+                  {
+                    "x": 824,
+                    "y": 149
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 206534,
+                  "end": 211850
+                },
+                "positions": [
+                  {
+                    "x": 813,
+                    "y": 189
+                  },
+                  {
+                    "x": 813,
+                    "y": 272
+                  },
+                  {
+                    "x": 807,
+                    "y": 302
+                  },
+                  {
+                    "x": 847,
+                    "y": 279
+                  },
+                  {
+                    "x": 864,
+                    "y": 227
+                  },
+                  {
+                    "x": 859,
+                    "y": 196
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 212383,
+                  "end": 213396
+                },
+                "positions": [
+                  {
+                    "x": 880,
+                    "y": 161
+                  },
+                  {
+                    "x": 883,
+                    "y": 166
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "endgameShift": {
+          "shootEvents": []
+        },
+        "movement": {
+          "bumpStuck": false
+        },
+        "climb": {
+          "climbTime": {
+            "L1": null,
+            "L2": null,
+            "L3": null
+          },
+          "climbSide": {
+            "middle": false,
+            "side": false,
+            "support": false
+          },
+          "level": "L0"
+        }
+      },
+      "comment": "",
+      "robotBroken": false
+    },
+    {
+      "_id": "69cf8e830c7206197dfb1e48",
+      "scouterName": "Big yoni",
+      "competition": "TESTING",
+      "match": {
+        "type": "qualification",
+        "number": 2
+      },
+      "teamNumber": 4744,
+      "auto": {
+        "movement": {
+          "trenchPass": false,
+          "bumpPass": true,
+          "bumpStuck": false
+        },
+        "chosenAuto": "trenchFuelMiddle",
+        "climb": {
+          "climbTime": {
+            "L1": null
+          },
+          "climbSide": {
+            "middle": false,
+            "side": false,
+            "support": false
+          },
+          "level": "L0"
+        },
+        "shootEvents": [
+          {
+            "interval": {
+              "start": 350769,
+              "end": 351285
+            },
+            "positions": [
+              {
+                "x": 374,
+                "y": 198
+              }
+            ]
+          }
+        ]
+      },
+      "tele": {
+        "transitionShift": {
+          "shootEvents": [
+            {
+              "interval": {
+                "start": 370876,
+                "end": 372591
+              },
+              "positions": [
+                {
+                  "x": 274,
+                  "y": 263
+                },
+                {
+                  "x": 273,
+                  "y": 257
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 54157,
+                "end": 56680
+              },
+              "positions": [
+                {
+                  "x": 292,
+                  "y": 231
+                },
+                {
+                  "x": 289,
+                  "y": 256
+                },
+                {
+                  "x": 289,
+                  "y": 256
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 150777,
+                "end": 153589
+              },
+              "positions": [
+                {
+                  "x": 263,
+                  "y": 209
+                },
+                {
+                  "x": 263,
+                  "y": 209
+                },
+                {
+                  "x": 324,
+                  "y": 264
+                }
+              ]
+            }
+          ]
+        },
+        "shifts": [
+          {
+            "shootEvents": [
+              {
+                "interval": {
+                  "start": 389816,
+                  "end": 390610
+                },
+                "positions": [
+                  {
+                    "x": 644,
+                    "y": 118
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 163121,
+                  "end": 167358
+                },
+                "positions": [
+                  {
+                    "x": 624,
+                    "y": 145
+                  },
+                  {
+                    "x": 592,
+                    "y": 187
+                  },
+                  {
+                    "x": 596,
+                    "y": 182
+                  },
+                  {
+                    "x": 598,
+                    "y": 180
+                  },
+                  {
+                    "x": 598,
+                    "y": 180
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 168638,
+                  "end": 170186
+                },
+                "positions": [
+                  {
+                    "x": 620,
+                    "y": 174
+                  },
+                  {
+                    "x": 588,
+                    "y": 171
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 175745,
+                  "end": 177728
+                },
+                "positions": [
+                  {
+                    "x": 672,
+                    "y": 190
+                  },
+                  {
+                    "x": 595,
+                    "y": 130
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "shootEvents": [
+              {
+                "interval": {
+                  "start": 185945,
+                  "end": 188224
+                },
+                "positions": [
+                  {
+                    "x": 205,
+                    "y": 256
+                  },
+                  {
+                    "x": 171,
+                    "y": 210
+                  },
+                  {
+                    "x": 166,
+                    "y": 192
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 195390,
+                  "end": 197826
+                },
+                "positions": [
+                  {
+                    "x": 186,
+                    "y": 126
+                  },
+                  {
+                    "x": 200,
+                    "y": 162
+                  },
+                  {
+                    "x": 202,
+                    "y": 155
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 204700,
+                  "end": 204957
+                },
+                "positions": [
+                  {
+                    "x": 279,
+                    "y": 227
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 205617,
+                  "end": 206459
+                },
+                "positions": [
+                  {
+                    "x": 252,
+                    "y": 167
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 208121,
+                  "end": 209088
+                },
+                "positions": [
+                  {
+                    "x": 216,
+                    "y": 143
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "shootEvents": [
+              {
+                "interval": {
+                  "start": 217832,
+                  "end": 219652
+                },
+                "positions": [
+                  {
+                    "x": 632,
+                    "y": 154
+                  },
+                  {
+                    "x": 597,
+                    "y": 153
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 229379,
+                  "end": 230903
+                },
+                "positions": [
+                  {
+                    "x": 620,
+                    "y": 476
+                  },
+                  {
+                    "x": 652,
+                    "y": 458
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "shootEvents": [
+              {
+                "interval": {
+                  "start": 242194,
+                  "end": 246544
+                },
+                "positions": [
+                  {
+                    "x": 553,
+                    "y": 145
+                  },
+                  {
+                    "x": 268,
+                    "y": 159
+                  },
+                  {
+                    "x": 241,
+                    "y": 174
+                  },
+                  {
+                    "x": 143,
+                    "y": 140
+                  },
+                  {
+                    "x": 118,
+                    "y": 128
+                  }
+                ]
+              },
+              {
+                "interval": {
+                  "start": 251247,
+                  "end": 254386
+                },
+                "positions": [
+                  {
+                    "x": 141,
+                    "y": 147
+                  },
+                  {
+                    "x": 178,
+                    "y": 183
+                  },
+                  {
+                    "x": 170,
+                    "y": 180
+                  },
+                  {
+                    "x": 172,
+                    "y": 179
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "endgameShift": {
+          "shootEvents": [
+            {
+              "interval": {
+                "start": 261485,
+                "end": 262609
+              },
+              "positions": [
+                {
+                  "x": 176,
+                  "y": 208
+                },
+                {
+                  "x": 179,
+                  "y": 212
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 275042,
+                "end": 278003
+              },
+              "positions": [
+                {
+                  "x": 219,
+                  "y": 284
+                },
+                {
+                  "x": 219,
+                  "y": 281
+                },
+                {
+                  "x": 219,
+                  "y": 280
+                }
+              ]
+            },
+            {
+              "interval": {
+                "start": 285770,
+                "end": 288696
+              },
+              "positions": [
+                {
+                  "x": 246,
+                  "y": 179
+                },
+                {
+                  "x": 245,
+                  "y": 182
+                },
+                {
+                  "x": 244,
+                  "y": 187
+                }
+              ]
+            }
+          ]
+        },
+        "movement": {
+          "bumpStuck": false
+        },
+        "climb": {
+          "climbTime": {
+            "L1": null,
+            "L2": null,
+            "L3": null
+          },
+          "climbSide": {
+            "middle": false,
+            "side": false,
+            "support": false
+          },
+          "level": "L0"
+        }
+      },
+      "comment": "",
+      "robotBroken": false
+    }
+  ]
+}
