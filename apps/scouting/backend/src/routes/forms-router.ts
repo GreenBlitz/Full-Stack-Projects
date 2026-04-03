@@ -62,10 +62,9 @@ formsRouter.post("/", async (req, res) => {
     createBodyVerificationPipe(combinedPostCodec),
     fromEither,
     map((combinedBody) =>
-      (Array.isArray(combinedBody) ? combinedBody : [combinedBody]).map(
-        normalizeScoutingForm,
-      ),
+      Array.isArray(combinedBody) ? combinedBody : [combinedBody],
     ),
+    map((arr) => arr.map(normalizeScoutingForm)),
     filterOrElse(
       (forms) => !isEmpty(forms),
       () => ({
@@ -75,9 +74,9 @@ formsRouter.post("/", async (req, res) => {
     ),
     bindTo("forms"),
     bind("collection", getFormsCollection),
-    tap(({ collection, forms }) =>
-      right(
-        collection.deleteMany({
+    flatTryCatch(
+      async ({ collection, forms }) => {
+        await collection.deleteMany({
           $or: forms.map((form) => ({
             scouterName: form.scouterName,
             "match.number": form.match.number,
@@ -85,11 +84,9 @@ formsRouter.post("/", async (req, res) => {
             competition: form.competition,
             teamNumber: form.teamNumber,
           })),
-        }),
-      ),
-    ),
-    flatTryCatch(
-      ({ collection, forms }) => collection.insertMany(forms),
+        });
+        return collection.insertMany(forms);
+      },
       () => ({
         status: StatusCodes.INTERNAL_SERVER_ERROR,
         reason: "Error Inserting Forms To Collection ",
