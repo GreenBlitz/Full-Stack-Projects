@@ -6,17 +6,15 @@ import { useLocalStorage } from "@repo/local_storage_hook";
 import { createNewScoutingForm } from "../ScoutMatch";
 import { useNavigate } from "react-router-dom";
 import { ConfirmDeletePopup } from "../../components/ConfirmDeletePopup";
+import { RobotBrokenButton } from "../../components/RobotBrokeButton";
 
 const BUTTON_STYLES = `px-8 py-3 text-base font-bold text-black 
             transition-all duration-300 
             active:scale-95 border rounded-xl
             bg-linear-to-r`;
 
-export const PostMatchTab: FC<TabProps> = ({
-  setForm,
-  currentForm,
-  resetTime,
-}) => {
+const MATCH_SUBMIT_INCREMENT = 1;
+export const PostMatchTab: FC<TabProps> = ({ setForm, currentForm ,resetTime}) => {
   const [_scoutingForms, setScoutingForms] = useLocalStorage<ScoutingForm[]>(
     "scouted_forms",
     [],
@@ -26,7 +24,15 @@ export const PostMatchTab: FC<TabProps> = ({
 
   const handleSubmit = async () => {
     resetTime();
-    setForm(createNewScoutingForm({ scouterName: currentForm.scouterName }));
+    setForm(
+      createNewScoutingForm({
+        scouterName: currentForm.scouterName,
+        match: {
+          type: currentForm.match.type,
+          number: currentForm.match.number + MATCH_SUBMIT_INCREMENT,
+        },
+      }),
+    );
     setScoutingForms((prev) => [...prev, currentForm]);
     await navigate("/");
   };
@@ -60,6 +66,14 @@ export const PostMatchTab: FC<TabProps> = ({
                      resize-none transition-all duration-200
                      shadow-[0_0_10px_rgba(34,197,94,0.2)]
                      focus:shadow-[0_0_20px_rgba(34,197,94,0.4)]"
+          />
+        </div>
+        <div className="flex justify-center">
+          <RobotBrokenButton
+            isRobotBroken={currentForm.robotBroken}
+            onChange={(value) =>
+              setForm((prev) => ({ ...prev, robotBroken: value }))
+            }
           />
         </div>
       </div>

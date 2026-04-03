@@ -10,11 +10,10 @@ import {
   map,
   fold,
   bindTo,
-  bind,
 } from "fp-ts/lib/TaskEither";
-import { mongofyQuery } from "../middleware/query";
+import { mongofyQuery,foldResponse,flatTryCatch } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
-import type { BPS, ScoutingForm, TinderStats } from "@repo/scouting_types";
+import type { BPS, ScoutingForm } from "@repo/scouting_types";
 import {
   calcAverageGeneralFuelData,
   formsToFuelData,
@@ -22,7 +21,7 @@ import {
 import { findMaxClimbLevel } from "../climb/calculations";
 import { findTimesStuckOnBump } from "../movement/stats";
 import { isSingleTeam } from "../verification/functions";
-import { getTeamBPS, getTeamBPSes } from "./bps-router";
+import { getTeamBPSes } from "./bps-router";
 import { firstElement } from "@repo/array-functions";
 
 export const tinderRouter = Router();
@@ -39,19 +38,17 @@ const createTinder = (forms: ScoutingForm[], bpses: Record<string, BPS[]>) => ({
   },
 });
 
-tinderRouter.get("/team", (req, res) =>
+// בס"ד
+tinderRouter.get("/", (req, res) =>
   pipe(
     getFormsCollection(),
-    flatMap((collection) =>
-      tryCatch(
-        () => collection.find(mongofyQuery(req.query)).toArray(),
-        (error) => ({
-          status: StatusCodes.INTERNAL_SERVER_ERROR,
-          reason: `DB Error: ${error}`,
-        }),
-      ),
+    flatTryCatch(
+      (collection) => collection.find(mongofyQuery(req.query)).toArray(),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `DB Error: ${error}`,
+      }),
     ),
-
     filterOrElse(isSingleTeam, () => ({
       status: StatusCodes.BAD_REQUEST,
       reason:
@@ -60,19 +57,15 @@ tinderRouter.get("/team", (req, res) =>
     flatMap((forms) =>
       getTeamBPSes({ [firstElement(forms).teamNumber]: forms }),
     ),
-
     map((teams) => {
       const firstTeam = firstElement(Object.values(teams));
-      createTinder(firstTeam.forms, {
-        [firstElement(firstTeam.forms).teamNumber]: firstTeam.bpses,
+      const teamNumber = firstElement(firstTeam.forms).teamNumber;
+      
+      return createTinder(firstTeam.forms, {
+        [teamNumber]: firstTeam.bpses,
       });
     }),
-
-    fold(
-      (error) => () =>
-        Promise.resolve(res.status(error.status).send(error.reason)),
-      (teamTinderStats) => () =>
-        Promise.resolve(res.status(StatusCodes.OK).json({ teamTinderStats })),
-    ),
+    bindTo("teamTinderStats"),
+    foldResponse(res),
   )(),
 );
