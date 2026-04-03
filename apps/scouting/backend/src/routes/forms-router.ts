@@ -7,13 +7,9 @@ import {
   bind,
   bindTo,
   filterOrElse,
-  flatMap,
   fold,
   fromEither,
   map,
-  right,
-  tap,
-  tryCatch,
 } from "fp-ts/lib/TaskEither";
 import {
   normalizeScoutingForm,
@@ -57,7 +53,7 @@ const combinedPostCodec = t.union([
 ]);
 
 formsRouter.post("/", async (req, res) => {
-  const task = pipe(
+  await pipe(
     rightEither(req),
     createBodyVerificationPipe(combinedPostCodec),
     fromEither,
@@ -94,9 +90,7 @@ formsRouter.post("/", async (req, res) => {
     ),
     bindTo("result"),
     foldResponse(res),
-  );
-
-  await task();
+  )();
 });
 
 formsRouter.get("/teams", async (req, res) => {
