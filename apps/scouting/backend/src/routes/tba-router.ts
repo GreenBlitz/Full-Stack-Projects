@@ -146,7 +146,6 @@ const getMatches = flow(
   ),
 );
 
-
 export const fetchCOPRS = (event: string) =>
   pipe(
     fetchTba(`/event/${event}/coprs`, eventOPRCodec),

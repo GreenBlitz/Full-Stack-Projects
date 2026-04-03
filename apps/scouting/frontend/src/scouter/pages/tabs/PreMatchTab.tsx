@@ -90,6 +90,144 @@ const matchMatchWithTeamNumber = (
   return allianceArr[index] ?? DEFAULT_TEAM_NUMBER;
 };
 
+const BASE_GAME: TBAMatches2026[number] = {
+  actual_time: 1773016179,
+  alliances: {
+    blue: {
+      dq_team_keys: [],
+      score: 274,
+      surrogate_team_keys: [],
+      team_keys: ["frc971", "frc604", "frc7413"],
+    },
+    red: {
+      dq_team_keys: [],
+      score: 454,
+      surrogate_team_keys: [],
+      team_keys: ["frc5760", "frc1678", "frc9470"],
+    },
+  },
+  comp_level: "qm",
+  event_key: "2026cahal",
+  key: "2026cahal_f1m1",
+  match_number: 1,
+  post_result_time: 1773016377,
+  predicted_time: 1773015850,
+  score_breakdown: {
+    blue: {
+      adjustPoints: 0,
+      autoTowerPoints: 0,
+      autoTowerRobot1: "None",
+      autoTowerRobot2: "None",
+      autoTowerRobot3: "None",
+      endGameTowerPoints: 0,
+      endGameTowerRobot1: "None",
+      endGameTowerRobot2: "None",
+      endGameTowerRobot3: "None",
+      energizedAchieved: false,
+      foulPoints: 35,
+      hubScore: {
+        uncounted: 0,
+      },
+      majorFoulCount: 2,
+      minorFoulCount: 4,
+      penalties: "None",
+      rp: 0,
+      superchargedAchieved: false,
+      totalAutoPoints: 44,
+      totalPoints: 274,
+      totalTeleopPoints: 195,
+      totalTowerPoints: 0,
+      traversalAchieved: false,
+    },
+    red: {
+      adjustPoints: 0,
+      autoTowerPoints: 0,
+      autoTowerRobot1: "None",
+      autoTowerRobot2: "None",
+      autoTowerRobot3: "None",
+      endGameTowerPoints: 0,
+      endGameTowerRobot1: "None",
+      endGameTowerRobot2: "None",
+      endGameTowerRobot3: "None",
+      energizedAchieved: false,
+      foulPoints: 50,
+      hubScore: {
+        uncounted: 37,
+      },
+      majorFoulCount: 0,
+      minorFoulCount: 7,
+      penalties: "None",
+      rp: 0,
+      superchargedAchieved: false,
+      totalAutoPoints: 107,
+      totalPoints: 454,
+      totalTeleopPoints: 297,
+      totalTowerPoints: 0,
+      traversalAchieved: false,
+    },
+  },
+  set_number: 1,
+  time: 1773012240,
+  videos: [
+    {
+      key: "ZN1shh2QF9k",
+      type: "youtube",
+    },
+  ],
+  winning_alliance: "red",
+};
+
+const makeGame = (
+  teams: {
+    red: [number, number, number];
+    blue: [number, number, number];
+  },
+  qual: number,
+) => ({
+  ...BASE_GAME,
+  match_number: qual,
+  alliances: {
+    blue: {
+      dq_team_keys: [],
+      score: 274,
+      surrogate_team_keys: [],
+      team_keys: [
+        `frc${teams.blue[0]}`,
+        `frc${teams.blue[1]}`,
+        `frc${teams.blue[2]}`,
+      ],
+    },
+    red: {
+      dq_team_keys: [],
+      score: 454,
+      surrogate_team_keys: [],
+      team_keys: [
+        `frc${teams.red[0]}`,
+        `frc${teams.red[1]}`,
+        `frc${teams.red[2]}`,
+      ],
+    },
+  },
+});
+const TESTING_COMP_MATCHES: TBAMatches2026 = [
+  makeGame({ blue: [5614, 7039, 2231], red: [5987, 2630, 3075] }, 1),
+  makeGame({ blue: [5951, 4590, 1690], red: [1577, 4744, 10935] }, 2),
+  makeGame({ blue: [2231, 1690, 1577], red: [5614, 3075, 5951] }, 3),
+  makeGame({ blue: [2630, 4590, 4744], red: [10935, 5987, 7039] }, 4),
+  makeGame({ blue: [4744, 2231, 4590], red: [7039, 5951, 5614] }, 5),
+  makeGame({ blue: [1577, 2630, 5987], red: [10935, 1690, 3075] }, 6),
+  makeGame({ blue: [4590, 10935, 5614], red: [1690, 3075, 7039] }, 7),
+  makeGame({ blue: [4744, 5987, 2231], red: [2630, 1577, 5951] }, 8),
+  makeGame({ blue: [5951, 5987, 4590], red: [3075, 7039, 1577] }, 9),
+  makeGame({ blue: [4744, 1690, 5614], red: [2231, 10935, 2630] }, 10),
+  makeGame({ blue: [1690, 2231, 5987], red: [4590, 3075, 4744] }, 11),
+  makeGame({ blue: [10935, 5951, 1577], red: [7039, 5614, 2630] }, 12),
+  makeGame({ blue: [5951, 10935, 4744], red: [5987, 5614, 3075] }, 13),
+  makeGame({ blue: [1690, 2231, 2630], red: [7039, 1577, 4590] }, 14),
+  makeGame({ blue: [5987, 4744, 7039], red: [5614, 1577, 1690] }, 15),
+  makeGame({ blue: [2630, 4590, 10935], red: [3075, 5951, 2231] }, 16),
+];
+
 const MATCH_ADJUSTMENT_OFFSET = 1;
 const PreMatchTab: FC<TabProps> = ({
   currentForm: form,
@@ -103,7 +241,7 @@ const PreMatchTab: FC<TabProps> = ({
     });
   const [tbaMatches, setTbaMatches] = useLocalStorage<TBAMatches2026>(
     "tbaMatches",
-    [],
+    TESTING_COMP_MATCHES,
   );
   const [match, setMatch] = useState(form.match);
 
