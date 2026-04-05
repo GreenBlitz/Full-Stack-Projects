@@ -16,25 +16,55 @@ import {
   PicklistGameStats,
   GamePeriod,
 } from "@repo/scouting_types";
-import { calculateAverageScoredFuel } from "../fuel/fuel-general";
+import {
+  calcAverageGeneralFuelData,
+  calculateAverageScoredFuel,
+  formsToFuelData,
+} from "../fuel/fuel-general";
+import { splitByDistances } from "../fuel/distance-split";
+import { processTeam } from "./teams-router";
+import { calculateAverageClimbScore } from "../climb/score";
 
 export const picklistRouter = Router();
 
 const createPicklistStats: (
   forms: ScoutingForm[],
   bpses: Record<string, BPS[]>,
-) => PicklistStats = (forms, bpses) => {};
+) => PicklistStats = (forms, bpses) => {
+  return {
+    teleop: createGamePeriodPicklistStats(forms, bpses, "teleop"),
+    auto: createGamePeriodPicklistStats(forms, bpses, "auto"),
+    superScouting:
+  };
+};
 
+const CLOSE_FUEL_DISTANCE = 150;
+const MEDIUM_FUEL_DISTANCE = 300;
+const FAR_FUEL_DISTANCE = 2000;
 const createGamePeriodPicklistStats: (
   forms: ScoutingForm[],
   bpses: Record<string, BPS[]>,
   gamePeriod: GamePeriod,
-) => PicklistGameStats = (forms, bpses, gamePeriod) => (
-    {
-        fuel: calculateAverageScoredFuel(forms, gamePeriod, bpses),
-        closeFuel: 
-    }
-);
+) => PicklistGameStats = (forms, bpses, gamePeriod) => {
+  const teamData = processTeam(bpses[firstElement(forms).teamNumber], forms);
+  return {
+    fuel: calculateAverageScoredFuel(
+      forms,
+      gamePeriod,
+      bpses[firstElement(forms).teamNumber],
+    ),
+    closeFuel:
+      teamData[gamePeriod].accuracy[CLOSE_FUEL_DISTANCE].amount / forms.length,
+    mediumFuel:
+      teamData[gamePeriod].accuracy[MEDIUM_FUEL_DISTANCE].amount / forms.length,
+    farFuel:
+      teamData[gamePeriod].accuracy[FAR_FUEL_DISTANCE].amount / forms.length,
+    climb: calculateAverageClimbScore(
+      teamData.auto.climbs.map((currentClimb) => currentClimb.level),
+      gamePeriod == "auto",
+    ),
+  };
+};
 
 picklistRouter.get("/", (req, res) =>
   pipe(
