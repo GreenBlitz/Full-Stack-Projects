@@ -2,7 +2,14 @@
 
 import { Router } from "express";
 import { getFormsCollection } from "./forms-router";
-import { flatMap, filterOrElse, map, bindTo } from "fp-ts/lib/TaskEither";
+import {
+  flatMap,
+  filterOrElse,
+  map,
+  bindTo,
+  bind,
+  tryCatch,
+} from "fp-ts/lib/TaskEither";
 import { pipe } from "fp-ts/lib/function";
 import { mongofyQuery, flatTryCatch, foldResponse } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
@@ -15,6 +22,7 @@ import {
   PicklistStats,
   PicklistGameStats,
   GamePeriod,
+  SuperScout,
 } from "@repo/scouting_types";
 import {
   calcAverageGeneralFuelData,
@@ -24,19 +32,23 @@ import {
 import { splitByDistances } from "../fuel/distance-split";
 import { processTeam } from "./teams-router";
 import { calculateAverageClimbScore } from "../climb/score";
+import { getSuperCollection } from "./super-scout-router";
+import { processAvarageTeamSuperScouting } from "../superScout/calculations";
 
 export const picklistRouter = Router();
 
 const createPicklistStats: (
   forms: ScoutingForm[],
   bpses: Record<string, BPS[]>,
-) => PicklistStats = (forms, bpses) => {
-  return {
-    teleop: createGamePeriodPicklistStats(forms, bpses, "teleop"),
-    auto: createGamePeriodPicklistStats(forms, bpses, "auto"),
-    superScouting:
-  };
-};
+  superForms: SuperScout[],
+) => PicklistStats = (forms, bpses, superForms) => ({
+  teleop: createGamePeriodPicklistStats(forms, bpses, "teleop"),
+  auto: createGamePeriodPicklistStats(forms, bpses, "auto"),
+  superScouting: processAvarageTeamSuperScouting(
+    firstElement(forms).teamNumber,
+    superForms,
+  ),
+});
 
 const CLOSE_FUEL_DISTANCE = 150;
 const MEDIUM_FUEL_DISTANCE = 300;
@@ -78,21 +90,40 @@ picklistRouter.get("/", (req, res) =>
     ),
     filterOrElse(isSingleTeam, () => ({
       status: StatusCodes.BAD_REQUEST,
-      reason:
-        "Picklist Error: Forms contain data from multiple different teams.",
+      reason: "Picklist: Forms contain data from multiple different teams.",
     })),
-    flatMap((forms) =>
+    bindTo("forms"),
+    bind("bpsData", ({ forms }) =>
       getTeamBPSes({ [firstElement(forms).teamNumber]: forms }),
     ),
-    map((teams) => {
-      const firstTeam = firstElement(Object.values(teams));
-      const teamNumber = firstElement(firstTeam.forms).teamNumber;
 
-      return createPicklistStats(firstTeam.forms, {
-        [teamNumber]: firstTeam.bpses,
-      });
+    bind("superForms", () =>
+      pipe(
+        getSuperCollection(),
+        flatMap((collection) =>
+          tryCatch(
+            () => collection.find({}).toArray(),
+            (error) => ({
+              status: StatusCodes.INTERNAL_SERVER_ERROR,
+              reason: `SuperScout DB Error: ${error}`,
+            }),
+          ),
+        ),
+      ),
+    ),
+
+    map(({ forms, bpsData, superForms }) => {
+      const teamNumber = firstElement(forms).teamNumber;
+      const teamBpsResult = bpsData[teamNumber];
+
+      return createPicklistStats(
+        forms,
+        {
+          [teamNumber]: teamBpsResult.bpses,
+        },
+        superForms,
+      );
     }),
-    bindTo("TeamPicklistStats"),
     foldResponse(res),
   )(),
 );

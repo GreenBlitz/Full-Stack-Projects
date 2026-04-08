@@ -1,11 +1,11 @@
 //בס"ד
 
-import { TeamSuperScout } from "../super_scout";
+import { TeamSuperScoutNumbers } from "../super_scout";
 
 export interface PicklistStats {
   teleop: PicklistGameStats;
   auto: PicklistGameStats;
-  superScouting: TeamSuperScout;
+  superScouting: TeamSuperScoutNumbers;
 }
 
 export interface PicklistGameStats {

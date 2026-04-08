@@ -32,6 +32,13 @@ export const superScoutCodec = t.type({
   ]),
 });
 
+type SuperMetricsRatings = {
+  [Metric in SuperMetricKey]: number;
+};
+export type TeamSuperScoutNumbers = {
+  teamNumber: number;
+} & SuperMetricsRatings;
+
 export type SuperScout = t.TypeOf<typeof superScoutCodec>;
 export type SuperSection = t.TypeOf<typeof sectionCodec>;
 export type SuperRating = SuperSection["rating"];
