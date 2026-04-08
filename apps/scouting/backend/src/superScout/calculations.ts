@@ -1,5 +1,6 @@
 //בס"ד
 
+import { calculateAverage } from "@repo/array-functions";
 import {
   SuperMetricKey,
   SuperScout,
@@ -52,8 +53,10 @@ export const calcAvarageTeamSuperScout = (
 
   const averagedMetrics = Object.fromEntries(
     superMetricKeys.map((metric) => {
-      const sum = superForms.reduce((acc, form) => acc + form[metric], 0);
-      return [metric, sum / count];
+      return [
+        metric,
+        calculateAverage(superForms, (superForm) => superForm[metric]),
+      ];
     }),
   );
 

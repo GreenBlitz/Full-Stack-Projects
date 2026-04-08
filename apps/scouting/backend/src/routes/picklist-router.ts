@@ -102,7 +102,7 @@ picklistRouter.get("/", (req, res) =>
         getSuperCollection(),
         flatMap((collection) =>
           tryCatch(
-            () => collection.find({}).toArray(),
+            () => collection.find().toArray(),
             (error) => ({
               status: StatusCodes.INTERNAL_SERVER_ERROR,
               reason: `SuperScout DB Error: ${error}`,
@@ -113,7 +113,7 @@ picklistRouter.get("/", (req, res) =>
     ),
 
     map(({ forms, bpsData, superForms }) => {
-      const teamNumber = firstElement(forms).teamNumber;
+      const { teamNumber } = firstElement(forms);
       const teamBpsResult = bpsData[teamNumber];
 
       return createPicklistStats(
