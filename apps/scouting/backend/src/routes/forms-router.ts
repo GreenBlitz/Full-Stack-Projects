@@ -12,7 +12,6 @@ import {
   map,
 } from "fp-ts/lib/TaskEither";
 import {
-  normalizeScoutingForm,
   scoutingFormIncomingPostCodec,
   type ScoutingForm,
 } from "@repo/scouting_types";
@@ -60,7 +59,6 @@ formsRouter.post("/", async (req, res) => {
     map((combinedBody) =>
       Array.isArray(combinedBody) ? combinedBody : [combinedBody],
     ),
-    map((arr) => arr.map(normalizeScoutingForm)),
     filterOrElse(
       (forms) => !isEmpty(forms),
       () => ({

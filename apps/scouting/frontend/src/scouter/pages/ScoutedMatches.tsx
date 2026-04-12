@@ -180,10 +180,7 @@ export const ScoutedMatches: FC = () => {
                   <QRCodeSVG
                     size={160}
                     value={decoder.decode(
-                      serialize(scoutingFormSerde.serializer, {
-                        ...selectedMatch,
-                        noShow: selectedMatch.noShow ?? false,
-                      }),
+                      serialize(scoutingFormSerde.serializer, selectedMatch),
                     )}
                     level={ERROR_CORRECTION_LEVEL}
                   />

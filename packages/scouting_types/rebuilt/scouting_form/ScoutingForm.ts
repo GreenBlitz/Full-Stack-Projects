@@ -16,16 +16,20 @@ export const matchCodec = t.type({
   type: matchType,
 });
 
-const scoutingFormBodyCodec = t.type({
-  scouterName: t.string,
-  competition: competitionCodec,
-  match: matchCodec,
-  teamNumber: t.number,
-  auto: autoCodec,
-  tele: teleCodec,
-  comment: t.string,
-  robotBroken: t.boolean,
-});
+const scoutingFormBodyCodec = t.intersection([
+  t.type({
+    scouterName: t.string,
+    competition: competitionCodec,
+    match: matchCodec,
+    teamNumber: t.number,
+    auto: autoCodec,
+    tele: teleCodec,
+    comment: t.string,
+    robotBroken: t.boolean,
+    noShow: t.boolean,
+  }),
+   t.partial({ noShow: t.boolean }),
+]);
 
 /** Canonical shape (e.g. app state, DB documents you control). */
 export const scoutingFormCodec = t.intersection([
@@ -33,26 +37,14 @@ export const scoutingFormCodec = t.intersection([
   t.type({ noShow: t.boolean }),
 ]);
 
-/**
- * Accepts POST bodies that omit `noShow` (legacy clients); normalize with {@link normalizeScoutingForm}.
- */
-export const scoutingFormIncomingPostCodec = t.intersection([
-  scoutingFormBodyCodec,
-  t.partial({ noShow: t.boolean }),
-]);
+/** POST bodies: same codec as body (optional `noShow` for legacy clients); normalize with {@link normalizeScoutingForm}. */
+export const scoutingFormIncomingPostCodec = scoutingFormBodyCodec;
 
 export type ScoutingForm = t.TypeOf<typeof scoutingFormCodec>;
 export type ScoutingFormIncomingPost = t.TypeOf<
   typeof scoutingFormIncomingPostCodec
 >;
 export type Match = t.TypeOf<typeof matchCodec>;
-
-export const normalizeScoutingForm = (
-  form: ScoutingFormIncomingPost,
-): ScoutingForm => ({
-  ...form,
-  noShow: form.noShow ?? false,
-});
 
 export const defaultScoutForm: ScoutingForm = {
   scouterName: "",
