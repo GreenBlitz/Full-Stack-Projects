@@ -17,9 +17,13 @@ import {
 } from "fp-ts/lib/TaskEither";
 import { scoutingFormCodec, type ScoutingForm } from "@repo/scouting_types";
 import { StatusCodes } from "http-status-codes";
-import { createBodyVerificationPipe } from "../middleware/verification";
+import {
+  createBodyVerificationPipe,
+  foldResponse,
+  flatTryCatch,
+} from "@repo/flow-utils";
 import { right as rightEither } from "fp-ts/lib/Either";
-import { mongofyQuery } from "../middleware/query";
+import { mongofyQuery } from "@repo/flow-utils";
 import * as t from "io-ts";
 import { isEmpty } from "@repo/array-functions";
 
@@ -75,38 +79,34 @@ formsRouter.post("/", async (req, res) => {
         }),
       ),
     ),
-    map(({ collection, forms }) => collection.insertMany(forms)),
-    fold(
-      (error) => () =>
-        Promise.resolve(res.status(error.status).send(error.reason)),
-      (result) => async () =>
-        res.status(StatusCodes.OK).json({ result: await result }),
+    flatTryCatch(
+      ({ collection, forms }) => collection.insertMany(forms),
+      () => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: "Error Inserting Forms To Collection ",
+      }),
     ),
+    bindTo("result"),
+    foldResponse(res),
   )();
 });
 
 formsRouter.get("/teams", async (req, res) => {
   await pipe(
     getFormsCollection(),
-    flatMap((collection) =>
-      tryCatch(
-        () =>
-          collection
-            .find(mongofyQuery({ "match.type": "qualification" }))
-            .toArray(),
-        (error) => ({
-          status: StatusCodes.INTERNAL_SERVER_ERROR,
-          reason: `DB Error: ${error}`,
-        }),
-      ),
+    flatTryCatch(
+      (collection) =>
+        collection
+          .find(mongofyQuery({ "match.type": "qualification" }))
+          .toArray(),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `DB Error: ${error}`,
+      }),
     ),
     map((forms) => forms.map((form) => form.teamNumber)),
     map((numbers) => [...new Set(numbers)]),
-    fold(
-      (error) => () =>
-        Promise.resolve(res.status(error.status).send(error.reason)),
-      (teamNumbers) => () =>
-        Promise.resolve(res.status(StatusCodes.OK).json({ teamNumbers })),
-    ),
+    bindTo("teamNumbers"),
+    foldResponse(res),
   )();
 });

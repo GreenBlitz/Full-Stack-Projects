@@ -4,14 +4,14 @@ import { flow, pipe } from "fp-ts/lib/function";
 import { getDb } from "../middleware/db";
 import { map, fold, bindTo, fromEither, bind } from "fp-ts/lib/TaskEither";
 import { SuperScout, superScoutCodec } from "@repo/scouting_types";
-import { mongofyQuery } from "../middleware/query";
+import { mongofyQuery } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
 import { right as rightEither } from "fp-ts/lib/Either";
-import { createBodyVerificationPipe } from "../middleware/verification";
+import { createBodyVerificationPipe } from "@repo/flow-utils";
 
 export const superScoutRouter = Router();
 
-const getSuperCollection = flow(
+export const getSuperCollection = flow(
   getDb,
   map((db) => db.collection<SuperScout>("/super")),
 );
