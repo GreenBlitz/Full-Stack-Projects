@@ -38,10 +38,6 @@ export const readGames = (): TaskEither<EndpointError, GameData[]> =>
         reason: `Error reading games file: ${error}`,
       }),
     ),
-    map((item) => {
-      console.log(item);
-      return item;
-    }),
     mapTask(
       createTypeCheckingEndpointFlow(gamesArrayCodec, (errors) => ({
         status: StatusCodes.INTERNAL_SERVER_ERROR,

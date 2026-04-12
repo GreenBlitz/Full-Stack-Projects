@@ -125,6 +125,7 @@ export const processTeam = (
     })),
     bpses,
   );
+
   return {
     tele,
     auto,

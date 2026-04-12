@@ -17,7 +17,6 @@ import {
   oprPropsCodec,
   tbaMatches2026,
   TBAMatches2026,
-  teamOPRCodec,
   type TBAMatchesProps,
 } from "@repo/scouting_types";
 import { right as rightEither } from "fp-ts/lib/Either";
@@ -179,6 +178,7 @@ export const fetchTeamsCOPRs = <A extends object>(
         coprs: coprs.find((copr) => copr.teamNumber === parseInt(teamNumber)),
       })),
     ),
+
     toUnion(teams),
   );
 

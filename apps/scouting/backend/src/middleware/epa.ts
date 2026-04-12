@@ -108,5 +108,7 @@ export const getTeamsEPAs = <A extends object>(
         epa: epaTeams[teamNumber],
       })),
     ),
+    
     toUnion(teams),
+    
   );
