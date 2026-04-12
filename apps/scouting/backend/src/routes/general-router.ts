@@ -19,6 +19,7 @@ import { calculateAverageClimbsScore } from "../climb/score";
 import { formsToFuelData } from "../fuel/fuel-general";
 import { getAllBPSes } from "./bps-router";
 import { isEmpty } from "@repo/array-functions";
+import { findTimesMovementEvent } from "../movement/stats";
 
 export const generalRouter = Router();
 
@@ -38,14 +39,22 @@ const formsToGeneralData = (
       const generalData: GeneralData = {
         teamNumber: Number(teamNumber),
         fuelData: fuelData,
-        highestClimbLevel: findMaxClimbLevel(teamForms),
         avarageClimbPoints: {
           fullGame:
             calculateAverageClimbsScore(teamForms).auto +
             calculateAverageClimbsScore(teamForms).tele,
           auto: calculateAverageClimbsScore(teamForms).auto,
           tele: calculateAverageClimbsScore(teamForms).tele,
+          highestClimbLevel: findMaxClimbLevel(teamForms),
         },
+        opr: ,
+        movement: {
+          passTrenchCount: findTimesMovementEvent(teamForms, "trenchPass"),
+          passBumpCount: findTimesMovementEvent(teamForms, "bumpPass"),
+          stuckBumpCount: findTimesMovementEvent(teamForms, "bumpStuck"),
+        },
+        epa: 0,
+        averagePointsPerMatch: 0,
       };
 
       return generalData;

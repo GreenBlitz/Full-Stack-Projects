@@ -3,13 +3,7 @@
 import { Router } from "express";
 import { pipe } from "fp-ts/lib/function";
 import { getFormsCollection } from "./forms-router";
-import {
-  flatMap,
-  filterOrElse,
-  map,
-  fold,
-  bindTo,
-} from "fp-ts/lib/TaskEither";
+import { flatMap, filterOrElse, map, fold, bindTo } from "fp-ts/lib/TaskEither";
 import { flatTryCatch, foldResponse, mongofyQuery } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
 import {
@@ -22,7 +16,7 @@ import {
   formsToFuelData,
 } from "../fuel/fuel-general";
 import { findMaxClimbLevel } from "../climb/calculations";
-import { findTimesStuckOnBump } from "../movement/stats";
+import { findTimesMovementEvent } from "../movement/stats";
 import { isSingleTeam } from "../verification/functions";
 import { getTeamBPSes } from "./bps-router";
 import { firstElement, isEmpty } from "@repo/array-functions";
@@ -37,7 +31,7 @@ const createTinder = (forms: ScoutingForm[], bpses: Record<string, BPS[]>) => ({
     maxClimbLevel: findMaxClimbLevel(forms),
   },
   movement: {
-    stuckOnBump: findTimesStuckOnBump(forms),
+    stuckOnBump: findTimesMovementEvent(forms, "bumpStuck"),
   },
 });
 
@@ -51,10 +45,13 @@ tinderRouter.get("/", (req, res) =>
         reason: `DB Error: ${error}`,
       }),
     ),
-    filterOrElse((forms) => !isEmpty(forms), () => ({
-      status: StatusCodes.BAD_REQUEST,
-      reason: "Tinder Team Error: No forms match the query.",
-    })),
+    filterOrElse(
+      (forms) => !isEmpty(forms),
+      () => ({
+        status: StatusCodes.BAD_REQUEST,
+        reason: "Tinder Team Error: No forms match the query.",
+      }),
+    ),
     filterOrElse(isSingleTeam, () => ({
       status: StatusCodes.BAD_REQUEST,
       reason:
@@ -63,11 +60,14 @@ tinderRouter.get("/", (req, res) =>
 
     map(excludeNoShowForms),
 
-    filterOrElse((forms) => !isEmpty(forms), () => ({
-      status: StatusCodes.BAD_REQUEST,
-      reason:
-        "Tinder Team Error: No valid scouting data (all matches marked no-show).",
-    })),
+    filterOrElse(
+      (forms) => !isEmpty(forms),
+      () => ({
+        status: StatusCodes.BAD_REQUEST,
+        reason:
+          "Tinder Team Error: No valid scouting data (all matches marked no-show).",
+      }),
+    ),
 
     flatMap((forms) =>
       getTeamBPSes({ [firstElement(forms).teamNumber]: forms }),
