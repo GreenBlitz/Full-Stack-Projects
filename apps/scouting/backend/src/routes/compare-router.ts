@@ -1,24 +1,21 @@
 //בס"ד
 
-import type {
-  BPS,
-  ScoutingForm,
-  TeleClimbLevel,
-  TimesClimedToLevels,
+import {
+  excludeNoShowForms,
+  type BPS,
+  type ScoutingForm,
+  type TeleClimbLevel,
+  type TimesClimedToLevels,
 } from "@repo/scouting_types";
 import { Router } from "express";
 import { getFormsCollection } from "./forms-router";
 import { pipe } from "fp-ts/lib/function";
 import {
-  flatMap,
-  left,
-  map,
-  right,
-  tryCatch,
-  fold,
-  bindTo,
   bind,
+  bindTo,
   filterOrElse,
+  fold,
+  map,
 } from "fp-ts/lib/TaskEither";
 import { mongofyQuery, flatTryCatch } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
@@ -47,12 +44,6 @@ const calculateAverageScoredFuel = (
     generalCalculateFuel(form, bpses),
   );
   const averagedFuelData = calcAverageGeneralFuelData(generalFuelData);
-  console.log(
-    `auto fuel: ${averagedFuelData.auto.scored.toFixed(DIGITS_AFTER_DECIMAL_DOT)}`,
-  );
-  console.log(
-    `fullGame fuel: ${averagedFuelData.fullGame.scored.toFixed(DIGITS_AFTER_DECIMAL_DOT)}`,
-  );
 
   return parseFloat(
     averagedFuelData[gamePeriod].scored.toFixed(DIGITS_AFTER_DECIMAL_DOT),
@@ -114,9 +105,21 @@ compareRouter.get("/", async (req, res) => {
         reason: `DB Error: ${error}`,
       }),
     ),
+    filterOrElse((forms) => !isEmpty(forms), () => ({
+      status: StatusCodes.BAD_REQUEST,
+      reason:
+        "Compare Two Validation Error: No forms match the query.",
+    })),
+    map(excludeNoShowForms),
+    filterOrElse((forms) => !isEmpty(forms), () => ({
+      status: StatusCodes.BAD_REQUEST,
+      reason:
+        "Compare Two Validation Error: No valid scouting data (all matches marked no-show).",
+    })),
     filterOrElse(isSingleTeam, () => ({
       status: StatusCodes.BAD_REQUEST,
-      reason: "Compare: Forms contain data from multiple different teams.",
+      reason:
+        "Compare Two Validation Error: Forms contain data from multiple different teams.",
     })),
     bindTo("teamForms"),
     bind("bpses", ({ teamForms }) =>

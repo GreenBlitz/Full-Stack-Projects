@@ -4,6 +4,7 @@ import type {
   FuelObject,
   GamePhase,
   MatchedEntry,
+  Match,
   TeamData,
 } from "@repo/scouting_types";
 import { useEffect, useMemo, useState, type FC } from "react";
@@ -49,6 +50,10 @@ const calculateAccuracy = (fuel: FuelObject) =>
   fuel.shot > NO_FUEL_SHOT ? fuel.scored / fuel.shot : NO_FUEL_SHOT;
 
 const FIRST_MATCH_TYPE_CHARACTER = 0;
+
+const formatNoShowMatch = (m: Match) =>
+  `${m.type[FIRST_MATCH_TYPE_CHARACTER]}${m.number}`;
+
 const createShotDataset = (data: MatchedEntry<FuelObject>[], key: FuelEvents) =>
   Object.fromEntries(
     data.map((entry) => [
@@ -87,8 +92,6 @@ export const TeamTab: FC = () => {
     fetchTeamNumbers().then(setScoutedTeams).catch(console.error);
   }, []);
 
-  console.log("ddd", teamData);
-
   return (
     <div className="flex flex-col text-black items-center bg-slate-950">
       <TeamSelect
@@ -99,6 +102,21 @@ export const TeamTab: FC = () => {
         scoutedTeams={scoutedTeams ?? []}
       />
       <PhaseToggle activeMode={phase} setActiveMode={setPhase} />
+
+      {teamData && (teamData.noShowMatches?.length ?? 0) > 0 ? (
+        <div
+          className={`${graphSection} w-full max-w-2xl text-left text-slate-200`}
+        >
+          <span className="font-black tracking-wider uppercase text-orange-400 text-lg block mb-2">
+            No-show matches (excluded from stats)
+          </span>
+          <ul className="list-disc list-inside text-sm space-y-1">
+            {(teamData.noShowMatches ?? []).map((m) => (
+              <li key={`${m.type}-${m.number}`}>{formatNoShowMatch(m)}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
 
       {data && (
         <AccuracyChart

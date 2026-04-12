@@ -7,7 +7,7 @@ import {
   fold,
   filterOrElse,
 } from "fp-ts/lib/TaskEither";
-import { mongofyQuery,flatTryCatch } from "@repo/flow-utils";
+import { mongofyQuery, flatTryCatch } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
 import { pipe } from "fp-ts/lib/function";
 import type {

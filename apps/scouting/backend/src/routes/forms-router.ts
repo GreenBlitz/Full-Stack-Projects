@@ -7,13 +7,9 @@ import {
   bind,
   bindTo,
   filterOrElse,
-  flatMap,
   fold,
   fromEither,
   map,
-  right,
-  tap,
-  tryCatch,
 } from "fp-ts/lib/TaskEither";
 import { scoutingFormCodec, type ScoutingForm } from "@repo/scouting_types";
 import { StatusCodes } from "http-status-codes";
@@ -47,12 +43,15 @@ formsRouter.get("/", async (req, res) => {
   )();
 });
 
-const combinedCodec = t.union([scoutingFormCodec, t.array(scoutingFormCodec)]);
+const combinedPostCodec = t.union([
+  scoutingFormCodec,
+  t.array(scoutingFormCodec),
+]);
 
 formsRouter.post("/", async (req, res) => {
   await pipe(
     rightEither(req),
-    createBodyVerificationPipe(combinedCodec),
+    createBodyVerificationPipe(combinedPostCodec),
     fromEither,
     map((combinedBody) =>
       Array.isArray(combinedBody) ? combinedBody : [combinedBody],
@@ -66,9 +65,9 @@ formsRouter.post("/", async (req, res) => {
     ),
     bindTo("forms"),
     bind("collection", getFormsCollection),
-    tap(({ collection, forms }) =>
-      right(
-        collection.deleteMany({
+    flatTryCatch(
+      async ({ collection, forms }) => {
+        await collection.deleteMany({
           $or: forms.map((form) => ({
             scouterName: form.scouterName,
             "match.number": form.match.number,
@@ -76,11 +75,9 @@ formsRouter.post("/", async (req, res) => {
             competition: form.competition,
             teamNumber: form.teamNumber,
           })),
-        }),
-      ),
-    ),
-    flatTryCatch(
-      ({ collection, forms }) => collection.insertMany(forms),
+        });
+        return collection.insertMany(forms);
+      },
       () => ({
         status: StatusCodes.INTERNAL_SERVER_ERROR,
         reason: "Error Inserting Forms To Collection ",

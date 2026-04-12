@@ -278,8 +278,12 @@ export const ScoutMatch: FC = () => {
     const shouldSyncFromStartMatchTab =
       activeTabIndex === startMatchTab && hasJustStartedOrResumed;
 
+    const ONE_SECOND = 1000;
+
     const shouldSyncNormally =
-      activeTabIndex !== startMatchTab && timerData.elapsedMs > 0;
+      activeTabIndex !== startMatchTab &&
+      timerData.elapsedMs > 0 &&
+      timerData.elapsedMs <= MATCH_END + ONE_SECOND;
 
     if (
       (shouldSyncFromStartMatchTab || shouldSyncNormally) &&

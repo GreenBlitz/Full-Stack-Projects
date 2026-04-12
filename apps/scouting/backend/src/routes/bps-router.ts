@@ -5,6 +5,7 @@ import {
   BPS,
   BPSBlueprint,
   bpsCodec,
+  excludeNoShowForms,
   Interval,
   Match,
   ScoutingForm,
@@ -17,25 +18,26 @@ import {
   bind,
   bindTo,
   filterOrElse,
-  flatMap,
   fold,
   fromEither,
   map,
   orElse,
   right,
   TaskEither,
-  tryCatch,
 } from "fp-ts/lib/TaskEither";
 import { getFormsCollection } from "./forms-router";
 import { StatusCodes } from "http-status-codes";
 import { firstElement, lastElement, mapObject } from "@repo/array-functions";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
-import { createBodyVerificationPipe, EndpointError } from "@repo/flow-utils";
+import {
+  createBodyVerificationPipe,
+  EndpointError,
+  flatTryCatch,
+  foldResponse,
+} from "@repo/flow-utils";
 import { right as rightEither } from "fp-ts/lib/Either";
 import { mapWithIndex, sequence } from "fp-ts/lib/Record";
 import { sequenceS } from "fp-ts/lib/Apply";
-import { foldResponse } from "@repo/flow-utils";
-import { flatTryCatch } from "@repo/flow-utils";
 
 export const bpsRouter = Router();
 
@@ -65,7 +67,7 @@ bpsRouter.get("/matches", async (req, res) => {
     bind("bpsCollection", getBPSCollection),
     flatTryCatch(
       async ({ formsCollection, bpsCollection }) => ({
-        forms: await formsCollection.find().toArray(),
+        forms: excludeNoShowForms(await formsCollection.find().toArray()),
         bpses: await bpsCollection.find().toArray(),
       }),
       (error) => ({
@@ -172,7 +174,7 @@ export const getTeamBPS = (team: number) =>
 
 export const getAllBPSes = (forms: ScoutingForm[]) =>
   pipe(
-    forms,
+    excludeNoShowForms(forms),
     groupBy((form) => form.teamNumber.toString()),
     mapWithIndex((teamStringedNumber, forms) =>
       sequenceS(ApplyPar)({

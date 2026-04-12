@@ -169,9 +169,8 @@ const PreMatchTab: FC<TabProps> = ({
           <input
             type="number"
             className="w-43.75 h-full"
-            min={0}
             max={MATCH_NUMBER_MAX}
-            value={match.number}
+            value={match.number === 0 ? undefined : match.number}
             onChange={(event) => {
               setMatch((prev) => ({
                 ...prev,
@@ -195,7 +194,7 @@ const PreMatchTab: FC<TabProps> = ({
             onClick={() => {
               setMatch((prev) => ({
                 ...prev,
-                number: prev.number - MATCH_ADJUSTMENT_OFFSET,
+                number: Math.max(prev.number - MATCH_ADJUSTMENT_OFFSET, 0),
               }));
             }}
           >
@@ -260,6 +259,21 @@ const PreMatchTab: FC<TabProps> = ({
           <option value="far">Far</option>
         </select>
       </InputBox>
+      <div className="w-120 flex justify-center">
+        <button
+          type="button"
+          className={`w-32 h-10 sm:h-12 px-2 text-xs shrink-0 rounded-xl transition-all duration-200 border-2 ${
+            form.noShow
+              ? "bg-orange-600 border-orange-400 text-white shadow-[0_0_15px_rgba(234,88,12,0.5)] scale-[1.02]"
+              : "bg-slate-800 border-white/10 text-slate-300"
+          }`}
+          onClick={() => {
+            setForm((prev) => ({ ...prev, noShow: !prev.noShow }));
+          }}
+        >
+          No-show
+        </button>
+      </div>
     </div>
   );
 };
