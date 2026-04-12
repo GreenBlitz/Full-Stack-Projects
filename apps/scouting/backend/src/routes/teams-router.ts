@@ -83,7 +83,7 @@ const uniqueNoShowMatches = (forms: ScoutingForm[]): Match[] => {
   return [...matches].sort(compareMatches);
 };
 
-const processTeam = (
+export const processTeam = (
   bpses: BPS[],
   forms: ScoutingForm[],
   coprs?: TeamOPR,
@@ -219,11 +219,11 @@ teamsRouter.get("/", async (req, res) => {
       ),
     ),
     flatMap(getTeamBPSes),
-    flatMap(fetchTeamsCOPRs),
-    flatMap(getTeamsEPAs),
+    //flatMap(fetchTeamsCOPRs),
+    //flatMap(getTeamsEPAs),
     map((teams) =>
       mapObject(teams, (team) =>
-        processTeam(team.bpses, team.forms, team.coprs, team.epa),
+        processTeam(team.bpses, team.forms, undefined, undefined),
       ),
     ),
     bindTo("teams"),

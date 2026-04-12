@@ -169,9 +169,8 @@ const PreMatchTab: FC<TabProps> = ({
           <input
             type="number"
             className="w-43.75 h-full"
-            min={0}
             max={MATCH_NUMBER_MAX}
-            value={match.number}
+            value={match.number === 0 ? undefined : match.number}
             onChange={(event) => {
               setMatch((prev) => ({
                 ...prev,
@@ -195,7 +194,7 @@ const PreMatchTab: FC<TabProps> = ({
             onClick={() => {
               setMatch((prev) => ({
                 ...prev,
-                number: prev.number - MATCH_ADJUSTMENT_OFFSET,
+                number: Math.max(prev.number - MATCH_ADJUSTMENT_OFFSET, 0),
               }));
             }}
           >

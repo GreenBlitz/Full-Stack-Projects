@@ -11,9 +11,9 @@ import { createBodyVerificationPipe } from "@repo/flow-utils";
 
 export const superScoutRouter = Router();
 
-const getSuperCollection = flow(
+export const getSuperCollection = flow(
   getDb,
-  map((db) => db.collection<SuperScout>("/super")),
+  map((db) => db.collection<SuperScout>("super")),
 );
 
 superScoutRouter.get("/", async (req, res) => {
