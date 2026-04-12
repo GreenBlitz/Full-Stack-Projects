@@ -13,7 +13,7 @@ export const superScoutRouter = Router();
 
 export const getSuperCollection = flow(
   getDb,
-  map((db) => db.collection<SuperScout>("/super")),
+  map((db) => db.collection<SuperScout>("super")),
 );
 
 superScoutRouter.get("/", async (req, res) => {
