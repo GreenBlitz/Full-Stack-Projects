@@ -11,10 +11,7 @@ import {
   fromEither,
   map,
 } from "fp-ts/lib/TaskEither";
-import {
-  scoutingFormBodyCodec,
-  type ScoutingForm,
-} from "@repo/scouting_types";
+import { scoutingFormCodec, type ScoutingForm } from "@repo/scouting_types";
 import { StatusCodes } from "http-status-codes";
 import {
   createBodyVerificationPipe,
@@ -47,8 +44,8 @@ formsRouter.get("/", async (req, res) => {
 });
 
 const combinedPostCodec = t.union([
-  scoutingFormBodyCodec,
-  t.array(scoutingFormBodyCodec),
+  scoutingFormCodec,
+  t.array(scoutingFormCodec),
 ]);
 
 formsRouter.post("/", async (req, res) => {
