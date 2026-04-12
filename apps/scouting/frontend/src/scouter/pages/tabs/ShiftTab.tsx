@@ -1,5 +1,5 @@
 // בס"ד
-import { useState, type FC } from "react";
+import { useMemo, useState, type FC } from "react";
 import type { TabProps } from "../ScoutMatch";
 import { ScoreMap, defaultPoint } from "../../components/ScoreMap";
 import type {
@@ -29,7 +29,8 @@ export const ShiftTab: FC<ShiftTabProps> = ({
 }) => {
   const [mapPosition, setMapPosition] = useState<Point>();
   const [mapZone, setMapZone] = useState<Alliance>(alliance);
-  const { recordedPositionsRef, start, stop } = usePositionRecording(mapPosition);
+  const { recordedPositionsRef, start, stop } =
+    usePositionRecording(mapPosition);
   const [isClimbing, setIsClimbing] = useState(false);
 
   const isAuto = shiftType === "auto";
@@ -76,7 +77,7 @@ export const ShiftTab: FC<ShiftTabProps> = ({
       });
 
       recordedPositionsRef.current = [];
-      return prevForm;
+      return { ...prevForm };
     });
   };
 
@@ -91,6 +92,8 @@ export const ShiftTab: FC<ShiftTabProps> = ({
     </div>
   );
 
+  const events = useMemo(() => getEvents(currentForm).length, [currentForm]);
+
   return (
     <div className="flex flex-row h-full w-full gap-3">
       {alliance === "red" && scoreMap}
@@ -102,6 +105,7 @@ export const ShiftTab: FC<ShiftTabProps> = ({
           size="compact"
           onStart={start}
           onStop={stop}
+          events={events}
         />
         <MovementForm
           setMovement={(value) => {

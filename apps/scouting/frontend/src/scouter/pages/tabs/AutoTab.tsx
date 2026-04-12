@@ -17,7 +17,8 @@ export const AutoTab: FC<TabProps> = ({
 }) => {
   const [mapPosition, setMapPosition] = useState<Point>();
   const [mapZone, setMapZone] = useState<Alliance>(alliance);
-  const { recordedPositionsRef, start, stop } = usePositionRecording(mapPosition);
+  const { recordedPositionsRef, start, stop } =
+    usePositionRecording(mapPosition);
 
   return (
     <div className="flex flex-row h-full w-full gap-3">
@@ -52,12 +53,16 @@ export const AutoTab: FC<TabProps> = ({
           size="compact"
           onStart={start}
           onStop={stop}
+          events={currentForm.auto.shootEvents.length}
         />
         <MovementForm
           setMovement={(value) => {
             setForm((prevForm) => ({
               ...prevForm,
-              auto: { ...prevForm.auto, movement: { ...prevForm.auto.movement, ...value } },
+              auto: {
+                ...prevForm.auto,
+                movement: { ...prevForm.auto.movement, ...value },
+              },
             }));
           }}
           currentMovement={currentForm.auto.movement}

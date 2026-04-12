@@ -248,6 +248,7 @@ export const ScoutMatch: FC = () => {
   }, [activeTabIndex]);
 
   const hasShiftJustEnded = (elapsedMs: number): boolean =>
+    elapsedMs > 0 &&
     TABS.some(
       (tab) =>
         tab.ShiftEndTimeMs >= elapsedMs && elapsedMs >= tab.ShiftExtraEndTimeMs,
