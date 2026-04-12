@@ -80,6 +80,11 @@ const Stopwatch: React.FC<StopwatchProps> = ({
     onStart?.();
   };
 
+  const reset = () => {
+    setElapsedTime(INITIAL_TIME_MILLISECONDS);
+    setIsRunning(false);
+  };
+
   const stop = () => {
     if (!isRunning) {
       return;
@@ -90,8 +95,7 @@ const Stopwatch: React.FC<StopwatchProps> = ({
     };
     addCycleTimeSeconds(cycleStopwatchCounter);
 
-    setElapsedTime(INITIAL_TIME_MILLISECONDS);
-    setIsRunning(false);
+    reset();
     onStop?.();
   };
 
@@ -110,10 +114,11 @@ const Stopwatch: React.FC<StopwatchProps> = ({
           font-mono font-semibold shadow-lg transition-all duration-150
           ${disabled ? "bg-slate-800 text-slate-900" : isRunning ? "bg-emerald-500 text-white scale-95" : "bg-slate-800 text-green-400 hover:bg-slate-700"}
         `}
-        onPointerDown={start}
-        onPointerUp={stop}
-        onPointerLeave={stop}
-        onPointerCancel={stop}
+        onMouseDown={start}
+        onMouseUp={stop}
+        onMouseLeave={stop}
+        onTouchStart={start}
+        onTouchEnd={stop}
       >
         {formatTime()}
       </div>
