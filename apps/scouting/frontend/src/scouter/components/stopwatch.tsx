@@ -117,7 +117,7 @@ const Stopwatch: React.FC<StopwatchProps> = ({
       <div
         className={`
           select-none cursor-pointer rounded-2xl
-          ${isCompact ? "px-2 py-1 text-xl sm:px-3 sm:py-2 sm:text-2xl" : "px-4 py-4 text-3xl"}
+          ${isCompact ? "px-2 py-1 text-xl sm:px-3 sm:py-1 sm:text-2xl" : "px-4 py-3 text-3xl"}
           font-mono font-semibold shadow-lg transition-all duration-150
           ${disabled ? "bg-slate-800 text-slate-900" : isRunning ? "bg-emerald-500 text-white scale-95" : "bg-slate-800 text-green-400 hover:bg-slate-700"}
         `}
@@ -126,7 +126,7 @@ const Stopwatch: React.FC<StopwatchProps> = ({
         onTouchEnd={stop}
       >
         {formatTime()}
-        <div className="text-slate-500 text-center">{events}</div>
+        <div className="text-slate-500 text-center text-lg">{events}</div>
       </div>
     </div>
   );

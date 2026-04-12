@@ -195,11 +195,11 @@ teamsRouter.get("/", async (req, res) => {
       ),
     ),
     flatMap(getTeamBPSes),
-    //flatMap(fetchTeamsCOPRs),
-    //flatMap(getTeamsEPAs),
+    flatMap(fetchTeamsCOPRs),
+    flatMap(getTeamsEPAs),
     map((teams) =>
       mapObject(teams, (team) =>
-        processTeam(team.bpses, team.forms, undefined, undefined),
+        processTeam(team.bpses, team.forms, team.coprs, team.epa),
       ),
     ),
     bindTo("teams"),

@@ -5,20 +5,20 @@ import {
   bindTo,
   fold,
   map,
-  right,
   TaskEither,
   tryCatch,
 } from "fp-ts/lib/TaskEither";
 import { getDb } from "./db";
 import { flow, pipe } from "fp-ts/lib/function";
-import { Type } from "io-ts";
 import axios, { AxiosRequestConfig } from "axios";
 import { StatusCodes } from "http-status-codes";
 import { map as taskMap } from "fp-ts/lib/Task";
 import { createTypeCheckingEndpointFlow } from "@repo/type-utils";
-import { EndpointError, flatTryCatch } from "@repo/flow-utils";
+import { EndpointError, flatTryCatch, toUnion } from "@repo/flow-utils";
 import { EPA, teamsYear } from "@repo/scouting_types";
 import { mapObject } from "@repo/array-functions";
+import { map as mapTask } from "fp-ts/Task";
+import { right as rightEither } from "fp-ts/Either";
 
 interface SavedEPA {
   team: number;
@@ -91,7 +91,9 @@ const getEPAs = flow(
   ),
 );
 
-export const getTeamsEPAs = <A extends object>(teams: Record<string, A>) =>
+export const getTeamsEPAs = <A extends object>(
+  teams: Record<string, A>,
+): TaskEither<never, Record<string, A & { epa?: EPA }>> =>
   pipe(
     getEPAs(),
     map((epaTeams) =>
@@ -106,4 +108,5 @@ export const getTeamsEPAs = <A extends object>(teams: Record<string, A>) =>
         epa: epaTeams[teamNumber],
       })),
     ),
+    toUnion(teams),
   );

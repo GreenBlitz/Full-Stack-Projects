@@ -5,6 +5,7 @@ import { Router } from "express";
 import {
   createBodyVerificationPipe,
   flatTryCatch,
+  toUnion,
   type EndpointError,
 } from "@repo/flow-utils";
 import { castItem, createTypeCheckingEndpointFlow } from "@repo/type-utils";
@@ -146,7 +147,6 @@ const getMatches = flow(
   ),
 );
 
-
 export const fetchCOPRS = (event: string) =>
   pipe(
     fetchTba(`/event/${event}/coprs`, eventOPRCodec),
@@ -170,7 +170,7 @@ export const fetchCOPRS = (event: string) =>
 export const fetchTeamsCOPRs = <A extends object>(
   teams: Record<string, A>,
   event: string = currentEvent,
-) =>
+): TaskEither<never, Record<string, A & { coprs?: TeamOPR }>> =>
   pipe(
     fetchCOPRS(event),
     map((coprs) =>
@@ -179,6 +179,7 @@ export const fetchTeamsCOPRs = <A extends object>(
         coprs: coprs.find((copr) => copr.teamNumber === parseInt(teamNumber)),
       })),
     ),
+    toUnion(teams),
   );
 
 tbaRouter.post("/matches", async (req, res) => {
