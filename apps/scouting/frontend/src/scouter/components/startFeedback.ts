@@ -3,47 +3,69 @@
  * Uses vibration when available and always attempts a short click sound.
  */
 
-type AudioContextedWindow = Window & { webkitAudioContext?: typeof AudioContext };
+type AudioContextedWindow = Window & {
+  AudioContext?: typeof AudioContext;
+  webkitAudioContext?: typeof AudioContext;
+};
 
 const VIBRATE_PULSE_MS = 120;
 const VIBRATE_PAUSE_MS = 40;
 
-let audioContext: AudioContext | null = null;
+const CLICK_FREQUENCY_HZ = 520;
+const CLICK_GAIN_PEAK = 0.12;
+const CLICK_GAIN_FLOOR = 0.001;
+const CLICK_DURATION_S = 0.04;
 
-const playTouchSound = (osc: OscillatorNode, gain: GainNode) => {
-  osc.connect(gain);
-  gain.connect(audioContext!.destination);
-  osc.frequency.value = 520;
-  osc.type = "sine";
-  gain.gain.setValueAtTime(0.12, audioContext!.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, audioContext!.currentTime + 0.04);
-  osc.start(audioContext!.currentTime);
-  osc.stop(audioContext!.currentTime + 0.04);
-};
-
-function playClick(): void {
-  try {
-    if (typeof window === "undefined") return;
+const getAudioContext = (() => {
+  let ctx: AudioContext | null = null;
+  return (): AudioContext | null => {
+    if (typeof window === "undefined") return null;
     const audioWindow = window as AudioContextedWindow;
     const Ctx = audioWindow.AudioContext ?? audioWindow.webkitAudioContext;
-    if (!Ctx) return;
-    if (!audioContext) {
-      audioContext = new Ctx();
+    if (!Ctx) return null;
+    if (!ctx) {
+      ctx = new Ctx();
     }
+    return ctx;
+  };
+})();
+
+const playTouchSound = (
+  osc: OscillatorNode,
+  gain: GainNode,
+  ctx: AudioContext,
+) => {
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.frequency.value = CLICK_FREQUENCY_HZ;
+  osc.type = "sine";
+  gain.gain.setValueAtTime(CLICK_GAIN_PEAK, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(
+    CLICK_GAIN_FLOOR,
+    ctx.currentTime + CLICK_DURATION_S,
+  );
+  osc.start(ctx.currentTime);
+  osc.stop(ctx.currentTime + CLICK_DURATION_S);
+};
+
+const playClick = (): void => {
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
     const play = () => {
-      const osc = audioContext!.createOscillator();
-      const gain = audioContext!.createGain();
-      playTouchSound(osc, gain);
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      playTouchSound(osc, gain, ctx);
     };
-    if (audioContext.state !== "suspended") {
+    if (ctx.state !== "suspended") {
       play();
       return;
     }
-    audioContext.resume().then(play);
+    ctx.resume().then(play);
   } catch {
     /* ignore */
   }
-}
+};
 
 export function playStartFeedback(): void {
   if (typeof window === "undefined") return;

@@ -95,6 +95,7 @@ const Stopwatch: React.FC<StopwatchProps> = ({
     };
     addCycleTimeSeconds(cycleStopwatchCounter);
 
+    setIsRunning(false);
     reset();
     onStop?.();
   };
