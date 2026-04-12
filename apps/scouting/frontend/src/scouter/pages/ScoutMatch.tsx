@@ -272,13 +272,15 @@ export const ScoutMatch: FC = () => {
 
     const nextTab = getTabIndexFromElapsedMs(timerData.elapsedMs);
 
-    const shouldSyncFromTabOne =
-      activeTabIndex === 1 && hasJustStartedOrResumed;
+    const startMatchTab = TABS.findIndex((tab) => tab.name === "Start Match");
 
-    const shouldSyncNormally = activeTabIndex !== 1 && timerData.elapsedMs > 0;
+    const shouldSyncFromStartMatchTab =
+      activeTabIndex === startMatchTab && hasJustStartedOrResumed;
+
+    const shouldSyncNormally = activeTabIndex !== startMatchTab && timerData.elapsedMs > 0;
 
     if (
-      (shouldSyncFromTabOne || shouldSyncNormally) &&
+      (shouldSyncFromStartMatchTab || shouldSyncNormally) &&
       activeTabIndex !== nextTab
     ) {
       setActiveTab(nextTab);

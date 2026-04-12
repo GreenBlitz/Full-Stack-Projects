@@ -1,7 +1,7 @@
 // בס"ד
 import type React from "react";
-import { useEffect, useMemo } from "react";
-import { useMatchTimer } from "../hooks/useMatchTimer"; // adjust path
+import { useMemo } from "react";
+import { useMatchTimer } from "../hooks/useMatchTimer";
 
 const MILLISECONDS_IN_A_SECOND = 1000;
 const SECONDS_IN_A_MINUTE = 60;
@@ -55,8 +55,8 @@ const StartMatchLocallyButton: React.FC<StartMatchLocallyButtonProps> = ({
             disabled
               ? "bg-gray-700 border-gray-600 text-gray-400 cursor-not-allowed"
               : isRunning
-                ? "bg-gradient-to-br from-green-900 to-black border-green-700 text-green-200 shadow-[0_0_25px_rgba(34,197,94,0.35)]"
-                : "bg-gradient-to-br from-black via-green-950 to-black border-green-800 text-green-300 hover:scale-105 hover:border-green-500 hover:shadow-[0_0_30px_rgba(34,197,94,0.45)] active:scale-95"
+                ? "bg-linear-to-br from-green-900 to-black border-green-700 text-green-200 shadow-[0_0_25px_rgba(34,197,94,0.35)]"
+                : "bg-linear-to-br from-black via-green-950 to-black border-green-800 text-green-300 hover:scale-105 hover:border-green-500 hover:shadow-[0_0_30px_rgba(34,197,94,0.45)] active:scale-95"
           }
         `}
       >

@@ -26,7 +26,9 @@ export const useMatchTimer = (tickMs = ITERATION_PERIOD_MS) => {
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
-    if (!timeState.isRunning) return undefined;
+    if (!timeState.isRunning) {
+      return undefined;
+    }
 
     const id = window.setInterval(() => {
       setNow(Date.now());
@@ -44,7 +46,9 @@ export const useMatchTimer = (tickMs = ITERATION_PERIOD_MS) => {
   }, [timeState, now]);
 
   const start = () => {
-    if (timeState.isRunning) return;
+    if (timeState.isRunning) {
+      return;
+    }
 
     const next: TimerState = {
       isRunning: true,
