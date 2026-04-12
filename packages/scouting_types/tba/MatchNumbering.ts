@@ -1,6 +1,6 @@
 // בס"ד
-import { Match } from "../rebuilt";
-import { TBAMatch } from "./TBAMatch";
+import type { Match } from "../rebuilt";
+import type { TBAMatch } from "./TBAMatch";
 
 const PLAYOFF_MATCHES_UNTIL_FINALS = 13;
 

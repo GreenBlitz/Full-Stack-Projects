@@ -17,16 +17,21 @@ import {
 import { getFormsCollection } from "./forms-router";
 import { StatusCodes } from "http-status-codes";
 import { castItem } from "@repo/type-utils";
-import type {
-  BPS,
-  Match,
-  ScoutingForm,
-  SectionTeamData,
-  Shift,
-  TeamData,
-  TeamOPR,
+import {
+  ACCURACY_DISTANCES,
+  compareMatches,
+  excludeNoShowForms,
+  isNoShowForm,
+  teamsProps,
+  type BPS,
+  type EPA,
+  type Match,
+  type ScoutingForm,
+  type SectionTeamData,
+  type Shift,
+  type TeamData,
+  type TeamOPR,
 } from "@repo/scouting_types";
-import { ACCURACY_DISTANCES, teamsProps } from "@repo/scouting_types";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
 import { calculateSum, isEmpty, mapObject } from "@repo/array-functions";
 import { createFuelObject } from "../fuel/fuel-object";
@@ -35,9 +40,7 @@ import { calculateFuelStatisticsOfShift } from "../fuel/fuel-general";
 import { calculateAverageBPS } from "../fuel/calculations/fuel-averaging";
 import { getTeamBPSes } from "./bps-router";
 import { foldResponse, flatTryCatch } from "@repo/flow-utils";
-import { compareMatches } from "@repo/scouting_types";
 import { fetchTeamsCOPRs } from "./tba-router";
-import { EPA } from "@repo/scouting_types";
 import { getTeamsEPAs } from "../middleware/epa";
 
 export const teamsRouter = Router();
@@ -67,21 +70,38 @@ const processFuelAndAccuracy = (
   };
 };
 
+const uniqueNoShowMatches = (forms: ScoutingForm[]): Match[] => {
+  const seen = new Set<string>();
+  const matches: Match[] = [];
+  for (const form of forms) {
+    if (!isNoShowForm(form)) continue;
+    const key = `${form.match.type}\0${form.match.number}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    matches.push(form.match);
+  }
+  return [...matches].sort(compareMatches);
+};
+
 export const processTeam = (
   bpses: BPS[],
   forms: ScoutingForm[],
   coprs?: TeamOPR,
   epa?: EPA,
 ): TeamData => {
+  const statsForms = excludeNoShowForms(forms);
   const tele = {
     movement: {
-      bumpStuck: calculateSum(forms, (form) =>
+      bumpStuck: calculateSum(statsForms, (form) =>
         Number(form.tele.movement.bumpStuck),
       ),
     },
-    climbs: forms.map((form) => ({ match: form.match, ...form.tele.climb })),
+    climbs: statsForms.map((form) => ({
+      match: form.match,
+      ...form.tele.climb,
+    })),
     ...processFuelAndAccuracy(
-      forms.map((form) => ({
+      statsForms.map((form) => ({
         match: form.match,
         shifts: [
           form.tele.transitionShift,
@@ -94,19 +114,22 @@ export const processTeam = (
   };
   const auto = {
     movement: {
-      bumpStuck: calculateSum(forms, (form) =>
+      bumpStuck: calculateSum(statsForms, (form) =>
         Number(form.auto.movement.bumpStuck),
       ),
-      bumpPass: calculateSum(forms, (form) =>
+      bumpPass: calculateSum(statsForms, (form) =>
         Number(form.auto.movement.bumpPass),
       ),
-      trenchPass: calculateSum(forms, (form) =>
+      trenchPass: calculateSum(statsForms, (form) =>
         Number(form.auto.movement.trenchPass),
       ),
     },
-    climbs: forms.map((form) => ({ match: form.match, ...form.auto.climb })),
+    climbs: statsForms.map((form) => ({
+      match: form.match,
+      ...form.auto.climb,
+    })),
     ...processFuelAndAccuracy(
-      forms.map((form) => ({
+      statsForms.map((form) => ({
         match: form.match,
         shifts: [form.auto],
       })),
@@ -114,7 +137,7 @@ export const processTeam = (
     ),
   };
   const fullGame = processFuelAndAccuracy(
-    forms.map((form) => ({
+    statsForms.map((form) => ({
       match: form.match,
       shifts: [
         form.auto,
@@ -130,6 +153,7 @@ export const processTeam = (
     auto,
     fullGame,
     metrics: { epa, bps: calculateAverageBPS(bpses), coprs },
+    noShowMatches: uniqueNoShowMatches(forms),
   };
 };
 
