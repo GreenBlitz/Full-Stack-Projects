@@ -16,7 +16,7 @@ const defaultTimer: TimerState = {
   elapsedBeforeStart: 0,
 };
 
-const ITERATION_PERIOD_MS = 10;
+const ITERATION_PERIOD_MS = 100;
 
 export const useMatchTimer = (tickMs = ITERATION_PERIOD_MS) => {
   const [timeState, setTimeState] = useLocalStorage<TimerState>(
@@ -34,7 +34,7 @@ export const useMatchTimer = (tickMs = ITERATION_PERIOD_MS) => {
     return () => {
       window.clearInterval(id);
     };
-  }, [timeState.isRunning, tickMs]);
+  }, [timeState, tickMs]);
 
   const elapsedMs = useMemo(() => {
     if (!timeState.isRunning || timeState.startTime === null) {

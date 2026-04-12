@@ -1,6 +1,6 @@
 // בס"ד
 import type React from "react";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useMatchTimer } from "../hooks/useMatchTimer"; // adjust path
 
 const MILLISECONDS_IN_A_SECOND = 1000;
@@ -9,15 +9,18 @@ const ITERATION_PERIOD_MS = 10;
 const DECIMAL_PLACES = 2;
 const DECIMAL_PLACES_MILLISECONDS = 3;
 
+export type TimerData = ReturnType<typeof useMatchTimer>;
+
 interface StartMatchLocallyButtonProps {
   disabled: boolean;
+  timerData: TimerData;
 }
 
 const StartMatchLocallyButton: React.FC<StartMatchLocallyButtonProps> = ({
   disabled,
+  timerData,
 }) => {
-  const { isRunning, elapsedMs, start, stop, reset } =
-    useMatchTimer(ITERATION_PERIOD_MS);
+  const { isRunning, elapsedMs, start, stop, reset } = timerData;
 
   const formattedTime = useMemo(() => {
     const minutes = Math.floor(

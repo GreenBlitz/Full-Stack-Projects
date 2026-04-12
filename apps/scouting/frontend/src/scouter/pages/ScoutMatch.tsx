@@ -19,13 +19,16 @@ import { PostMatchTab } from "./tabs/PostMatchTab";
 import { useNavigate } from "react-router-dom";
 import { PreMatchTab } from "./tabs/PreMatchTab";
 import { useMatchTimer } from "../hooks/useMatchTimer";
-import StartMatchLocallyButton from "../components/StartMatchLocallyButton";
+import StartMatchLocallyButton, {
+  type TimerData,
+} from "../components/StartMatchLocallyButton";
 import { boolean } from "io-ts";
 export interface TabProps {
   setForm: Dispatch<SetStateAction<ScoutingForm>>;
   currentForm: ScoutingForm;
   alliance: Alliance;
   originTime: number;
+  timerData: TimerData;
 }
 interface Tab {
   name: string;
@@ -56,7 +59,9 @@ const TABS: Tab[] = [
   },
   {
     name: "Start Match",
-    Component: () => <StartMatchLocallyButton disabled={false} />,
+    Component: (props) => (
+      <StartMatchLocallyButton timerData={props.timerData} disabled={false} />
+    ),
     ShiftEndTimeMs: 0,
     ShiftExtraEndTimeMs: 0,
   },
@@ -230,70 +235,35 @@ export const ScoutMatch: FC = () => {
     return TABS[activeTabIndex]?.Component ?? PostMatchTab;
   }, [activeTabIndex]);
 
-  const hasShiftJustEnded = (elapsedMs: number): boolean => {
-    if (
-      TABS[TAB_NAME_TO_INDEX["Auto"]].ShiftEndTimeMs >= elapsedMs &&
-      elapsedMs >= TABS[TAB_NAME_TO_INDEX["Auto"]].ShiftExtraEndTimeMs
-    )
-      return true;
-    if (
-      TABS[TAB_NAME_TO_INDEX["Transition"]].ShiftEndTimeMs >= elapsedMs &&
-      elapsedMs >= TABS[TAB_NAME_TO_INDEX["Transition"]].ShiftExtraEndTimeMs
-    )
-      return true;
-    if (
-      TABS[TAB_NAME_TO_INDEX["Shift1"]].ShiftEndTimeMs >= elapsedMs &&
-      elapsedMs >= TABS[TAB_NAME_TO_INDEX["Shift1"]].ShiftExtraEndTimeMs
-    )
-      return true;
-    if (
-      TABS[TAB_NAME_TO_INDEX["Shift2"]].ShiftEndTimeMs >= elapsedMs &&
-      elapsedMs >= TABS[TAB_NAME_TO_INDEX["Shift2"]].ShiftExtraEndTimeMs
-    )
-      return true;
-    if (
-      TABS[TAB_NAME_TO_INDEX["Shift3"]].ShiftEndTimeMs >= elapsedMs &&
-      elapsedMs >= TABS[TAB_NAME_TO_INDEX["Shift3"]].ShiftExtraEndTimeMs
-    )
-      return true;
-    if (
-      TABS[TAB_NAME_TO_INDEX["Shift4"]].ShiftEndTimeMs >= elapsedMs &&
-      elapsedMs >= TABS[TAB_NAME_TO_INDEX["Shift4"]].ShiftExtraEndTimeMs
-    )
-      return true;
-    return false;
-  };
-  const { elapsedMs, isRunning } = useMatchTimer(ITERATION_PERIOD_MS);
+  const hasShiftJustEnded = (elapsedMs: number): boolean =>
+    TABS.some(
+      (tab) =>
+        tab.ShiftEndTimeMs >= elapsedMs && elapsedMs >= tab.ShiftExtraEndTimeMs,
+    );
 
-  const previousIsRunningRef = useRef(isRunning);
+  const timerData = useMatchTimer(ITERATION_PERIOD_MS);
 
-  const getTabIndexFromElapsedMs = (elapsedMs: number): number => {
-    if (elapsedMs <= 0) return 2;
-    if (elapsedMs <= TABS[TAB_NAME_TO_INDEX["Auto"]].ShiftEndTimeMs) return 2;
-    if (elapsedMs <= TABS[TAB_NAME_TO_INDEX["Transition"]].ShiftEndTimeMs)
-      return 3;
-    if (elapsedMs <= TABS[TAB_NAME_TO_INDEX["Shift1"]].ShiftEndTimeMs) return 4;
-    if (elapsedMs <= TABS[TAB_NAME_TO_INDEX["Shift2"]].ShiftEndTimeMs) return 5;
-    if (elapsedMs <= TABS[TAB_NAME_TO_INDEX["Shift3"]].ShiftEndTimeMs) return 6;
-    if (elapsedMs <= TABS[TAB_NAME_TO_INDEX["Shift4"]].ShiftEndTimeMs) return 7;
-    if (elapsedMs <= TABS[TAB_NAME_TO_INDEX["Endgame"]].ShiftEndTimeMs)
-      return 8;
-    return 9;
-  };
+  const previousIsRunningRef = useRef(timerData.isRunning);
+
+  const getTabIndexFromElapsedMs = (elapsedMs: number): number =>
+    TABS.findIndex((tab) => elapsedMs <= tab.ShiftEndTimeMs);
 
   useEffect(() => {
     setBackgroundColor(
-      hasShiftJustEnded(elapsedMs) ? "bg-amber-400/40" : "bg-black/40",
+      hasShiftJustEnded(timerData.elapsedMs)
+        ? "bg-amber-400/40"
+        : "bg-black/40",
     );
 
-    const hasJustStartedOrResumed = !previousIsRunningRef.current && isRunning;
+    const hasJustStartedOrResumed =
+      !previousIsRunningRef.current && timerData.isRunning;
 
-    const nextTab = getTabIndexFromElapsedMs(elapsedMs);
+    const nextTab = getTabIndexFromElapsedMs(timerData.elapsedMs);
 
     const shouldSyncFromTabOne =
       activeTabIndex === 1 && hasJustStartedOrResumed;
 
-    const shouldSyncNormally = activeTabIndex !== 1 && elapsedMs > 0;
+    const shouldSyncNormally = activeTabIndex !== 1 && timerData.elapsedMs > 0;
 
     if (
       (shouldSyncFromTabOne || shouldSyncNormally) &&
@@ -302,8 +272,14 @@ export const ScoutMatch: FC = () => {
       setActiveTab(nextTab);
     }
 
-    previousIsRunningRef.current = isRunning;
-  }, [elapsedMs, isRunning, activeTabIndex, setActiveTab]);
+    previousIsRunningRef.current = timerData.isRunning;
+  }, [
+    timerData,
+    timerData.isRunning,
+    timerData.elapsedMs,
+    activeTabIndex,
+    setActiveTab,
+  ]);
   return (
     <div
       className="max-h-screen bg-black p-4 md:p-6 flex items-center justify-center
@@ -331,6 +307,7 @@ export const ScoutMatch: FC = () => {
               currentForm={scoutingForm}
               alliance={alliance}
               originTime={originTime}
+              timerData={timerData}
             />
           </div>
         </div>
