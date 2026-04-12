@@ -1,7 +1,12 @@
 //בס"ד
 import type React from "react";
 import { useRef } from "react";
-import { IoPlay, IoPause, IoPlaySkipBack, IoPlaySkipForward } from "react-icons/io5";
+import {
+  IoPlay,
+  IoPause,
+  IoPlaySkipBack,
+  IoPlaySkipForward,
+} from "react-icons/io5";
 import { formatDuration } from "@repo/video-utils";
 
 const PLAY_PAUSE_ICON_SIZE = 18;
@@ -23,7 +28,7 @@ interface VideoControlsProps {
   onSeek: (percent: number) => void;
 }
 
-const SPEEDS = [0.25, 0.5, 1] as const;
+const SPEEDS = [0.2, 0.25, 0.5, 1] as const;
 
 export const VideoControls: React.FC<VideoControlsProps> = ({
   progress,
@@ -77,7 +82,11 @@ export const VideoControls: React.FC<VideoControlsProps> = ({
             className="w-11 h-11 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center transition-colors shadow-lg shadow-emerald-900/30"
             aria-label={isPlaying ? "Pause" : "Play"}
           >
-            {isPlaying ? <IoPause size={PLAY_PAUSE_ICON_SIZE} /> : <IoPlay size={PLAY_PAUSE_ICON_SIZE} />}
+            {isPlaying ? (
+              <IoPause size={PLAY_PAUSE_ICON_SIZE} />
+            ) : (
+              <IoPlay size={PLAY_PAUSE_ICON_SIZE} />
+            )}
           </button>
           <button
             onClick={() => onJump(-SEEK_JUMP_SECONDS)}
