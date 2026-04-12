@@ -121,15 +121,13 @@ const Stopwatch: React.FC<StopwatchProps> = ({
           font-mono font-semibold shadow-lg transition-all duration-150
           ${disabled ? "bg-slate-800 text-slate-900" : isRunning ? "bg-emerald-500 text-white scale-95" : "bg-slate-800 text-green-400 hover:bg-slate-700"}
         `}
-        onMouseDown={start}
-        onMouseUp={stop}
         onMouseLeave={stop}
         onTouchStart={start}
         onTouchEnd={stop}
       >
         {formatTime()}
+        <div className="text-slate-500 text-center">{events}</div>
       </div>
-      {events}
     </div>
   );
 };

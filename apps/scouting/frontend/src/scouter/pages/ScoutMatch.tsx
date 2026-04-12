@@ -248,6 +248,7 @@ export const ScoutMatch: FC = () => {
   }, [activeTabIndex]);
 
   const hasShiftJustEnded = (elapsedMs: number): boolean =>
+    elapsedMs > 0 &&
     TABS.some(
       (tab) =>
         tab.ShiftEndTimeMs >= elapsedMs && elapsedMs >= tab.ShiftExtraEndTimeMs,
@@ -277,7 +278,8 @@ export const ScoutMatch: FC = () => {
     const shouldSyncFromStartMatchTab =
       activeTabIndex === startMatchTab && hasJustStartedOrResumed;
 
-    const shouldSyncNormally = activeTabIndex !== startMatchTab && timerData.elapsedMs > 0;
+    const shouldSyncNormally =
+      activeTabIndex !== startMatchTab && timerData.elapsedMs > 0;
 
     if (
       (shouldSyncFromStartMatchTab || shouldSyncNormally) &&
