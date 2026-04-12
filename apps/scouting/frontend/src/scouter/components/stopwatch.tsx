@@ -17,6 +17,7 @@ interface StopwatchProps {
   size?: "default" | "compact";
   onStart?: () => void;
   onStop?: () => void;
+  events: number;
 }
 
 const Stopwatch: React.FC<StopwatchProps> = ({
@@ -26,6 +27,7 @@ const Stopwatch: React.FC<StopwatchProps> = ({
   size = "default",
   onStart,
   onStop,
+  events,
 }) => {
   const [isRunning, setIsRunning] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(INITIAL_TIME_MILLISECONDS);
@@ -109,7 +111,7 @@ const Stopwatch: React.FC<StopwatchProps> = ({
   return (
     <div
       className={`flex flex-col items-center ${
-        isCompact ? "py-1 px-1 sm:py-2 sm:px-2" : "py-6 px-5"
+        isCompact ? " px-1 sm:py-2 sm:px-2" : "py-6 px-5"
       }`}
     >
       <div
@@ -127,6 +129,7 @@ const Stopwatch: React.FC<StopwatchProps> = ({
       >
         {formatTime()}
       </div>
+      {events}
     </div>
   );
 };
