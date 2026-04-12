@@ -16,31 +16,21 @@ export const matchCodec = t.type({
   type: matchType,
 });
 
-const scoutingFormBodyCodec = t.intersection([
-  t.type({
-    scouterName: t.string,
-    competition: competitionCodec,
-    match: matchCodec,
-    teamNumber: t.number,
-    auto: autoCodec,
-    tele: teleCodec,
-    comment: t.string,
-    robotBroken: t.boolean,
-    noShow: t.boolean,
-  }),
-   t.partial({ noShow: t.boolean }),
-]);
+const scoutingFormBodyCodec = t.type({
+  scouterName: t.string,
+  competition: competitionCodec,
+  match: matchCodec,
+  teamNumber: t.number,
+  auto: autoCodec,
+  tele: teleCodec,
+  comment: t.string,
+  robotBroken: t.boolean,
+  noShow: t.boolean,
+});
 
-/** Canonical shape (e.g. app state, DB documents you control). */
-export const scoutingFormCodec = t.intersection([
-  scoutingFormBodyCodec,
-  t.type({ noShow: t.boolean }),
-]);
-
-/** POST bodies: same codec as body (optional `noShow` for legacy clients); normalize with {@link normalizeScoutingForm}. */
 export const scoutingFormIncomingPostCodec = scoutingFormBodyCodec;
 
-export type ScoutingForm = t.TypeOf<typeof scoutingFormCodec>;
+export type ScoutingForm = t.TypeOf<typeof scoutingFormBodyCodec>;
 export type ScoutingFormIncomingPost = t.TypeOf<
   typeof scoutingFormIncomingPostCodec
 >;
@@ -61,7 +51,6 @@ export const defaultScoutForm: ScoutingForm = {
   noShow: false,
 };
 
-/** Treats missing `noShow` as false (e.g. legacy Mongo documents). */
 export const isNoShowForm = (form: { noShow?: boolean }): boolean =>
   Boolean(form.noShow);
 
