@@ -16,7 +16,7 @@ export const matchCodec = t.type({
   type: matchType,
 });
 
-const scoutingFormBodyCodec = t.type({
+export const scoutingFormBodyCodec = t.type({
   scouterName: t.string,
   competition: competitionCodec,
   match: matchCodec,
@@ -28,12 +28,8 @@ const scoutingFormBodyCodec = t.type({
   noShow: t.boolean,
 });
 
-export const scoutingFormIncomingPostCodec = scoutingFormBodyCodec;
 
 export type ScoutingForm = t.TypeOf<typeof scoutingFormBodyCodec>;
-export type ScoutingFormIncomingPost = t.TypeOf<
-  typeof scoutingFormIncomingPostCodec
->;
 export type Match = t.TypeOf<typeof matchCodec>;
 
 export const defaultScoutForm: ScoutingForm = {

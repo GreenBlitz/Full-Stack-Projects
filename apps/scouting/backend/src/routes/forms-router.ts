@@ -12,7 +12,7 @@ import {
   map,
 } from "fp-ts/lib/TaskEither";
 import {
-  scoutingFormIncomingPostCodec,
+  scoutingFormBodyCodec,
   type ScoutingForm,
 } from "@repo/scouting_types";
 import { StatusCodes } from "http-status-codes";
@@ -47,8 +47,8 @@ formsRouter.get("/", async (req, res) => {
 });
 
 const combinedPostCodec = t.union([
-  scoutingFormIncomingPostCodec,
-  t.array(scoutingFormIncomingPostCodec),
+  scoutingFormBodyCodec,
+  t.array(scoutingFormBodyCodec),
 ]);
 
 formsRouter.post("/", async (req, res) => {
