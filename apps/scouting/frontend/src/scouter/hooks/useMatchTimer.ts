@@ -1,4 +1,5 @@
 // בס"ד
+import { useLocalStorage } from "@repo/local_storage_hook";
 import { useEffect, useMemo, useState } from "react";
 
 const STORAGE_KEY = "match-timer";
@@ -9,60 +10,20 @@ interface TimerState {
   elapsedBeforeStart: number;
 }
 
-const defaultState: TimerState = {
+const defaultTimer: TimerState = {
   isRunning: false,
   startTime: null,
   elapsedBeforeStart: 0,
 };
 
-const readState = (): TimerState => {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if (!raw) return defaultState;
-
-  try {
-    const parsed = JSON.parse(raw) as Partial<TimerState>;
-    return {
-      isRunning: Boolean(parsed.isRunning),
-      startTime:
-        typeof parsed.startTime === "number"
-          ? parsed.startTime
-          : defaultState.startTime,
-      elapsedBeforeStart:
-        typeof parsed.elapsedBeforeStart === "number"
-          ? parsed.elapsedBeforeStart
-          : defaultState.elapsedBeforeStart,
-    };
-  } catch {
-    return defaultState;
-  }
-};
-
-const writeState = (next: TimerState) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-  window.dispatchEvent(new Event("match-timer-updated"));
-};
-
 const ITERATION_PERIOD_MS = 10;
 
 export const useMatchTimer = (tickMs = ITERATION_PERIOD_MS) => {
-  const [timeState, setTimeState] = useState<TimerState>(() => readState());
+  const [timeState, setTimeState] = useLocalStorage<TimerState>(
+    STORAGE_KEY,
+    defaultTimer,
+  );
   const [now, setNow] = useState(() => Date.now());
-  useEffect(() => {
-    const onStorage = (e: StorageEvent) => {
-      if (e.key !== STORAGE_KEY) return;
-      setTimeState(readState());
-    };
-    const onLocal = () => {
-      setTimeState(readState());
-    };
-    window.addEventListener("storage", onStorage);
-    window.addEventListener("match-timer-updated", onLocal);
-
-    return () => {
-      window.removeEventListener("storage", onStorage);
-      window.removeEventListener("match-timer-updated", onLocal);
-    };
-  }, []);
 
   useEffect(() => {
     if (!timeState.isRunning) return undefined;
@@ -83,37 +44,32 @@ export const useMatchTimer = (tickMs = ITERATION_PERIOD_MS) => {
   }, [timeState, now]);
 
   const start = () => {
-    const current = readState();
-    if (current.isRunning) return;
+    if (timeState.isRunning) return;
 
     const next: TimerState = {
       isRunning: true,
       startTime: Date.now(),
-      elapsedBeforeStart: current.elapsedBeforeStart,
+      elapsedBeforeStart: timeState.elapsedBeforeStart,
     };
-    writeState(next);
     setTimeState(next);
   };
 
   const stop = () => {
-    const current = readState();
-    if (!current.isRunning || current.startTime === null) return;
+    if (!timeState.isRunning || timeState.startTime === null) return;
 
     const nextElapsed =
-      current.elapsedBeforeStart + (Date.now() - current.startTime);
+      timeState.elapsedBeforeStart + (Date.now() - timeState.startTime);
 
     const next: TimerState = {
       isRunning: false,
       startTime: null,
       elapsedBeforeStart: nextElapsed,
     };
-    writeState(next);
     setTimeState(next);
   };
 
   const reset = () => {
-    writeState(defaultState);
-    setTimeState(defaultState);
+    setTimeState(defaultTimer);
     setNow(Date.now());
   };
 
