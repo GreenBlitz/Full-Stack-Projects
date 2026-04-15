@@ -67,7 +67,7 @@ const formsToGeneralData = (
         },
         epa: resultEPA.breakdown.total_points,
         averagePointsPerMatch: calculateTotalGamePoints(
-          forms,
+          teamForms,
           bpses[teamNumber],
         ),
       };
