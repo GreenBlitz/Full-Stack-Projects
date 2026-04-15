@@ -25,8 +25,7 @@ export interface GeneralData {
   fuelData: GeneralFuelData;
   avarageClimbPoints: GeneralClimbData;
   movement: GeneralMovementData;
-  opr: number;
+  copr: number | undefined;
   epa: number;
   averagePointsPerMatch: number;
 }
-

@@ -8,7 +8,9 @@ import { mongofyQuery, flatTryCatch } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
 
 import {
+  EPA,
   excludeNoShowForms,
+  TeamOPR,
   type BPS,
   type GeneralData,
   type ScoutingForm,
@@ -20,12 +22,17 @@ import { formsToFuelData } from "../fuel/fuel-general";
 import { getAllBPSes } from "./bps-router";
 import { isEmpty } from "@repo/array-functions";
 import { findTimesMovementEvent } from "../movement/stats";
+import { fetchTeamsCOPRs } from "./tba-router";
+import { getTeamsEPAs } from "../middleware/epa";
+import { calculateTotalGamePoints } from "../game/calculations";
 
 export const generalRouter = Router();
 
 const formsToGeneralData = (
   forms: ScoutingForm[],
   bpses: Record<string, BPS[]>,
+  coprs?: TeamOPR,
+  epa?: EPA,
 ) => {
   const calculatedFuel: TeamNumberAndFuelData = formsToFuelData(bpses)(forms);
 
@@ -35,6 +42,11 @@ const formsToGeneralData = (
       const teamForms = forms.filter(
         (form) => form.teamNumber.toString() === teamNumber,
       );
+      const resultOPR = {} as TeamOPR;
+      const resultEPA = {} as EPA;
+
+      fetchTeamsCOPRs({ teamNumber: resultOPR });
+      getTeamsEPAs({ teamNumber: resultEPA });
 
       const generalData: GeneralData = {
         teamNumber: Number(teamNumber),
@@ -47,14 +59,17 @@ const formsToGeneralData = (
           tele: calculateAverageClimbsScore(teamForms).tele,
           highestClimbLevel: findMaxClimbLevel(teamForms),
         },
-        opr: ,
+        copr: resultOPR.fuelTotal,
         movement: {
           passTrenchCount: findTimesMovementEvent(teamForms, "trenchPass"),
           passBumpCount: findTimesMovementEvent(teamForms, "bumpPass"),
           stuckBumpCount: findTimesMovementEvent(teamForms, "bumpStuck"),
         },
-        epa: 0,
-        averagePointsPerMatch: 0,
+        epa: resultEPA.breakdown.total_points,
+        averagePointsPerMatch: calculateTotalGamePoints(
+          forms,
+          bpses[teamNumber],
+        ),
       };
 
       return generalData;
