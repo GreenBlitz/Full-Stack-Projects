@@ -34,4 +34,4 @@ export interface TeamData {
   noShowMatches: Match[];
 }
 
-export type GamePhase = "tele" | "auto" | "fullGame";
+export type GamePhase = "tele" | "auto";

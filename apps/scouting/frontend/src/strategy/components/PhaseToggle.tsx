@@ -19,7 +19,6 @@ export const PhaseToggle: FC<{
   }[] = [
     { id: "auto", label: "Auto", icon: IoPlayOutline },
     { id: "tele", label: "Tele", icon: FiZap },
-    { id: "fullGame", label: "Full", icon: LuLayoutGrid },
   ];
 
   const handlePress = (mode: GamePhase) => {
