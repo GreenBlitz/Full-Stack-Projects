@@ -1,46 +1,33 @@
 // בס"ד
 
 import { useState, type FC } from "react";
-import type {
-  Alliance,
-  AllianceTeams,
-  MatchType,
-  SuperMetricKey,
-  SuperRatingValue,
-  SuperSection,
-  TeamSuperScout,
-} from "@repo/scouting_types";
 import {
-  SUPER_SCOUT_API_URL,
-  createEmptyAllianceTeams,
-  ALLIANCE_SIZE,
-} from "./metrics";
+  type Alliance,
+  type AllianceTeams,
+  type MatchType,
+} from "@repo/scouting_types";
 import { TeamCard } from "./TeamCard";
 import { MatchInfoCard } from "./MatchInfoCard";
 
 type TeamIndex = 0 | 1 | 2;
 
-const updateTeamAt = (
-  prev: AllianceTeams,
-  index: TeamIndex,
-  patch: Partial<TeamSuperScout>,
-): AllianceTeams => {
-  const updated = [...prev] as AllianceTeams;
-  updated[index] = { ...updated[index], ...patch };
-  return updated;
-};
+const createEmptyAllianceTeam = (): AllianceTeams[number] => ({
+  active: "",
+  inactive: "",
+  driving: {
+    comments: "",
+    rating: null,
+  },
+  faults: "",
+  teamNumber: 0,
+});
 
-const updateTeamSection = (
-  prev: AllianceTeams,
-  index: TeamIndex,
-  key: SuperMetricKey,
-  sectionPatch: Partial<SuperSection>,
-): AllianceTeams => {
-  const team = prev[index];
-  return updateTeamAt(prev, index, {
-    [key]: { ...team[key], ...sectionPatch },
-  });
-};
+const ALLIANCE_SIZE = 3;
+const createEmptyAllianceTeams = (): AllianceTeams => [
+  createEmptyAllianceTeam(),
+  createEmptyAllianceTeam(),
+  createEmptyAllianceTeam(),
+];
 
 export const SuperScoutTab: FC = () => {
   const [matchNumber, setMatchNumber] = useState(0);
@@ -56,14 +43,9 @@ export const SuperScoutTab: FC = () => {
       return;
     }
 
-    if (teams.some((t) => t.teamNumber <= 0)) {
-      alert("Please enter valid team numbers for all 3 teams.");
-      return;
-    }
-
     setIsSubmitting(true);
     try {
-      const response = await fetch(SUPER_SCOUT_API_URL, {
+      const response = await fetch("/api/v1/super", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -128,22 +110,12 @@ export const SuperScoutTab: FC = () => {
       <TeamCard
         teamIndex={activeTeamIndex}
         teamData={teams[activeTeamIndex]}
-        onTeamNumberChange={(num) =>
-          setTeams((prev) =>
-            updateTeamAt(prev, activeTeamIndex, { teamNumber: num }),
-          )
-        }
-        onRatingChange={(key, rating) =>
-          setTeams((prev) =>
-            updateTeamSection(prev, activeTeamIndex, key, { rating }),
-          )
-        }
-        onCommentChange={(key, comment) =>
-          setTeams((prev) =>
-            updateTeamSection(prev, activeTeamIndex, key, {
-              info: comment || undefined,
-            }),
-          )
+        updateTeam={(team) =>
+          setTeams((prev) => {
+            const copy: AllianceTeams = [...prev];
+            copy[activeTeamIndex] = team;
+            return copy;
+          })
         }
       />
 
