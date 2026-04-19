@@ -62,7 +62,7 @@ export const TeamCard: FC<TeamCardProps> = ({
                   driving: {
                     rating:
                       teamData.driving.rating === rating
-                        ? undefined
+                        ? null
                         : (rating as TeamSuperScout["driving"]["rating"]),
                     comments: teamData.driving.comments,
                   },
@@ -80,6 +80,36 @@ export const TeamCard: FC<TeamCardProps> = ({
           ))}
         </div>
       </MetricCard>
+      <MetricCard
+        label={"Active"}
+        onChange={(text) =>
+          updateTeam({
+            ...teamData,
+            active: text,
+          })
+        }
+        text={teamData.active}
+      />
+      <MetricCard
+        label={"Inactive"}
+        onChange={(text) =>
+          updateTeam({
+            ...teamData,
+            inactive: text,
+          })
+        }
+        text={teamData.inactive}
+      />
+      <MetricCard
+        label={"Faults"}
+        onChange={(text) =>
+          updateTeam({
+            ...teamData,
+            faults: text,
+          })
+        }
+        text={teamData.faults}
+      />
     </div>
   </div>
 );

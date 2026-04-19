@@ -29,7 +29,7 @@ const createEmptyAllianceTeam = (): AllianceTeams[number] => ({
   inactive: "",
   driving: {
     comments: "",
-    rating: undefined,
+    rating: null,
   },
   faults: "",
   teamNumber: 0,

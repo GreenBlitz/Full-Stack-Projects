@@ -18,7 +18,7 @@ export const teamSuperScoutCodec = t.type({
         6: null,
         7: null,
       }),
-      t.undefined,
+      t.null,
     ]),
   }),
   faults: t.string,
