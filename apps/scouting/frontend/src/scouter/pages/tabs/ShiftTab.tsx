@@ -1,18 +1,9 @@
 // בס"ד
-import { useMemo, useState, type FC } from "react";
+import { useState, type FC } from "react";
 import type { TabProps } from "../ScoutMatch";
-import { ScoreMap, defaultPoint } from "../../components/ScoreMap";
-import type {
-  Alliance,
-  Point,
-  ScoutingForm,
-  ShiftType,
-} from "@repo/scouting_types";
+import type { ScoutingForm, ShiftType } from "@repo/scouting_types";
 import { MovementForm } from "../../components/MovementForm";
-import { usePositionRecording } from "../../hooks/usePositionRecording";
-import { isEmpty } from "@repo/array-functions";
 import { ClimbSection } from "../../components/ClimbSection";
-import Stopwatch from "../../components/stopwatch";
 
 interface ShiftTabProps extends TabProps {
   tabIndex: number;
@@ -27,19 +18,12 @@ export const ShiftTab: FC<ShiftTabProps> = ({
   originTime,
   currentForm,
 }) => {
-  const [mapPosition, setMapPosition] = useState<Point>();
-  const [mapZone, setMapZone] = useState<Alliance>(alliance);
-  const { recordedPositionsRef, start, stop } =
-    usePositionRecording(mapPosition);
   const [isClimbing, setIsClimbing] = useState(false);
-
-  const isAuto = shiftType === "auto";
-  const gamePhase = isAuto ? "auto" : "tele";
 
   if (isClimbing) {
     return (
       <ClimbSection
-        isAuto={isAuto}
+        isAuto={false}
         setForm={setForm}
         currentForm={currentForm}
         originTime={originTime}
@@ -52,86 +36,49 @@ export const ShiftTab: FC<ShiftTabProps> = ({
     );
   }
 
-  const getEvents = (form: ScoutingForm) => {
-    if (shiftType === "auto") {
-      return form.auto.shootEvents;
-    }
+  const getCurrentShift = () => {
     if (shiftType === "transition") {
-      return form.tele.transitionShift.shootEvents;
+      return currentForm.tele.transitionShift;
     }
     if (shiftType === "endgame") {
-      return form.tele.endgameShift.shootEvents;
+      return currentForm.tele.endgameShift;
     }
-    return form.tele.shifts[tabIndex].shootEvents;
+    return currentForm.tele.shifts[tabIndex];
   };
 
-  const handleSetForm = (cycle: { start: number; end: number }) => {
-    setForm((prevForm) => {
-      const prevEvents = getEvents(prevForm);
-      const positions = isEmpty(recordedPositionsRef.current)
-        ? [mapPosition ?? { ...defaultPoint }]
-        : [...recordedPositionsRef.current];
-      prevEvents.push({
-        interval: cycle,
-        positions,
-      });
-
-      recordedPositionsRef.current = [];
-      return { ...prevForm };
-    });
+  const makeNewShifts = (
+    shift: ScoutingForm["tele"]["transitionShift"],
+    shifts: ScoutingForm["tele"]["shifts"],
+  ) => {
+    if (shiftType === "transition") {
+      return { transitionShift: shift };
+    }
+    if (shiftType === "endgame") {
+      return { endgameShift: shift };
+    }
+    const newShifts: ScoutingForm["tele"]["shifts"] = [...shifts];
+    newShifts[tabIndex] = shift;
+    return { shifts: newShifts };
   };
-
-  const scoreMap = (
-    <div className="flex-1 min-w-0 h-full">
-      <ScoreMap
-        setPosition={setMapPosition}
-        currentPoint={mapPosition}
-        alliance={alliance}
-        mapZone={mapZone}
-      />
-    </div>
-  );
-
-  const events = useMemo(() => getEvents(currentForm).length, [currentForm]);
 
   return (
     <div className="flex flex-row h-full w-full gap-3">
-      {alliance === "red" && scoreMap}
       <div className="flex flex-col items-center gap-0.5 sm:gap-1 shrink-0 w-32 sm:w-36 min-h-0 py-0.5 sm:py-1">
-        <Stopwatch
-          addCycleTimeSeconds={handleSetForm}
-          originTime={originTime}
-          disabled={mapPosition === undefined}
-          size="compact"
-          onStart={start}
-          onStop={stop}
-          events={events}
-        />
         <MovementForm
           setMovement={(value) => {
             setForm((prevForm) => ({
               ...prevForm,
-              [gamePhase]: {
-                ...prevForm[gamePhase],
-                movement: value,
+              tele: {
+                ...prevForm.tele,
+
+                ...makeNewShifts(value, prevForm.tele.shifts),
               },
             }));
           }}
-          currentMovement={currentForm[gamePhase].movement}
+          currentMovement={getCurrentShift()}
         />
 
-        {gamePhase === "tele" && (
-          <button
-            className={`bg-${mapZone}-500 h-8 sm:h-10 w-32 text-[10px] sm:text-xs px-2`}
-            onClick={() => {
-              setMapZone((prev) => (prev === "red" ? "blue" : "red"));
-            }}
-          >
-            Field Side
-          </button>
-        )}
-
-        {(shiftType === "auto" || shiftType === "endgame") && (
+        {shiftType === "endgame" && (
           <button
             className={`bg-amber-600 h-8 sm:h-10 w-32 text-[10px] sm:text-xs px-2`}
             onClick={() => {
@@ -142,7 +89,6 @@ export const ShiftTab: FC<ShiftTabProps> = ({
           </button>
         )}
       </div>
-      {alliance === "blue" && scoreMap}
     </div>
   );
 };
