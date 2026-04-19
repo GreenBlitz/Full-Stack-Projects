@@ -1,20 +1,14 @@
 // בס"ד
 
 import { useState, type FC } from "react";
-import type {
-  Alliance,
-  AllianceTeams,
-  MatchType,
-  SuperMetricKey,
-  SuperRatingValue,
-  SuperSection,
-  TeamSuperScout,
-} from "@repo/scouting_types";
 import {
-  SUPER_SCOUT_API_URL,
-  createEmptyAllianceTeams,
-  ALLIANCE_SIZE,
-} from "./metrics";
+  superScoutCodec,
+  type Alliance,
+  type AllianceTeams,
+  type MatchType,
+  type SuperMetricKey,
+  type TeamSuperScout,
+} from "@repo/scouting_types";
 import { TeamCard } from "./TeamCard";
 import { MatchInfoCard } from "./MatchInfoCard";
 
@@ -30,17 +24,24 @@ const updateTeamAt = (
   return updated;
 };
 
-const updateTeamSection = (
-  prev: AllianceTeams,
-  index: TeamIndex,
-  key: SuperMetricKey,
-  sectionPatch: Partial<SuperSection>,
-): AllianceTeams => {
-  const team = prev[index];
-  return updateTeamAt(prev, index, {
-    [key]: { ...team[key], ...sectionPatch },
-  });
-};
+const createEmptyAllianceTeam = (): AllianceTeams[number] => ({
+  active: "",
+  inactive: "",
+  driving: {
+    comments: "",
+    rating: undefined,
+  },
+  faults: "",
+  teamNumber: 0,
+});
+
+const ALLIANCE_SIZE = 3;
+const createEmptyAllianceTeams = (): AllianceTeams => [
+  createEmptyAllianceTeam(),
+  createEmptyAllianceTeam(),
+  createEmptyAllianceTeam(),
+];
+
 
 export const SuperScoutTab: FC = () => {
   const [matchNumber, setMatchNumber] = useState(0);
@@ -63,7 +64,7 @@ export const SuperScoutTab: FC = () => {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch(SUPER_SCOUT_API_URL, {
+      const response = await fetch("/api/v1/super", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -128,22 +129,12 @@ export const SuperScoutTab: FC = () => {
       <TeamCard
         teamIndex={activeTeamIndex}
         teamData={teams[activeTeamIndex]}
-        onTeamNumberChange={(num) =>
-          setTeams((prev) =>
-            updateTeamAt(prev, activeTeamIndex, { teamNumber: num }),
-          )
-        }
-        onRatingChange={(key, rating) =>
-          setTeams((prev) =>
-            updateTeamSection(prev, activeTeamIndex, key, { rating }),
-          )
-        }
-        onCommentChange={(key, comment) =>
-          setTeams((prev) =>
-            updateTeamSection(prev, activeTeamIndex, key, {
-              info: comment || undefined,
-            }),
-          )
+        updateTeam={(team) =>
+          setTeams((prev) => {
+            const copy: AllianceTeams = [...prev];
+            copy[activeTeamIndex] = team;
+            return copy;
+          })
         }
       />
 
