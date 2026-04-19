@@ -59,8 +59,17 @@ const serdeClimbAuto = createRecordSerde<AutoClimb>({
   level: serdeEnumedString(["L0", "L1"]),
 });
 
+const MOVEMENT_PASS_BITS = 6;
+
+const serdeSideMovement = createRecordSerde({
+  bumpStuck: serdeUnsignedInt(MOVEMENT_PASS_BITS),
+  bumpPass: serdeUnsignedInt(MOVEMENT_PASS_BITS),
+  trenchPass: serdeUnsignedInt(MOVEMENT_PASS_BITS),
+});
+
 const serdeMovement = createRecordSerde({
-  bumpStuck: serdeBool(),
+  red: serdeSideMovement,
+  blue: serdeSideMovement,
 });
 
 const serdeTele = createRecordSerde<typeof defaultTele>({

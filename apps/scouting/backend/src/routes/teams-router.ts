@@ -19,13 +19,14 @@ import { StatusCodes } from "http-status-codes";
 import { castItem } from "@repo/type-utils";
 import {
   compareMatches,
+  defaultTele,
   excludeNoShowForms,
   isNoShowForm,
+  Movement,
   teamsProps,
   type EPA,
   type Match,
   type ScoutingForm,
-  type Shift,
   type TeamData,
   type TeamOPR,
 } from "@repo/scouting_types";
@@ -36,11 +37,6 @@ import { fetchTeamsCOPRs } from "./tba-router";
 import { getTeamsEPAs } from "../middleware/epa";
 
 export const teamsRouter = Router();
-
-interface SectionForm {
-  match: Match;
-  shifts: Shift[];
-}
 
 const uniqueNoShowMatches = (forms: ScoutingForm[]): Match[] => {
   const seen = new Set<string>();
@@ -55,6 +51,45 @@ const uniqueNoShowMatches = (forms: ScoutingForm[]): Match[] => {
   return [...matches].sort(compareMatches);
 };
 
+const addMovements = (
+  movement1: Movement["red"],
+  movement2: Movement["red"],
+): Movement["red"] => ({
+  trenchPass: movement1.trenchPass + movement2.trenchPass,
+  bumpStuck: movement1.bumpStuck + movement2.bumpStuck,
+  bumpPass: movement1.bumpPass + movement2.bumpPass,
+});
+
+const addShifts = (
+  shift1: ScoutingForm["tele"]["transitionShift"],
+  shift2: ScoutingForm["tele"]["transitionShift"],
+) => ({
+  red: addMovements(shift1.red, shift2.red),
+  blue: addMovements(shift1.blue, shift2.blue),
+});
+
+const collectMovementInfoOfField = (forms: ScoutingForm[]) => {
+  const teles = forms.map((form) => form.tele);
+  const averagePerShift = teles.reduce<ScoutingForm["tele"]>(
+    (acc, tele) => ({
+      transitionShift: addShifts(tele.transitionShift, acc.transitionShift),
+      endgameShift: addShifts(tele.endgameShift, acc.endgameShift),
+      shifts: [
+        addShifts(tele.shifts[0], acc.shifts[0]),
+        addShifts(tele.shifts[1], acc.shifts[1]),
+        addShifts(tele.shifts[2], acc.shifts[2]),
+        addShifts(tele.shifts[3], acc.shifts[3]),
+      ],
+      climb: acc.climb,
+    }),
+    defaultTele,
+  );
+
+  return {
+    averagePerShift,
+  };
+};
+
 export const processTeam = (
   forms: ScoutingForm[],
   coprs?: TeamOPR,
@@ -62,28 +97,13 @@ export const processTeam = (
 ): TeamData => {
   const statsForms = excludeNoShowForms(forms);
   const tele = {
-    movement: {
-      bumpStuck: calculateSum(statsForms, (form) =>
-        Number(form.tele.movement.bumpStuck),
-      ),
-    },
+    movement: collectMovementInfoOfField(forms),
     climbs: statsForms.map((form) => ({
       match: form.match,
       ...form.tele.climb,
     })),
   };
   const auto = {
-    movement: {
-      bumpStuck: calculateSum(statsForms, (form) =>
-        Number(form.auto.movement.bumpStuck),
-      ),
-      bumpPass: calculateSum(statsForms, (form) =>
-        Number(form.auto.movement.bumpPass),
-      ),
-      trenchPass: calculateSum(statsForms, (form) =>
-        Number(form.auto.movement.trenchPass),
-      ),
-    },
     climbs: statsForms.map((form) => ({
       match: form.match,
       ...form.auto.climb,
@@ -159,7 +179,7 @@ teamsRouter.get("/", async (req, res) => {
           ),
       ),
     ),
-    map((teams) => mapObject(teams,(forms) => ({forms}))),
+    map((teams) => mapObject(teams, (forms) => ({ forms }))),
     flatMap(fetchTeamsCOPRs),
     flatMap(getTeamsEPAs),
     map((teams) =>
