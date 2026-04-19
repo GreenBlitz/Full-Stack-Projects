@@ -16,8 +16,10 @@ export const AutoTab: FC<TabProps> = ({
   currentForm,
 }) => {
   const [mapPosition, setMapPosition] = useState<Point>();
-  const { recordedPositionsRef, start, stop } =
-    usePositionRecording(mapPosition);
+  const { recordedPositionsRef, start, stop } = usePositionRecording(
+    mapPosition,
+    originTime,
+  );
   useEffect(
     () => () => {
       setForm({

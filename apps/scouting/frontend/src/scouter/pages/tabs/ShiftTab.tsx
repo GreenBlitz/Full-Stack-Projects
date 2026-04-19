@@ -62,33 +62,31 @@ export const ShiftTab: FC<ShiftTabProps> = ({
   };
 
   return (
-    <div className="flex flex-row h-full w-full gap-3">
-      <div className="flex flex-col items-center gap-0.5 sm:gap-1 shrink-0 w-32 sm:w-36 min-h-0 py-0.5 sm:py-1">
-        <MovementForm
-          setMovement={(value) => {
-            setForm((prevForm) => ({
-              ...prevForm,
-              tele: {
-                ...prevForm.tele,
+    <div className="flex flex-row h-full w-full gap-3 items-center justify-center">
+      <MovementForm
+        setMovement={(value) => {
+          setForm((prevForm) => ({
+            ...prevForm,
+            tele: {
+              ...prevForm.tele,
 
-                ...makeNewShifts(value, prevForm.tele.shifts),
-              },
-            }));
+              ...makeNewShifts(value, prevForm.tele.shifts),
+            },
+          }));
+        }}
+        currentMovement={getCurrentShift()}
+      />
+
+      {shiftType === "endgame" && (
+        <button
+          className={`bg-amber-600 h-8 sm:h-10 w-32 text-[10px] sm:text-xs px-2`}
+          onClick={() => {
+            setIsClimbing(true);
           }}
-          currentMovement={getCurrentShift()}
-        />
-
-        {shiftType === "endgame" && (
-          <button
-            className={`bg-amber-600 h-8 sm:h-10 w-32 text-[10px] sm:text-xs px-2`}
-            onClick={() => {
-              setIsClimbing(true);
-            }}
-          >
-            Climb
-          </button>
-        )}
-      </div>
+        >
+          Climb
+        </button>
+      )}
     </div>
   );
 };

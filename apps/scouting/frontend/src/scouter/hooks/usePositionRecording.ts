@@ -25,13 +25,13 @@ const DEFAULT_RECORDING_INTERVAL_MS = 100;
 
 export const usePositionRecording = (
   currentPosition: Point | undefined,
+  originTime: number,
   recordingIntervalMs: number = DEFAULT_RECORDING_INTERVAL_MS,
 ): PositionRecordingResult => {
   const recordedPositionsRef = useRef<TimedPoint[]>([]);
   const positionIntervalRef = useRef<number | null>(null);
   const currentPositionRef = useRef<Point | undefined>(undefined);
   const recordingIntervalRef = useRef(recordingIntervalMs);
-  const initialTimeRef = useRef<number>(0);
 
   useEffect(() => {
     currentPositionRef.current = currentPosition;
@@ -48,14 +48,16 @@ export const usePositionRecording = (
 
     recordedPositionsRef.current = [];
     const initialPosition = currentPositionRef.current ?? { ...defaultPoint };
-    recordedPositionsRef.current.push({ point: initialPosition, time: 0 });
-    initialTimeRef.current = Date.now();
+    recordedPositionsRef.current.push({
+      point: initialPosition,
+      time: originTime,
+    });
 
     positionIntervalRef.current = window.setInterval(() => {
       const currentPos = currentPositionRef.current ?? { ...defaultPoint };
       recordedPositionsRef.current.push({
         point: currentPos,
-        time: Date.now() - initialTimeRef.current,
+        time: Date.now() - originTime,
       });
     }, recordingIntervalRef.current);
   });
