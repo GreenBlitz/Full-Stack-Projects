@@ -9,9 +9,5 @@ export interface PicklistStats {
 }
 
 export interface PicklistGameStats {
-  fuel: number;
-  closeFuel: number;
-  mediumFuel: number;
-  farFuel: number;
   climb: number;
 }

@@ -4,7 +4,6 @@ import type {
   AutoClimb,
   AutoMovement,
   Climb,
-  FuelObject,
   Match,
   TeleClimb,
   TeleMovement,
@@ -21,13 +20,6 @@ export const teamsProps = t.type({
 export const ACCURACY_DISTANCES = [150, 300, 2000] as const;
 
 export type MatchedEntry<Entry> = { match: Match } & Entry;
-export interface SectionTeamData {
-  fuel: MatchedEntry<FuelObject>[];
-  accuracy: Record<
-    (typeof ACCURACY_DISTANCES)[number],
-    FuelObject & { amount: number }
-  >;
-}
 interface SectionSpecificTeamData<
   Movement extends TeleMovement = TeleMovement,
   Climbing extends Climb = TeleClimb,
@@ -37,10 +29,9 @@ interface SectionSpecificTeamData<
 }
 
 export interface TeamData {
-  tele: SectionTeamData & SectionSpecificTeamData;
-  auto: SectionTeamData & SectionSpecificTeamData<AutoMovement, AutoClimb>;
-  fullGame: SectionTeamData;
-  metrics: { epa: EPA | undefined; bps: number; coprs: TeamOPR | undefined };
+  tele: SectionSpecificTeamData;
+  auto: SectionSpecificTeamData<AutoMovement, AutoClimb>;
+  metrics: { epa: EPA | undefined; coprs: TeamOPR | undefined };
   /** Matches scouted as no-show (excluded from stats above). */
   noShowMatches: Match[];
 }

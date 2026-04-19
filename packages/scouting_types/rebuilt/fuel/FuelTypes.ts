@@ -2,11 +2,6 @@
 
 import type { ClimbLevel, Point } from "../scouting_form";
 
-export interface GeneralFuelData {
-  fullGame: FuelObject;
-  auto: FuelObject;
-  tele: FuelObject;
-}
 
 export interface GeneralClimbData {
   fullGame: number;
@@ -16,22 +11,9 @@ export interface GeneralClimbData {
 
 export interface GeneralData {
   teamNumber: number;
-  fuelData: GeneralFuelData;
   highestClimbLevel: ClimbLevel;
   avarageClimbPoints: GeneralClimbData;
 }
-
-export type GameTime = keyof GeneralFuelData;
-
-
-export type FuelEvents = "scored" | "shot" | "missed" | "passed";
-
-export type FuelObject = GameObject<
-  FuelEvents,
-  {
-    positions: Point[];
-  }
->;
 
 export type GamePeriod = "auto" | "fullGame" | "teleop";
 
@@ -50,5 +32,3 @@ export interface GameObjectWithPoints<T extends string> {
   calculatePoints: (gameObject: GameObject<T, unknown>) => number;
   calculateRP: (gameObject: GameObject<T, unknown>) => number;
 }
-
-export type TeamNumberAndFuelData = Record<number, GeneralFuelData>;

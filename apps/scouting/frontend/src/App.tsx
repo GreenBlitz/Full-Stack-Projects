@@ -24,7 +24,6 @@ const App: FC = () => {
         element={<Leaderboard competition={CURRENT_COMPETITION} />}
       />
       <Route path="/settings" element={<SettingsPage />} />
-      <Route path="/bps" element={<BpsBase />} />
       <Route path="/strategy" element={<StrategyNavigationBar />}>
         <Route path="team" element={<TeamTab />} />
         <Route path="general" element={<GeneralDataTable filters={{}} />} />

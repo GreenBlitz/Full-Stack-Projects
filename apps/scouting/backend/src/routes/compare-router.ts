@@ -2,7 +2,6 @@
 
 import {
   excludeNoShowForms,
-  type BPS,
   type ScoutingForm,
   type TeleClimbLevel,
   type TimesClimedToLevels,
@@ -10,21 +9,10 @@ import {
 import { Router } from "express";
 import { getFormsCollection } from "./forms-router";
 import { pipe } from "fp-ts/lib/function";
-import {
-  bind,
-  bindTo,
-  filterOrElse,
-  fold,
-  map,
-} from "fp-ts/lib/TaskEither";
+import { bind, bindTo, filterOrElse, fold, map } from "fp-ts/lib/TaskEither";
 import { mongofyQuery, flatTryCatch } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
 import { calculateSum, firstElement, isEmpty } from "@repo/array-functions";
-import {
-  calcAverageGeneralFuelData,
-  generalCalculateFuel,
-} from "../fuel/fuel-general";
-import { getTeamBPS } from "./bps-router";
 import { isSingleTeam } from "../verification/functions";
 
 export const compareRouter = Router();
@@ -34,21 +22,6 @@ type GamePeriod = "auto" | "fullGame" | "teleop";
 const DIGITS_AFTER_DECIMAL_DOT = 2;
 const INITIAL_COUNTER_VALUE = 0;
 const INCREMENT = 1;
-
-const calculateAverageScoredFuel = (
-  forms: ScoutingForm[],
-  gamePeriod: GamePeriod,
-  bpses: BPS[],
-) => {
-  const generalFuelData = forms.map((form) =>
-    generalCalculateFuel(form, bpses),
-  );
-  const averagedFuelData = calcAverageGeneralFuelData(generalFuelData);
-
-  return parseFloat(
-    averagedFuelData[gamePeriod].scored.toFixed(DIGITS_AFTER_DECIMAL_DOT),
-  );
-};
 
 const findMaxClimbLevel = (forms: ScoutingForm[]) => {
   const fullGameClimbedLevels = [
@@ -105,36 +78,30 @@ compareRouter.get("/", async (req, res) => {
         reason: `DB Error: ${error}`,
       }),
     ),
-    filterOrElse((forms) => !isEmpty(forms), () => ({
-      status: StatusCodes.BAD_REQUEST,
-      reason:
-        "Compare Two Validation Error: No forms match the query.",
-    })),
+    filterOrElse(
+      (forms) => !isEmpty(forms),
+      () => ({
+        status: StatusCodes.BAD_REQUEST,
+        reason: "Compare Two Validation Error: No forms match the query.",
+      }),
+    ),
     map(excludeNoShowForms),
-    filterOrElse((forms) => !isEmpty(forms), () => ({
-      status: StatusCodes.BAD_REQUEST,
-      reason:
-        "Compare Two Validation Error: No valid scouting data (all matches marked no-show).",
-    })),
+    filterOrElse(
+      (forms) => !isEmpty(forms),
+      () => ({
+        status: StatusCodes.BAD_REQUEST,
+        reason:
+          "Compare Two Validation Error: No valid scouting data (all matches marked no-show).",
+      }),
+    ),
     filterOrElse(isSingleTeam, () => ({
       status: StatusCodes.BAD_REQUEST,
       reason:
         "Compare Two Validation Error: Forms contain data from multiple different teams.",
     })),
     bindTo("teamForms"),
-    bind("bpses", ({ teamForms }) =>
-      getTeamBPS(firstElement(teamForms).teamNumber),
-    ),
-    map(({ teamForms, bpses }) => ({
+    map(({ teamForms }) => ({
       teamNumber: firstElement(teamForms).teamNumber,
-      averageFuel: {
-        averageFuelInGame: calculateAverageScoredFuel(
-          teamForms,
-          "fullGame",
-          bpses,
-        ),
-        averageFuelInAuto: calculateAverageScoredFuel(teamForms, "auto", bpses),
-      },
       climb: {
         maxClimbLevel: findMaxClimbLevel(teamForms),
         timesClimbedToMax: findTimesClimbedToMax(
