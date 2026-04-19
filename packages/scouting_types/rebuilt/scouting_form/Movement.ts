@@ -8,8 +8,8 @@ const sideMovement = t.type({
 });
 
 export const teleMovementCodec = t.type({
-  red: sideMovement,
-  blue: sideMovement,
+  ally: sideMovement,
+  opponent: sideMovement,
 });
 
 export const defaultSideMovement: t.TypeOf<typeof sideMovement> = {
@@ -19,8 +19,8 @@ export const defaultSideMovement: t.TypeOf<typeof sideMovement> = {
 };
 
 export const defaultMovement: t.TypeOf<typeof teleMovementCodec> = {
-  red: defaultSideMovement,
-  blue: defaultSideMovement,
+  ally: defaultSideMovement,
+  opponent: defaultSideMovement,
 };
 
 export type TeleMovement = t.TypeOf<typeof teleMovementCodec>;

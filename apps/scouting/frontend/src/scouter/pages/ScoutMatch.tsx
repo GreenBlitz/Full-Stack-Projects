@@ -269,6 +269,10 @@ export const ScoutMatch: FC = () => {
         : "bg-black/40",
     );
 
+    if (activeTabIndex === 1 && timerData.elapsedMs > 100) {
+      return;
+    }
+
     const hasJustStartedOrResumed =
       !previousIsRunningRef.current && timerData.isRunning;
 

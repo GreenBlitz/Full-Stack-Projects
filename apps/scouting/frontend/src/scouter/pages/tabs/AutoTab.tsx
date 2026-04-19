@@ -24,7 +24,13 @@ export const AutoTab: FC<TabProps> = ({
     () => () => {
       setForm({
         ...currentForm,
-        auto: { ...currentForm.auto, path: recordedPositionsRef.current },
+        auto: {
+          ...currentForm.auto,
+          path:
+            recordedPositionsRef.current.length > 10
+              ? recordedPositionsRef.current
+              : currentForm.auto.path,
+        },
       });
     },
     [],

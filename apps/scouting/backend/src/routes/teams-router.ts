@@ -52,9 +52,9 @@ const uniqueNoShowMatches = (forms: ScoutingForm[]): Match[] => {
 };
 
 const addMovements = (
-  movement1: Movement["red"],
-  movement2: Movement["red"],
-): Movement["red"] => ({
+  movement1: Movement["ally"],
+  movement2: Movement["ally"],
+): Movement["ally"] => ({
   trenchPass: movement1.trenchPass + movement2.trenchPass,
   bumpStuck: movement1.bumpStuck + movement2.bumpStuck,
   bumpPass: movement1.bumpPass + movement2.bumpPass,
@@ -64,8 +64,8 @@ const addShifts = (
   shift1: ScoutingForm["tele"]["transitionShift"],
   shift2: ScoutingForm["tele"]["transitionShift"],
 ) => ({
-  red: addMovements(shift1.red, shift2.red),
-  blue: addMovements(shift1.blue, shift2.blue),
+  ally: addMovements(shift1.ally, shift2.ally),
+  opponent: addMovements(shift1.opponent, shift2.opponent),
 });
 
 const collectMovementInfoOfField = (forms: ScoutingForm[]) => {

@@ -74,6 +74,7 @@ export const ShiftTab: FC<ShiftTabProps> = ({
             },
           }));
         }}
+        allianceColor={alliance}
         currentMovement={getCurrentShift()}
       />
 

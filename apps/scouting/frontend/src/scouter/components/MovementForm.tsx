@@ -1,13 +1,13 @@
 import type { Dispatch, FC } from "react";
-import type { Movement } from "@repo/scouting_types";
+import type { Alliance, Movement } from "@repo/scouting_types";
 
 // Types for better internal handling
-type AllianceColor = "red" | "blue";
-type MovementKey = keyof Movement["red"];
+type MovementKey = keyof Movement["ally"];
 
 interface MovementFormProps {
   setMovement: Dispatch<Movement>;
   currentMovement: Movement;
+  allianceColor: Alliance;
 }
 
 /**
@@ -17,18 +17,24 @@ interface MovementFormProps {
 export const MovementForm: FC<MovementFormProps> = ({
   setMovement,
   currentMovement,
+  allianceColor,
 }) => {
-  const alliances: AllianceColor[] = ["red", "blue"];
+  const alliances: Alliance[] = ["red", "blue"];
 
+  const toAlignment = (color: Alliance) =>
+    color === allianceColor ? "ally" : "opponent";
   return (
     <div className="grid grid-cols-2 gap-6 p-4 max-w-2xl mx-auto">
       {alliances.map((color) => (
         <MovementSideForm
           key={color}
           color={color}
-          currentMovement={currentMovement[color]}
+          currentMovement={currentMovement[toAlignment(color)]}
           setMovement={(newSideData) =>
-            setMovement({ ...currentMovement, [color]: newSideData })
+            setMovement({
+              ...currentMovement,
+              [toAlignment(color)]: newSideData,
+            })
           }
         />
       ))}
@@ -37,9 +43,9 @@ export const MovementForm: FC<MovementFormProps> = ({
 };
 
 interface MovementSideFormProps {
-  setMovement: (data: Movement["red"]) => void;
-  currentMovement: Movement["red"];
-  color: AllianceColor;
+  setMovement: (data: Movement["ally"]) => void;
+  currentMovement: Movement["ally"];
+  color: Alliance;
 }
 
 /**
@@ -82,7 +88,7 @@ interface MovementButtonProps {
   label: string;
   onClick: () => void;
   count: number;
-  color: AllianceColor;
+  color: Alliance;
 }
 
 /**
