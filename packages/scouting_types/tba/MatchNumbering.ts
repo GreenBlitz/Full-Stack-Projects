@@ -4,26 +4,34 @@ import type { TBAMatch } from "./TBAMatch";
 
 const PLAYOFF_MATCHES_UNTIL_FINALS = 13;
 
-export const tbaMatchToRegularMatch = (tbaMatch: TBAMatch): Match => {
-  const matchNumber = tbaMatch.match_number;
-  const setNumber = tbaMatch.set_number;
-  const matchLevel = tbaMatch.comp_level;
-
-  if (matchLevel === "pc") {
-    return { number: matchNumber, type: "practice" };
+/** Maps TBA `comp_level` / set / match numbers to app `Match` (quals, practice, playoffs). */
+export const tbaScheduleFieldsToMatch = (
+  comp_level: string,
+  set_number: number,
+  match_number: number,
+): Match => {
+  if (comp_level === "pc") {
+    return { number: match_number, type: "practice" };
   }
-  if (matchLevel === "qm") {
-    return { number: matchNumber, type: "qualification" };
+  if (comp_level === "qm") {
+    return { number: match_number, type: "qualification" };
   }
 
-  if (matchLevel === "sf") {
-    return { number: setNumber, type: "playoff" };
+  if (comp_level === "sf") {
+    return { number: set_number, type: "playoff" };
   }
   return {
-    number: matchNumber + PLAYOFF_MATCHES_UNTIL_FINALS,
+    number: match_number + PLAYOFF_MATCHES_UNTIL_FINALS,
     type: "playoff",
   };
 };
+
+export const tbaMatchToRegularMatch = (tbaMatch: TBAMatch): Match =>
+  tbaScheduleFieldsToMatch(
+    tbaMatch.comp_level,
+    tbaMatch.set_number,
+    tbaMatch.match_number,
+  );
 
 const MATCH_TYPES_ORDER: Record<Match["type"], number> = {
   practice: 0,

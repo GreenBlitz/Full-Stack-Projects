@@ -1,10 +1,13 @@
 //בס"ד
-import { useEffect, useState, type FC, type JSX } from "react";
+import { useEffect, useMemo, useRef, useState, type FC, type JSX } from "react";
 import {
   compareMatches,
   isMatchesSame,
+  manualRowsToScheduleSlots,
+  mergeSchedulePreferManual,
   tbaMatchToRegularMatch,
   type Alliance,
+  type ManualSchedulesByCompetition,
   type Match,
   type TBAMatches2026,
   type TBAMatchesProps,
@@ -105,45 +108,62 @@ const PreMatchTab: FC<TabProps> = ({
     "tbaMatches",
     [],
   );
+  const [manualSchedulesByCompetition] =
+    useLocalStorage<ManualSchedulesByCompetition>(
+      "manualMatchScheduleByCompetition",
+      {},
+    );
   const [match, setMatch] = useState(form.match);
+  const userPickedTeamNumberRef = useRef(false);
 
   const updateTBAMatches = async () => {
     if (tbaMatches.some((tbaMatch) => tbaMatch.match_number === match.number)) {
       return;
     }
-    const newTBAMatches = await fetchGameMatches<TBAMatches2026>(
-      form.competition,
-      match,
-    );
-    setTbaMatches(newTBAMatches);
+    try {
+      const newTBAMatches = await fetchGameMatches<TBAMatches2026>(
+        form.competition,
+        match,
+      );
+      setTbaMatches(newTBAMatches);
+    } catch {
+      /* keep cached TBA matches; manual schedule still applies */
+    }
   };
-  const handleManual = () => {
-    const input = window.prompt("Enter the team number:");
 
-    if (input === null) return;
-
-    const teamNumber = parseInt(input);
-
-    setForm((prev) => ({ ...prev, teamNumber }));
+  const applyMatchUpdate = (next: Match) => {
+    userPickedTeamNumberRef.current = false;
+    setMatch(next);
   };
+
+  const mergedSlots = useMemo(() => {
+    const manualRows =
+      manualSchedulesByCompetition[form.competition] ?? [];
+    const manualSlots = manualRowsToScheduleSlots(manualRows);
+    const tbaSlots = toQualMatches(tbaMatches);
+    return mergeSchedulePreferManual(tbaSlots, manualSlots);
+  }, [tbaMatches, manualSchedulesByCompetition, form.competition]);
 
   useEffect(() => {
     setAlliance(robotPositionInfo.alliance);
   }, [robotPositionInfo]);
 
   useEffect(() => {
-    const qualMatches = toQualMatches(tbaMatches);
     const newTeam = matchMatchWithTeamNumber(
       {
         match: match,
         alliance: robotPositionInfo.alliance,
         initialLocation: robotPositionInfo.location,
       },
-      qualMatches,
+      mergedSlots,
     );
 
-    setForm((prev) => ({ ...prev, teamNumber: newTeam, match }));
-  }, [tbaMatches, match, robotPositionInfo]);
+    setForm((prev) => ({
+      ...prev,
+      teamNumber: userPickedTeamNumberRef.current ? prev.teamNumber : newTeam,
+      match,
+    }));
+  }, [mergedSlots, match, robotPositionInfo]);
 
   useEffect(() => {
     void updateTBAMatches();
@@ -172,19 +192,19 @@ const PreMatchTab: FC<TabProps> = ({
             max={MATCH_NUMBER_MAX}
             value={match.number === 0 ? undefined : match.number}
             onChange={(event) => {
-              setMatch((prev) => ({
-                ...prev,
+              applyMatchUpdate({
+                ...match,
                 number: Number(event.target.value),
-              }));
+              });
             }}
           />
           <button
             className="w-20 h-full"
             onClick={() => {
-              setMatch((prev) => ({
-                ...prev,
-                number: prev.number + MATCH_ADJUSTMENT_OFFSET,
-              }));
+              applyMatchUpdate({
+                ...match,
+                number: match.number + MATCH_ADJUSTMENT_OFFSET,
+              });
             }}
           >
             +
@@ -192,10 +212,10 @@ const PreMatchTab: FC<TabProps> = ({
           <button
             className="w-20 h-full"
             onClick={() => {
-              setMatch((prev) => ({
-                ...prev,
-                number: Math.max(prev.number - MATCH_ADJUSTMENT_OFFSET, 0),
-              }));
+              applyMatchUpdate({
+                ...match,
+                number: Math.max(match.number - MATCH_ADJUSTMENT_OFFSET, 0),
+              });
             }}
           >
             -
@@ -208,21 +228,51 @@ const PreMatchTab: FC<TabProps> = ({
           className="w-90.75 h-full"
           value={match.type}
           onChange={(event) => {
-            if (event.target.value === "manual") {
-              handleManual();
-              return;
-            }
-            setMatch((prev) => ({
-              ...prev,
+            applyMatchUpdate({
+              ...match,
               type: event.target.value as Match["type"],
-            }));
+            });
           }}
         >
           <option value="practice">Practice</option>
           <option value="qualification">Qualification</option>
           <option value="playoff">Playoff</option>
-          <option value="manual">Manual</option>
         </select>
+      </InputBox>
+      <InputBox name="Team #">
+        <div className="flex gap-1 items-center w-90.75">
+          <input
+            type="number"
+            className="w-24 h-full min-w-0"
+            value={form.teamNumber === 0 ? "" : form.teamNumber}
+            onChange={(event) => {
+              userPickedTeamNumberRef.current = true;
+              const n = Number(event.target.value);
+              setForm((prev) => ({
+                ...prev,
+                teamNumber: Number.isFinite(n) ? n : 0,
+              }));
+            }}
+          />
+          <button
+            type="button"
+            className="text-xs px-2 py-1 rounded bg-zinc-700 text-zinc-200 shrink-0"
+            onClick={() => {
+              userPickedTeamNumberRef.current = false;
+              const newTeam = matchMatchWithTeamNumber(
+                {
+                  match,
+                  alliance: robotPositionInfo.alliance,
+                  initialLocation: robotPositionInfo.location,
+                },
+                mergedSlots,
+              );
+              setForm((prev) => ({ ...prev, teamNumber: newTeam }));
+            }}
+          >
+            Use schedule
+          </button>
+        </div>
       </InputBox>
       <InputBox name="Alliance">
         <select
