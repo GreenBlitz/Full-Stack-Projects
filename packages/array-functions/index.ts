@@ -41,7 +41,7 @@ export const isEmpty = (arr: unknown[]): boolean =>
 
 export const mapObject = <K extends string, A, B>(
   obj: Record<K, A>,
-  transformation: (value: A,key: K) => B,
+  transformation: (value: A, key: K) => B,
 ): Record<K, B> => {
   /* 
    these eslint warnings are because 
@@ -50,10 +50,32 @@ export const mapObject = <K extends string, A, B>(
   */
   const entries: [K, B][] = Object.entries<A>(obj).map(([key, value]) => [
     key as K,
-    transformation(value,key as K),
+    transformation(value, key as K),
   ]);
 
   return Object.fromEntries(entries) as unknown as Record<K, B>;
+};
+
+export const mapKeys = <K1 extends string, A, K2 extends string>(
+  obj: Record<K1, A>,
+  transformation: (key: K1,value: A) => K2,
+) => {
+  const entries: [K2, A][] = Object.entries<A>(obj).map(([key, value]) => [
+    transformation(key as K1,value) as K2,
+    value,
+  ]);
+
+  return Object.fromEntries(entries) as unknown as Record<K2, A>;
+};
+
+export const flipRecord = <K extends string, A extends string>(
+  obj: Record<K, A>,
+) => {
+  const flippedEntries = Object.entries<A>(obj).map(([key, value]) => [
+    value as A,
+    key as K,
+  ]);
+  return Object.fromEntries(flippedEntries) as unknown as Record<A, K>;
 };
 
 interface Partition<T> {

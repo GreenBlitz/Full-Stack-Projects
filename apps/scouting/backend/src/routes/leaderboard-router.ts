@@ -3,13 +3,11 @@
 import { Router } from "express";
 import { getFormsCollection } from "./forms-router";
 import {
-  flatMap,
   map,
-  tryCatch,
   fold,
   filterOrElse,
 } from "fp-ts/lib/TaskEither";
-import { mongofyQuery } from "../middleware/query";
+import { mongofyQuery, flatTryCatch } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
 import { pipe } from "fp-ts/lib/function";
 import type {
@@ -60,14 +58,12 @@ const createLeaderboard = (
 leaderboardRouter.get("/", (req, res) =>
   pipe(
     getFormsCollection(),
-    flatMap((collection) =>
-      tryCatch(
-        () => collection.find(mongofyQuery(req.query)).toArray(),
-        (error) => ({
-          status: StatusCodes.INTERNAL_SERVER_ERROR,
-          reason: `DB Error: ${error}`,
-        }),
-      ),
+    flatTryCatch(
+      (collection) => collection.find(mongofyQuery(req.query)).toArray(),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `DB Error: ${error}`,
+      }),
     ),
 
     filterOrElse(isSingleCompetition, () => ({

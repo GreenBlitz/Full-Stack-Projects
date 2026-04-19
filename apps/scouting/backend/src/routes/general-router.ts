@@ -3,32 +3,29 @@
 import { Router } from "express";
 import { getFormsCollection } from "./forms-router";
 import { pipe } from "fp-ts/lib/function";
-import {
-  flatMap,
-  fold,
-  map,
-  tryCatch,
-  bindTo,
-  bind,
-} from "fp-ts/lib/TaskEither";
-import { mongofyQuery } from "../middleware/query";
+import { fold, map, bindTo, bind } from "fp-ts/lib/TaskEither";
+import { mongofyQuery, flatTryCatch } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
 
-import type {
-  BPS,
-  GeneralData,
-  ScoutingForm,
-  TeamNumberAndFuelData,
+import {
+  excludeNoShowForms,
+  type BPS,
+  type GeneralData,
+  type ScoutingForm,
+  type TeamNumberAndFuelData,
 } from "@repo/scouting_types";
 import { findMaxClimbLevel } from "../climb/calculations";
 import { calculateAverageClimbsScore } from "../climb/score";
-import { formsToFuelData, generalCalculateFuel } from "../fuel/fuel-general";
+import { formsToFuelData } from "../fuel/fuel-general";
 import { getAllBPSes } from "./bps-router";
 import { isEmpty } from "@repo/array-functions";
 
 export const generalRouter = Router();
 
-const formsToGeneralData = (forms: ScoutingForm[], bpses: Record<string,BPS[]>) => {
+const formsToGeneralData = (
+  forms: ScoutingForm[],
+  bpses: Record<string, BPS[]>,
+) => {
   const calculatedFuel: TeamNumberAndFuelData = formsToFuelData(bpses)(forms);
 
   const allGeneralData: GeneralData[] = Object.entries(calculatedFuel).map(
@@ -61,16 +58,16 @@ const formsToGeneralData = (forms: ScoutingForm[], bpses: Record<string,BPS[]>) 
 generalRouter.get("/", async (req, res) => {
   await pipe(
     getFormsCollection(),
-    flatMap((collection) =>
-      tryCatch(
-        () => collection.find(mongofyQuery(req.query)).toArray(),
-        (error) => ({
-          status: StatusCodes.INTERNAL_SERVER_ERROR,
-          reason: `DB Error: ${error}`,
-        }),
-      ),
+    flatTryCatch(
+      (collection) => collection.find(mongofyQuery(req.query)).toArray(),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `DB Error: ${error}`,
+      }),
     ),
+
     bindTo("forms"),
+    map(({ forms }) => ({ forms: excludeNoShowForms(forms) })),
     bind("teamBpses", ({ forms }) => getAllBPSes(forms)),
     map(({ forms, teamBpses }) => ({
       forms: forms.filter((form) => !isEmpty(teamBpses[form.teamNumber])),

@@ -1,29 +1,31 @@
 //בס"ד
 
-import type {
-  BPS,
-  ScoutingForm,
-  TeleClimbLevel,
-  TimesClimedToLevels,
+import {
+  excludeNoShowForms,
+  type BPS,
+  type ScoutingForm,
+  type TeleClimbLevel,
+  type TimesClimedToLevels,
 } from "@repo/scouting_types";
 import { Router } from "express";
 import { getFormsCollection } from "./forms-router";
 import { pipe } from "fp-ts/lib/function";
 import {
-  flatMap,
-  left,
-  map,
-  right,
-  tryCatch,
-  fold,
-  bindTo,
   bind,
+  bindTo,
+  filterOrElse,
+  fold,
+  map,
 } from "fp-ts/lib/TaskEither";
-import { mongofyQuery } from "../middleware/query";
+import { mongofyQuery, flatTryCatch } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
 import { calculateSum, firstElement, isEmpty } from "@repo/array-functions";
-import { calcAverageGeneralFuelData, generalCalculateFuel } from "../fuel/fuel-general";
+import {
+  calcAverageGeneralFuelData,
+  generalCalculateFuel,
+} from "../fuel/fuel-general";
 import { getTeamBPS } from "./bps-router";
+import { isSingleTeam } from "../verification/functions";
 
 export const compareRouter = Router();
 
@@ -42,12 +44,6 @@ const calculateAverageScoredFuel = (
     generalCalculateFuel(form, bpses),
   );
   const averagedFuelData = calcAverageGeneralFuelData(generalFuelData);
-  console.log(
-    `auto fuel: ${averagedFuelData.auto.scored.toFixed(DIGITS_AFTER_DECIMAL_DOT)}`,
-  );
-  console.log(
-    `fullGame fuel: ${averagedFuelData.fullGame.scored.toFixed(DIGITS_AFTER_DECIMAL_DOT)}`,
-  );
 
   return parseFloat(
     averagedFuelData[gamePeriod].scored.toFixed(DIGITS_AFTER_DECIMAL_DOT),
@@ -102,29 +98,29 @@ const findTimesClimbedToLevels = (forms: ScoutingForm[]) => {
 compareRouter.get("/", async (req, res) => {
   await pipe(
     getFormsCollection(),
-    flatMap((collection) =>
-      tryCatch(
-        () => collection.find(mongofyQuery(req.query)).toArray(),
-        (error) => ({
-          status: StatusCodes.INTERNAL_SERVER_ERROR,
-          reason: `DB Error: ${error}`,
-        }),
-      ),
+    flatTryCatch(
+      async (collection) => collection.find(mongofyQuery(req.query)).toArray(),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `DB Error: ${error}`,
+      }),
     ),
-    flatMap((forms) => {
-      if (isEmpty(forms)) return right(forms);
-
-      const firstTeam = firstElement(forms).teamNumber;
-      const isSameTeam = forms.every((f) => f.teamNumber === firstTeam);
-
-      return isSameTeam
-        ? right(forms)
-        : left({
-            status: StatusCodes.BAD_REQUEST,
-            reason:
-              "Compare Two Validation Error: Forms contain data from multiple different teams.",
-          });
-    }),
+    filterOrElse((forms) => !isEmpty(forms), () => ({
+      status: StatusCodes.BAD_REQUEST,
+      reason:
+        "Compare Two Validation Error: No forms match the query.",
+    })),
+    map(excludeNoShowForms),
+    filterOrElse((forms) => !isEmpty(forms), () => ({
+      status: StatusCodes.BAD_REQUEST,
+      reason:
+        "Compare Two Validation Error: No valid scouting data (all matches marked no-show).",
+    })),
+    filterOrElse(isSingleTeam, () => ({
+      status: StatusCodes.BAD_REQUEST,
+      reason:
+        "Compare Two Validation Error: Forms contain data from multiple different teams.",
+    })),
     bindTo("teamForms"),
     bind("bpses", ({ teamForms }) =>
       getTeamBPS(firstElement(teamForms).teamNumber),

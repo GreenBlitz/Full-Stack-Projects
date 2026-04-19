@@ -4,45 +4,60 @@ import axios from "axios";
 import { Router } from "express";
 import {
   createBodyVerificationPipe,
-  createTypeCheckingEndpointFlow,
+  flatTryCatch,
   type EndpointError,
-} from "../middleware/verification";
+} from "@repo/flow-utils";
+import { castItem, createTypeCheckingEndpointFlow } from "@repo/type-utils";
 import {
+  COPR_TO_TBA_COPR,
+  eventOPRCodec,
+  Match,
   matchesProps,
-  scoreBreakdown2026,
-  tbaMatch,
+  oprPropsCodec,
+  tbaMatches2026,
+  TBAMatches2026,
+  teamOPRCodec,
   type TBAMatchesProps,
 } from "@repo/scouting_types";
-import { right } from "fp-ts/lib/Either";
+import { right as rightEither } from "fp-ts/lib/Either";
 import { StatusCodes } from "http-status-codes";
 import {
   flatMap,
-  fold,
   type TaskEither,
   fromEither,
   tryCatch,
   map,
-  chainFirstTaskK,
+  chainFirstW,
+  bindTo,
+  right,
 } from "fp-ts/lib/TaskEither";
 import { flow, pipe } from "fp-ts/lib/function";
 import { map as taskMap } from "fp-ts/lib/Task";
-import * as t from "io-ts";
 import type { Type } from "io-ts";
 import { getDb } from "../middleware/db";
-import { getMax } from "@repo/array-functions";
+import {
+  firstElement,
+  getMax,
+  isEmpty,
+  mapKeys,
+  mapObject,
+} from "@repo/array-functions";
 import { fold as booleanFold } from "fp-ts/boolean";
+import { foldResponse } from "@repo/flow-utils";
+import { compareMatches, tbaMatchToRegularMatch } from "@repo/scouting_types";
+import { TeamOPR } from "@repo/scouting_types";
+import { teamStringToTeamNumber } from "@repo/frc";
 
 export const tbaRouter = Router();
 
-const TBA_KEY = process.env.TBA_API_KEY ?? "yourtbakey";
+const TBA_KEY = process.env.TBA_API_KEY;
 const TBA_URL = "https://www.thebluealliance.com/api/v3";
 
-const tbaMatches = t.array(tbaMatch(scoreBreakdown2026, t.type({})));
-type TBAMatches = t.TypeOf<typeof tbaMatches>;
+const currentEvent = "2026cahal";
 
-const getCollection = flow(
+const getMatchesCollection = flow(
   getDb,
-  map((db) => db.collection<TBAMatches[number]>("tba")),
+  map((db) => db.collection<TBAMatches2026[number]>("tba/matches")),
 );
 
 const fetchTba = <U>(
@@ -61,7 +76,7 @@ const fetchTba = <U>(
           .then((response) => response.data as unknown),
       (error) => ({
         status: StatusCodes.INTERNAL_SERVER_ERROR,
-        reason: `Error Fetching From TBA: error ${error}`,
+        reason: `Error Fetching From TBA: error ${String(error)}`,
       }),
     ),
     taskMap(
@@ -72,60 +87,123 @@ const fetchTba = <U>(
     ),
   ) satisfies TaskEither<EndpointError, U>;
 
-const insertMatches = (matches: TBAMatches) =>
+const insertMatches = (matches: TBAMatches2026) =>
   pipe(
-    getCollection(),
-    map((collection) => collection.insertMany(matches)),
+    getMatchesCollection(),
+    flatTryCatch(
+      (collection) => collection.insertMany(matches),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `Error inserting matches: ${String(error)}`,
+      }),
+    ),
   );
-const getStoredMatches = flow(
-  getCollection,
-  flatMap((collection) =>
-    tryCatch(collection.find().toArray, (error) => ({
+
+const getStoredMatches = pipe(
+  getMatchesCollection(),
+  flatTryCatch(
+    (collection) => collection.find().toArray(),
+    (error) => ({
       reason: `Error getting from collection ${String(error)}`,
       status: StatusCodes.BAD_REQUEST,
-    })),
+    }),
   ),
+  map((docs) => docs.map(({ _id, ...rest }) => rest) satisfies TBAMatches2026),
 );
 
+const getMaxMatch = (matches: TBAMatches2026): Match => {
+  if (isEmpty(matches)) {
+    return { type: "practice", number: 0 };
+  }
+  const lastMatch = getMax(matches, (match) => match.match_number);
+  return tbaMatchToRegularMatch(lastMatch);
+};
+
+const DID_COMPARE_FAIL = 0;
 const getMatches = flow(
   flatMap((body: TBAMatchesProps) =>
     pipe(
-      getStoredMatches(),
+      getStoredMatches,
       map((currentMatches) => ({ currentMatches, body })),
     ),
   ),
   flatMap(({ currentMatches, body }) =>
     pipe(
-      getMax(currentMatches, (match) => match.match_number).match_number <
-        body.maxMatch,
+      compareMatches(getMaxMatch(currentMatches), body.maxMatch) <
+        DID_COMPARE_FAIL,
       booleanFold(
+        // FALSE => already have enough stored
+        () => fromEither(rightEither(currentMatches)),
+
+        // TRUE => fetch more, store them, return fetched
         () =>
           pipe(
-            fetchTba(`/event/${body.event}/matches`, tbaMatches),
-            chainFirstTaskK(
-              (fetchedMatches) => async () =>
-                Promise.resolve(insertMatches(fetchedMatches)),
-            ),
+            fetchTba(`/event/${body.event}/matches`, tbaMatches2026),
+            chainFirstW((fetchedMatches) => insertMatches(fetchedMatches)),
           ),
-        () => fromEither(right(currentMatches)),
       ),
     ),
   ),
 );
 
+
+export const fetchCOPRS = (event: string) =>
+  pipe(
+    fetchTba(`/event/${event}/coprs`, eventOPRCodec),
+    map((coprs) =>
+      Object.keys(firstElement(Object.values(coprs)) ?? {}) // gets all of the team strings (frc4590, frc1690)
+        .map((teamString) => ({
+          ...mapObject(coprs, (coprTeams) => coprTeams?.[teamString]),
+          teamNumber: teamStringToTeamNumber(teamString),
+        })),
+    ),
+    map((teams) =>
+      teams.map((team) =>
+        mapKeys(team, (key) =>
+          key === "teamNumber" ? "teamNumber" : COPR_TO_TBA_COPR[key],
+        ),
+      ),
+    ),
+    map((item) => item as TeamOPR[]),
+  );
+
+export const fetchTeamsCOPRs = <A extends object>(
+  teams: Record<string, A>,
+  event: string = currentEvent,
+) =>
+  pipe(
+    fetchCOPRS(event),
+    map((coprs) =>
+      mapObject(teams, (team, teamNumber) => ({
+        ...team,
+        coprs: coprs.find((copr) => copr.teamNumber === parseInt(teamNumber)),
+      })),
+    ),
+  );
+
 tbaRouter.post("/matches", async (req, res) => {
   await pipe(
-    right(req),
+    rightEither(req),
     createBodyVerificationPipe(matchesProps),
     fromEither,
     getMatches,
-    fold(
-      (error) => () =>
-        new Promise((resolve) => {
-          resolve(res.status(error.status).send(error.reason));
-        }),
-      (matches) => () =>
-        Promise.resolve(res.status(StatusCodes.OK).json({ matches })),
-    ),
+    bindTo("matches"),
+    foldResponse(res),
+  )();
+});
+
+tbaRouter.get("/copr", async (req, res) => {
+  await pipe(
+    req.query,
+    castItem,
+    rightEither,
+    createTypeCheckingEndpointFlow(oprPropsCodec, () => ({
+      status: StatusCodes.BAD_REQUEST,
+      reason: "Did not pass in event",
+    })),
+    fromEither,
+    flatMap(({ event }) => fetchCOPRS(event)),
+    bindTo("teams"),
+    foldResponse(res),
   )();
 });

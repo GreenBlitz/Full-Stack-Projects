@@ -5,9 +5,10 @@ import { serdeBool } from "./serde-bool";
 
 export const serdeOptional = <T>(tSerde: Serde<T>): Serde<T | undefined> => ({
   serializer(serializedData: BitArray, value?: T) {
-    serdeBool().serializer(serializedData, value != undefined);
-    if (value) {
-      tSerde.serializer(serializedData, value);
+    const present = value !== undefined;
+    serdeBool().serializer(serializedData, present);
+    if (present) {
+      tSerde.serializer(serializedData, value as T);
     }
   },
   deserializer: (serializedData: BitArray): T | undefined =>

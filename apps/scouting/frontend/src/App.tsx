@@ -13,6 +13,7 @@ import SettingsPage from "./scouter/pages/SettingsPage";
 import { CURRENT_COMPETITION } from "@repo/scouting_types";
 import { StrategyNavigationBar } from "./strategy/components/StrategyNavBar";
 import { SuperScoutTab } from "./strategy/tabs/super-scout/SuperScoutTab";
+import { Tinder } from "./strategy/tabs/Tinder";
 
 const App: FC = () => {
   return (
@@ -30,6 +31,7 @@ const App: FC = () => {
         <Route path="forecast" element={<MatchForecast />} />
         <Route path="compare" element={<CompareTwo />} />
         <Route path="super" element={<SuperScoutTab />} />
+        <Route path="tinder" element={<Tinder />} />
       </Route>
       <Route path="*" element={<ScoutedMatches />} />
     </Routes>
