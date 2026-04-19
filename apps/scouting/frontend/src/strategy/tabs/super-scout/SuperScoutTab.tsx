@@ -14,16 +14,6 @@ import { MatchInfoCard } from "./MatchInfoCard";
 
 type TeamIndex = 0 | 1 | 2;
 
-const updateTeamAt = (
-  prev: AllianceTeams,
-  index: TeamIndex,
-  patch: Partial<TeamSuperScout>,
-): AllianceTeams => {
-  const updated = [...prev] as AllianceTeams;
-  updated[index] = { ...updated[index], ...patch };
-  return updated;
-};
-
 const createEmptyAllianceTeam = (): AllianceTeams[number] => ({
   active: "",
   inactive: "",
@@ -42,7 +32,6 @@ const createEmptyAllianceTeams = (): AllianceTeams => [
   createEmptyAllianceTeam(),
 ];
 
-
 export const SuperScoutTab: FC = () => {
   const [matchNumber, setMatchNumber] = useState(0);
   const [matchType, setMatchType] = useState<MatchType>("qualification");
@@ -54,11 +43,6 @@ export const SuperScoutTab: FC = () => {
   const submitSuperScoutForm = async () => {
     if (matchNumber <= 0) {
       alert("Please enter a valid match number.");
-      return;
-    }
-
-    if (teams.some((t) => t.teamNumber <= 0)) {
-      alert("Please enter valid team numbers for all 3 teams.");
       return;
     }
 
