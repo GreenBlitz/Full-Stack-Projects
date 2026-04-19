@@ -6,7 +6,7 @@ import type { TeamData } from "@repo/scouting_types";
 const NUMBER_OF_DIGITS = 2;
 const Metric: FC<{
   name: string;
-  value: number;
+  value?: number;
   colors: string;
   onClick?: () => void;
 }> = ({ name, value, colors, onClick }) => (
@@ -19,7 +19,7 @@ const Metric: FC<{
       {name}
     </span>
     <span className="text-3xl font-black">
-      {value.toFixed(NUMBER_OF_DIGITS)}
+      {value?.toFixed(NUMBER_OF_DIGITS)}
     </span>
   </div>
 );
