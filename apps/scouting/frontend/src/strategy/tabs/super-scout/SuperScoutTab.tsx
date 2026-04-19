@@ -2,12 +2,9 @@
 
 import { useState, type FC } from "react";
 import {
-  superScoutCodec,
   type Alliance,
   type AllianceTeams,
   type MatchType,
-  type SuperMetricKey,
-  type TeamSuperScout,
 } from "@repo/scouting_types";
 import { TeamCard } from "./TeamCard";
 import { MatchInfoCard } from "./MatchInfoCard";
