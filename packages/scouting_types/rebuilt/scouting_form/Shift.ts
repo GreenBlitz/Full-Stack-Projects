@@ -5,16 +5,6 @@ import { intervalCodec } from "./Interval";
 import type { autoClimbCodec } from "./Segments";
 import type { ScoutingForm } from "./ScoutingForm";
 
-export const shiftCodec = t.type({
-  shootEvents: t.array(shootEventCodec),
-});
-export const defaultShift: t.TypeOf<typeof shiftCodec> = {
-  shootEvents: [],
-};
-
-export type Shift = t.TypeOf<typeof shiftCodec>;
-export type ShiftsArray = Shift[];
-
 export const levelTimeCodec = t.union([intervalCodec, t.null]);
 
 export const climbTimeCodec = t.type({

@@ -33,17 +33,6 @@ const serdePoint = createRecordSerde<Point>({
   y: serdeUnsignedInt(COORDINATE_BIT_COUNT),
 });
 
-const serdeShootEvents = serdeArray(
-  createRecordSerde<ShootEvent>({
-    interval: serdeInterval,
-    positions: serdeArray(serdePoint),
-  }),
-);
-
-const serdeShift = createRecordSerde({
-  shootEvents: serdeShootEvents,
-});
-
 const serdeClimbTele = createRecordSerde<TeleClimb>({
   climbTime: createRecordSerde({
     L1: serdeOptionalNull(serdeInterval),
@@ -70,25 +59,25 @@ const serdeClimbAuto = createRecordSerde<AutoClimb>({
   level: serdeEnumedString(["L0", "L1"]),
 });
 
+const serdeMovement = createRecordSerde({
+  bumpStuck: serdeBool(),
+});
+
 const serdeTele = createRecordSerde<typeof defaultTele>({
-  transitionShift: serdeShift,
-  shifts: serdeArray(serdeShift) as any, //shifts requires 4 and this is how to fix that
-  endgameShift: serdeShift,
-  movement: createRecordSerde({
-    bumpStuck: serdeBool(),
-  }),
+  transitionShift: serdeMovement,
+  shifts: serdeArray(serdeMovement) as any, //shifts requires 4 and this is how to fix that
+  endgameShift: serdeMovement,
   climb: serdeClimbTele,
 });
 
 export const serdeAuto = createRecordSerde<typeof defaultAuto>({
-  shootEvents: serdeShootEvents,
-  chosenAuto: serdeEnumedString(["trenchFuelMiddle"]),
-  movement: createRecordSerde({
-    trenchPass: serdeBool(),
-    bumpPass: serdeBool(),
-    bumpStuck: serdeBool(),
-  }),
   climb: serdeClimbAuto,
+  path: serdeArray(
+    createRecordSerde({
+      point: serdePoint,
+      time: serdeUnsignedInt(TIME_MILLISECONDS_BIT_COUNT),
+    }),
+  ),
 });
 
 const serdeNoShow: Serde<boolean> = {
