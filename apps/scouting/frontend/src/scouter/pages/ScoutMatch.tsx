@@ -23,6 +23,7 @@ import StartMatchLocallyButton, {
   type TimerData,
 } from "../components/StartMatchLocallyButton";
 import { boolean } from "io-ts";
+import { AutoTab } from "./tabs/AutoTab";
 export interface TabProps {
   setForm: Dispatch<SetStateAction<ScoutingForm>>;
   currentForm: ScoutingForm;
@@ -68,7 +69,7 @@ const TABS: Tab[] = [
   },
   {
     name: "Auto",
-    Component: (props) => <ShiftTab shiftType="auto" tabIndex={0} {...props} />,
+    Component: (props) => <AutoTab {...props} />,
     ShiftEndTimeMs: AUTO_END,
     ShiftExtraEndTimeMs: AUTO_END - MILLISECONDS_IN_FIVE_SECONDS,
   },

@@ -10,25 +10,28 @@ import { useRef, useEffect } from "react";
 import type { Point } from "@repo/scouting_types";
 import { defaultPoint } from "../components/ScoreMap";
 
+type TimedPoint = { point: Point; time: number };
+
 interface PositionRecordingResult {
   /** Ref containing all recorded positions. Reset on each start(). */
-  recordedPositionsRef: { current: Point[] };
+  recordedPositionsRef: { current: TimedPoint[] };
   /** Begin recording positions at the configured interval. */
   start: () => void;
   /** Stop recording positions. */
   stop: () => void;
 }
 
-const DEFAULT_RECORDING_INTERVAL_MS = 1000;
+const DEFAULT_RECORDING_INTERVAL_MS = 100;
 
 export const usePositionRecording = (
   currentPosition: Point | undefined,
   recordingIntervalMs: number = DEFAULT_RECORDING_INTERVAL_MS,
 ): PositionRecordingResult => {
-  const recordedPositionsRef = useRef<Point[]>([]);
+  const recordedPositionsRef = useRef<TimedPoint[]>([]);
   const positionIntervalRef = useRef<number | null>(null);
   const currentPositionRef = useRef<Point | undefined>(undefined);
   const recordingIntervalRef = useRef(recordingIntervalMs);
+  const initialTimeRef = useRef<number>(0);
 
   useEffect(() => {
     currentPositionRef.current = currentPosition;
@@ -45,11 +48,15 @@ export const usePositionRecording = (
 
     recordedPositionsRef.current = [];
     const initialPosition = currentPositionRef.current ?? { ...defaultPoint };
-    recordedPositionsRef.current.push(initialPosition);
+    recordedPositionsRef.current.push({ point: initialPosition, time: 0 });
+    initialTimeRef.current = Date.now();
 
     positionIntervalRef.current = window.setInterval(() => {
       const currentPos = currentPositionRef.current ?? { ...defaultPoint };
-      recordedPositionsRef.current.push(currentPos);
+      recordedPositionsRef.current.push({
+        point: currentPos,
+        time: Date.now() - initialTimeRef.current,
+      });
     }, recordingIntervalRef.current);
   });
 
