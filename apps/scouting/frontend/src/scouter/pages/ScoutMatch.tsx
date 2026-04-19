@@ -60,7 +60,7 @@ const TABS: Tab[] = [
     ShiftExtraEndTimeMs: 0,
   },
   {
-    name: "Start Match",
+    name: "Start",
     Component: (props) => (
       <StartMatchLocallyButton timerData={props.timerData} disabled={false} />
     ),
