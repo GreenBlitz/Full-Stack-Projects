@@ -33,7 +33,7 @@ const createPicklistStats: (
   forms: ScoutingForm[],
   superForms: SuperScout[],
 ) => PicklistStats = (forms, superForms) => ({
-  teleop: createGamePeriodPicklistStats(forms, "teleop"),
+  tele: createGamePeriodPicklistStats(forms, "tele"),
   auto: createGamePeriodPicklistStats(forms, "auto"),
   superScouting: processAvarageTeamSuperScouting(
     firstElement(forms).teamNumber,

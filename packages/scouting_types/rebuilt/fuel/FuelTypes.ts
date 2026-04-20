@@ -15,7 +15,7 @@ export interface GeneralData {
   avarageClimbPoints: GeneralClimbData;
 }
 
-export type GamePeriod = "auto" | "fullGame" | "teleop";
+export type GamePeriod = "auto" | "fullGame" | "tele";
 
 export type GameObject<T extends string, AdditionalInfo> = Record<T, number> &
   AdditionalInfo;

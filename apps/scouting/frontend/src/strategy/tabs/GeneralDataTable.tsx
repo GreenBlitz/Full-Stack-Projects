@@ -7,34 +7,18 @@ import {
   useReactTable,
   type SortingState,
 } from "@tanstack/react-table";
-import type {
-  ClimbLevel,
-  FuelEvents,
-  GameTime,
-  GeneralData,
-  GeneralFuelData,
-  TeamNumberAndFuelData,
-} from "@repo/scouting_types";
+import type { ClimbLevel, GamePeriod, GeneralData } from "@repo/scouting_types";
 import type React from "react";
 import { useState, useEffect, useMemo } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { HiOutlineChevronUpDown } from "react-icons/hi2";
 
-interface TableRow {
-  teamNumber: number;
-  generalFuelData: GeneralFuelData;
-}
-
-export type Column = FuelEvents | "climb" | "max climb";
+export type Column = "climb" | "max climb";
 
 type DataValue = ClimbLevel | number | undefined;
 
-type DataAccessor = (row: GeneralData, gameTime: GameTime) => DataValue;
+type DataAccessor = (row: GeneralData, gameTime: GamePeriod) => DataValue;
 const columnToKey: Record<Column, DataAccessor> = {
-  scored: (row, gameTime) => row.fuelData[gameTime].scored,
-  shot: (row, gameTime) => row.fuelData[gameTime].shot,
-  missed: (row, gameTime) => row.fuelData[gameTime].missed,
-  passed: (row, gameTime) => row.fuelData[gameTime].passed,
   climb: (row, gameTime) => row.avarageClimbPoints[gameTime],
   "max climb": (row) => row.highestClimbLevel,
 };
@@ -72,7 +56,7 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
   filters,
 }) => {
   const [allGeneralData, setAllGeneralData] = useState<GeneralData[]>([]);
-  const [gameTime, setGameTime] = useState<GameTime>("tele");
+  const [gameTime, setGameTime] = useState<GamePeriod>("tele");
   const [sorting, setSorting] = useState<SortingState>([]);
 
   useEffect(() => {
@@ -114,9 +98,6 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
         ),
       }),
 
-      createColumn("scored", "text-emerald-400 font-bold"),
-      createColumn("missed", "text-rose-500/90 font-medium"),
-      createColumn("passed", "text-orange-400 font-medium"),
       createColumn("climb", "text-purple-400 font-bold"),
       createColumn("max climb", "text-slate-400 uppercase text-[10px]"),
     ],
@@ -136,7 +117,7 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
     <div className="flex flex-col gap-6 p-4 bg-slate-950 min-h-screen">
       <div className="overflow-hidden rounded-2xl border border-white/10 bg-slate-900/40 backdrop-blur-sm shadow-2xl">
         <div className="flex gap-1.5 justify-center bg-slate-900/50 p-1.5 rounded-2xl border border-white/5 self-center">
-          {(["auto", "tele", "fullGame"] as GameTime[]).map((time) => (
+          {(["auto", "tele", "fullGame"] as GamePeriod[]).map((time) => (
             <button
               key={time}
               onClick={() => {

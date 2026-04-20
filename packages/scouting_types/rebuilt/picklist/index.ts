@@ -3,7 +3,7 @@
 import { TeamSuperScoutNumbers } from "../super_scout";
 
 export interface PicklistStats {
-  teleop: PicklistGameStats;
+  tele: PicklistGameStats;
   auto: PicklistGameStats;
   superScouting: TeamSuperScoutNumbers;
 }
