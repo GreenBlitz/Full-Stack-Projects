@@ -4,6 +4,7 @@
   "globalPassThroughEnv": [
     "FRONTEND_PORT",
     "BACKEND_PORT",
+    "TBA_API_KEY",
     "NODE_ENV"
   ],
 
