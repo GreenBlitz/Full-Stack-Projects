@@ -23,6 +23,7 @@ import StartMatchLocallyButton, {
   type TimerData,
 } from "../components/StartMatchLocallyButton";
 import { boolean } from "io-ts";
+import { AutoTab } from "./tabs/AutoTab";
 export interface TabProps {
   setForm: Dispatch<SetStateAction<ScoutingForm>>;
   currentForm: ScoutingForm;
@@ -59,7 +60,7 @@ const TABS: Tab[] = [
     ShiftExtraEndTimeMs: 0,
   },
   {
-    name: "Start Match",
+    name: "Start",
     Component: (props) => (
       <StartMatchLocallyButton timerData={props.timerData} disabled={false} />
     ),
@@ -68,7 +69,7 @@ const TABS: Tab[] = [
   },
   {
     name: "Auto",
-    Component: (props) => <ShiftTab shiftType="auto" tabIndex={0} {...props} />,
+    Component: (props) => <AutoTab {...props} />,
     ShiftEndTimeMs: AUTO_END,
     ShiftExtraEndTimeMs: AUTO_END - MILLISECONDS_IN_FIVE_SECONDS,
   },
@@ -267,6 +268,10 @@ export const ScoutMatch: FC = () => {
         ? "bg-amber-400/40"
         : "bg-black/40",
     );
+
+    if (activeTabIndex === 1 && timerData.elapsedMs > 100) {
+      return;
+    }
 
     const hasJustStartedOrResumed =
       !previousIsRunningRef.current && timerData.isRunning;

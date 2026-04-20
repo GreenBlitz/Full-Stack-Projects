@@ -4,40 +4,29 @@ import { Router } from "express";
 import { getFormsCollection } from "./forms-router";
 import { pipe } from "fp-ts/lib/function";
 import { fold, map, bindTo, bind } from "fp-ts/lib/TaskEither";
-import { mongofyQuery, flatTryCatch } from "@repo/flow-utils";
+import { mongofyQuery, flatTryCatch, foldResponse } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
 
 import {
   excludeNoShowForms,
-  type BPS,
   type GeneralData,
   type ScoutingForm,
-  type TeamNumberAndFuelData,
 } from "@repo/scouting_types";
 import { findMaxClimbLevel } from "../climb/calculations";
 import { calculateAverageClimbsScore } from "../climb/score";
-import { formsToFuelData } from "../fuel/fuel-general";
-import { getAllBPSes } from "./bps-router";
-import { isEmpty } from "@repo/array-functions";
+import { groupBy } from "fp-ts/lib/NonEmptyArray";
 
 export const generalRouter = Router();
 
-const formsToGeneralData = (
-  forms: ScoutingForm[],
-  bpses: Record<string, BPS[]>,
-) => {
-  const calculatedFuel: TeamNumberAndFuelData = formsToFuelData(bpses)(forms);
+const formsToGeneralData = (forms: ScoutingForm[]) => {
+  const groupedForms = groupBy((form: ScoutingForm) =>
+    form.teamNumber.toString(),
+  )(forms);
 
-  const allGeneralData: GeneralData[] = Object.entries(calculatedFuel).map(
-    (teamNumberAndFuelData) => {
-      const [teamNumber, fuelData] = teamNumberAndFuelData;
-      const teamForms = forms.filter(
-        (form) => form.teamNumber.toString() === teamNumber,
-      );
-
+  const allGeneralData: GeneralData[] = Object.entries(groupedForms).map(
+    ([teamNumber, teamForms]) => {
       const generalData: GeneralData = {
         teamNumber: Number(teamNumber),
-        fuelData: fuelData,
         highestClimbLevel: findMaxClimbLevel(teamForms),
         avarageClimbPoints: {
           fullGame:
@@ -68,19 +57,10 @@ generalRouter.get("/", async (req, res) => {
 
     bindTo("forms"),
     map(({ forms }) => ({ forms: excludeNoShowForms(forms) })),
-    bind("teamBpses", ({ forms }) => getAllBPSes(forms)),
-    map(({ forms, teamBpses }) => ({
-      forms: forms.filter((form) => !isEmpty(teamBpses[form.teamNumber])),
-      teamBpses,
-    })),
 
-    map(({ forms, teamBpses }) => formsToGeneralData(forms, teamBpses)),
+    map(({ forms}) => formsToGeneralData(forms)),
 
-    fold(
-      (error) => () =>
-        Promise.resolve(res.status(error.status).send(error.reason)),
-      (generalData) => () =>
-        Promise.resolve(res.status(StatusCodes.OK).json({ generalData })),
-    ),
+    bindTo("generalData"),
+    foldResponse(res),
   )();
 });

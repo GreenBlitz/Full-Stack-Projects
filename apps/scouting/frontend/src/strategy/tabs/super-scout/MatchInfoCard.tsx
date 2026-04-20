@@ -2,7 +2,7 @@
 
 import type { FC } from "react";
 import type { Alliance, MatchType } from "@repo/scouting_types";
-import { formInputStyles } from "./metrics";
+import { superFormInputStyles } from "./TeamCard";
 
 interface MatchInfoCardProps {
   matchNumber: number;
@@ -36,7 +36,7 @@ export const MatchInfoCard: FC<MatchInfoCardProps> = ({
           onChange={(e) => onMatchNumberChange(Number(e.target.value))}
           min={1}
           max={127}
-          className={formInputStyles}
+          className={superFormInputStyles}
         />
       </div>
 
@@ -47,7 +47,7 @@ export const MatchInfoCard: FC<MatchInfoCardProps> = ({
         <select
           value={matchType}
           onChange={(e) => onMatchTypeChange(e.target.value as MatchType)}
-          className={formInputStyles}
+          className={superFormInputStyles}
         >
           <option value="practice">Practice</option>
           <option value="qualification">Qualification</option>

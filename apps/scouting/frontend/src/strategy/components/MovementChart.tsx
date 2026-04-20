@@ -1,15 +1,9 @@
 // בס"ד
 import type { FC } from "react";
-import type {
-  AutoMovement,
-  Movement,
-  TeleMovement,
-} from "@repo/scouting_types";
-
-type CountedMovement<M extends Movement> = Record<keyof M, number>;
+import type { Movement, TeleMovement } from "@repo/scouting_types";
 
 interface MovementChartProps {
-  movements: CountedMovement<AutoMovement> | CountedMovement<TeleMovement>;
+  movements: TeleMovement;
 }
 
 const RED_COLOR_AMOUNT = 0;
@@ -37,7 +31,7 @@ export const MovementChart: FC<MovementChartProps> = ({ movements }) => {
 
   return (
     <div className="grid grid-cols-3 gap-3 w-full max-w-md mx-auto p-2">
-      {Object.entries(movements).map(([key, value], index, arr) => (
+      {Object.entries(movements.ally).map(([key, value], index, arr) => (
         <div
           key={key}
           className={`flex flex-col ${arr.length === TELE_MOVEMENT_AMOUNT ? "col-start-2" : ""} items-center text-center justify-center p-4 rounded-2xl border-2 transition-all shadow-lg ${getBgColor(

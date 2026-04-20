@@ -2,10 +2,9 @@
 import * as t from "io-ts";
 import type {
   AutoClimb,
-  AutoMovement,
   Climb,
-  FuelObject,
   Match,
+  ScoutingForm,
   TeleClimb,
   TeleMovement,
 } from "../rebuilt";
@@ -21,28 +20,18 @@ export const teamsProps = t.type({
 export const ACCURACY_DISTANCES = [150, 300, 2000] as const;
 
 export type MatchedEntry<Entry> = { match: Match } & Entry;
-export interface SectionTeamData {
-  fuel: MatchedEntry<FuelObject>[];
-  accuracy: Record<
-    (typeof ACCURACY_DISTANCES)[number],
-    FuelObject & { amount: number }
-  >;
-}
-interface SectionSpecificTeamData<
-  Movement extends TeleMovement = TeleMovement,
-  Climbing extends Climb = TeleClimb,
-> {
-  movement: Record<keyof Movement, number>;
+interface SectionSpecificTeamData<Climbing extends Climb = TeleClimb> {
   climbs: MatchedEntry<Climbing>[];
 }
 
 export interface TeamData {
-  tele: SectionTeamData & SectionSpecificTeamData;
-  auto: SectionTeamData & SectionSpecificTeamData<AutoMovement, AutoClimb>;
-  fullGame: SectionTeamData;
-  metrics: { epa: EPA | undefined; bps: number; coprs: TeamOPR | undefined };
+  tele: {
+    movement: { averagePerShift: ScoutingForm["tele"] };
+  } & SectionSpecificTeamData;
+  auto: SectionSpecificTeamData<AutoClimb>;
+  metrics: { epa: EPA | undefined; coprs: TeamOPR | undefined };
   /** Matches scouted as no-show (excluded from stats above). */
   noShowMatches: Match[];
 }
 
-export type GamePhase = "tele" | "auto" | "fullGame";
+export type GamePhase = "tele" | "auto";

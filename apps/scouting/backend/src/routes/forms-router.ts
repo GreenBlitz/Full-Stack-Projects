@@ -33,13 +33,15 @@ export const getFormsCollection = flow(
 formsRouter.get("/", async (req, res) => {
   await pipe(
     getFormsCollection(),
-    map((collection) => collection.find(mongofyQuery(req.query)).toArray()),
-    fold(
-      (error) => () =>
-        Promise.resolve(res.status(error.status).send(error.reason)),
-      (forms) => async () =>
-        res.status(StatusCodes.OK).json({ forms: await forms }),
+    flatTryCatch(
+      (collection) => collection.find(mongofyQuery(req.query)).toArray(),
+      () => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: "Error Inserting Forms To Collection ",
+      }),
     ),
+    bindTo("forms"),
+    foldResponse(res),
   )();
 });
 

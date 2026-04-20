@@ -1,5 +1,5 @@
 // בס"ד
-import { defineConfig } from "vite";
+import { defineConfig, type PluginOption } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 // import { VitePWA } from "vite-plugin-pwa";
@@ -70,5 +70,5 @@ export default defineConfig({
     //     ]
     //   }
     // }),
-  ],
+  ] as unknown as PluginOption[],
 });

@@ -4,8 +4,8 @@
   "globalPassThroughEnv": [
     "FRONTEND_PORT",
     "BACKEND_PORT",
-    "NODE_ENV",
-    "TBA_API_KEY"
+    "TBA_API_KEY",
+    "NODE_ENV"
   ],
 
   "tasks": {

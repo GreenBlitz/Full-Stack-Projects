@@ -5,6 +5,8 @@ import { Router } from "express";
 import {
   createBodyVerificationPipe,
   flatTryCatch,
+  createLog,
+  tap,
   toUnion,
   type EndpointError,
 } from "@repo/flow-utils";
@@ -31,7 +33,7 @@ import {
   bindTo,
   right,
 } from "fp-ts/lib/TaskEither";
-import { flow, pipe } from "fp-ts/lib/function";
+import { flow, identity, pipe } from "fp-ts/lib/function";
 import { map as taskMap } from "fp-ts/lib/Task";
 import type { Type } from "io-ts";
 import { getDb } from "../middleware/db";
@@ -78,6 +80,10 @@ const fetchTba = <U>(
         status: StatusCodes.INTERNAL_SERVER_ERROR,
         reason: `Error Fetching From TBA: error ${String(error)}`,
       }),
+    ),
+    createLog(
+      () => route,
+      () => route,
     ),
     taskMap(
       createTypeCheckingEndpointFlow(typeToCheck, (errors) => ({

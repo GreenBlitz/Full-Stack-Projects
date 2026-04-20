@@ -29,11 +29,6 @@ export const MetricsChart: FC<TeamData["metrics"]> = ({ epa, bps, coprs }) => {
   const [isEPAOpen, setEPAOpenness] = useState(false);
   return (
     <div className="grid grid-cols-3 gap-3 w-full max-w-md mx-auto p-2">
-      <Metric
-        name="BPS"
-        value={bps}
-        colors="bg-purple-500/20 border-purple-500/50 text-purple-200"
-      />
 
       <Metric
         name="EPA"

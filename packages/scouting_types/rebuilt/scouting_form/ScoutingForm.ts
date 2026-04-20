@@ -3,7 +3,7 @@ import * as t from "io-ts";
 import { autoCodec, defaultAuto, defaultTele, teleCodec } from "./Segments";
 import { competitionCodec } from "./GameData";
 
-export const CURRENT_COMPETITION = "TESTING";
+export const CURRENT_COMPETITION = "2026cahal";
 
 const matchType = t.keyof({
   practice: null,
