@@ -17,9 +17,7 @@ import { isSingleTeam } from "../verification/functions";
 
 export const compareRouter = Router();
 
-type GamePeriod = "auto" | "fullGame" | "teleop";
 
-const DIGITS_AFTER_DECIMAL_DOT = 2;
 const INITIAL_COUNTER_VALUE = 0;
 const INCREMENT = 1;
 

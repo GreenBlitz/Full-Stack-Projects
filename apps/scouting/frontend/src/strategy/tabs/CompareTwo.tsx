@@ -191,23 +191,6 @@ export const CompareTwo: React.FC = () => {
                   </span>
                 </div>
 
-                <StatBox
-                  label="Average Fuel (Full Game)"
-                  value={team.averageFuel.averageFuelInGame}
-                  color={getStatColor(
-                    team.averageFuel.averageFuelInGame,
-                    other.averageFuel.averageFuelInGame,
-                  )}
-                />
-
-                <StatBox
-                  label="Average Fuel (Auto)"
-                  value={team.averageFuel.averageFuelInAuto}
-                  color={getStatColor(
-                    team.averageFuel.averageFuelInAuto,
-                    other.averageFuel.averageFuelInAuto,
-                  )}
-                />
 
                 <div
                   className={`p-6 border-b border-white/5 flex flex-col items-center transition-all duration-300 ${getStatColor(levelToScore(team.climb.maxClimbLevel), levelToScore(other.climb.maxClimbLevel))}`}
