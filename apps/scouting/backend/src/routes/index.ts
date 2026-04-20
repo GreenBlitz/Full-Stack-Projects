@@ -13,6 +13,7 @@ import { tinderRouter } from "./tinder-router";
 import { bpsRouter } from "./bps-router";
 import { superScoutRouter } from "./super-scout-router";
 import { picklistRouter } from "./picklist-router";
+import { pitScoutRouter } from "./pit-scout-router";
 
 export const apiRouter = Router();
 
@@ -28,6 +29,7 @@ apiRouter.use("/tinder", tinderRouter);
 apiRouter.use("/bps", bpsRouter);
 apiRouter.use("/super", superScoutRouter);
 apiRouter.use("/picklist", picklistRouter);
+apiRouter.use("/pit", pitScoutRouter);
 
 apiRouter.get("/health", (req, res) => {
   res.status(StatusCodes.OK).send({ message: "Healthy!" });
