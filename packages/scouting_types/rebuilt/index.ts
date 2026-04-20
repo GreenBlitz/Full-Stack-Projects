@@ -7,3 +7,4 @@ export type * from "./leaderboard";
 export type * from "./tinder";
 export * from "./super_scout";
 export * from "./picklist";
+export * from "./pit_scout";

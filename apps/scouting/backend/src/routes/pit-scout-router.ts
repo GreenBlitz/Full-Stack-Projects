@@ -4,10 +4,10 @@ import { Router } from "express";
 import { flow, pipe } from "fp-ts/lib/function";
 import { getDb } from "../middleware/db";
 import { bind, bindTo, fromEither, map } from "fp-ts/lib/TaskEither";
-import { PitScout, pitScoutCodec } from "@repo/scouting_types/pit_scout";
 import { createBodyVerificationPipe, foldResponse } from "@repo/flow-utils";
 import { right as rightEither } from "fp-ts/lib/Either";
 import { mongofyQuery } from "@repo/flow-utils";
+import { PitScout, pitScoutCodec } from "@repo/scouting_types";
 
 export const pitScoutRouter = Router();
 
