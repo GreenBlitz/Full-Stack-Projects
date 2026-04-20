@@ -8,6 +8,8 @@ import {
   tryCatch,
   right,
   TaskEither,
+  map,
+  mapBoth,
 } from "fp-ts/lib/TaskEither";
 import { right as rightEither } from "fp-ts/lib/Either";
 
@@ -31,4 +33,27 @@ export const toUnion = <E, A, B>(
       (item) => () => Promise.resolve(item),
     ),
     mapTask(rightEither),
+  );
+
+export const tap = <A>(fn: (a: A) => void) =>
+  map<A, A>((a) => {
+    fn(a);
+    return a;
+  });
+
+export const createLog = <E, A>(
+  rightTransformation?: (a: A) => unknown,
+  leftTransformation?: (e: E) => unknown,
+) =>
+  mapBoth<E, E, A, A>(
+    (e) => {
+      const item = leftTransformation ? leftTransformation(e) : e;
+      console.log("LEFT = ", item);
+      return e;
+    },
+    (a) => {
+      const item = rightTransformation ? rightTransformation(a) : a;
+      console.log("RIGHT = ", item);
+      return a;
+    },
   );

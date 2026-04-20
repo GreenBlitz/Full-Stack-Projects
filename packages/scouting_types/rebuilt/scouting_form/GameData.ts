@@ -8,21 +8,22 @@ const matchType = t.keyof({
 });
 
 export const competitionCodec = t.keyof({
-  TESTING: null,
-  ISDE1: null,
-  ISDE2: null,
-  ISDE3: null,
-  ISDE4: null,
-  ISCMP: null,
-  ARCHIMEDES: null,
-  CMPTX: null,
-  CURIE: null,
-  DALY: null,
-  GALILEO: null,
-  HOPPER: null,
-  JOHNSON: null,
-  MILSTEIN: null,
-  NEWTON: null,
+  testing: null,
+  isde1: null,
+  isde2: null,
+  isde3: null,
+  isde4: null,
+  iscmp: null,
+  "2026cahal": null,
+  "2026arc": null,
+  "2026cur": null,
+  "2026dal": null,
+  "2026gal": null,
+  "2026hop": null,
+  "2026joh": null,
+  "2026mil": null,
+  "2026new": null,
+  "2026cmptx": null,
 });
 
 export const gameDataCodec = t.type({

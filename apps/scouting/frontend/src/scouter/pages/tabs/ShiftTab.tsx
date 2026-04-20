@@ -80,7 +80,7 @@ export const ShiftTab: FC<ShiftTabProps> = ({
 
       {shiftType === "endgame" && (
         <button
-          className={`bg-amber-600 h-8 sm:h-10 w-32 text-[10px] sm:text-xs px-2`}
+          className={`bg-amber-600 h-16 w-16 text-[10px] sm:text-xs `}
           onClick={() => {
             setIsClimbing(true);
           }}
