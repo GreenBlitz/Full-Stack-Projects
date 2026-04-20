@@ -2,21 +2,15 @@
 import * as t from "io-ts";
 import {
   defaultMovement,
-  autoMovementCodec,
   teleMovementCodec,
 } from "./Movement";
 import {
   climbCodec,
   defaultAutoClimb,
   defaultClimb,
-  defaultShift,
   levelTimeCodec,
-  shiftCodec,
 } from "./Shift";
-
-const autoTypes = t.keyof({
-  trenchFuelMiddle: null,
-});
+import { point } from "./ShootEvent";
 
 export const autoClimbTimeCodec = t.type({
   L1: levelTimeCodec,
@@ -31,35 +25,32 @@ export const autoClimbCodec = t.type({
   }),
 });
 
-export const autoCodec = t.intersection([
-  t.type({
-    movement: autoMovementCodec,
-    chosenAuto: autoTypes,
-    climb: autoClimbCodec,
-  }),
-  shiftCodec,
-]);
+export const autoCodec = t.type({
+  climb: autoClimbCodec,
+  path: t.array(t.type({ point, time: t.number })),
+});
 
 export const defaultAuto: t.TypeOf<typeof autoCodec> = {
-  movement: defaultMovement,
-  chosenAuto: "trenchFuelMiddle",
   climb: defaultAutoClimb,
-  ...defaultShift,
+  path: [],
 };
 
 export const teleCodec = t.type({
-  transitionShift: shiftCodec,
-  shifts: t.tuple([shiftCodec, shiftCodec, shiftCodec, shiftCodec]),
-  endgameShift: shiftCodec,
-  movement: teleMovementCodec,
+  transitionShift: teleMovementCodec,
+  shifts: t.tuple([
+    teleMovementCodec,
+    teleMovementCodec,
+    teleMovementCodec,
+    teleMovementCodec,
+  ]),
+  endgameShift: teleMovementCodec,
   climb: climbCodec,
 });
 
 export const defaultTele: t.TypeOf<typeof teleCodec> = {
-  transitionShift: defaultShift,
-  shifts: [defaultShift, defaultShift, defaultShift, defaultShift],
-  endgameShift: defaultShift,
-  movement: { bumpStuck: false },
+  transitionShift: defaultMovement,
+  shifts: [defaultMovement, defaultMovement, defaultMovement, defaultMovement],
+  endgameShift: defaultMovement,
   climb: defaultClimb,
 };
 

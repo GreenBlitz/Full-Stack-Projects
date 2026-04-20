@@ -239,14 +239,14 @@ export const ScoutedMatches: FC = () => {
           Leaderboard
         </button>
 
-        <button
+        {/* <button
           className="w-full h-12 mt-4 bg-linear-to-r from-slate-700 to-slate-800 shadow-[0_0_15px_rgba(148,163,184,0.4)] rounded-lg font-bold text-white text-xs transition-transform active:scale-95"
           onClick={() => {
             void navigate("/settings");
           }}
         >
           Settings
-        </button>
+        </button> */}
       </div>
     </div>
   );

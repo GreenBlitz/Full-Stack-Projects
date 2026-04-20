@@ -18,57 +18,25 @@ import { getFormsCollection } from "./forms-router";
 import { StatusCodes } from "http-status-codes";
 import { castItem } from "@repo/type-utils";
 import {
-  ACCURACY_DISTANCES,
   compareMatches,
+  defaultTele,
   excludeNoShowForms,
   isNoShowForm,
+  Movement,
   teamsProps,
-  type BPS,
   type EPA,
   type Match,
   type ScoutingForm,
-  type SectionTeamData,
-  type Shift,
   type TeamData,
   type TeamOPR,
 } from "@repo/scouting_types";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
 import { calculateSum, isEmpty, mapObject } from "@repo/array-functions";
-import { createFuelObject } from "../fuel/fuel-object";
-import { splitByDistances } from "../fuel/distance-split";
-import { calculateFuelStatisticsOfShift } from "../fuel/fuel-general";
-import { calculateAverageBPS } from "../fuel/calculations/fuel-averaging";
-import { getTeamBPSes } from "./bps-router";
 import { foldResponse, flatTryCatch } from "@repo/flow-utils";
 import { fetchTeamsCOPRs } from "./tba-router";
 import { getTeamsEPAs } from "../middleware/epa";
 
 export const teamsRouter = Router();
-
-interface SectionForm {
-  match: Match;
-  shifts: Shift[];
-}
-
-const processFuelAndAccuracy = (
-  forms: SectionForm[],
-  bpses: BPS[],
-): SectionTeamData => {
-  return {
-    fuel: forms.map((form) => ({
-      match: form.match,
-      ...calculateFuelStatisticsOfShift(form.match, bpses, form.shifts),
-    })),
-    accuracy: splitByDistances(
-      forms.flatMap((form) =>
-        form.shifts
-          .flatMap((shift) => shift.shootEvents)
-          .map((event) => createFuelObject(event, form.match, bpses)),
-      ),
-      ACCURACY_DISTANCES,
-    ),
-  };
-};
 
 const uniqueNoShowMatches = (forms: ScoutingForm[]): Match[] => {
   const seen = new Set<string>();
@@ -83,77 +51,69 @@ const uniqueNoShowMatches = (forms: ScoutingForm[]): Match[] => {
   return [...matches].sort(compareMatches);
 };
 
+const addMovements = (
+  movement1: Movement["ally"],
+  movement2: Movement["ally"],
+): Movement["ally"] => ({
+  trenchPass: movement1.trenchPass + movement2.trenchPass,
+  bumpStuck: movement1.bumpStuck + movement2.bumpStuck,
+  bumpPass: movement1.bumpPass + movement2.bumpPass,
+});
+
+const addShifts = (
+  shift1: ScoutingForm["tele"]["transitionShift"],
+  shift2: ScoutingForm["tele"]["transitionShift"],
+) => ({
+  ally: addMovements(shift1.ally, shift2.ally),
+  opponent: addMovements(shift1.opponent, shift2.opponent),
+});
+
+const collectMovementInfoOfField = (forms: ScoutingForm[]) => {
+  const teles = forms.map((form) => form.tele);
+  const averagePerShift = teles.reduce<ScoutingForm["tele"]>(
+    (acc, tele) => ({
+      transitionShift: addShifts(tele.transitionShift, acc.transitionShift),
+      endgameShift: addShifts(tele.endgameShift, acc.endgameShift),
+      shifts: [
+        addShifts(tele.shifts[0], acc.shifts[0]),
+        addShifts(tele.shifts[1], acc.shifts[1]),
+        addShifts(tele.shifts[2], acc.shifts[2]),
+        addShifts(tele.shifts[3], acc.shifts[3]),
+      ],
+      climb: acc.climb,
+    }),
+    defaultTele,
+  );
+
+  return {
+    averagePerShift,
+  };
+};
+
 export const processTeam = (
-  bpses: BPS[],
   forms: ScoutingForm[],
   coprs?: TeamOPR,
   epa?: EPA,
 ): TeamData => {
   const statsForms = excludeNoShowForms(forms);
   const tele = {
-    movement: {
-      bumpStuck: calculateSum(statsForms, (form) =>
-        Number(form.tele.movement.bumpStuck),
-      ),
-    },
+    movement: collectMovementInfoOfField(forms),
     climbs: statsForms.map((form) => ({
       match: form.match,
       ...form.tele.climb,
     })),
-    ...processFuelAndAccuracy(
-      statsForms.map((form) => ({
-        match: form.match,
-        shifts: [
-          form.tele.transitionShift,
-          form.tele.endgameShift,
-          ...form.tele.shifts,
-        ],
-      })),
-      bpses,
-    ),
   };
   const auto = {
-    movement: {
-      bumpStuck: calculateSum(statsForms, (form) =>
-        Number(form.auto.movement.bumpStuck),
-      ),
-      bumpPass: calculateSum(statsForms, (form) =>
-        Number(form.auto.movement.bumpPass),
-      ),
-      trenchPass: calculateSum(statsForms, (form) =>
-        Number(form.auto.movement.trenchPass),
-      ),
-    },
     climbs: statsForms.map((form) => ({
       match: form.match,
       ...form.auto.climb,
     })),
-    ...processFuelAndAccuracy(
-      statsForms.map((form) => ({
-        match: form.match,
-        shifts: [form.auto],
-      })),
-      bpses,
-    ),
   };
-  const fullGame = processFuelAndAccuracy(
-    statsForms.map((form) => ({
-      match: form.match,
-      shifts: [
-        form.auto,
-        form.tele.transitionShift,
-        ...form.tele.shifts,
-        form.tele.endgameShift,
-      ],
-    })),
-    bpses,
-  );
 
   return {
     tele,
     auto,
-    fullGame,
-    metrics: { epa, bps: calculateAverageBPS(bpses), coprs },
+    metrics: { epa, coprs },
     noShowMatches: uniqueNoShowMatches(forms),
   };
 };
@@ -219,13 +179,11 @@ teamsRouter.get("/", async (req, res) => {
           ),
       ),
     ),
-    flatMap(getTeamBPSes),
+    map((teams) => mapObject(teams, (forms) => ({ forms }))),
     flatMap(fetchTeamsCOPRs),
     flatMap(getTeamsEPAs),
     map((teams) =>
-      mapObject(teams, (team) =>
-        processTeam(team.bpses, team.forms, team.coprs, team.epa),
-      ),
+      mapObject(teams, (team) => processTeam(team.forms, team.coprs, team.epa)),
     ),
     bindTo("teams"),
     foldResponse(res),

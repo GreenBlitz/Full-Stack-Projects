@@ -1,24 +1,27 @@
 // בס"ד
 import * as t from "io-ts";
 
-export const teleMovementCodec = t.type({
-  bumpStuck: t.boolean,
+const sideMovement = t.type({
+  trenchPass: t.number,
+  bumpPass: t.number,
+  bumpStuck: t.number,
 });
 
-export const autoMovementCodec = t.intersection([
-  t.type({
-    trenchPass: t.boolean,
-    bumpPass: t.boolean,
-  }),
-  teleMovementCodec,
-]);
+export const teleMovementCodec = t.type({
+  ally: sideMovement,
+  opponent: sideMovement,
+});
 
-export const defaultMovement: t.TypeOf<typeof autoMovementCodec> = {
-  trenchPass: false,
-  bumpPass: false,
-  bumpStuck: false,
+export const defaultSideMovement: t.TypeOf<typeof sideMovement> = {
+  trenchPass: 0,
+  bumpPass: 0,
+  bumpStuck: 0,
 };
 
-export type AutoMovement = t.TypeOf<typeof autoMovementCodec>;
-export type TeleMovement = t.TypeOf<typeof teleMovementCodec>
-export type Movement = AutoMovement | TeleMovement;
+export const defaultMovement: t.TypeOf<typeof teleMovementCodec> = {
+  ally: defaultSideMovement,
+  opponent: defaultSideMovement,
+};
+
+export type TeleMovement = t.TypeOf<typeof teleMovementCodec>;
+export type Movement = TeleMovement;

@@ -1,7 +1,5 @@
 // בס"ד
 import type {
-  FuelEvents,
-  FuelObject,
   GamePhase,
   MatchedEntry,
   Match,
@@ -45,22 +43,10 @@ async function fetchTeamData(team: number, recency?: number) {
   return firstElement(Object.values(data.teams));
 }
 
-const NO_FUEL_SHOT = 0;
-const calculateAccuracy = (fuel: FuelObject) =>
-  fuel.shot > NO_FUEL_SHOT ? fuel.scored / fuel.shot : NO_FUEL_SHOT;
-
 const FIRST_MATCH_TYPE_CHARACTER = 0;
 
 const formatNoShowMatch = (m: Match) =>
   `${m.type[FIRST_MATCH_TYPE_CHARACTER]}${m.number}`;
-
-const createShotDataset = (data: MatchedEntry<FuelObject>[], key: FuelEvents) =>
-  Object.fromEntries(
-    data.map((entry) => [
-      entry.match.type[FIRST_MATCH_TYPE_CHARACTER] + entry.match.number,
-      { value: entry[key] },
-    ]),
-  );
 
 const graphSection =
   "w-96 h-64 p-4 items-center bg-slate-900/40 backdrop-blur-md border border-white/10 rounded-3xl shadow-2xl";
@@ -117,82 +103,6 @@ export const TeamTab: FC = () => {
           </ul>
         </div>
       ) : null}
-
-      {data && (
-        <AccuracyChart
-          metrics={{
-            meterAndHalf: calculateAccuracy(
-              data.accuracy[METER_AND_HALF_CENTIMETERS],
-            ),
-            threeMeter: calculateAccuracy(
-              data.accuracy[THREE_METER_CENTIMETERS],
-            ),
-            more: calculateAccuracy(data.accuracy[MORE_DISTANCE]),
-          }}
-        />
-      )}
-
-      {data && (
-        <div className={graphSection}>
-          <PieGraph
-            name={"Distance Shots"}
-            points={{
-              "Meter And Half": {
-                value: data.accuracy[METER_AND_HALF_CENTIMETERS].amount,
-                color: "red",
-              },
-              "Three Meter": {
-                value: data.accuracy[THREE_METER_CENTIMETERS].amount,
-                color: "blue",
-              },
-              More: {
-                value: data.accuracy[MORE_DISTANCE].amount,
-                color: "orange",
-              },
-            }}
-          />
-        </div>
-      )}
-
-      {data && (
-        <div className={`${graphSection} text-center`}>
-          <span className="font-black tracking-wider uppercase text-slate-400 text-2xl">
-            shoot positions
-          </span>
-          <div className="w-full h-48">
-            <HeatMap
-              positions={data.fuel.flatMap((fuel) => fuel.positions)}
-              path={redField}
-              aspectRatio={0} //bro this does nothing
-            />
-          </div>
-        </div>
-      )}
-
-      {data && (
-        <div className={graphSection}>
-          <LineChart
-            dataSetsProps={[
-              {
-                name: "Scored",
-                points: createShotDataset(data.fuel, "scored"),
-              },
-              {
-                name: "Missed",
-                points: createShotDataset(data.fuel, "missed"),
-              },
-              {
-                name: "Shot",
-                points: createShotDataset(data.fuel, "shot"),
-              },
-              {
-                name: "Pass",
-                points: createShotDataset(data.fuel, "passed"),
-              },
-            ]}
-          />
-        </div>
-      )}
       {data && "climbs" in data && (
         <div className={graphSection}>
           <LineChart
@@ -222,10 +132,9 @@ export const TeamTab: FC = () => {
         </div>
       )}
       {data && "movement" in data && (
-        <MovementChart movements={data.movement} />
-      )}
-      {teamData && phase === "fullGame" && (
-        <MetricsChart {...teamData.metrics} />
+        <MovementChart
+          movements={data.movement.averagePerShift.transitionShift}
+        />
       )}
     </div>
   );

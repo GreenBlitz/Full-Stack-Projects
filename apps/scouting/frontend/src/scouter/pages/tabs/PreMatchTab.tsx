@@ -137,8 +137,7 @@ const PreMatchTab: FC<TabProps> = ({
   };
 
   const mergedSlots = useMemo(() => {
-    const manualRows =
-      manualSchedulesByCompetition[form.competition] ?? [];
+    const manualRows = manualSchedulesByCompetition[form.competition] ?? [];
     const manualSlots = manualRowsToScheduleSlots(manualRows);
     const tbaSlots = toQualMatches(tbaMatches);
     return mergeSchedulePreferManual(tbaSlots, manualSlots);

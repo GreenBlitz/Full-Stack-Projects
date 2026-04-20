@@ -7,7 +7,6 @@ import { TeamTab } from "./strategy/tabs/team/TeamTab";
 import { MatchForecast } from "./strategy/tabs/forecast/MatchForecast";
 import { GeneralDataTable } from "./strategy/tabs/GeneralDataTable";
 import { CompareTwo } from "./strategy/tabs/CompareTwo";
-import BpsBase from "./scouter/components/bps-components/BpsBase";
 import { Leaderboard } from "./scouter/pages/Leaderboard";
 import SettingsPage from "./scouter/pages/SettingsPage";
 import { CURRENT_COMPETITION } from "@repo/scouting_types";
@@ -24,7 +23,6 @@ const App: FC = () => {
         element={<Leaderboard competition={CURRENT_COMPETITION} />}
       />
       <Route path="/settings" element={<SettingsPage />} />
-      <Route path="/bps" element={<BpsBase />} />
       <Route path="/strategy" element={<StrategyNavigationBar />}>
         <Route path="team" element={<TeamTab />} />
         <Route path="general" element={<GeneralDataTable filters={{}} />} />

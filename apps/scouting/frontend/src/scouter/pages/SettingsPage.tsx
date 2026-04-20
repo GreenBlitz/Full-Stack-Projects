@@ -5,6 +5,7 @@ import { isLeft } from "fp-ts/lib/Either";
 import { PathReporter } from "io-ts/lib/PathReporter";
 import {
   competitions,
+  CURRENT_COMPETITION,
   decodeManualScheduleJson,
   type Competition,
   type ManualSchedulesByCompetition,
@@ -42,7 +43,7 @@ const SettingsPage: FC = () => {
     );
 
   const [scheduleCompetition, setScheduleCompetition] =
-    useState<Competition>("TESTING");
+    useState<Competition>(CURRENT_COMPETITION);
   const [scheduleJsonDraft, setScheduleJsonDraft] = useState("");
   const [scheduleMessage, setScheduleMessage] = useState<{
     kind: "ok" | "err";
