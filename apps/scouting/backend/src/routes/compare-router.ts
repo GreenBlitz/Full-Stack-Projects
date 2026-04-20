@@ -10,13 +10,12 @@ import { Router } from "express";
 import { getFormsCollection } from "./forms-router";
 import { pipe } from "fp-ts/lib/function";
 import { bind, bindTo, filterOrElse, fold, map } from "fp-ts/lib/TaskEither";
-import { mongofyQuery, flatTryCatch } from "@repo/flow-utils";
+import { mongofyQuery, flatTryCatch, foldResponse } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
 import { calculateSum, firstElement, isEmpty } from "@repo/array-functions";
 import { isSingleTeam } from "../verification/functions";
 
 export const compareRouter = Router();
-
 
 const INITIAL_COUNTER_VALUE = 0;
 const INCREMENT = 1;
@@ -111,11 +110,7 @@ compareRouter.get("/", async (req, res) => {
       },
     })),
 
-    fold(
-      (error) => () =>
-        Promise.resolve(res.status(error.status).send(error.reason)),
-      (teamCompareData) => () =>
-        Promise.resolve(res.status(StatusCodes.OK).json({ teamCompareData })),
-    ),
+    bindTo("teamCompareData"),
+    foldResponse(res),
   )();
 });

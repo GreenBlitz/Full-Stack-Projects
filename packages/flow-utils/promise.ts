@@ -30,5 +30,5 @@ export const toUnion = <E, A, B>(
       () => () => Promise.resolve(defaultValue),
       (item) => () => Promise.resolve(item),
     ),
-    mapTask((item) => rightEither(item)),
+    mapTask(rightEither),
   );

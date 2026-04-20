@@ -50,6 +50,7 @@ import { teamStringToTeamNumber } from "@repo/frc";
 
 export const tbaRouter = Router();
 
+const TBA_KEY = process.env.TBA_API_KEY;
 const TBA_URL = "https://www.thebluealliance.com/api/v3";
 
 const currentEvent = "2026cahal";
@@ -69,11 +70,7 @@ const fetchTba = <U>(
       () =>
         axios
           .get(TBA_URL + route, {
-            headers: {
-              ...(process.env.TBA_API_KEY
-                ? { "X-TBA-Auth-Key": process.env.TBA_API_KEY }
-                : {}),
-            },
+            headers: { "X-TBA-Auth-Key": TBA_KEY },
             ...config,
           })
           .then((response) => response.data as unknown),

@@ -4,7 +4,7 @@ import { Router } from "express";
 import { getFormsCollection } from "./forms-router";
 import { pipe } from "fp-ts/lib/function";
 import { fold, map, bindTo, bind } from "fp-ts/lib/TaskEither";
-import { mongofyQuery, flatTryCatch } from "@repo/flow-utils";
+import { mongofyQuery, flatTryCatch, foldResponse } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
 
 import {
@@ -60,11 +60,7 @@ generalRouter.get("/", async (req, res) => {
 
     map(({ forms}) => formsToGeneralData(forms)),
 
-    fold(
-      (error) => () =>
-        Promise.resolve(res.status(error.status).send(error.reason)),
-      (generalData) => () =>
-        Promise.resolve(res.status(StatusCodes.OK).json({ generalData })),
-    ),
+    bindTo("generalData"),
+    foldResponse(res),
   )();
 });
