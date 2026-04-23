@@ -1,39 +1,46 @@
 //בס"ד
 
 import { useState, type FC } from "react";
-import type { PitScout, pitScoutBoolean } from "@repo/scouting_types";
-
-type BooleanFieldKey = "hasTurret" | "canPassTrench" | "canPassBumpEasily";
-type NumberFieldKey = "robotWeight" | "ballCapacity";
+import type {
+  PitScout,
+  PitScoutBoolean,
+  PitScoutBooleanKey,
+  PitScoutBooleanMetric,
+  PitScoutNumber,
+  PitScoutNumberKey,
+} from "@repo/scouting_types";
+import { NumberStats } from "./NumberStats";
+import { BooleanStats } from "./BooleanStats";
 
 const NUMBER_FIELDS: {
-  key: NumberFieldKey;
+  statKey: PitScoutNumberKey;
   label: string;
   placeholder: string;
 }[] = [
   {
-    key: "robotWeight",
+    statKey: "robotWeight",
     label: "Robot Weight (lbs)",
     placeholder: "e.g. 120",
   },
-  { key: "ballCapacity", label: "Ball Capacity", placeholder: "e.g. 50" },
+  { statKey: "ballCapacity", label: "Ball Capacity", placeholder: "e.g. 50" },
 ];
 
 const PIT_SCOUT_URL = "/api/v1/pit/";
 
-const BOOLEAN_FIELDS: { key: BooleanFieldKey; label: string }[] = [
-  { key: "hasTurret", label: "Has turret?" },
-  { key: "canPassTrench", label: "Can pass trench?" },
-  { key: "canPassBumpEasily", label: "Can pass bump easily?" },
+const BOOLEAN_FIELDS: { statKey: PitScoutBooleanKey; label: string }[] = [
+  { statKey: "hasTurret", label: "Has turret?" },
+  { statKey: "canPassTrench", label: "Can pass trench?" },
+  { statKey: "canPassBumpEasily", label: "Can pass bump easily?" },
 ];
 
 const initialState: PitScout = {
   teamNumber: 0,
-  robotWeight: undefined,
-  ballCapacity: undefined,
-  hasTurret: undefined,
-  canPassTrench: undefined,
-  canPassBumpEasily: undefined,
+  numberMetrics: { robotWeight: undefined, ballCapacity: undefined },
+  booleanMetrics: {
+    hasTurret: undefined,
+    canPassTrench: undefined,
+    canPassBumpEasily: undefined,
+  },
   extraInfo: undefined,
 };
 
@@ -44,14 +51,22 @@ export const PitScoutTab: FC = () => {
   >("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
-  const setString = (key: keyof PitScout, value: string) =>
-    setForm((form) => ({ ...form, [key]: value || undefined }));
-
-  const setBool = (key: BooleanFieldKey, value: pitScoutBoolean) =>
+  const setNumberForm = (key: PitScoutNumberKey, value: number) =>
     setForm((form) => ({
       ...form,
-      [key]: form[key] === value ? undefined : value,
+      numberMetrics: { ...form.numberMetrics, [key]: value || undefined },
     }));
+  const setBoolForm = (key: PitScoutBooleanKey, value: PitScoutBooleanMetric) =>
+    setForm((form) => ({
+      ...form,
+      booleanMetrics: {
+        ...form.booleanMetrics,
+        [key]: form.booleanMetrics[key] === value ? undefined : value,
+      },
+    }));
+
+  const setExtraForm = (value: string) =>
+    setForm((form) => ({ ...form, extraInfo: value || undefined }));
 
   const handleSubmit = async () => {
     if (!form.teamNumber) {
@@ -108,22 +123,14 @@ export const PitScoutTab: FC = () => {
       </div>
 
       <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
-        {NUMBER_FIELDS.map(({ key, label, placeholder }) => (
-          <div
-            key={key}
-            className="bg-slate-800/40 border border-white/5 p-5 rounded-2xl"
-          >
-            <label className="text-[10px] font-bold uppercase text-slate-500 block mb-2">
-              {label}
-            </label>
-            <input
-              type="number"
-              className="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-2.5 outline-none focus:border-amber-500/50 transition-all text-sm font-medium"
-              value={form[key] ?? ""}
-              onChange={(event) => setString(key, event.target.value)}
-              placeholder={placeholder}
-            />
-          </div>
+        {NUMBER_FIELDS.map(({ statKey: key, label, placeholder }) => (
+          <NumberStats
+            statKey={key}
+            label={label}
+            placeholder={placeholder}
+            form={form}
+            setNumberForm={setNumberForm}
+          />
         ))}
       </div>
 
@@ -132,34 +139,13 @@ export const PitScoutTab: FC = () => {
           Mechanical Capabilities
         </h2>
         <div className="grid gap-4">
-          {BOOLEAN_FIELDS.map(({ key, label }) => (
-            <div key={key} className="flex items-center justify-between group">
-              <span className="text-sm font-medium text-slate-300 group-hover:text-white transition-colors">
-                {label}
-              </span>
-              <div className="flex gap-2 bg-slate-900/80 p-1 rounded-xl border border-white/5">
-                <button
-                  onClick={() => setBool(key, true)}
-                  className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all ${
-                    form[key] === true
-                      ? "bg-emerald-500 text-slate-950 shadow-[0_0_10px_rgba(16,185,129,0.2)]"
-                      : "text-slate-500 hover:text-slate-300"
-                  }`}
-                >
-                  Yes
-                </button>
-                <button
-                  onClick={() => setBool(key, false)}
-                  className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all ${
-                    form[key] === false
-                      ? "bg-rose-500 text-slate-950 shadow-[0_0_10px_rgba(244,63,94,0.2)]"
-                      : "text-slate-500 hover:text-slate-300"
-                  }`}
-                >
-                  No
-                </button>
-              </div>
-            </div>
+          {BOOLEAN_FIELDS.map(({ statKey: key, label }) => (
+            <BooleanStats
+              statKey={key}
+              label={label}
+              form={form}
+              setBoolForm={setBoolForm}
+            />
           ))}
         </div>
       </div>
@@ -171,7 +157,7 @@ export const PitScoutTab: FC = () => {
         <textarea
           className="w-full bg-slate-900/50 border border-white/10 rounded-xl p-4 min-h-[120px] outline-none focus:border-amber-500/50 transition-all text-sm resize-none placeholder:text-slate-700"
           value={form.extraInfo ?? ""}
-          onChange={(event) => setString("extraInfo", event.target.value)}
+          onChange={(event) => setExtraForm(event.target.value)}
           placeholder="Enter extra observations..."
         />
       </div>

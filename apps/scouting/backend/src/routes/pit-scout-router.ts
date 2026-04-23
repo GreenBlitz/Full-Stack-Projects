@@ -4,10 +4,15 @@ import { Router } from "express";
 import { flow, pipe } from "fp-ts/lib/function";
 import { getDb } from "../middleware/db";
 import { bind, bindTo, fromEither, map } from "fp-ts/lib/TaskEither";
-import { createBodyVerificationPipe, foldResponse } from "@repo/flow-utils";
+import {
+  createBodyVerificationPipe,
+  flatTryCatch,
+  foldResponse,
+} from "@repo/flow-utils";
 import { right as rightEither } from "fp-ts/lib/Either";
 import { mongofyQuery } from "@repo/flow-utils";
 import { PitScout, pitScoutCodec } from "@repo/scouting_types";
+import { StatusCodes } from "http-status-codes";
 
 export const pitScoutRouter = Router();
 
@@ -31,7 +36,14 @@ pitScoutRouter.post("/", async (req, res) => {
 pitScoutRouter.get("/", async (req, res) => {
   await flow(
     getPitCollection,
-    map((collection) => collection.find(mongofyQuery(req.query)).toArray()),
+    flatTryCatch(
+      (collection) => collection.find(mongofyQuery(req.query)).toArray(),
+      () => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: "Error Inserting Forms To Collection ",
+      }),
+    ),
+    bindTo("forms"),
     foldResponse(res),
   )();
 });
