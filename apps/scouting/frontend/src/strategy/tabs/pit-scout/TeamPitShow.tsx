@@ -12,8 +12,6 @@ import { BOOLEAN_FIELDS, NUMBER_FIELDS } from "./PitScoutTab";
 const PIT_SCOUT_URL = "/api/v1/pit/";
 const NO_ANSWER = "N/A";
 
-// --- resolve ---
-
 const resolveField = <T,>(
   forms: PitScout[],
   extract: (form: PitScout) => T,
@@ -185,23 +183,21 @@ export const PitScoutResultsTab: FC = () => {
 
   useEffect(() => {
     fetch(PIT_SCOUT_URL)
-      .then((r) => r.json())
+      .then((response) => response.json())
       .then((data: PitScout[]) => {
         setAllForms(data);
         setLoadStatus("done");
       })
-      .catch((e) => {
-        console.error("fetch error:", e);
+      .catch((error) => {
+        console.error("fetch error:", error);
         setLoadStatus("error");
       });
   }, []);
 
-  const teams = [...new Set(allForms.map((f) => f.teamNumber))].sort(
-    (a, b) => a - b,
-  );
+  const teams = [...new Set(allForms.map((form) => form.teamNumber))].sort();
 
   const teamForms = selectedTeam
-    ? allForms.filter((f) => f.teamNumber === selectedTeam)
+    ? allForms.filter((form) => form.teamNumber === selectedTeam)
     : [];
 
   return (
@@ -220,16 +216,20 @@ export const PitScoutResultsTab: FC = () => {
           <select
             className="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 text-sm font-mono outline-none focus:border-amber-500/50 transition-all text-slate-200"
             value={selectedTeam ?? ""}
-            onChange={(e) =>
-              setSelectedTeam(e.target.value ? parseInt(e.target.value) : null)
+            onChange={(event) =>
+              setSelectedTeam(
+                event.target.value ? parseInt(event.target.value) : null,
+              )
             }
           >
             <option value="">— pick a team —</option>
-            {teams.map((t) => {
-              const count = allForms.filter((f) => f.teamNumber === t).length;
+            {teams.map((teamNumber) => {
+              const count = allForms.filter(
+                (f) => f.teamNumber === teamNumber,
+              ).length;
               return (
-                <option key={t} value={t}>
-                  {`Team ${t}${count > 1 ? ` (${count} submissions)` : ""}`}
+                <option key={teamNumber} value={teamNumber}>
+                  {`Team ${teamNumber}${count > 1 ? ` (${count} submissions)` : ""}`}
                 </option>
               );
             })}
