@@ -13,6 +13,7 @@ import { CURRENT_COMPETITION } from "@repo/scouting_types";
 import { StrategyNavigationBar } from "./strategy/components/StrategyNavBar";
 import { SuperScoutTab } from "./strategy/tabs/super-scout/SuperScoutTab";
 import { Tinder } from "./strategy/tabs/Tinder";
+import { PitScoutTab } from "./strategy/tabs/pit-scout/PitScoutTab";
 
 const App: FC = () => {
   return (
@@ -30,6 +31,7 @@ const App: FC = () => {
         <Route path="compare" element={<CompareTwo />} />
         <Route path="super" element={<SuperScoutTab />} />
         <Route path="tinder" element={<Tinder />} />
+        <Route path="pit" element={<PitScoutTab />} />
       </Route>
       <Route path="*" element={<ScoutedMatches />} />
     </Routes>
