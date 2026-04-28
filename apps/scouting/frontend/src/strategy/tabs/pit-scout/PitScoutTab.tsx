@@ -12,7 +12,7 @@ import type {
 import { NumberStats } from "./NumberStats";
 import { BooleanStats } from "./BooleanStats";
 
-const NUMBER_FIELDS: {
+export const NUMBER_FIELDS: {
   statKey: PitScoutNumberKey;
   label: string;
   placeholder: string;
@@ -27,11 +27,12 @@ const NUMBER_FIELDS: {
 
 const PIT_SCOUT_URL = "/api/v1/pit/";
 
-const BOOLEAN_FIELDS: { statKey: PitScoutBooleanKey; label: string }[] = [
-  { statKey: "hasTurret", label: "Has turret?" },
-  { statKey: "canPassTrench", label: "Can pass trench?" },
-  { statKey: "canPassBumpEasily", label: "Can pass bump easily?" },
-];
+export const BOOLEAN_FIELDS: { statKey: PitScoutBooleanKey; label: string }[] =
+  [
+    { statKey: "hasTurret", label: "Has turret?" },
+    { statKey: "canPassTrench", label: "Can pass trench?" },
+    { statKey: "canPassBumpEasily", label: "Can pass bump easily?" },
+  ];
 
 const initialState: PitScout = {
   teamNumber: 0,

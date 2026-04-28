@@ -7,51 +7,50 @@ import type {
   PitScoutBooleanMetric,
   PitScoutNumberKey,
 } from "@repo/scouting_types";
+import { BOOLEAN_FIELDS, NUMBER_FIELDS } from "./PitScoutTab";
 
 const PIT_SCOUT_URL = "/api/v1/pit/";
-
-const NUMBER_FIELDS: { statKey: PitScoutNumberKey; label: string }[] = [
-  { statKey: "robotWeight", label: "Robot Weight (lbs)" },
-  { statKey: "ballCapacity", label: "Ball Capacity" },
-];
-
-const BOOLEAN_FIELDS: { statKey: PitScoutBooleanKey; label: string }[] = [
-  { statKey: "hasTurret", label: "Has turret?" },
-  { statKey: "canPassTrench", label: "Can pass trench?" },
-  { statKey: "canPassBumpEasily", label: "Can pass bump easily?" },
-];
+const NO_ANSWER = "N/A";
 
 // --- resolve ---
 
-function resolveField<T>(
+const resolveField = <T,>(
   forms: PitScout[],
   extract: (form: PitScout) => T,
   display: (value: T) => string,
-): { state: "agree"; value: string } | { state: "conflict"; values: string[] } {
+):
+  | { state: "agree"; value: string }
+  | { state: "conflict"; values: string[] } => {
   if (forms.length === 0) return { state: "agree", value: "N/A" };
-  const values = forms.map(extract).filter((v) => v !== undefined) as T[];
+  const values = forms
+    .map(extract)
+    .filter((v) => v !== undefined && v !== null) as T[];
   if (values.length === 0) return { state: "agree", value: "N/A" };
   const unique = [...new Set(values)];
-  if (unique.length === 1)
-    return { state: "agree", value: display(unique[0]) };
-  return { state: "conflict", values: values.map(display) };
-}
+  return unique.length === 1
+    ? { state: "agree", value: display(unique[0]) }
+    : { state: "conflict", values: values.map(display) };
+};
 
-function resolveBool(
+const resolveBool = (
   forms: PitScout[],
   key: PitScoutBooleanKey,
-): { state: "agree"; value: PitScoutBooleanMetric } | { state: "conflict"; values: PitScoutBooleanMetric[] } {
+):
+  | { state: "agree"; value: PitScoutBooleanMetric }
+  | { state: "conflict"; values: PitScoutBooleanMetric[] } => {
   if (forms.length === 0) return { state: "agree", value: undefined };
-  const values = forms.map((f) => f.booleanMetrics[key]).filter((v) => v !== undefined) as boolean[];
+  const values = forms
+    .map((f) => f.booleanMetrics?.[key])
+    .filter((v) => v !== undefined && v !== null) as boolean[];
   if (values.length === 0) return { state: "agree", value: undefined };
   const unique = [...new Set(values)];
-  if (unique.length === 1) return { state: "agree", value: unique[0] };
-  return { state: "conflict", values };
-}
+  return unique.length === 1
+    ? { state: "agree", value: unique[0] }
+    : { state: "conflict", values };
+};
 
-function resolveNotes(forms: PitScout[]): string[] {
-  return forms.map((f) => f.extraInfo).filter((v): v is string => !!v);
-}
+const resolveNotes = (forms: PitScout[]): string[] =>
+  forms.map((f) => f.extraInfo).filter((v): v is string => !!v);
 
 // --- StatCell ---
 
@@ -180,7 +179,9 @@ const NotesCell: FC<{ notes: string[] }> = ({ notes }) => {
 export const PitScoutResultsTab: FC = () => {
   const [allForms, setAllForms] = useState<PitScout[]>([]);
   const [selectedTeam, setSelectedTeam] = useState<number | null>(null);
-  const [loadStatus, setLoadStatus] = useState<"loading" | "error" | "done">("loading");
+  const [loadStatus, setLoadStatus] = useState<"loading" | "error" | "done">(
+    "loading",
+  );
 
   useEffect(() => {
     fetch(PIT_SCOUT_URL)
@@ -205,7 +206,6 @@ export const PitScoutResultsTab: FC = () => {
 
   return (
     <div className="flex flex-col items-center gap-6 max-w-2xl mx-auto pb-12 text-slate-200">
-
       <div className="w-full bg-slate-800/40 border border-white/5 p-6 rounded-2xl backdrop-blur-sm shadow-xl">
         <h2 className="text-xs font-black uppercase tracking-[0.2em] text-amber-500 mb-4">
           Select Team
@@ -246,7 +246,7 @@ export const PitScoutResultsTab: FC = () => {
                 label={label}
                 {...resolveField(
                   teamForms,
-                  (f) => f.numberMetrics[statKey],
+                  (f) => f.numberMetrics?.[statKey],
                   (v) => v?.toString() ?? "N/A",
                 )}
               />
