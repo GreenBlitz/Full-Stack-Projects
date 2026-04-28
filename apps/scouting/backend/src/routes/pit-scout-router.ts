@@ -34,16 +34,15 @@ pitScoutRouter.post("/", async (req, res) => {
 });
 
 pitScoutRouter.get("/", async (req, res) => {
-  await flow(
-    getPitCollection,
+  await pipe(
+    getPitCollection(),
     flatTryCatch(
       (collection) => collection.find(mongofyQuery(req.query)).toArray(),
-      () => ({
+      (error) => ({
         status: StatusCodes.INTERNAL_SERVER_ERROR,
-        reason: "Error Inserting Forms To Collection ",
+        reason: `Error Fetching Forms Pit Scout: ${error}`,
       }),
     ),
-    bindTo("forms"),
     foldResponse(res),
   )();
 });
