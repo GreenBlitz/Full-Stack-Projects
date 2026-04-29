@@ -9,19 +9,19 @@ import { LuLayoutGrid } from "react-icons/lu";
 const ACTIVE_SIZE = 3;
 const INACTIVE_SIZE = 2;
 export const PhaseToggle: FC<{
-  activeMode: GamePhase;
-  setActiveMode: (phase: GamePhase) => void;
+  activeMode: "pit" | "forms";
+  setActiveMode: (phase: "pit" | "forms") => void;
 }> = ({ activeMode, setActiveMode }) => {
   const options: {
-    id: GamePhase;
+    id: "pit" | "forms";
     label: string;
     icon: IconType;
   }[] = [
-    { id: "auto", label: "Auto", icon: IoPlayOutline },
-    { id: "tele", label: "Tele", icon: FiZap },
+    { id: "pit", label: "Pit", icon: IoPlayOutline },
+    { id: "forms", label: "Forms", icon: FiZap },
   ];
 
-  const handlePress = (mode: GamePhase) => {
+  const handlePress = (mode: "pit" | "forms") => {
     setActiveMode(mode);
   };
 

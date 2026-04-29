@@ -52,7 +52,7 @@ const formatNoShowMatch = (m: Match) =>
 const graphSection =
   "w-96 h-64 p-4 items-center bg-slate-900/40 backdrop-blur-md border border-white/10 rounded-3xl shadow-2xl";
 export const TeamTab: FC = () => {
-  const [phase, setPhase] = useState<GamePhase>("tele");
+  const [phase, setPhase] = useState<"pit" | "forms">("pit");
   const [teamData, setTeamData] = useState<TeamData>();
   const [teamNumber, setTeamNumber] = useLocalStorage<number | null>(
     "team/teamNumber",
@@ -63,8 +63,6 @@ export const TeamTab: FC = () => {
     null,
   );
   const [scoutedTeams, setScoutedTeams] = useState<number[]>();
-
-  const data = useMemo(() => teamData?.[phase], [teamData, phase]);
 
   useEffect(() => {
     if (!teamNumber || !FRC_TEAM_NUMBERS.includes(teamNumber)) {
@@ -89,55 +87,11 @@ export const TeamTab: FC = () => {
         scoutedTeams={scoutedTeams ?? []}
       />
       <PhaseToggle activeMode={phase} setActiveMode={setPhase} />
-
-      {teamData && (teamData.noShowMatches?.length ?? 0) > 0 ? (
-        <div
-          className={`${graphSection} w-full max-w-2xl text-left text-slate-200`}
-        >
-          <span className="font-black tracking-wider uppercase text-orange-400 text-lg block mb-2">
-            No-show matches (excluded from stats)
-          </span>
-          <ul className="list-disc list-inside text-sm space-y-1">
-            {(teamData.noShowMatches ?? []).map((m) => (
-              <li key={`${m.type}-${m.number}`}>{formatNoShowMatch(m)}</li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
-      {data && "climbs" in data && (
-        <div className={graphSection}>
-          <LineChart
-            min={0}
-            dataSetsProps={[
-              {
-                name: "Climb",
-                points: getClimbDataset(data),
-                size: 10,
-                color: "#10b981",
-              },
-            ]}
-          />
-        </div>
-      )}
-      {data && "climbs" in data && (
-        <div className={graphSection}>
-          <BarChart
-            dataSetsProps={[
-              {
-                name: "Median Climb Time",
-                points: calculateMedianClimbs(data, phase),
-                color: "green",
-              },
-            ]}
-          />
-        </div>
-      )}
-      {data && "movement" in data && (
-        <MovementChart
-          movements={data.movement.averagePerShift.transitionShift}
+        <MetricsChart
+          epa={teamData?.metrics.epa}
+          coprs={teamData?.metrics.coprs}
         />
-      )}
-      <PitScoutResultsTab teamNumber={teamNumber} />
+      {phase === "pit" && <PitScoutResultsTab teamNumber={teamNumber} />}
     </div>
   );
 };

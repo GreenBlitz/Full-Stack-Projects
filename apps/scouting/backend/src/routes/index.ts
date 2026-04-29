@@ -8,7 +8,6 @@ import { forecastRouter } from "./forecast-router";
 import { teamsRouter } from "./teams-router";
 import { generalRouter } from "./general-router";
 import { leaderboardRouter } from "./leaderboard-router";
-import { compareRouter } from "./compare-router";
 import { tinderRouter } from "./tinder-router";
 import { pitScoutRouter } from "./pit-scout-router";
 
@@ -21,7 +20,6 @@ apiRouter.use("/forecast", forecastRouter);
 apiRouter.use("/team", teamsRouter);
 apiRouter.use("/general", generalRouter);
 apiRouter.use("/leaderboard", leaderboardRouter);
-apiRouter.use("/compare", compareRouter);
 apiRouter.use("/tinder", tinderRouter);
 apiRouter.use("/pit", pitScoutRouter);
 

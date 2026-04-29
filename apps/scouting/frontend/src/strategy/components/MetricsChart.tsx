@@ -24,12 +24,11 @@ const Metric: FC<{
   </div>
 );
 
-export const MetricsChart: FC<TeamData["metrics"]> = ({ epa, bps, coprs }) => {
+export const MetricsChart: FC<TeamData["metrics"]> = ({ epa, coprs }) => {
   const [isCOPROpen, setCOPROpenness] = useState(false);
   const [isEPAOpen, setEPAOpenness] = useState(false);
   return (
-    <div className="grid grid-cols-3 gap-3 w-full max-w-md mx-auto p-2">
-
+    <div className="grid grid-cols-2 gap-3 w-full max-w-md mx-auto p-2">
       <Metric
         name="EPA"
         value={epa?.total_points?.mean ?? 0}
