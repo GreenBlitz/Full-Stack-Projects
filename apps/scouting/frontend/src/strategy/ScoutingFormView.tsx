@@ -6,20 +6,25 @@ import { AutoPath } from "./AutoPath";
 import { TeleSection } from "./TeleSection";
 import type { ScoutingForm } from "@repo/scouting_types";
 
-interface Point { x: number; y: number; }
-interface PathPoint { point: Point; time: number; }
-
+interface Point {
+  x: number;
+  y: number;
+}
+interface PathPoint {
+  point: Point;
+  time: number;
+}
 
 interface ScoutingFormViewProps {
   form: ScoutingForm;
 }
 
 const InfoCell: FC<{ label: string; value: string }> = ({ label, value }) => (
-  <div className="bg-slate-800/40 border border-white/5 p-4 rounded-2xl">
-    <label className="text-[10px] font-bold uppercase text-slate-500 block mb-1">
+  <div className="bg-slate-800/40 border border-white/5 p-4 rounded-2xl text-center">
+    <label className="text-[15px] font-bold uppercase text-slate-500 block mb-1">
       {label}
     </label>
-    <span className="text-sm font-medium text-slate-200">{value}</span>
+    <span className="text-lg font-medium text-slate-200">{value}</span>
   </div>
 );
 
@@ -43,7 +48,6 @@ const BoolCell: FC<{ label: string; value: boolean }> = ({ label, value }) => (
 export const ScoutingFormView: FC<ScoutingFormViewProps> = ({ form }) => {
   return (
     <div className="flex flex-col gap-6 max-w-2xl mx-auto pb-12 text-slate-200">
-
       {/* Header */}
       <div className="w-full bg-slate-800/40 border border-white/5 p-6 rounded-2xl backdrop-blur-sm shadow-xl">
         <h2 className="text-xs font-black uppercase tracking-[0.2em] text-amber-500 mb-4">
@@ -73,6 +77,7 @@ export const ScoutingFormView: FC<ScoutingFormViewProps> = ({ form }) => {
         <h2 className="text-xs font-black uppercase tracking-[0.2em] text-amber-500 mb-4">
           Auto
         </h2>
+        <InfoCell label="Fuel" value={form.auto.balls} />
         <AutoPath path={form.auto.path} />
       </div>
 
@@ -101,7 +106,6 @@ export const ScoutingFormView: FC<ScoutingFormViewProps> = ({ form }) => {
           </p>
         </div>
       )}
-
     </div>
   );
 };

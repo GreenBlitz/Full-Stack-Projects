@@ -18,12 +18,12 @@ export const TeleSection: FC<TeleSectionProps> = ({ label, data }) => {
 
   return (
     <div className="bg-slate-800/40 border border-white/5 p-5 rounded-2xl flex flex-col gap-3">
-      <label className="text-[10px] font-bold uppercase text-slate-500 block">
+      <label className="text-[15px] font-bold uppercase text-slate-300 block">
         {label}
       </label>
       {data.rating !== undefined && (
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-bold uppercase text-slate-500">
+          <span className="text-[15px] font-bold uppercase text-slate-500">
             Rating
           </span>
           <div className="flex gap-1">
@@ -36,7 +36,7 @@ export const TeleSection: FC<TeleSectionProps> = ({ label, data }) => {
               />
             ))}
           </div>
-          <span className="text-sm font-mono text-slate-300">
+          <span className="text-xl font-mono text-slate-300">
             {data.rating}/7
           </span>
         </div>
