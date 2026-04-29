@@ -87,7 +87,6 @@ const StatCell: FC<StatCellProps> = (props) => {
   );
 };
 
-// --- BoolPill ---
 
 const BoolPill: FC<{ value: PitScoutBooleanMetric }> = ({ value }) => {
   if (value === undefined)
@@ -107,7 +106,6 @@ const BoolPill: FC<{ value: PitScoutBooleanMetric }> = ({ value }) => {
   );
 };
 
-// --- BooleanStatCell ---
 
 type BooleanStatCellProps =
   | { label: string; state: "agree"; value: PitScoutBooleanMetric }
@@ -141,7 +139,6 @@ const BooleanStatCell: FC<BooleanStatCellProps> = (props) => {
   );
 };
 
-// --- NotesCell ---
 
 const NotesCell: FC<{ notes: string[] }> = ({ notes }) => {
   if (notes.length === 0)
@@ -172,9 +169,14 @@ const NotesCell: FC<{ notes: string[] }> = ({ notes }) => {
   );
 };
 
-// --- PitScoutResultsTab ---
 
-export const PitScoutResultsTab: FC = () => {
+interface PitScoutResultsTabProps {
+  teamNumber: number | null;
+}
+
+export const PitScoutResultsTab: FC<PitScoutResultsTabProps> = ({
+  teamNumber,
+}) => {
   const [allForms, setAllForms] = useState<PitScout[]>([]);
   const [selectedTeam, setSelectedTeam] = useState<number | null>(null);
   const [loadStatus, setLoadStatus] = useState<"loading" | "error" | "done">(
@@ -194,6 +196,10 @@ export const PitScoutResultsTab: FC = () => {
       });
   }, []);
 
+  useEffect(() => {
+    setSelectedTeam(teamNumber);
+  });
+
   const teams = [...new Set(allForms.map((form) => form.teamNumber))].sort();
 
   const teamForms = selectedTeam
@@ -202,42 +208,7 @@ export const PitScoutResultsTab: FC = () => {
 
   return (
     <div className="flex flex-col items-center gap-6 max-w-2xl mx-auto pb-12 text-slate-200">
-      <div className="w-full bg-slate-800/40 border border-white/5 p-6 rounded-2xl backdrop-blur-sm shadow-xl">
-        <h2 className="text-xs font-black uppercase tracking-[0.2em] text-amber-500 mb-4">
-          Select Team
-        </h2>
-        {loadStatus === "loading" && (
-          <p className="text-slate-500 text-sm">Loading forms...</p>
-        )}
-        {loadStatus === "error" && (
-          <p className="text-rose-400 text-sm">Failed to load pit scouts.</p>
-        )}
-        {loadStatus === "done" && (
-          <select
-            className="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 text-sm font-mono outline-none focus:border-amber-500/50 transition-all text-slate-200"
-            value={selectedTeam ?? ""}
-            onChange={(event) =>
-              setSelectedTeam(
-                event.target.value ? parseInt(event.target.value) : null,
-              )
-            }
-          >
-            <option value="">— pick a team —</option>
-            {teams.map((teamNumber) => {
-              const count = allForms.filter(
-                (f) => f.teamNumber === teamNumber,
-              ).length;
-              return (
-                <option key={teamNumber} value={teamNumber}>
-                  {`Team ${teamNumber}${count > 1 ? ` (${count} submissions)` : ""}`}
-                </option>
-              );
-            })}
-          </select>
-        )}
-      </div>
-
-      {selectedTeam && teamForms.length > 0 && (
+      {selectedTeam && teamForms.length > 0 ? (
         <>
           <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
             {NUMBER_FIELDS.map(({ statKey, label }) => (
@@ -275,6 +246,8 @@ export const PitScoutResultsTab: FC = () => {
             <NotesCell notes={resolveNotes(teamForms)} />
           </div>
         </>
+      ) : (
+        <p>no pit scouting recorded yet</p>
       )}
     </div>
   );

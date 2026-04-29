@@ -21,6 +21,7 @@ import { HeatMap } from "../../components/heatmap/HeatMap";
 import { redField } from "@repo/rebuilt_map";
 import { fetchTeamNumbers } from "../../fetches";
 import { PieGraph } from "../../components/PieChart";
+import { PitScoutResultsTab } from "../pit-scout/TeamPitShow";
 
 const METER_AND_HALF_CENTIMETERS = 150;
 const THREE_METER_CENTIMETERS = 300;
@@ -136,6 +137,7 @@ export const TeamTab: FC = () => {
           movements={data.movement.averagePerShift.transitionShift}
         />
       )}
+      <PitScoutResultsTab teamNumber={teamNumber} />
     </div>
   );
 };

@@ -33,7 +33,6 @@ const App: FC = () => {
         <Route path="super" element={<SuperScoutTab />} />
         <Route path="tinder" element={<Tinder />} />
         <Route path="pit" element={<PitScoutTab />} />
-        <Route path="pitShow" element={<PitScoutResultsTab/>} />
       </Route>
       <Route path="*" element={<ScoutedMatches />} />
     </Routes>
