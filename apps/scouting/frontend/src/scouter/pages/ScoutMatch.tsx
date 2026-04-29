@@ -24,6 +24,8 @@ import StartMatchLocallyButton, {
 } from "../components/StartMatchLocallyButton";
 import { boolean } from "io-ts";
 import { AutoTab } from "./tabs/AutoTab";
+import { SuperScoutTab } from "../../strategy/tabs/super-scout/SuperScoutTab";
+import { TeamCard } from "../../strategy/tabs/super-scout/TeamCard";
 export interface TabProps {
   setForm: Dispatch<SetStateAction<ScoutingForm>>;
   currentForm: ScoutingForm;
@@ -42,13 +44,7 @@ interface Tab {
 const ITERATION_PERIOD_MS = 10;
 
 const AUTO_END = 20_000;
-const TRANSITION_END = 30_000;
-
-const SHIFT_1_END = 55_000;
-const SHIFT_2_END = 80_000;
-const SHIFT_3_END = 105_000;
-const SHIFT_4_END = 130_000;
-const MATCH_END = 160_000;
+const MATCH_END = 171_000;
 
 const MILLISECONDS_IN_FIVE_SECONDS = 5000;
 
@@ -74,52 +70,17 @@ const TABS: Tab[] = [
     ShiftExtraEndTimeMs: AUTO_END - MILLISECONDS_IN_FIVE_SECONDS,
   },
   {
-    name: "Transition",
+    name: "Tele",
     Component: (props) => (
-      <ShiftTab shiftType={"transition"} tabIndex={0} {...props} />
-    ),
-    ShiftEndTimeMs: TRANSITION_END,
-    ShiftExtraEndTimeMs: TRANSITION_END - MILLISECONDS_IN_FIVE_SECONDS,
-  },
-  {
-    name: "Shift1",
-    Component: (props) => (
-      <ShiftTab shiftType={"teleop"} tabIndex={0} {...props} />
-    ),
-    ShiftEndTimeMs: SHIFT_1_END,
-    ShiftExtraEndTimeMs: SHIFT_1_END - MILLISECONDS_IN_FIVE_SECONDS,
-  },
-  {
-    name: "Shift2",
-    Component: (props) => (
-      <ShiftTab shiftType={"teleop"} tabIndex={1} {...props} />
-    ),
-    ShiftEndTimeMs: SHIFT_2_END,
-    ShiftExtraEndTimeMs: SHIFT_2_END - MILLISECONDS_IN_FIVE_SECONDS,
-  },
-  {
-    name: "Shift3",
-    Component: (props) => (
-      <ShiftTab shiftType={"teleop"} tabIndex={2} {...props} />
-    ),
-    ShiftEndTimeMs: SHIFT_3_END,
-    ShiftExtraEndTimeMs: SHIFT_3_END - MILLISECONDS_IN_FIVE_SECONDS,
-  },
-  {
-    name: "Shift4",
-    Component: (props) => (
-      <ShiftTab shiftType={"teleop"} tabIndex={3} {...props} />
-    ),
-    ShiftEndTimeMs: SHIFT_4_END,
-    ShiftExtraEndTimeMs: SHIFT_4_END - MILLISECONDS_IN_FIVE_SECONDS,
-  },
-  {
-    name: "Endgame",
-    Component: (props) => (
-      <ShiftTab shiftType={"endgame"} tabIndex={0} {...props} />
+      <TeamCard
+        teamData={props.currentForm.tele}
+        updateTeam={(newTele) =>
+          props.setForm((prev) => ({ ...prev, tele: newTele }))
+        }
+      />
     ),
     ShiftEndTimeMs: MATCH_END,
-    ShiftExtraEndTimeMs: MATCH_END,
+    ShiftExtraEndTimeMs: MATCH_END - MILLISECONDS_IN_FIVE_SECONDS,
   },
   {
     name: "Post",

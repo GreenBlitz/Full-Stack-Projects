@@ -1,17 +1,13 @@
 // בס"ד
 
 import { useState, type FC } from "react";
-import {
-  type Alliance,
-  type AllianceTeams,
-  type MatchType,
-} from "@repo/scouting_types";
+import { type Alliance, type MatchType } from "@repo/scouting_types";
 import { TeamCard } from "./TeamCard";
 import { MatchInfoCard } from "./MatchInfoCard";
 
 type TeamIndex = 0 | 1 | 2;
 
-const createEmptyAllianceTeam = (): AllianceTeams[number] => ({
+const createEmptyAllianceTeam = () => ({
   active: "",
   inactive: "",
   driving: {
@@ -23,7 +19,7 @@ const createEmptyAllianceTeam = (): AllianceTeams[number] => ({
 });
 
 const ALLIANCE_SIZE = 3;
-const createEmptyAllianceTeams = (): AllianceTeams => [
+const createEmptyAllianceTeams = () => [
   createEmptyAllianceTeam(),
   createEmptyAllianceTeam(),
   createEmptyAllianceTeam(),
@@ -33,7 +29,7 @@ export const SuperScoutTab: FC = () => {
   const [matchNumber, setMatchNumber] = useState(0);
   const [matchType, setMatchType] = useState<MatchType>("qualification");
   const [alliance, setAlliance] = useState<Alliance>("red");
-  const [teams, setTeams] = useState<AllianceTeams>(createEmptyAllianceTeams);
+  const [teams, setTeams] = useState<any>(createEmptyAllianceTeams);
   const [activeTeamIndex, setActiveTeamIndex] = useState<TeamIndex>(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -111,8 +107,8 @@ export const SuperScoutTab: FC = () => {
         teamIndex={activeTeamIndex}
         teamData={teams[activeTeamIndex]}
         updateTeam={(team) =>
-          setTeams((prev) => {
-            const copy: AllianceTeams = [...prev];
+          setTeams((prev: any) => {
+            const copy = [...prev];
             copy[activeTeamIndex] = team;
             return copy;
           })

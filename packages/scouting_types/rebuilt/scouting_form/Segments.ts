@@ -1,9 +1,6 @@
 // בס"ד
 import * as t from "io-ts";
-import {
-  defaultMovement,
-  teleMovementCodec,
-} from "./Movement";
+import { defaultMovement, teleMovementCodec } from "./Movement";
 import {
   climbCodec,
   defaultAutoClimb,
@@ -35,23 +32,21 @@ export const defaultAuto: t.TypeOf<typeof autoCodec> = {
   path: [],
 };
 
+export const teleSection = t.union([
+  t.type({ rating: t.union([t.number, t.undefined]), description: t.string }),
+  t.undefined,
+]);
+
 export const teleCodec = t.type({
-  transitionShift: teleMovementCodec,
-  shifts: t.tuple([
-    teleMovementCodec,
-    teleMovementCodec,
-    teleMovementCodec,
-    teleMovementCodec,
-  ]),
-  endgameShift: teleMovementCodec,
-  climb: climbCodec,
+  driving: teleSection,
+  defense: teleSection,
+  evasion: teleSection,
 });
 
 export const defaultTele: t.TypeOf<typeof teleCodec> = {
-  transitionShift: defaultMovement,
-  shifts: [defaultMovement, defaultMovement, defaultMovement, defaultMovement],
-  endgameShift: defaultMovement,
-  climb: defaultClimb,
+  driving: undefined,
+  defense: undefined,
+  evasion: undefined,
 };
 
 export type AutoClimb = t.TypeOf<typeof autoClimbCodec>;
