@@ -47,11 +47,13 @@ export const usePositionRecording = (
     }
 
     recordedPositionsRef.current = [];
-    const initialPosition = currentPositionRef.current ?? { ...defaultPoint };
-    recordedPositionsRef.current.push({
-      point: initialPosition,
-      time: Date.now() - originTime,
-    });
+    const initialPosition = currentPositionRef.current;
+    if (initialPosition) {
+      recordedPositionsRef.current.push({
+        point: initialPosition,
+        time: Date.now() - originTime,
+      });
+    }
 
     positionIntervalRef.current = window.setInterval(() => {
       const currentPos = currentPositionRef.current ?? { ...defaultPoint };

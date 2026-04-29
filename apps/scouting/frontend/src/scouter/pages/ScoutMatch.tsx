@@ -26,6 +26,7 @@ import { boolean } from "io-ts";
 import { AutoTab } from "./tabs/AutoTab";
 import { SuperScoutTab } from "../../strategy/tabs/super-scout/SuperScoutTab";
 import { TeamCard } from "../../strategy/tabs/super-scout/TeamCard";
+import { TeleTab } from "./tabs/TeleTab";
 export interface TabProps {
   setForm: Dispatch<SetStateAction<ScoutingForm>>;
   currentForm: ScoutingForm;
@@ -72,14 +73,7 @@ const TABS: Tab[] = [
   },
   {
     name: "Tele",
-    Component: (props) => (
-      <TeamCard
-        teamData={props.currentForm.tele}
-        updateTeam={(newTele) =>
-          props.setForm((prev) => ({ ...prev, tele: newTele }))
-        }
-      />
-    ),
+    Component: (props) => <TeleTab {...props} />,
     ShiftEndTimeMs: MATCH_END,
     ShiftExtraEndTimeMs: MATCH_END - MILLISECONDS_IN_FIVE_SECONDS,
   },
@@ -286,9 +280,9 @@ export const ScoutMatch: FC = () => {
             teamNumber={scoutingForm.teamNumber}
           />
         )}
-        <div className="flex-1 flex flex-col overflow-hidden p-2 relative z-10">
+        <div className="flex-1 flex flex-col p-2 relative z-10">
           <div
-            className={`flex-1 min-h-0 text-green-100 overflow-hidden pr-2
+            className={`flex-1 min-h-0 text-green-100 overflow-y-auto pr-2
             ${backgroundColor} rounded-xl p-3 sm:p-4 lg:p-6 border border-green-500/20 shadow-inner
             animate-in fade-in slide-in-from-right-4 duration-300`}
           >
