@@ -15,6 +15,7 @@ export interface GeneralData {
   driving: number;
   defense: number;
   evasion: number;
+  autoFuel: number;
 }
 
 export type GamePeriod = "auto" | "fullGame" | "tele";

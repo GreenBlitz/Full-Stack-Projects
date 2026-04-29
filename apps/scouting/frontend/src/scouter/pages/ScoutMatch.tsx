@@ -226,6 +226,9 @@ export const ScoutMatch: FC = () => {
     if (activeTabIndex === 1 && timerData.elapsedMs > 100) {
       return;
     }
+    if (activeTabIndex === TABS.length - 1) {
+      return;
+    }
 
     const hasJustStartedOrResumed =
       !previousIsRunningRef.current && timerData.isRunning;

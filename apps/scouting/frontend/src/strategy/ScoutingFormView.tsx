@@ -77,7 +77,7 @@ export const ScoutingFormView: FC<ScoutingFormViewProps> = ({ form }) => {
         <h2 className="text-xs font-black uppercase tracking-[0.2em] text-amber-500 mb-4">
           Auto
         </h2>
-        <InfoCell label="Fuel" value={form.auto.balls} />
+        <InfoCell label="Fuel" value={`~${form.auto.balls}`} />
         <AutoPath path={form.auto.path} />
       </div>
 
@@ -88,9 +88,18 @@ export const ScoutingFormView: FC<ScoutingFormViewProps> = ({ form }) => {
             Tele
           </h2>
           <div className="flex flex-col gap-3">
-            <TeleSection label="Driving" data={form.tele.driving} />
-            <TeleSection label="Defense" data={form.tele.defense} />
-            <TeleSection label="Evasion" data={form.tele.evasion} />
+            <TeleSection
+              label="Driving"
+              data={form.tele.driving ?? undefined}
+            />
+            <TeleSection
+              label="Defense"
+              data={form.tele.defense ?? undefined}
+            />
+            <TeleSection
+              label="Evasion"
+              data={form.tele.evasion ?? undefined}
+            />
           </div>
         </div>
       )}

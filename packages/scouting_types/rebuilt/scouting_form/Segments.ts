@@ -47,6 +47,7 @@ export const defaultAuto: t.TypeOf<typeof autoCodec> = {
 export const teleSection = t.union([
   t.type({ rating: t.union([t.number, t.undefined]), description: t.string }),
   t.undefined,
+  t.null,
 ]);
 
 export const teleCodec = t.type({

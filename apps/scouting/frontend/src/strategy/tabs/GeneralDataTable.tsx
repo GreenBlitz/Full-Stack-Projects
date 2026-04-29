@@ -13,7 +13,13 @@ import { useState, useEffect, useMemo } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { HiOutlineChevronUpDown } from "react-icons/hi2";
 
-export type Column = "EPA" | "OPR" | "Driving" | "Evasion" | "Defense";
+export type Column =
+  | "EPA"
+  | "OPR"
+  | "Driving"
+  | "Evasion"
+  | "Defense"
+  | "Auto Fuel";
 
 type DataValue = ClimbLevel | number | undefined;
 
@@ -24,6 +30,7 @@ const columnToKey: Record<Column, DataAccessor> = {
   Driving: ({ driving }) => driving,
   Defense: ({ defense }) => defense,
   Evasion: ({ evasion }) => evasion,
+  "Auto Fuel": ({ autoFuel }) => autoFuel,
 };
 
 const fetchGeneralData = async (filters = {}) => {
@@ -94,11 +101,12 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
 
       // createColumn("climb", "text-purple-400 font-bold"),
       // createColumn("max climb", "text-slate-400 uppercase text-[10px]"),
-      createColumn("EPA", "text-yellow-500 bold"),
-      createColumn("OPR", "text-blue-500"),
+      createColumn("EPA", "text-yellow-500 font-bold"),
+      createColumn("OPR", "text-blue-500 font-bold"),
       createColumn("Driving", "text-orange-500"),
       createColumn("Defense", "text-pink-500"),
       createColumn("Evasion", "text-purple-500"),
+      createColumn("Auto Fuel", "text-red-500"),
     ],
     [sorting],
   );

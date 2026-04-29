@@ -162,7 +162,7 @@ const PreMatchTab: FC<TabProps> = ({
   }, [mergedSlots, match, robotPositionInfo]);
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full gap-3  mx-auto">
+    <div className="flex flex-col items-center justify-center w-full h-full gap-3 my-7 mx-auto">
       <InputBox name="Scouter Name">
         <input
           type="text"

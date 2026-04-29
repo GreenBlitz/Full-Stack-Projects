@@ -65,8 +65,8 @@ generalRouter.get("/", async (req, res) => {
     flatMap(fetchTeamsCOPRs),
     flatMap(getTeamsEPAs),
     map((teams) =>
-      Object.entries(teams).map(([teamNumber, { forms, coprs, epa }]) => {
-        const generalData: GeneralData = {
+      Object.entries(teams).map(
+        ([teamNumber, { forms, coprs, epa }]): GeneralData => ({
           teamNumber: Number(teamNumber),
           epa: epa?.breakdown.total_points ?? 0,
           opr: coprs?.totalPoints ?? 0,
@@ -82,10 +82,11 @@ generalRouter.get("/", async (req, res) => {
             forms.filter(({ tele }) => tele.evasion?.rating),
             ({ tele }) => tele.evasion?.rating ?? 0,
           ),
-        };
-
-        return generalData;
-      }),
+          autoFuel: calculateAverage(forms, ({ auto }) =>
+            Number(auto.balls === "more" ? 150 : auto.balls),
+          ),
+        }),
+      ),
     ),
 
     bindTo("generalData"),
