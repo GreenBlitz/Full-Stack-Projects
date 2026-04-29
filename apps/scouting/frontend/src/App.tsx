@@ -14,7 +14,6 @@ import { StrategyNavigationBar } from "./strategy/components/StrategyNavBar";
 import { SuperScoutTab } from "./strategy/tabs/super-scout/SuperScoutTab";
 import { Tinder } from "./strategy/tabs/Tinder";
 import { PitScoutTab } from "./strategy/tabs/pit-scout/PitScoutTab";
-import { PitScoutResultsTab } from "./strategy/tabs/pit-scout/TeamPitShow";
 
 const App: FC = () => {
   return (

@@ -23,7 +23,7 @@ superScoutRouter.get("/", async (req, res) => {
       (collection) => collection.find(mongofyQuery(req.query)).toArray(),
       () => ({
         status: StatusCodes.INTERNAL_SERVER_ERROR,
-        reason: "Error Inserting Forms To Collection ",
+        reason: "Error Getting Forms From Collection",
       }),
     ),
     bindTo("forms"),
