@@ -2,7 +2,6 @@
 
 import type { ClimbLevel, Point } from "../scouting_form";
 
-
 export interface GeneralClimbData {
   fullGame: number;
   auto: number;
@@ -32,3 +31,5 @@ export interface GameObjectWithPoints<T extends string> {
   calculatePoints: (gameObject: GameObject<T, unknown>) => number;
   calculateRP: (gameObject: GameObject<T, unknown>) => number;
 }
+
+export type GeneralFuelData = any;

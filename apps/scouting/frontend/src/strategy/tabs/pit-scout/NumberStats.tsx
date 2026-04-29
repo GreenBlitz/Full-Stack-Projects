@@ -3,7 +3,6 @@
 import type {
   PitScout,
   PitScoutNumberKey,
-  SuperScout,
 } from "@repo/scouting_types";
 import type { FC } from "react";
 

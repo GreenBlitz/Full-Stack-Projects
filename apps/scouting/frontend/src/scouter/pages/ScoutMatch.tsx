@@ -13,7 +13,6 @@ import {
   type Alliance,
   type ScoutingForm,
 } from "@repo/scouting_types";
-import { ShiftTab } from "./tabs/ShiftTab";
 import { useLocalStorage } from "@repo/local_storage_hook";
 import { PostMatchTab } from "./tabs/PostMatchTab";
 import { useNavigate } from "react-router-dom";
@@ -22,10 +21,7 @@ import { useMatchTimer } from "../hooks/useMatchTimer";
 import StartMatchLocallyButton, {
   type TimerData,
 } from "../components/StartMatchLocallyButton";
-import { boolean } from "io-ts";
 import { AutoTab } from "./tabs/AutoTab";
-import { SuperScoutTab } from "../../strategy/tabs/super-scout/SuperScoutTab";
-import { TeamCard } from "../../strategy/tabs/super-scout/TeamCard";
 import { TeleTab } from "./tabs/TeleTab";
 export interface TabProps {
   setForm: Dispatch<SetStateAction<ScoutingForm>>;

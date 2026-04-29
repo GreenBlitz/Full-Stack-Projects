@@ -8,7 +8,7 @@ import tailwindcss from "@tailwindcss/vite";
 // const HOURS_PER_DAY = 24;
 // const MAX_ENTRIES = 50;
 
-const DEFAULT_PORT = 80;
+const DEFAULT_PORT = 443;
 const port = parseInt(process.env.FRONTEND_PORT ?? DEFAULT_PORT.toString());
 
 export default defineConfig({

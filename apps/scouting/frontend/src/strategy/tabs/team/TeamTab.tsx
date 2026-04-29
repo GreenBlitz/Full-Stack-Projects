@@ -15,7 +15,6 @@ import { LineChart } from "../../components/LineChart";
 import { PhaseToggle } from "../../components/PhaseToggle";
 import { MetricsChart } from "../../components/MetricsChart";
 import { BarChart } from "../../components/BarChart";
-import { calculateMedianClimbs, getClimbDataset } from "../../ClimbProcessing";
 import { useLocalStorage } from "@repo/local_storage_hook";
 import { HeatMap } from "../../components/heatmap/HeatMap";
 import { redField } from "@repo/rebuilt_map";
