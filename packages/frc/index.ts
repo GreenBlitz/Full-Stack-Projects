@@ -1505,7 +1505,7 @@ export const FRC_TEAMS = [
   },
 ];
 
-export const FRC_teamNumberS = FRC_TEAMS.map((team) => team.teamNumber);
+export const FRC_TEAM_NUMBERS = FRC_TEAMS.map((team) => team.teamNumber);
 
 export type TeamString<N extends number = number> = `frc${N}`;
 export const teamStringToTeamNumber = <
