@@ -58,6 +58,7 @@ export const processTeam = (
 ): TeamData => {
   return {
     metrics: { epa, coprs },
+    forms,
     noShowMatches: uniqueNoShowMatches(forms),
   };
 };

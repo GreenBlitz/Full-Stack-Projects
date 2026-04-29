@@ -22,6 +22,7 @@ import { redField } from "@repo/rebuilt_map";
 import { fetchTeamNumbers } from "../../fetches";
 import { PieGraph } from "../../components/PieChart";
 import { PitScoutResultsTab } from "../pit-scout/TeamPitShow";
+import { ScoutingFormView } from "../../ScoutingFormView";
 
 const METER_AND_HALF_CENTIMETERS = 150;
 const THREE_METER_CENTIMETERS = 300;
@@ -87,10 +88,13 @@ export const TeamTab: FC = () => {
         scoutedTeams={scoutedTeams ?? []}
       />
       <PhaseToggle activeMode={phase} setActiveMode={setPhase} />
-        <MetricsChart
-          epa={teamData?.metrics.epa}
-          coprs={teamData?.metrics.coprs}
-        />
+      <MetricsChart
+        epa={teamData?.metrics.epa}
+        coprs={teamData?.metrics.coprs}
+      />
+      {phase === "forms" && teamData && teamData.forms.length > 0 && (
+        <ScoutingFormView form={teamData?.forms[0]} />
+      )}
       {phase === "pit" && <PitScoutResultsTab teamNumber={teamNumber} />}
     </div>
   );
