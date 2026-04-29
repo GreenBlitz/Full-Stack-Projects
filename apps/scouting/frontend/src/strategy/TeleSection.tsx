@@ -23,9 +23,11 @@ export const TeleSection: FC<TeleSectionProps> = ({ label, data }) => {
       </label>
       {data.rating !== undefined && (
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-bold uppercase text-slate-500">Rating</span>
+          <span className="text-[10px] font-bold uppercase text-slate-500">
+            Rating
+          </span>
           <div className="flex gap-1">
-            {Array.from({ length: 5 }).map((_, i) => (
+            {Array.from({ length: 7 }).map((_, i) => (
               <div
                 key={i}
                 className={`w-4 h-4 rounded-sm ${
@@ -34,7 +36,9 @@ export const TeleSection: FC<TeleSectionProps> = ({ label, data }) => {
               />
             ))}
           </div>
-          <span className="text-sm font-mono text-slate-300">{data.rating}/5</span>
+          <span className="text-sm font-mono text-slate-300">
+            {data.rating}/7
+          </span>
         </div>
       )}
       {data.description && (
