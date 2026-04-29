@@ -2,6 +2,7 @@
 // AutoPath.tsx
 
 import { useEffect, useRef, useState, type FC } from "react";
+import { redField } from "@repo/rebuilt_map";
 
 interface Point {
   x: number;
@@ -17,8 +18,8 @@ interface AutoPathProps {
   path: PathPoint[];
 }
 
-const FIELD_WIDTH = 1654; // cm, FRC 2025 field
-const FIELD_HEIGHT = 802;
+const FIELD_WIDTH = 1010; // cm, FRC 2025 field
+const FIELD_HEIGHT = 652;
 
 export const AutoPath: FC<AutoPathProps> = ({ path }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -26,8 +27,16 @@ export const AutoPath: FC<AutoPathProps> = ({ path }) => {
   const [progress, setProgress] = useState(0);
   const animFrameRef = useRef<number | null>(null);
   const startTimeRef = useRef<number | null>(null);
+  const fieldImageRef = useRef<HTMLImageElement | null>(null);
 
-  console.log(animFrameRef);
+  useEffect(() => {
+    const img = new Image();
+    img.src = redField; // put your image in the public folder
+    img.onload = () => {
+      fieldImageRef.current = img;
+      draw(0);
+    };
+  }, []);
   const sortedPath = [...path].sort((a, b) => a.time - b.time);
   const maxTime = sortedPath.at(-1)?.time ?? 0;
 
@@ -64,27 +73,13 @@ export const AutoPath: FC<AutoPathProps> = ({ path }) => {
     });
 
     ctx.clearRect(0, 0, W, H);
-
     // Field background
-    ctx.fillStyle = "#0f172a";
-    ctx.fillRect(0, 0, W, H);
 
-    // Grid lines
-    ctx.strokeStyle = "rgba(255,255,255,0.05)";
-    ctx.lineWidth = 1;
-    for (let i = 0; i <= 10; i++) {
-      const x = (i / 10) * W;
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, H);
-      ctx.stroke();
-    }
-    for (let i = 0; i <= 5; i++) {
-      const y = (i / 5) * H;
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(W, y);
-      ctx.stroke();
+    if (fieldImageRef.current) {
+      ctx.drawImage(fieldImageRef.current, 0, 0, W, H);
+    } else {
+      ctx.fillStyle = "#0f172a";
+      ctx.fillRect(0, 0, W, H);
     }
 
     // Field border
@@ -96,8 +91,8 @@ export const AutoPath: FC<AutoPathProps> = ({ path }) => {
 
     // Draw full path (faded)
     ctx.beginPath();
-    ctx.strokeStyle = "rgba(251,191,36,0.15)";
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = "rgba(129, 251, 36, 0.7)";
+    ctx.lineWidth = 4;
     const first = toCanvas(sortedPath[0].point);
     ctx.moveTo(first.x, first.y);
     for (const { point } of sortedPath) {
@@ -112,8 +107,8 @@ export const AutoPath: FC<AutoPathProps> = ({ path }) => {
 
     if (traveledPoints.length > 0 && currentPos) {
       ctx.beginPath();
-      ctx.strokeStyle = "#f59e0b";
-      ctx.lineWidth = 3;
+      ctx.strokeStyle = "#00fb3f";
+      ctx.lineWidth = 6;
       ctx.lineJoin = "round";
       ctx.lineCap = "round";
       const start = toCanvas(traveledPoints[0].point);
