@@ -13,14 +13,17 @@ import { useState, useEffect, useMemo } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { HiOutlineChevronUpDown } from "react-icons/hi2";
 
-export type Column = "climb" | "max climb";
+export type Column = "EPA" | "OPR" | "Driving" | "Evasion" | "Defense";
 
 type DataValue = ClimbLevel | number | undefined;
 
-type DataAccessor = (row: GeneralData, gameTime: GamePeriod) => DataValue;
+type DataAccessor = (row: GeneralData) => DataValue;
 const columnToKey: Record<Column, DataAccessor> = {
-  climb: (row, gameTime) => row.avarageClimbPoints[gameTime],
-  "max climb": (row) => row.highestClimbLevel,
+  EPA: ({ epa }) => epa,
+  OPR: ({ opr }) => opr,
+  Driving: ({ driving }) => driving,
+  Defense: ({ defense }) => defense,
+  Evasion: ({ evasion }) => evasion,
 };
 
 const fetchGeneralData = async (filters = {}) => {
@@ -56,26 +59,17 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
   filters,
 }) => {
   const [allGeneralData, setAllGeneralData] = useState<GeneralData[]>([]);
-  const [gameTime, setGameTime] = useState<GamePeriod>("tele");
   const [sorting, setSorting] = useState<SortingState>([]);
 
   useEffect(() => {
     fetchGeneralData(filters).then(setAllGeneralData).catch(console.error);
   }, [filters]);
 
-  const tableData = useMemo(
-    () =>
-      allGeneralData.map((generalData) => ({
-        ...generalData,
-        _uiKey: gameTime,
-      })),
-    [allGeneralData, gameTime],
-  );
-
+  const tableData = allGeneralData;
   const columnHelper = createColumnHelper<GeneralData>();
 
   const createColumn = (headerAndId: Column, style: string) =>
-    columnHelper.accessor((row) => columnToKey[headerAndId](row, gameTime), {
+    columnHelper.accessor((row) => columnToKey[headerAndId](row), {
       id: headerAndId,
       header: headerAndId,
       sortingFn: "alphanumeric",
@@ -98,10 +92,15 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
         ),
       }),
 
-      createColumn("climb", "text-purple-400 font-bold"),
-      createColumn("max climb", "text-slate-400 uppercase text-[10px]"),
+      // createColumn("climb", "text-purple-400 font-bold"),
+      // createColumn("max climb", "text-slate-400 uppercase text-[10px]"),
+      createColumn("EPA", "text-yellow-500 bold"),
+      createColumn("OPR", "text-blue-500"),
+      createColumn("Driving", "text-orange-500"),
+      createColumn("Defense", "text-pink-500"),
+      createColumn("Evasion", "text-purple-500"),
     ],
-    [gameTime, sorting],
+    [sorting],
   );
 
   const table = useReactTable({
@@ -116,23 +115,6 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
   return (
     <div className="flex flex-col gap-6 p-4 bg-slate-950 min-h-screen">
       <div className="overflow-hidden rounded-2xl border border-white/10 bg-slate-900/40 backdrop-blur-sm shadow-2xl">
-        <div className="flex gap-1.5 justify-center bg-slate-900/50 p-1.5 rounded-2xl border border-white/5 self-center">
-          {(["auto", "tele", "fullGame"] as GamePeriod[]).map((time) => (
-            <button
-              key={time}
-              onClick={() => {
-                setGameTime(time);
-              }}
-              className={`px-5 py-2 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all border ${
-                gameTime === time
-                  ? "bg-emerald-500 text-slate-950 border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]"
-                  : "bg-transparent text-slate-500 border-transparent hover:text-slate-300"
-              }`}
-            >
-              {time}
-            </button>
-          ))}
-        </div>
         <table className="w-full text-left text-sm border-collapse">
           <thead className="bg-slate-800/50 border-b border-white/10">
             {table.getHeaderGroups().map((headerGroup) => (

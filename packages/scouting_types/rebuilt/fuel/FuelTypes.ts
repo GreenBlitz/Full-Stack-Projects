@@ -10,8 +10,11 @@ export interface GeneralClimbData {
 
 export interface GeneralData {
   teamNumber: number;
-  highestClimbLevel: ClimbLevel;
-  avarageClimbPoints: GeneralClimbData;
+  epa: number;
+  opr: number;
+  driving: number;
+  defense: number;
+  evasion: number;
 }
 
 export type GamePeriod = "auto" | "fullGame" | "tele";
