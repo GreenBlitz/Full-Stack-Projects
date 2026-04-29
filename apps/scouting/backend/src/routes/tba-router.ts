@@ -56,7 +56,7 @@ const TBA_KEY =
   "";
 const TBA_URL = "https://www.thebluealliance.com/api/v3";
 
-const currentEvent = "2026cahal";
+const currentEvent = "2026new";
 
 const getMatchesCollection = flow(
   getDb,
