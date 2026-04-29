@@ -65,6 +65,13 @@ export const TeamTab: FC = () => {
   );
   const [scoutedTeams, setScoutedTeams] = useState<number[]>();
 
+  const [formIndex, setFormIndex] = useState(0);
+
+  // reset index when team changes
+  useEffect(() => {
+    setFormIndex(0);
+  }, [teamNumber]);
+
   useEffect(() => {
     if (!teamNumber || !FRC_TEAM_NUMBERS.includes(teamNumber)) {
       return;
@@ -93,7 +100,30 @@ export const TeamTab: FC = () => {
         coprs={teamData?.metrics.coprs}
       />
       {phase === "forms" && teamData && teamData.forms.length > 0 && (
-        <ScoutingFormView form={teamData?.forms[0]} />
+        <div className="flex flex-col items-center w-full max-w-2xl">
+          <div className="flex items-center justify-between w-full px-4 mb-2">
+            <button
+              onClick={() => setFormIndex((i) => Math.max(0, i - 1))}
+              disabled={formIndex === 0}
+              className="px-6 py-3 bg-slate-800 border border-white/10 rounded-lg text-slate-300 text-sm font-black disabled:opacity-30 hover:bg-slate-700 transition-all active:scale-95"
+            >
+              ←
+            </button>
+            <span className="text-xl font-bold uppercase text-slate-500">
+              Form {formIndex + 1} / {teamData.forms.length}
+            </span>
+            <button
+              onClick={() =>
+                setFormIndex((i) => Math.min(teamData.forms.length - 1, i + 1))
+              }
+              disabled={formIndex === teamData.forms.length - 1}
+              className="px-6 py-3 bg-slate-800 border border-white/10 rounded-lg text-slate-300 text-sm font-black disabled:opacity-30 hover:bg-slate-700 transition-all active:scale-95"
+            >
+              →
+            </button>
+          </div>
+          <ScoutingFormView form={teamData.forms[formIndex]} />
+        </div>
       )}
       {phase === "pit" && <PitScoutResultsTab teamNumber={teamNumber} />}
     </div>
