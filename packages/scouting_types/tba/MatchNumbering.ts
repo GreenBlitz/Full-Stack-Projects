@@ -1,6 +1,6 @@
 // בס"ד
 import type { Match } from "../rebuilt";
-import type { TBAMatch } from "./TBAMatch";
+import { SimpleTBAMatch } from "./ScoreBreakdown2026";
 
 const PLAYOFF_MATCHES_UNTIL_FINALS = 13;
 
@@ -26,7 +26,7 @@ export const tbaScheduleFieldsToMatch = (
   };
 };
 
-export const tbaMatchToRegularMatch = (tbaMatch: TBAMatch): Match =>
+export const tbaMatchToRegularMatch = (tbaMatch: SimpleTBAMatch): Match =>
   tbaScheduleFieldsToMatch(
     tbaMatch.comp_level,
     tbaMatch.set_number,
@@ -51,3 +51,26 @@ export const compareMatches = (match1: Match, match2: Match) => {
 const MATCH_SAME_COMPARANCE = 0;
 export const isMatchesSame = (match1: Match, match2: Match) =>
   compareMatches(match1, match2) === MATCH_SAME_COMPARANCE;
+
+export const createSimpleMatch = (
+  match: Match,
+  red: number[],
+  blue: number[],
+): SimpleTBAMatch => ({
+  alliances: {
+    red: {
+      team_keys: red.map((team) => `frc${team}`),
+    },
+    blue: {
+      team_keys: blue.map((team) => `frc${team}`),
+    },
+  },
+  match_number: match.number,
+  set_number: match.number,
+  comp_level:
+    match.type === "practice"
+      ? "pc"
+      : match.type === "qualification"
+        ? "qm"
+        : "sf",
+});

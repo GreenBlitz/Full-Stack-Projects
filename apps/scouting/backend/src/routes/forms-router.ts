@@ -90,6 +90,25 @@ formsRouter.post("/", async (req, res) => {
   )();
 });
 
+formsRouter.put("/", async (req, res) => {
+  await pipe(
+    rightEither(req),
+    createBodyVerificationPipe(scoutingFormCodec),
+    fromEither,
+    bindTo("newForm"),
+    bind("collection", getFormsCollection),
+    flatTryCatch(
+      async ({ collection, newForm }) =>
+        collection.replaceOne({ $or: [{ _id: req.query.id }] }, newForm),
+      () => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: "Error Replacing Form To Collection ",
+      }),
+    ),
+    foldResponse(res),
+  )();
+});
+
 formsRouter.get("/teams", async (req, res) => {
   await pipe(
     getFormsCollection(),
