@@ -21,7 +21,7 @@ app.use(
 
 console.log("Backend URL: ", BACKEND_URL);
 
-const defaultPort = 80;
+const defaultPort = 443;
 const securePort = 443;
 const port = parseInt(process.env.FRONTEND_PORT ?? defaultPort.toString());
 const protocol = port === securePort ? "https" : "http";
