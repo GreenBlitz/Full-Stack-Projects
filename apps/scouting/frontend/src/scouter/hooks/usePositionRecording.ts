@@ -50,7 +50,7 @@ export const usePositionRecording = (
     const initialPosition = currentPositionRef.current ?? { ...defaultPoint };
     recordedPositionsRef.current.push({
       point: initialPosition,
-      time: originTime,
+      time: Date.now() - originTime,
     });
 
     positionIntervalRef.current = window.setInterval(() => {

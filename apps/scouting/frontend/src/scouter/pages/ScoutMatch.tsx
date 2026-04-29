@@ -33,6 +33,7 @@ export interface TabProps {
   originTime: number;
   timerData: TimerData;
   setAlliance: Dispatch<SetStateAction<Alliance>>;
+  setOriginTime: Dispatch<SetStateAction<number>>;
 }
 interface Tab {
   name: string;
@@ -204,7 +205,7 @@ export const ScoutMatch: FC = () => {
   const [backgroundColor, setBackgroundColor] = useState("bg-black/40");
   const [activeTabIndex, setActiveTab] = useState(STARTING_TAB_INDEX);
   const [alliance, setAlliance] = useState<Alliance>("red");
-  const originTime = useMemo(() => Date.now(), []);
+  const [originTime, setOriginTime] = useState(() => Date.now());
   const CurrentTab = useMemo(() => {
     return TABS[activeTabIndex]?.Component ?? PostMatchTab;
   }, [activeTabIndex]);
@@ -216,7 +217,9 @@ export const ScoutMatch: FC = () => {
         tab.ShiftEndTimeMs >= elapsedMs && elapsedMs >= tab.ShiftExtraEndTimeMs,
     );
 
-  const timerData = useMatchTimer(ITERATION_PERIOD_MS);
+  const timerData = useMatchTimer(ITERATION_PERIOD_MS, () =>
+    setOriginTime(Date.now()),
+  );
 
   const previousIsRunningRef = useRef(timerData.isRunning);
 
@@ -296,6 +299,7 @@ export const ScoutMatch: FC = () => {
               originTime={originTime}
               timerData={timerData}
               setAlliance={setAlliance}
+              setOriginTime={setOriginTime}
             />
           </div>
         </div>
