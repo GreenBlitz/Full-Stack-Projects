@@ -1,6 +1,6 @@
 // בס"ד
 import type { Match } from "../rebuilt";
-import { SimpleTBAMatch } from "./ScoreBreakdown2026";
+import type { SimpleTBAMatch } from "./ScoreBreakdown2026";
 
 const PLAYOFF_MATCHES_UNTIL_FINALS = 13;
 

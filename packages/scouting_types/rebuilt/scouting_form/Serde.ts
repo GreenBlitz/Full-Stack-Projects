@@ -67,11 +67,13 @@ const serdeSideMovement = createRecordSerde({
   trenchPass: serdeUnsignedInt(MOVEMENT_PASS_BITS),
 });
 
-const serdeSectionTele = serdeOptional(
-  createRecordSerde({
-    rating: serdeOptional(serdeUnsignedInt(5)),
-    description: serdeString(),
-  }),
+const serdeSectionTele = serdeOptionalNull(
+  serdeOptional(
+    createRecordSerde({
+      rating: serdeOptional(serdeUnsignedInt(5)),
+      description: serdeString(),
+    }),
+  ),
 );
 const serdeTele = createRecordSerde<typeof defaultTele>({
   driving: serdeSectionTele,
