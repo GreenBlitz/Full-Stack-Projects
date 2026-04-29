@@ -3,13 +3,7 @@
 import { Router } from "express";
 import { flow, pipe } from "fp-ts/lib/function";
 import { getDb } from "../middleware/db";
-import {
-  bind,
-  bindTo,
-  filterOrElse,
-  fromEither,
-  map,
-} from "fp-ts/lib/TaskEither";
+import { bind, bindTo, fromEither, map } from "fp-ts/lib/TaskEither";
 import {
   createBodyVerificationPipe,
   flatTryCatch,
@@ -19,7 +13,6 @@ import { right as rightEither } from "fp-ts/lib/Either";
 import { mongofyQuery } from "@repo/flow-utils";
 import { PitScout, pitScoutCodec } from "@repo/scouting_types";
 import { StatusCodes } from "http-status-codes";
-import { isSinglePitScoutTeam } from "../verification/functions";
 
 export const pitScoutRouter = Router();
 
@@ -41,21 +34,15 @@ pitScoutRouter.post("/", async (req, res) => {
 });
 
 pitScoutRouter.get("/", async (req, res) => {
-  await flow(
-    getPitCollection,
+  await pipe(
+    getPitCollection(),
     flatTryCatch(
       (collection) => collection.find(mongofyQuery(req.query)).toArray(),
-      () => ({
+      (error) => ({
         status: StatusCodes.INTERNAL_SERVER_ERROR,
-        reason: "Error getting forms from collection ",
+        reason: `Error Fetching Forms Pit Scout: ${error}`,
       }),
     ),
-    filterOrElse(isSinglePitScoutTeam, () => ({
-      status: StatusCodes.BAD_REQUEST,
-      reason:
-        "Pit Scouting Error: Forms contain data from multiple different teams.",
-    })),
-    bindTo("forms"),
     foldResponse(res),
   )();
 });
