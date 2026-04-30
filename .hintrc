@@ -6,8 +6,7 @@
     "axe/forms": [
       "default",
       {
-        "select-name": "off",
-        "label": "off"
+        "select-name": "off"
       }
     ]
   }

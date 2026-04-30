@@ -67,34 +67,20 @@ const serdeSideMovement = createRecordSerde({
   trenchPass: serdeUnsignedInt(MOVEMENT_PASS_BITS),
 });
 
-const serdeSectionTele = serdeOptionalNull(
-  serdeOptional(
-    createRecordSerde({
-      rating: serdeOptional(serdeUnsignedInt(5)),
-      description: serdeString(),
-    }),
-  ),
-);
+const serdeMovement = createRecordSerde({
+  red: serdeSideMovement,
+  blue: serdeSideMovement,
+});
+
 const serdeTele = createRecordSerde<typeof defaultTele>({
-  driving: serdeSectionTele,
-  defense: serdeSectionTele,
-  evasion: serdeSectionTele,
+  transitionShift: serdeMovement,
+  shifts: serdeArray(serdeMovement) as any, //shifts requires 4 and this is how to fix that
+  endgameShift: serdeMovement,
+  climb: serdeClimbTele,
 });
 
 export const serdeAuto = createRecordSerde<typeof defaultAuto>({
-  balls: serdeEnumedString([
-    "0",
-    "10",
-    "20",
-    "30",
-    "40",
-    "60",
-    "80",
-    "100",
-    "120",
-    "140",
-    "more",
-  ]),
+  climb: serdeClimbAuto,
   path: serdeArray(
     createRecordSerde({
       point: serdePoint,

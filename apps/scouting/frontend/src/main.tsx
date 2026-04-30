@@ -12,9 +12,7 @@ import StartMatchLocallyButton from "./scouter/components/StartMatchLocallyButto
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
-      <div className="bg-[#242424]">
-        <App></App>
-      </div>
+    <App></App>
     </BrowserRouter>
   </StrictMode>,
 );

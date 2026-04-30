@@ -1,6 +1,6 @@
 //בס"ד
 
-import type { TeamSuperScoutNumbers } from "../super_scout";
+import { TeamSuperScoutNumbers } from "../super_scout";
 
 export interface PicklistStats {
   tele: PicklistGameStats;

@@ -25,8 +25,11 @@ interface SectionSpecificTeamData<Climbing extends Climb = TeleClimb> {
 }
 
 export interface TeamData {
+  tele: {
+    movement: { averagePerShift: ScoutingForm["tele"] };
+  } & SectionSpecificTeamData;
+  auto: SectionSpecificTeamData<AutoClimb>;
   metrics: { epa: EPA | undefined; coprs: TeamOPR | undefined };
-  forms: ScoutingForm[];
   /** Matches scouted as no-show (excluded from stats above). */
   noShowMatches: Match[];
 }
