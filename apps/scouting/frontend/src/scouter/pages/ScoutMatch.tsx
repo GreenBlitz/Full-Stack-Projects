@@ -251,7 +251,7 @@ export const ScoutMatch: FC = () => {
       (shouldSyncFromStartMatchTab || shouldSyncNormally) &&
       activeTabIndex !== nextTab
     ) {
-      setActiveTab(nextTab);
+      // setActiveTab(nextTab); //people dont want this apparently
     }
 
     previousIsRunningRef.current = timerData.isRunning;
