@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useRef, useState, type FC, type JSX } from "react";
 import {
   compareMatches,
+  createSimpleMatch,
   isMatchesSame,
   manualRowsToScheduleSlots,
   mergeSchedulePreferManual,
@@ -9,6 +10,7 @@ import {
   type Alliance,
   type ManualSchedulesByCompetition,
   type Match,
+  type SimpleTBAMatch,
   type TBAMatches2026,
   type TBAMatchesProps,
 } from "@repo/scouting_types";
@@ -58,7 +60,7 @@ type MatchTeams = {
 
 const toTeamNum = (k: string) => Number(k.replace("frc", ""));
 
-const toQualMatches = (matches: TBAMatches2026): MatchTeams[] =>
+const toQualMatches = (matches: SimpleTBAMatch[]): MatchTeams[] =>
   matches
     .map((tbaMatch) => ({
       match: tbaMatchToRegularMatch(tbaMatch),
@@ -104,10 +106,7 @@ const PreMatchTab: FC<TabProps> = ({
       alliance: "red",
       location: "close",
     });
-  const [tbaMatches, setTbaMatches] = useLocalStorage<TBAMatches2026>(
-    "tbaMatches",
-    [],
-  );
+  const [tbaMatches, setTbaMatches] = useState<SimpleTBAMatch[]>([]);
   const [manualSchedulesByCompetition] =
     useLocalStorage<ManualSchedulesByCompetition>(
       "manualMatchScheduleByCompetition",
@@ -116,20 +115,18 @@ const PreMatchTab: FC<TabProps> = ({
   const [match, setMatch] = useState(form.match);
   const userPickedTeamNumberRef = useRef(false);
 
-  const updateTBAMatches = async () => {
-    if (tbaMatches.some((tbaMatch) => tbaMatch.match_number === match.number)) {
-      return;
-    }
-    try {
-      const newTBAMatches = await fetchGameMatches<TBAMatches2026>(
-        form.competition,
-        match,
-      );
-      setTbaMatches(newTBAMatches);
-    } catch {
-      /* keep cached TBA matches; manual schedule still applies */
-    }
-  };
+  // const updateTBAMatches = async () => {
+
+  //   try {
+  //     const newTBAMatches = await fetchGameMatches<SimpleTBAMatch>(
+  //       form.competition,
+  //       match,
+  //     );
+  //     setTbaMatches(newTBAMatches);
+  //   } catch {
+  //     /* keep cached TBA matches; manual schedule still applies */
+  //   }
+  // };
 
   const applyMatchUpdate = (next: Match) => {
     userPickedTeamNumberRef.current = false;
@@ -164,12 +161,8 @@ const PreMatchTab: FC<TabProps> = ({
     }));
   }, [mergedSlots, match, robotPositionInfo]);
 
-  useEffect(() => {
-    void updateTBAMatches();
-  }, [match]);
-
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full gap-3  mx-auto">
+    <div className="flex flex-col items-center justify-center w-full h-full gap-3 my-7 mx-auto">
       <InputBox name="Scouter Name">
         <input
           type="text"

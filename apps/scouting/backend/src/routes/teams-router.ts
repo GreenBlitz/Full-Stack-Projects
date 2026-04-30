@@ -51,69 +51,14 @@ const uniqueNoShowMatches = (forms: ScoutingForm[]): Match[] => {
   return [...matches].sort(compareMatches);
 };
 
-const addMovements = (
-  movement1: Movement["ally"],
-  movement2: Movement["ally"],
-): Movement["ally"] => ({
-  trenchPass: movement1.trenchPass + movement2.trenchPass,
-  bumpStuck: movement1.bumpStuck + movement2.bumpStuck,
-  bumpPass: movement1.bumpPass + movement2.bumpPass,
-});
-
-const addShifts = (
-  shift1: ScoutingForm["tele"]["transitionShift"],
-  shift2: ScoutingForm["tele"]["transitionShift"],
-) => ({
-  ally: addMovements(shift1.ally, shift2.ally),
-  opponent: addMovements(shift1.opponent, shift2.opponent),
-});
-
-const collectMovementInfoOfField = (forms: ScoutingForm[]) => {
-  const teles = forms.map((form) => form.tele);
-  const averagePerShift = teles.reduce<ScoutingForm["tele"]>(
-    (acc, tele) => ({
-      transitionShift: addShifts(tele.transitionShift, acc.transitionShift),
-      endgameShift: addShifts(tele.endgameShift, acc.endgameShift),
-      shifts: [
-        addShifts(tele.shifts[0], acc.shifts[0]),
-        addShifts(tele.shifts[1], acc.shifts[1]),
-        addShifts(tele.shifts[2], acc.shifts[2]),
-        addShifts(tele.shifts[3], acc.shifts[3]),
-      ],
-      climb: acc.climb,
-    }),
-    defaultTele,
-  );
-
-  return {
-    averagePerShift,
-  };
-};
-
 export const processTeam = (
   forms: ScoutingForm[],
   coprs?: TeamOPR,
   epa?: EPA,
 ): TeamData => {
-  const statsForms = excludeNoShowForms(forms);
-  const tele = {
-    movement: collectMovementInfoOfField(forms),
-    climbs: statsForms.map((form) => ({
-      match: form.match,
-      ...form.tele.climb,
-    })),
-  };
-  const auto = {
-    climbs: statsForms.map((form) => ({
-      match: form.match,
-      ...form.auto.climb,
-    })),
-  };
-
   return {
-    tele,
-    auto,
     metrics: { epa, coprs },
+    forms,
     noShowMatches: uniqueNoShowMatches(forms),
   };
 };

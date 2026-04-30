@@ -13,7 +13,6 @@ import {
   type Alliance,
   type ScoutingForm,
 } from "@repo/scouting_types";
-import { ShiftTab } from "./tabs/ShiftTab";
 import { useLocalStorage } from "@repo/local_storage_hook";
 import { PostMatchTab } from "./tabs/PostMatchTab";
 import { useNavigate } from "react-router-dom";
@@ -22,8 +21,8 @@ import { useMatchTimer } from "../hooks/useMatchTimer";
 import StartMatchLocallyButton, {
   type TimerData,
 } from "../components/StartMatchLocallyButton";
-import { boolean } from "io-ts";
 import { AutoTab } from "./tabs/AutoTab";
+import { TeleTab } from "./tabs/TeleTab";
 export interface TabProps {
   setForm: Dispatch<SetStateAction<ScoutingForm>>;
   currentForm: ScoutingForm;
@@ -31,6 +30,7 @@ export interface TabProps {
   originTime: number;
   timerData: TimerData;
   setAlliance: Dispatch<SetStateAction<Alliance>>;
+  setOriginTime: Dispatch<SetStateAction<number>>;
 }
 interface Tab {
   name: string;
@@ -42,13 +42,7 @@ interface Tab {
 const ITERATION_PERIOD_MS = 10;
 
 const AUTO_END = 20_000;
-const TRANSITION_END = 30_000;
-
-const SHIFT_1_END = 55_000;
-const SHIFT_2_END = 80_000;
-const SHIFT_3_END = 105_000;
-const SHIFT_4_END = 130_000;
-const MATCH_END = 160_000;
+const MATCH_END = 171_000;
 
 const MILLISECONDS_IN_FIVE_SECONDS = 5000;
 
@@ -74,52 +68,10 @@ const TABS: Tab[] = [
     ShiftExtraEndTimeMs: AUTO_END - MILLISECONDS_IN_FIVE_SECONDS,
   },
   {
-    name: "Transition",
-    Component: (props) => (
-      <ShiftTab shiftType={"transition"} tabIndex={0} {...props} />
-    ),
-    ShiftEndTimeMs: TRANSITION_END,
-    ShiftExtraEndTimeMs: TRANSITION_END - MILLISECONDS_IN_FIVE_SECONDS,
-  },
-  {
-    name: "Shift1",
-    Component: (props) => (
-      <ShiftTab shiftType={"teleop"} tabIndex={0} {...props} />
-    ),
-    ShiftEndTimeMs: SHIFT_1_END,
-    ShiftExtraEndTimeMs: SHIFT_1_END - MILLISECONDS_IN_FIVE_SECONDS,
-  },
-  {
-    name: "Shift2",
-    Component: (props) => (
-      <ShiftTab shiftType={"teleop"} tabIndex={1} {...props} />
-    ),
-    ShiftEndTimeMs: SHIFT_2_END,
-    ShiftExtraEndTimeMs: SHIFT_2_END - MILLISECONDS_IN_FIVE_SECONDS,
-  },
-  {
-    name: "Shift3",
-    Component: (props) => (
-      <ShiftTab shiftType={"teleop"} tabIndex={2} {...props} />
-    ),
-    ShiftEndTimeMs: SHIFT_3_END,
-    ShiftExtraEndTimeMs: SHIFT_3_END - MILLISECONDS_IN_FIVE_SECONDS,
-  },
-  {
-    name: "Shift4",
-    Component: (props) => (
-      <ShiftTab shiftType={"teleop"} tabIndex={3} {...props} />
-    ),
-    ShiftEndTimeMs: SHIFT_4_END,
-    ShiftExtraEndTimeMs: SHIFT_4_END - MILLISECONDS_IN_FIVE_SECONDS,
-  },
-  {
-    name: "Endgame",
-    Component: (props) => (
-      <ShiftTab shiftType={"endgame"} tabIndex={0} {...props} />
-    ),
+    name: "Tele",
+    Component: (props) => <TeleTab {...props} />,
     ShiftEndTimeMs: MATCH_END,
-    ShiftExtraEndTimeMs: MATCH_END,
+    ShiftExtraEndTimeMs: MATCH_END - MILLISECONDS_IN_FIVE_SECONDS,
   },
   {
     name: "Post",
@@ -243,7 +195,7 @@ export const ScoutMatch: FC = () => {
   const [backgroundColor, setBackgroundColor] = useState("bg-black/40");
   const [activeTabIndex, setActiveTab] = useState(STARTING_TAB_INDEX);
   const [alliance, setAlliance] = useState<Alliance>("red");
-  const originTime = useMemo(() => Date.now(), []);
+  const [originTime, setOriginTime] = useState(() => Date.now());
   const CurrentTab = useMemo(() => {
     return TABS[activeTabIndex]?.Component ?? PostMatchTab;
   }, [activeTabIndex]);
@@ -255,7 +207,9 @@ export const ScoutMatch: FC = () => {
         tab.ShiftEndTimeMs >= elapsedMs && elapsedMs >= tab.ShiftExtraEndTimeMs,
     );
 
-  const timerData = useMatchTimer(ITERATION_PERIOD_MS);
+  const timerData = useMatchTimer(ITERATION_PERIOD_MS, () =>
+    setOriginTime(Date.now()),
+  );
 
   const previousIsRunningRef = useRef(timerData.isRunning);
 
@@ -270,6 +224,9 @@ export const ScoutMatch: FC = () => {
     );
 
     if (activeTabIndex === 1 && timerData.elapsedMs > 100) {
+      return;
+    }
+    if (activeTabIndex === TABS.length - 1) {
       return;
     }
 
@@ -322,9 +279,9 @@ export const ScoutMatch: FC = () => {
             teamNumber={scoutingForm.teamNumber}
           />
         )}
-        <div className="flex-1 flex flex-col overflow-hidden p-2 relative z-10">
+        <div className="flex-1 flex flex-col p-2 relative z-10">
           <div
-            className={`flex-1 min-h-0 text-green-100 overflow-hidden pr-2
+            className={`flex-1 min-h-0 text-green-100 overflow-y-auto pr-2
             ${backgroundColor} rounded-xl p-3 sm:p-4 lg:p-6 border border-green-500/20 shadow-inner
             animate-in fade-in slide-in-from-right-4 duration-300`}
           >
@@ -335,6 +292,7 @@ export const ScoutMatch: FC = () => {
               originTime={originTime}
               timerData={timerData}
               setAlliance={setAlliance}
+              setOriginTime={setOriginTime}
             />
           </div>
         </div>

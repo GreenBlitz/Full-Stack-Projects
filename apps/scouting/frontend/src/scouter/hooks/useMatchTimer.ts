@@ -18,7 +18,10 @@ const defaultTimer: TimerState = {
 
 const ITERATION_PERIOD_MS = 100;
 
-export const useMatchTimer = (tickMs = ITERATION_PERIOD_MS) => {
+export const useMatchTimer = (
+  tickMs = ITERATION_PERIOD_MS,
+  onStart?: () => void,
+) => {
   const [timeState, setTimeState] = useLocalStorage<TimerState>(
     STORAGE_KEY,
     defaultTimer,
@@ -56,6 +59,7 @@ export const useMatchTimer = (tickMs = ITERATION_PERIOD_MS) => {
       elapsedBeforeStart: timeState.elapsedBeforeStart,
     };
     setTimeState(next);
+    onStart?.();
   };
 
   const stop = () => {
