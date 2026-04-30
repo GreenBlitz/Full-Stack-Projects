@@ -223,6 +223,9 @@ export const ScoutMatch: FC = () => {
         : "bg-black/40",
     );
 
+    if (activeTabIndex === 1 && timerData.elapsedMs < 200) {
+      setActiveTab(2);
+    }
     if (activeTabIndex === 1 && timerData.elapsedMs > 100) {
       return;
     }

@@ -14,7 +14,7 @@ const BUTTON_STYLES = `px-8 py-3 text-base font-bold text-black
             bg-linear-to-r`;
 
 const MATCH_SUBMIT_INCREMENT = 1;
-export const PostMatchTab: FC<TabProps> = ({ setForm, currentForm }) => {
+export const PostMatchTab: FC<TabProps> = ({ setForm, currentForm,timerData }) => {
   const [_scoutingForms, setScoutingForms] = useLocalStorage<ScoutingForm[]>(
     "scouted_forms",
     [],
@@ -33,6 +33,7 @@ export const PostMatchTab: FC<TabProps> = ({ setForm, currentForm }) => {
       }),
     );
     setScoutingForms((prev) => [...prev, currentForm]);
+    timerData.reset();
     await navigate("/");
   };
   const handleText = (message: string) => {
@@ -113,6 +114,7 @@ export const PostMatchTab: FC<TabProps> = ({ setForm, currentForm }) => {
             setForm(
               createNewScoutingForm({ scouterName: currentForm.scouterName }),
             );
+            timerData.reset();
             void navigate("/");
           }}
           close={() => {
