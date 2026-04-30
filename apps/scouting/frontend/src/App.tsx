@@ -18,6 +18,7 @@ import { PitScoutTab } from "./strategy/tabs/pit-scout/PitScoutTab";
 const App: FC = () => {
   return (
     <Routes>
+      <Route path="pit" element={<PitScoutTab />} />
       <Route path="/scout" element={<ScoutMatch />} />
       <Route
         path="/leaderboard"
@@ -31,7 +32,6 @@ const App: FC = () => {
         <Route path="compare" element={<CompareTwo />} />
         <Route path="super" element={<SuperScoutTab />} />
         <Route path="tinder" element={<Tinder />} />
-        <Route path="pit" element={<PitScoutTab />} />
       </Route>
       <Route path="*" element={<ScoutedMatches />} />
     </Routes>

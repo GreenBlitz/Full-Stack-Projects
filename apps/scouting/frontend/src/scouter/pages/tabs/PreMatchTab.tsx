@@ -1,4 +1,4 @@
-//בס"ד
+// בס"ד
 import { useEffect, useMemo, useRef, useState, type FC, type JSX } from "react";
 import {
   compareMatches,
@@ -115,19 +115,6 @@ const PreMatchTab: FC<TabProps> = ({
   const [match, setMatch] = useState(form.match);
   const userPickedTeamNumberRef = useRef(false);
 
-  // const updateTBAMatches = async () => {
-
-  //   try {
-  //     const newTBAMatches = await fetchGameMatches<SimpleTBAMatch>(
-  //       form.competition,
-  //       match,
-  //     );
-  //     setTbaMatches(newTBAMatches);
-  //   } catch {
-  //     /* keep cached TBA matches; manual schedule still applies */
-  //   }
-  // };
-
   const applyMatchUpdate = (next: Match) => {
     userPickedTeamNumberRef.current = false;
     setMatch(next);
@@ -166,7 +153,7 @@ const PreMatchTab: FC<TabProps> = ({
       <InputBox name="Scouter Name">
         <input
           type="text"
-          className="w-85 h-full"
+          className="w-full h-full"
           defaultValue={form.scouterName}
           onChange={(event) => {
             setForm((prev) => ({
@@ -180,7 +167,7 @@ const PreMatchTab: FC<TabProps> = ({
         <>
           <input
             type="number"
-            className="w-43.75 h-full"
+            className="w-1/2 h-full"
             max={MATCH_NUMBER_MAX}
             value={match.number === 0 ? undefined : match.number}
             onChange={(event) => {
@@ -191,7 +178,7 @@ const PreMatchTab: FC<TabProps> = ({
             }}
           />
           <button
-            className="w-20 h-full"
+            className="w-10 h-full"
             onClick={() => {
               applyMatchUpdate({
                 ...match,
@@ -202,7 +189,7 @@ const PreMatchTab: FC<TabProps> = ({
             +
           </button>
           <button
-            className="w-20 h-full"
+            className="w-10 h-full"
             onClick={() => {
               applyMatchUpdate({
                 ...match,
@@ -217,7 +204,7 @@ const PreMatchTab: FC<TabProps> = ({
 
       <InputBox name="Match Type">
         <select
-          className="w-90.75 h-full"
+          className="w-full h-full"
           value={match.type}
           onChange={(event) => {
             applyMatchUpdate({
@@ -232,7 +219,7 @@ const PreMatchTab: FC<TabProps> = ({
         </select>
       </InputBox>
       <InputBox name="Team #">
-        <div className="flex gap-1 items-center w-90.75">
+        <div className="flex gap-1 items-center w-full">
           <input
             type="number"
             className="w-24 h-full min-w-0"
@@ -268,7 +255,7 @@ const PreMatchTab: FC<TabProps> = ({
       </InputBox>
       <InputBox name="Alliance">
         <select
-          className="w-90.75 h-full"
+          className="w-full h-full"
           defaultValue={robotPositionInfo.alliance}
           onChange={(event) => {
             setRobotPositionInfo((prev) => ({
@@ -287,7 +274,7 @@ const PreMatchTab: FC<TabProps> = ({
       </InputBox>
       <InputBox name="Location">
         <select
-          className="w-90.75 h-full"
+          className="w-full h-full"
           defaultValue={robotPositionInfo.location}
           onChange={(event) => {
             setRobotPositionInfo((prev) => ({
@@ -301,7 +288,7 @@ const PreMatchTab: FC<TabProps> = ({
           <option value="far">Far</option>
         </select>
       </InputBox>
-      <div className="w-120 flex justify-center">
+      <div className="w-full max-w-sm flex justify-center">
         <button
           type="button"
           className={`w-32 h-10 sm:h-12 px-2 text-xs shrink-0 rounded-xl transition-all duration-200 border-2 ${
@@ -326,9 +313,9 @@ interface InputBoxProps {
 }
 
 const InputBox: FC<InputBoxProps> = ({ name, children }) => (
-  <div className="w-120 border-2 border-green-500 rounded-lg p-5 flex flex-col gap-3 py-0 h-12">
-    <div className="flex w-115 justify-between items-center text-green-500 pr-1 h-70">
-      <div>{`${name}:`}</div>
+  <div className="w-full max-w-sm border-2 border-green-500 rounded-lg px-5 h-12 flex items-center">
+    <div className="flex w-full justify-between items-center text-green-500 gap-2">
+      <div className="shrink-0">{`${name}:`}</div>
       {children}
     </div>
   </div>
