@@ -57,6 +57,7 @@ export const PostMatchTab: FC<TabProps> = ({ setForm, currentForm }) => {
             onChange={(event) => {
               handleText(event.target.value);
             }}
+            defaultValue={currentForm.comment}
             placeholder="Add any additional notes or observations about this match..."
             className="w-full flex-1 p-4 text-base border-2 border-green-500/30 rounded-xl 
                      bg-[#1a1a1a] text-green-100
