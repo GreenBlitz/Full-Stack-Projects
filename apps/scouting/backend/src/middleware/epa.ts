@@ -30,7 +30,7 @@ const getEPACollection = flow(
 );
 
 const STATBOTICS_URL = "https://api.statbotics.io/v3";
-const LOCATION = "country=Israel";
+const LOCATION = "event=Newton";
 const YEAR = 2026;
 
 const fetchEPAs = (config?: AxiosRequestConfig) =>
