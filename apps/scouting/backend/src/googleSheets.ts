@@ -1,10 +1,18 @@
 //בס"ד
-
 import { google } from "googleapis";
+import path from "path";
 
+const CHAMPS_SHEETS_ID = "1x8vQwFVIlIVrUVz2EZf3NfLTisu2PsZSCHQz7mGCYEE";
+
+const SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"];
+const KEY_FILE_PATH = path.join(__dirname, "../src/sheets-key.json");
+
+console.log(KEY_FILE_PATH);
+
+// Google Authentication
 const auth = new google.auth.GoogleAuth({
-  keyFile: "./sheets-key.json",
-  scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
+  keyFile: KEY_FILE_PATH,
+  scopes: SCOPES,
 });
 
 const sheets = google.sheets({ version: "v4", auth });
@@ -25,9 +33,33 @@ const formatData = (data: string[][]) => {
     const keyedData: Record<string, string> = {};
 
     row.forEach((current, index) => {
-        keyedData[keys[index]] = current;
+      keyedData[keys[index]] = current;
     });
 
     return keyedData;
   });
 };
+
+async function updateData() {
+  try {
+    const raw = await getSheetData(CHAMPS_SHEETS_ID, "raw data");
+
+    console.log("raw:", raw);
+
+    if (!raw) {
+      console.log("No data returned");
+      return;
+    }
+
+    const formatted = formatData(raw);
+
+    console.log(formatted);
+    console.log("checking");
+  } catch (err) {
+    console.error("ERROR in updateData:", err);
+  }
+}
+
+updateData();
+
+console.log("checking 2");

@@ -13,6 +13,7 @@ const FIRST_TEAM = 0;
 const SECOND_TEAM = 1;
 const THIRD_TEAM = 2;
 
+
 export const superScoutToTeamSuperScout = (
   superScoutForms: SuperScout[],
 ): TeamSuperScout[] => superScoutForms.flatMap((form) => form.teams);

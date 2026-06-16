@@ -35,6 +35,7 @@ import { calculateSum, isEmpty, mapObject } from "@repo/array-functions";
 import { foldResponse, flatTryCatch } from "@repo/flow-utils";
 import { fetchTeamsCOPRs } from "./tba-router";
 import { getTeamsEPAs } from "../middleware/epa";
+import path from "path";
 
 export const teamsRouter = Router();
 
@@ -125,10 +126,8 @@ teamsRouter.get("/", async (req, res) => {
       ),
     ),
     map((teams) => mapObject(teams, (forms) => ({ forms }))),
-    flatMap(fetchTeamsCOPRs),
-    flatMap(getTeamsEPAs),
     map((teams) =>
-      mapObject(teams, (team) => processTeam(team.forms, team.coprs, team.epa)),
+      mapObject(teams, (team) => processTeam(team.forms)),
     ),
     bindTo("teams"),
     foldResponse(res),
