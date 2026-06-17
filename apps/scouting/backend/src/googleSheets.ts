@@ -15,7 +15,10 @@ const sheetsRange = "teamPerMatch";
 const SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"];
 const KEY_FILE_PATH = path.join(__dirname, "../src/sheets-key.json");
 
-console.log(KEY_FILE_PATH);
+export const getBeeScoutCollection = flow(
+  getDb,
+  map((db) => db.collection<BeeScoutingForm>("beeScout")),
+);
 
 const googleAuthentication = new google.auth.GoogleAuth({
   keyFile: KEY_FILE_PATH,
@@ -95,11 +98,6 @@ const structureData = (data: Record<string, string>[]): BeeScoutingForm[] => {
   });
 };
 
-export const getBeeScoutConnection = flow(
-  getDb,
-  map((db) => db.collection<BeeScoutingForm>("beeScout")),
-);
-
 const updateData = async (db: Db) => {
   try {
     const raw = await getSheetData(CHAMPS_SHEETS_ID, sheetsRange);
@@ -128,7 +126,8 @@ export const startBeeScoutSync = () => {
   const run = pipe(
     getDb(),
     fold(
-      (err) => async () => console.error("DB connection with beeScout failed:", err.reason),
+      (err) => async () =>
+        console.error("DB connection with beeScout failed:", err.reason),
       (db) => async () => {
         updateData(db);
         setInterval(() => updateData(db), MILISECONDS_IN_FIVE_MINUTES);
