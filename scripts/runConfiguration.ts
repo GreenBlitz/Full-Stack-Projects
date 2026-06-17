@@ -15,9 +15,9 @@ dotenv.config({
   ].filter(Boolean) as string[],
 });
 
+console.log("running workspace", workspace, "in", environment);
 execSync(`turbo run ${environment} --filter=${workspace}*`, {
   stdio: "inherit",
   env: { ...process.env },
 });
 
-console.log("running workspace", workspace, "in", environment);
