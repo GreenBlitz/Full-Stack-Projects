@@ -4,3 +4,4 @@ package-lock.json
 dist
 .secret.env
 dev-dist
+sheets-key.json
