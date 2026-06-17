@@ -4,7 +4,6 @@ import { NavLink, Outlet } from "react-router-dom";
 import { LuTable, LuSwords } from "react-icons/lu";
 import { AiOutlineTeam } from "react-icons/ai";
 import type { IconType } from "react-icons/lib";
-import { TiWeatherCloudy } from "react-icons/ti";
 
 const NavigationElement: FC<NavigationElementProps> = ({
   isActive,
@@ -34,8 +33,7 @@ interface NavigationOption {
 const strategyNavigationOptions: NavigationOption[] = [
   { destination: "team", label: "Team", icon: AiOutlineTeam },
   { destination: "general", label: "General", icon: LuTable },
-  { destination: "compare", label: "Compare", icon: LuSwords },
-  { destination: "forecast", label: "Forecast", icon: TiWeatherCloudy },
+  { destination: "tinder", label: "Tinder", icon: LuSwords },
 ];
 
 interface NavigationElementProps {
