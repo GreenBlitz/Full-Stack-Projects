@@ -26,7 +26,10 @@ const googleAuthentication = new google.auth.GoogleAuth({
 
 const sheets = google.sheets({ version: "v4", auth: googleAuthentication });
 
-const getSheetData = async (spreadsheetId: string = "", range: string) => {
+const getSheetData = async (
+  spreadsheetId: string | undefined,
+  range: string,
+) => {
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId,
     range,
@@ -102,7 +105,7 @@ const updateData = async (db: Db) => {
     const raw = await getSheetData(process.env.CHAMPS_SHEETS_ID, sheetsRange);
     if (!raw) {
       console.log("No data returned from Bee A Scout google sheets");
-      return [];
+      return;
     }
 
     const structured = structureData(formatData(raw));
@@ -125,7 +128,7 @@ const updateData = async (db: Db) => {
   }
 };
 
-const MILISECONDS_IN_FIVE_MINUTES = 30000;
+const MILISECONDS_IN_FIVE_MINUTES = 300000;
 
 export const startBeeScoutSync = () => {
   pipe(
