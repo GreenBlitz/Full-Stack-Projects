@@ -15,14 +15,9 @@ export interface CompareClimb {
   timesClimbedToLevels: TimesClimedToLevels;
 }
 
-export interface CompareAverageFuel {
-  averageFuelInGame: number;
-  averageFuelInAuto: number;
-}
 
 export interface TeamCompareData {
   teamNumber: number;
-  averageFuel: CompareAverageFuel;
   climb: CompareClimb;
 }
 

@@ -24,6 +24,8 @@ interface ScoreMapProps {
   setPosition: Dispatch<SetStateAction<Point | undefined>>;
   alliance: Alliance;
   mapZone: Alliance;
+  onStartTouch?: () => void;
+  onStopTouch?: () => void;
 }
 
 const alliancizePosition = (alliance: Alliance, position: Point): Point => {
@@ -102,6 +104,8 @@ export const ScoreMap: FC<ScoreMapProps> = ({
   setPosition,
   alliance,
   mapZone,
+  onStartTouch,
+  onStopTouch,
 }) => {
   const [isHolding, setHolding] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -152,9 +156,11 @@ export const ScoreMap: FC<ScoreMapProps> = ({
         onTouchStart={(event) => {
           setHolding(true);
           handleMapClick(event);
+          onStartTouch?.();
         }}
         onTouchEnd={() => {
           setHolding(false);
+          onStopTouch?.();
         }}
         className="block max-h-full max-w-full select-none"
         alt="Game Map"

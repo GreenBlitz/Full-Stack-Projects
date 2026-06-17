@@ -5,16 +5,6 @@ import { intervalCodec } from "./Interval";
 import type { autoClimbCodec } from "./Segments";
 import type { ScoutingForm } from "./ScoutingForm";
 
-export const shiftCodec = t.type({
-  shootEvents: t.array(shootEventCodec),
-});
-export const defaultShift: t.TypeOf<typeof shiftCodec> = {
-  shootEvents: [],
-};
-
-export type Shift = t.TypeOf<typeof shiftCodec>;
-export type ShiftsArray = Shift[];
-
 export const levelTimeCodec = t.union([intervalCodec, t.null]);
 
 export const climbTimeCodec = t.type({
@@ -43,7 +33,7 @@ type Interval = t.TypeOf<typeof intervalCodec>;
 
 export type SingleLevelTime = Partial<Record<ActiveClimbLevel, Interval>>;
 
-export type Climb = ScoutingForm["auto" | "tele"]["climb"];
+export type Climb = any;
 export type ClimbLevel = Climb["level"];
 
 export type TeleClimb = t.TypeOf<typeof climbCodec>;
@@ -51,7 +41,7 @@ export type TeleClimbSide = TeleClimb["climbSide"];
 export type TeleClimbLevel = TeleClimb["level"];
 export type TeleClimbTime = TeleClimb["climbTime"];
 
-export type ShiftType = "auto" | "transition" | "teleop" | "endgame";
+export type ShiftType =  "transition" | "teleop" | "endgame";
 
 export const defaultClimb: t.TypeOf<typeof climbCodec> = {
   climbTime: {

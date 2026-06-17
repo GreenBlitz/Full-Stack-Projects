@@ -1,7 +1,5 @@
 // בס"ד
 import type {
-  FuelEvents,
-  FuelObject,
   GamePhase,
   MatchedEntry,
   Match,
@@ -17,12 +15,13 @@ import { LineChart } from "../../components/LineChart";
 import { PhaseToggle } from "../../components/PhaseToggle";
 import { MetricsChart } from "../../components/MetricsChart";
 import { BarChart } from "../../components/BarChart";
-import { calculateMedianClimbs, getClimbDataset } from "../../ClimbProcessing";
 import { useLocalStorage } from "@repo/local_storage_hook";
 import { HeatMap } from "../../components/heatmap/HeatMap";
 import { redField } from "@repo/rebuilt_map";
 import { fetchTeamNumbers } from "../../fetches";
 import { PieGraph } from "../../components/PieChart";
+import { PitScoutResultsTab } from "../pit-scout/TeamPitShow";
+import { ScoutingFormView } from "../../ScoutingFormView";
 
 const METER_AND_HALF_CENTIMETERS = 150;
 const THREE_METER_CENTIMETERS = 300;
@@ -45,27 +44,15 @@ async function fetchTeamData(team: number, recency?: number) {
   return firstElement(Object.values(data.teams));
 }
 
-const NO_FUEL_SHOT = 0;
-const calculateAccuracy = (fuel: FuelObject) =>
-  fuel.shot > NO_FUEL_SHOT ? fuel.scored / fuel.shot : NO_FUEL_SHOT;
-
 const FIRST_MATCH_TYPE_CHARACTER = 0;
 
 const formatNoShowMatch = (m: Match) =>
   `${m.type[FIRST_MATCH_TYPE_CHARACTER]}${m.number}`;
 
-const createShotDataset = (data: MatchedEntry<FuelObject>[], key: FuelEvents) =>
-  Object.fromEntries(
-    data.map((entry) => [
-      entry.match.type[FIRST_MATCH_TYPE_CHARACTER] + entry.match.number,
-      { value: entry[key] },
-    ]),
-  );
-
 const graphSection =
   "w-96 h-64 p-4 items-center bg-slate-900/40 backdrop-blur-md border border-white/10 rounded-3xl shadow-2xl";
 export const TeamTab: FC = () => {
-  const [phase, setPhase] = useState<GamePhase>("tele");
+  const [phase, setPhase] = useState<"pit" | "forms">("pit");
   const [teamData, setTeamData] = useState<TeamData>();
   const [teamNumber, setTeamNumber] = useLocalStorage<number | null>(
     "team/teamNumber",
@@ -77,7 +64,12 @@ export const TeamTab: FC = () => {
   );
   const [scoutedTeams, setScoutedTeams] = useState<number[]>();
 
-  const data = useMemo(() => teamData?.[phase], [teamData, phase]);
+  const [formIndex, setFormIndex] = useState(0);
+
+  // reset index when team changes
+  useEffect(() => {
+    setFormIndex(0);
+  }, [teamNumber]);
 
   useEffect(() => {
     if (!teamNumber || !FRC_TEAM_NUMBERS.includes(teamNumber)) {
@@ -102,131 +94,37 @@ export const TeamTab: FC = () => {
         scoutedTeams={scoutedTeams ?? []}
       />
       <PhaseToggle activeMode={phase} setActiveMode={setPhase} />
-
-      {teamData && (teamData.noShowMatches?.length ?? 0) > 0 ? (
-        <div
-          className={`${graphSection} w-full max-w-2xl text-left text-slate-200`}
-        >
-          <span className="font-black tracking-wider uppercase text-orange-400 text-lg block mb-2">
-            No-show matches (excluded from stats)
-          </span>
-          <ul className="list-disc list-inside text-sm space-y-1">
-            {(teamData.noShowMatches ?? []).map((m) => (
-              <li key={`${m.type}-${m.number}`}>{formatNoShowMatch(m)}</li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
-
-      {data && (
-        <AccuracyChart
-          metrics={{
-            meterAndHalf: calculateAccuracy(
-              data.accuracy[METER_AND_HALF_CENTIMETERS],
-            ),
-            threeMeter: calculateAccuracy(
-              data.accuracy[THREE_METER_CENTIMETERS],
-            ),
-            more: calculateAccuracy(data.accuracy[MORE_DISTANCE]),
-          }}
-        />
-      )}
-
-      {data && (
-        <div className={graphSection}>
-          <PieGraph
-            name={"Distance Shots"}
-            points={{
-              "Meter And Half": {
-                value: data.accuracy[METER_AND_HALF_CENTIMETERS].amount,
-                color: "red",
-              },
-              "Three Meter": {
-                value: data.accuracy[THREE_METER_CENTIMETERS].amount,
-                color: "blue",
-              },
-              More: {
-                value: data.accuracy[MORE_DISTANCE].amount,
-                color: "orange",
-              },
-            }}
-          />
-        </div>
-      )}
-
-      {data && (
-        <div className={`${graphSection} text-center`}>
-          <span className="font-black tracking-wider uppercase text-slate-400 text-2xl">
-            shoot positions
-          </span>
-          <div className="w-full h-48">
-            <HeatMap
-              positions={data.fuel.flatMap((fuel) => fuel.positions)}
-              path={redField}
-              aspectRatio={0} //bro this does nothing
-            />
+      <MetricsChart
+        epa={teamData?.metrics.epa}
+        coprs={teamData?.metrics.coprs}
+      />
+      {phase === "forms" && teamData && teamData.forms.length > 0 && (
+        <div className="flex flex-col items-center w-full max-w-2xl">
+          <div className="flex items-center justify-between w-full px-4 mb-2">
+            <button
+              onClick={() => setFormIndex((i) => Math.max(0, i - 1))}
+              disabled={formIndex === 0}
+              className="px-6 py-3 bg-slate-800 border border-white/10 rounded-lg text-slate-300 text-sm font-black disabled:opacity-30 hover:bg-slate-700 transition-all active:scale-95"
+            >
+              ←
+            </button>
+            <span className="text-xl font-bold uppercase text-slate-500">
+              Form {formIndex + 1} / {teamData.forms.length}
+            </span>
+            <button
+              onClick={() =>
+                setFormIndex((i) => Math.min(teamData.forms.length - 1, i + 1))
+              }
+              disabled={formIndex === teamData.forms.length - 1}
+              className="px-6 py-3 bg-slate-800 border border-white/10 rounded-lg text-slate-300 text-sm font-black disabled:opacity-30 hover:bg-slate-700 transition-all active:scale-95"
+            >
+              →
+            </button>
           </div>
+          <ScoutingFormView form={teamData.forms[formIndex]} />
         </div>
       )}
-
-      {data && (
-        <div className={graphSection}>
-          <LineChart
-            dataSetsProps={[
-              {
-                name: "Scored",
-                points: createShotDataset(data.fuel, "scored"),
-              },
-              {
-                name: "Missed",
-                points: createShotDataset(data.fuel, "missed"),
-              },
-              {
-                name: "Shot",
-                points: createShotDataset(data.fuel, "shot"),
-              },
-              {
-                name: "Pass",
-                points: createShotDataset(data.fuel, "passed"),
-              },
-            ]}
-          />
-        </div>
-      )}
-      {data && "climbs" in data && (
-        <div className={graphSection}>
-          <LineChart
-            min={0}
-            dataSetsProps={[
-              {
-                name: "Climb",
-                points: getClimbDataset(data),
-                size: 10,
-                color: "#10b981",
-              },
-            ]}
-          />
-        </div>
-      )}
-      {data && "climbs" in data && (
-        <div className={graphSection}>
-          <BarChart
-            dataSetsProps={[
-              {
-                name: "Median Climb Time",
-                points: calculateMedianClimbs(data, phase),
-                color: "green",
-              },
-            ]}
-          />
-        </div>
-      )}
-      {data && "movement" in data && (
-        <MovementChart movements={data.movement} />
-      )}
-      {teamData && phase === "fullGame" && (
-        <MetricsChart {...teamData.metrics} />
-      )}
+      {phase === "pit" && <PitScoutResultsTab teamNumber={teamNumber} />}
     </div>
   );
 };

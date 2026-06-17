@@ -17,11 +17,13 @@ import {
   createBodyVerificationPipe,
   foldResponse,
   flatTryCatch,
+  createLog,
 } from "@repo/flow-utils";
 import { right as rightEither } from "fp-ts/lib/Either";
 import { mongofyQuery } from "@repo/flow-utils";
 import * as t from "io-ts";
 import { isEmpty } from "@repo/array-functions";
+import { ObjectId } from "mongodb";
 
 export const formsRouter = Router();
 
@@ -33,13 +35,15 @@ export const getFormsCollection = flow(
 formsRouter.get("/", async (req, res) => {
   await pipe(
     getFormsCollection(),
-    map((collection) => collection.find(mongofyQuery(req.query)).toArray()),
-    fold(
-      (error) => () =>
-        Promise.resolve(res.status(error.status).send(error.reason)),
-      (forms) => async () =>
-        res.status(StatusCodes.OK).json({ forms: await forms }),
+    flatTryCatch(
+      (collection) => collection.find(mongofyQuery(req.query)).toArray(),
+      () => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: "Error Inserting Forms To Collection ",
+      }),
     ),
+    bindTo("forms"),
+    foldResponse(res),
   )();
 });
 
@@ -84,6 +88,26 @@ formsRouter.post("/", async (req, res) => {
       }),
     ),
     bindTo("result"),
+    foldResponse(res),
+  )();
+});
+
+formsRouter.put("/", async (req, res) => {
+  await pipe(
+    rightEither(req),
+    createBodyVerificationPipe(scoutingFormCodec),
+    fromEither,
+    bindTo("newForm"),
+    bind("collection", getFormsCollection),
+    createLog(() => `Updating: ${req.query.id}`),
+    flatTryCatch(
+      async ({ collection, newForm }) =>
+        collection.replaceOne({ _id: new ObjectId(req.query.id) }, newForm),
+      () => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: "Error Replacing Form To Collection ",
+      }),
+    ),
     foldResponse(res),
   )();
 });
