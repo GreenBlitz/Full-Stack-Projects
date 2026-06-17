@@ -26,10 +26,7 @@ const googleAuthentication = new google.auth.GoogleAuth({
 
 const sheets = google.sheets({ version: "v4", auth: googleAuthentication });
 
-const getSheetData = async (
-  spreadsheetId: string = "1x8vQwFVIlIVrUVz2EZf3NfLTisu2PsZSCHQz7mGCYEE",
-  range: string,
-) => {
+const getSheetData = async (spreadsheetId: string = "", range: string) => {
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId,
     range,
