@@ -1,15 +1,14 @@
 //בס"ד
-import { BeeScoutingForm, PitScout } from "@repo/scouting_types";
+import { BeeScoutingForm } from "@repo/scouting_types";
 import { google } from "googleapis";
 import { Db } from "mongodb";
 
 import path from "path";
 import { getDb } from "./middleware/db";
 import { flow, pipe } from "fp-ts/lib/function";
-import { data } from "react-router-dom";
 import { fold, map } from "fp-ts/lib/TaskEither";
+import { firstElement } from "@repo/array-functions";
 
-const CHAMPS_SHEETS_ID = "1x8vQwFVIlIVrUVz2EZf3NfLTisu2PsZSCHQz7mGCYEE";
 const sheetsRange = "teamPerMatch";
 
 const SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"];
@@ -27,7 +26,10 @@ const googleAuthentication = new google.auth.GoogleAuth({
 
 const sheets = google.sheets({ version: "v4", auth: googleAuthentication });
 
-const getSheetData = async (spreadsheetId: string, range: string) => {
+const getSheetData = async (
+  spreadsheetId: string = "1x8vQwFVIlIVrUVz2EZf3NfLTisu2PsZSCHQz7mGCYEE",
+  range: string,
+) => {
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId,
     range,
@@ -37,7 +39,7 @@ const getSheetData = async (spreadsheetId: string, range: string) => {
 };
 
 const formatData = (data: string[][]) => {
-  const keys = data[0];
+  const keys = firstElement(data);
 
   return data.slice(1).map((row) => {
     const keyedData: Record<string, string> = {};
@@ -54,17 +56,16 @@ const structureData = (data: Record<string, string>[]): BeeScoutingForm[] => {
   return data.map((row) => {
     const toBool = (v: string) => v === "1" || v === "TRUE";
 
-    const getTeleClimb = () => {
-      return row.E_ClimbHeight == "low"
+    const getTeleClimb = () =>
+      row.E_ClimbHeight == "low"
         ? 1
         : row.E_ClimbHeight == "mid"
           ? 2
           : row.E_ClimbHeight == "high"
             ? 3
             : 0;
-    };
     return {
-      teamNumber: Number(row.D_TeamNumber.split(" - ")[0]),
+      teamNumber: Number(firstElement(row.D_TeamNumber.split(" - "))),
       matchNumber: Number(row.D_MatchNumber),
 
       auto: {
@@ -100,7 +101,8 @@ const structureData = (data: Record<string, string>[]): BeeScoutingForm[] => {
 
 const updateData = async (db: Db) => {
   try {
-    const raw = await getSheetData(CHAMPS_SHEETS_ID, sheetsRange);
+    console.log(process.env.CHAMPS_SHEETS_ID);
+    const raw = await getSheetData(process.env.CHAMPS_SHEETS_ID, sheetsRange);
     if (!raw) {
       console.log("No data returned from Bee A Scout google sheets");
       return [];
@@ -109,6 +111,12 @@ const updateData = async (db: Db) => {
     const structured = structureData(formatData(raw));
     const collection = db.collection<BeeScoutingForm>("beeScout");
 
+    if (structured.length < 10) {
+      console.log(
+        "something went wrong - no data in new update in Bee A Scout",
+      );
+      return;
+    }
     await collection.deleteMany({});
     await collection.insertMany(structured);
 
@@ -123,7 +131,7 @@ const updateData = async (db: Db) => {
 const MILISECONDS_IN_FIVE_MINUTES = 30000;
 
 export const startBeeScoutSync = () => {
-  const run = pipe(
+  pipe(
     getDb(),
     fold(
       (err) => async () =>
@@ -133,7 +141,5 @@ export const startBeeScoutSync = () => {
         setInterval(() => updateData(db), MILISECONDS_IN_FIVE_MINUTES);
       },
     ),
-  );
-
-  run();
+  )();
 };

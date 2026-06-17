@@ -30,7 +30,7 @@ const getEPACollection = flow(
 );
 
 const STATBOTICS_URL = "https://api.statbotics.io/v3";
-const LOCATION = "event=Newton";
+const LOCATION = "event=Israel";
 const YEAR = 2026;
 
 const fetchEPAs = (config?: AxiosRequestConfig) =>
@@ -108,7 +108,6 @@ export const getTeamsEPAs = <A extends object>(
         epa: epaTeams[teamNumber],
       })),
     ),
-    
+
     toUnion(teams),
-    
   );

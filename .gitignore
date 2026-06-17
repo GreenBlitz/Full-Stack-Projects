@@ -5,4 +5,3 @@ dist
 .secret.env
 dev-dist
 sheets-key.json
-beedoogma.json

@@ -6,12 +6,10 @@ import { pipe } from "fp-ts/lib/function";
 import { createTypeCheckingEndpointFlow } from "@repo/type-utils";
 import {
   flatMap,
-  fold,
   fromEither,
   left as taskLeft,
   right as taskRight,
   map,
-  tryCatch,
   bindTo,
 } from "fp-ts/lib/TaskEither";
 import { getFormsCollection } from "./forms-router";
@@ -19,10 +17,7 @@ import { StatusCodes } from "http-status-codes";
 import { castItem } from "@repo/type-utils";
 import {
   compareMatches,
-  defaultTele,
-  excludeNoShowForms,
   isNoShowForm,
-  Movement,
   teamsProps,
   type EPA,
   type Match,
@@ -31,11 +26,9 @@ import {
   type TeamOPR,
 } from "@repo/scouting_types";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
-import { calculateSum, isEmpty, mapObject } from "@repo/array-functions";
+import { isEmpty, mapObject } from "@repo/array-functions";
 import { foldResponse, flatTryCatch } from "@repo/flow-utils";
-import { fetchTeamsCOPRs } from "./tba-router";
-import { getTeamsEPAs } from "../middleware/epa";
-import path from "path";
+
 
 export const teamsRouter = Router();
 

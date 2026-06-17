@@ -1,8 +1,6 @@
 // בס"ד
 import express from "express";
 import { apiRouter } from "./routes";
-import "./googleSheets";
-import { startUpdatingEPAS } from "./middleware/epa";
 import { startBeeScoutSync } from "./googleSheets";
 
 const app = express();

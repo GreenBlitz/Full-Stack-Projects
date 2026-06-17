@@ -5,7 +5,8 @@
     "FRONTEND_PORT",
     "BACKEND_PORT",
     "TBA_API_KEY",
-    "NODE_ENV"
+    "NODE_ENV",
+    "CHAMPS_SHEETS_ID"
   ],
 
   "tasks": {
