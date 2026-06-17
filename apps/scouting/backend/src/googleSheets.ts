@@ -2,6 +2,7 @@
 import { google } from "googleapis";
 import path from "path";
 
+const CHAMPS_SHEETS_ID = "1x8vQwFVIlIVrUVz2EZf3NfLTisu2PsZSCHQz7mGCYEE";
 
 const SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"];
 const KEY_FILE_PATH = path.join(__dirname, "../src/sheets-key.json");
