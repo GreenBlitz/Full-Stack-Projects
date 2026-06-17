@@ -1,13 +1,13 @@
 // בס"ד
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-// import { registerSW } from "virtual:pwa-register";
+import { registerSW } from "virtual:pwa-register";
 import "./index.css";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import StartMatchLocallyButton from "./scouter/components/StartMatchLocallyButton";
 
-// registerSW({ immediate: true });
+registerSW({ immediate: true });
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
