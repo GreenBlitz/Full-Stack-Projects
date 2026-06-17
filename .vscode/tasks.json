@@ -8,18 +8,18 @@
         "isDefault": true
       },
       "type": "shell",
-      "command": "turbo run build --filter=${input:project}*"
+      "command": "npm run build ${input:project}"
     },
     {
       "label": "dev",
       "type": "shell",
-      "command": "dotenv -e .dev.env -e .public.env -e .secret.env -- 'turbo run dev --filter=${input:project}*'",
+      "command": "npm run dev ${input:project}",
       "problemMatcher": []
     },
     {
       "label": "serve",
       "type": "shell",
-      "command": "dotenv -e .public.env -e .secret.env -- 'turbo run serve --filter=${input:project}*'"
+      "command": "npm run serve ${input:project}"
     },
     {
       "label": "deploy",
