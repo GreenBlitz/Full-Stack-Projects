@@ -8,11 +8,8 @@ import { forecastRouter } from "./forecast-router";
 import { teamsRouter } from "./teams-router";
 import { generalRouter } from "./general-router";
 import { leaderboardRouter } from "./leaderboard-router";
-import { compareRouter } from "./compare-router";
 import { tinderRouter } from "./tinder-router";
-import { bpsRouter } from "./bps-router";
-import { superScoutRouter } from "./super-scout-router";
-import { picklistRouter } from "./picklist-router";
+import { pitScoutRouter } from "./pit-scout-router";
 
 export const apiRouter = Router();
 
@@ -23,11 +20,8 @@ apiRouter.use("/forecast", forecastRouter);
 apiRouter.use("/team", teamsRouter);
 apiRouter.use("/general", generalRouter);
 apiRouter.use("/leaderboard", leaderboardRouter);
-apiRouter.use("/compare", compareRouter);
 apiRouter.use("/tinder", tinderRouter);
-apiRouter.use("/bps", bpsRouter);
-apiRouter.use("/super", superScoutRouter);
-apiRouter.use("/picklist", picklistRouter);
+apiRouter.use("/pit", pitScoutRouter);
 
 apiRouter.get("/health", (req, res) => {
   res.status(StatusCodes.OK).send({ message: "Healthy!" });

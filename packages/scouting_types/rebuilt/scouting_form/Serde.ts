@@ -33,17 +33,6 @@ const serdePoint = createRecordSerde<Point>({
   y: serdeUnsignedInt(COORDINATE_BIT_COUNT),
 });
 
-const serdeShootEvents = serdeArray(
-  createRecordSerde<ShootEvent>({
-    interval: serdeInterval,
-    positions: serdeArray(serdePoint),
-  }),
-);
-
-const serdeShift = createRecordSerde({
-  shootEvents: serdeShootEvents,
-});
-
 const serdeClimbTele = createRecordSerde<TeleClimb>({
   climbTime: createRecordSerde({
     L1: serdeOptionalNull(serdeInterval),
@@ -70,25 +59,48 @@ const serdeClimbAuto = createRecordSerde<AutoClimb>({
   level: serdeEnumedString(["L0", "L1"]),
 });
 
+const MOVEMENT_PASS_BITS = 6;
+
+const serdeSideMovement = createRecordSerde({
+  bumpStuck: serdeUnsignedInt(MOVEMENT_PASS_BITS),
+  bumpPass: serdeUnsignedInt(MOVEMENT_PASS_BITS),
+  trenchPass: serdeUnsignedInt(MOVEMENT_PASS_BITS),
+});
+
+const serdeSectionTele = serdeOptionalNull(
+  serdeOptional(
+    createRecordSerde({
+      rating: serdeOptional(serdeUnsignedInt(5)),
+      description: serdeString(),
+    }),
+  ),
+);
 const serdeTele = createRecordSerde<typeof defaultTele>({
-  transitionShift: serdeShift,
-  shifts: serdeArray(serdeShift) as any, //shifts requires 4 and this is how to fix that
-  endgameShift: serdeShift,
-  movement: createRecordSerde({
-    bumpStuck: serdeBool(),
-  }),
-  climb: serdeClimbTele,
+  driving: serdeSectionTele,
+  defense: serdeSectionTele,
+  evasion: serdeSectionTele,
 });
 
 export const serdeAuto = createRecordSerde<typeof defaultAuto>({
-  shootEvents: serdeShootEvents,
-  chosenAuto: serdeEnumedString(["trenchFuelMiddle"]),
-  movement: createRecordSerde({
-    trenchPass: serdeBool(),
-    bumpPass: serdeBool(),
-    bumpStuck: serdeBool(),
-  }),
-  climb: serdeClimbAuto,
+  balls: serdeEnumedString([
+    "0",
+    "10",
+    "20",
+    "30",
+    "40",
+    "60",
+    "80",
+    "100",
+    "120",
+    "140",
+    "more",
+  ]),
+  path: serdeArray(
+    createRecordSerde({
+      point: serdePoint,
+      time: serdeUnsignedInt(TIME_MILLISECONDS_BIT_COUNT),
+    }),
+  ),
 });
 
 const serdeNoShow: Serde<boolean> = {

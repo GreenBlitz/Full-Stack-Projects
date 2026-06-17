@@ -1,11 +1,16 @@
-//בס"ד
-import { useEffect, useState, type FC, type JSX } from "react";
+// בס"ד
+import { useEffect, useMemo, useRef, useState, type FC, type JSX } from "react";
 import {
   compareMatches,
+  createSimpleMatch,
   isMatchesSame,
+  manualRowsToScheduleSlots,
+  mergeSchedulePreferManual,
   tbaMatchToRegularMatch,
   type Alliance,
+  type ManualSchedulesByCompetition,
   type Match,
+  type SimpleTBAMatch,
   type TBAMatches2026,
   type TBAMatchesProps,
 } from "@repo/scouting_types";
@@ -55,7 +60,7 @@ type MatchTeams = {
 
 const toTeamNum = (k: string) => Number(k.replace("frc", ""));
 
-const toQualMatches = (matches: TBAMatches2026): MatchTeams[] =>
+const toQualMatches = (matches: SimpleTBAMatch[]): MatchTeams[] =>
   matches
     .map((tbaMatch) => ({
       match: tbaMatchToRegularMatch(tbaMatch),
@@ -101,60 +106,54 @@ const PreMatchTab: FC<TabProps> = ({
       alliance: "red",
       location: "close",
     });
-  const [tbaMatches, setTbaMatches] = useLocalStorage<TBAMatches2026>(
-    "tbaMatches",
-    [],
-  );
-  const [match, setMatch] = useState(form.match);
-
-  const updateTBAMatches = async () => {
-    if (tbaMatches.some((tbaMatch) => tbaMatch.match_number === match.number)) {
-      return;
-    }
-    const newTBAMatches = await fetchGameMatches<TBAMatches2026>(
-      form.competition,
-      match,
+  const [tbaMatches, setTbaMatches] = useState<SimpleTBAMatch[]>([]);
+  const [manualSchedulesByCompetition] =
+    useLocalStorage<ManualSchedulesByCompetition>(
+      "manualMatchScheduleByCompetition",
+      {},
     );
-    setTbaMatches(newTBAMatches);
+  const [match, setMatch] = useState(form.match);
+  const userPickedTeamNumberRef = useRef(false);
+
+  const applyMatchUpdate = (next: Match) => {
+    userPickedTeamNumberRef.current = false;
+    setMatch(next);
   };
-  const handleManual = () => {
-    const input = window.prompt("Enter the team number:");
 
-    if (input === null) return;
-
-    const teamNumber = parseInt(input);
-
-    setForm((prev) => ({ ...prev, teamNumber }));
-  };
+  const mergedSlots = useMemo(() => {
+    const manualRows = manualSchedulesByCompetition[form.competition] ?? [];
+    const manualSlots = manualRowsToScheduleSlots(manualRows);
+    const tbaSlots = toQualMatches(tbaMatches);
+    return mergeSchedulePreferManual(tbaSlots, manualSlots);
+  }, [tbaMatches, manualSchedulesByCompetition, form.competition]);
 
   useEffect(() => {
     setAlliance(robotPositionInfo.alliance);
   }, [robotPositionInfo]);
 
   useEffect(() => {
-    const qualMatches = toQualMatches(tbaMatches);
     const newTeam = matchMatchWithTeamNumber(
       {
         match: match,
         alliance: robotPositionInfo.alliance,
         initialLocation: robotPositionInfo.location,
       },
-      qualMatches,
+      mergedSlots,
     );
 
-    setForm((prev) => ({ ...prev, teamNumber: newTeam, match }));
-  }, [tbaMatches, match, robotPositionInfo]);
-
-  useEffect(() => {
-    void updateTBAMatches();
-  }, [match]);
+    setForm((prev) => ({
+      ...prev,
+      teamNumber: userPickedTeamNumberRef.current ? prev.teamNumber : newTeam,
+      match,
+    }));
+  }, [mergedSlots, match, robotPositionInfo]);
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full gap-3  mx-auto">
+    <div className="flex flex-col items-center justify-center w-full h-full gap-3 my-7 mx-auto">
       <InputBox name="Scouter Name">
         <input
           type="text"
-          className="w-85 h-full"
+          className="w-full h-full"
           defaultValue={form.scouterName}
           onChange={(event) => {
             setForm((prev) => ({
@@ -168,34 +167,34 @@ const PreMatchTab: FC<TabProps> = ({
         <>
           <input
             type="number"
-            className="w-43.75 h-full"
+            className="w-1/2 h-full"
             max={MATCH_NUMBER_MAX}
             value={match.number === 0 ? undefined : match.number}
             onChange={(event) => {
-              setMatch((prev) => ({
-                ...prev,
+              applyMatchUpdate({
+                ...match,
                 number: Number(event.target.value),
-              }));
+              });
             }}
           />
           <button
-            className="w-20 h-full"
+            className="w-10 h-full"
             onClick={() => {
-              setMatch((prev) => ({
-                ...prev,
-                number: prev.number + MATCH_ADJUSTMENT_OFFSET,
-              }));
+              applyMatchUpdate({
+                ...match,
+                number: match.number + MATCH_ADJUSTMENT_OFFSET,
+              });
             }}
           >
             +
           </button>
           <button
-            className="w-20 h-full"
+            className="w-10 h-full"
             onClick={() => {
-              setMatch((prev) => ({
-                ...prev,
-                number: Math.max(prev.number - MATCH_ADJUSTMENT_OFFSET, 0),
-              }));
+              applyMatchUpdate({
+                ...match,
+                number: Math.max(match.number - MATCH_ADJUSTMENT_OFFSET, 0),
+              });
             }}
           >
             -
@@ -205,28 +204,58 @@ const PreMatchTab: FC<TabProps> = ({
 
       <InputBox name="Match Type">
         <select
-          className="w-90.75 h-full"
+          className="w-full h-full"
           value={match.type}
           onChange={(event) => {
-            if (event.target.value === "manual") {
-              handleManual();
-              return;
-            }
-            setMatch((prev) => ({
-              ...prev,
+            applyMatchUpdate({
+              ...match,
               type: event.target.value as Match["type"],
-            }));
+            });
           }}
         >
           <option value="practice">Practice</option>
           <option value="qualification">Qualification</option>
           <option value="playoff">Playoff</option>
-          <option value="manual">Manual</option>
         </select>
+      </InputBox>
+      <InputBox name="Team #">
+        <div className="flex gap-1 items-center w-full">
+          <input
+            type="number"
+            className="w-24 h-full min-w-0"
+            value={form.teamNumber === 0 ? "" : form.teamNumber}
+            onChange={(event) => {
+              userPickedTeamNumberRef.current = true;
+              const n = Number(event.target.value);
+              setForm((prev) => ({
+                ...prev,
+                teamNumber: Number.isFinite(n) ? n : 0,
+              }));
+            }}
+          />
+          <button
+            type="button"
+            className="text-xs px-2 py-1 rounded bg-zinc-700 text-zinc-200 shrink-0"
+            onClick={() => {
+              userPickedTeamNumberRef.current = false;
+              const newTeam = matchMatchWithTeamNumber(
+                {
+                  match,
+                  alliance: robotPositionInfo.alliance,
+                  initialLocation: robotPositionInfo.location,
+                },
+                mergedSlots,
+              );
+              setForm((prev) => ({ ...prev, teamNumber: newTeam }));
+            }}
+          >
+            Use schedule
+          </button>
+        </div>
       </InputBox>
       <InputBox name="Alliance">
         <select
-          className="w-90.75 h-full"
+          className="w-full h-full"
           defaultValue={robotPositionInfo.alliance}
           onChange={(event) => {
             setRobotPositionInfo((prev) => ({
@@ -245,7 +274,7 @@ const PreMatchTab: FC<TabProps> = ({
       </InputBox>
       <InputBox name="Location">
         <select
-          className="w-90.75 h-full"
+          className="w-full h-full"
           defaultValue={robotPositionInfo.location}
           onChange={(event) => {
             setRobotPositionInfo((prev) => ({
@@ -259,7 +288,7 @@ const PreMatchTab: FC<TabProps> = ({
           <option value="far">Far</option>
         </select>
       </InputBox>
-      <div className="w-120 flex justify-center">
+      <div className="w-full max-w-sm flex justify-center">
         <button
           type="button"
           className={`w-32 h-10 sm:h-12 px-2 text-xs shrink-0 rounded-xl transition-all duration-200 border-2 ${
@@ -284,9 +313,9 @@ interface InputBoxProps {
 }
 
 const InputBox: FC<InputBoxProps> = ({ name, children }) => (
-  <div className="w-120 border-2 border-green-500 rounded-lg p-5 flex flex-col gap-3 py-0 h-12">
-    <div className="flex w-115 justify-between items-center text-green-500 pr-1 h-70">
-      <div>{`${name}:`}</div>
+  <div className="w-full max-w-sm border-2 border-green-500 rounded-lg px-5 h-12 flex items-center">
+    <div className="flex w-full justify-between items-center text-green-500 gap-2">
+      <div className="shrink-0">{`${name}:`}</div>
       {children}
     </div>
   </div>

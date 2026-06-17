@@ -7,36 +7,30 @@ import {
   useReactTable,
   type SortingState,
 } from "@tanstack/react-table";
-import type {
-  ClimbLevel,
-  FuelEvents,
-  GameTime,
-  GeneralData,
-  GeneralFuelData,
-  TeamNumberAndFuelData,
-} from "@repo/scouting_types";
+import type { ClimbLevel, GamePeriod, GeneralData } from "@repo/scouting_types";
 import type React from "react";
 import { useState, useEffect, useMemo } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { HiOutlineChevronUpDown } from "react-icons/hi2";
 
-interface TableRow {
-  teamNumber: number;
-  generalFuelData: GeneralFuelData;
-}
-
-export type Column = FuelEvents | "climb" | "max climb";
+export type Column =
+  | "EPA"
+  | "OPR"
+  | "Driving"
+  | "Evasion"
+  | "Defense"
+  | "Auto Fuel";
 
 type DataValue = ClimbLevel | number | undefined;
 
-type DataAccessor = (row: GeneralData, gameTime: GameTime) => DataValue;
+type DataAccessor = (row: GeneralData) => DataValue;
 const columnToKey: Record<Column, DataAccessor> = {
-  scored: (row, gameTime) => row.fuelData[gameTime].scored,
-  shot: (row, gameTime) => row.fuelData[gameTime].shot,
-  missed: (row, gameTime) => row.fuelData[gameTime].missed,
-  passed: (row, gameTime) => row.fuelData[gameTime].passed,
-  climb: (row, gameTime) => row.avarageClimbPoints[gameTime],
-  "max climb": (row) => row.highestClimbLevel,
+  EPA: ({ epa }) => epa,
+  OPR: ({ opr }) => opr,
+  Driving: ({ driving }) => driving,
+  Defense: ({ defense }) => defense,
+  Evasion: ({ evasion }) => evasion,
+  "Auto Fuel": ({ autoFuel }) => autoFuel,
 };
 
 const fetchGeneralData = async (filters = {}) => {
@@ -72,26 +66,17 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
   filters,
 }) => {
   const [allGeneralData, setAllGeneralData] = useState<GeneralData[]>([]);
-  const [gameTime, setGameTime] = useState<GameTime>("tele");
   const [sorting, setSorting] = useState<SortingState>([]);
 
   useEffect(() => {
     fetchGeneralData(filters).then(setAllGeneralData).catch(console.error);
   }, [filters]);
 
-  const tableData = useMemo(
-    () =>
-      allGeneralData.map((generalData) => ({
-        ...generalData,
-        _uiKey: gameTime,
-      })),
-    [allGeneralData, gameTime],
-  );
-
+  const tableData = allGeneralData;
   const columnHelper = createColumnHelper<GeneralData>();
 
   const createColumn = (headerAndId: Column, style: string) =>
-    columnHelper.accessor((row) => columnToKey[headerAndId](row, gameTime), {
+    columnHelper.accessor((row) => columnToKey[headerAndId](row), {
       id: headerAndId,
       header: headerAndId,
       sortingFn: "alphanumeric",
@@ -114,13 +99,16 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
         ),
       }),
 
-      createColumn("scored", "text-emerald-400 font-bold"),
-      createColumn("missed", "text-rose-500/90 font-medium"),
-      createColumn("passed", "text-orange-400 font-medium"),
-      createColumn("climb", "text-purple-400 font-bold"),
-      createColumn("max climb", "text-slate-400 uppercase text-[10px]"),
+      // createColumn("climb", "text-purple-400 font-bold"),
+      // createColumn("max climb", "text-slate-400 uppercase text-[10px]"),
+      createColumn("EPA", "text-yellow-500 font-bold"),
+      createColumn("OPR", "text-blue-500 font-bold"),
+      createColumn("Driving", "text-orange-500"),
+      createColumn("Defense", "text-pink-500"),
+      createColumn("Evasion", "text-purple-500"),
+      createColumn("Auto Fuel", "text-red-500"),
     ],
-    [gameTime, sorting],
+    [sorting],
   );
 
   const table = useReactTable({
@@ -135,23 +123,6 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
   return (
     <div className="flex flex-col gap-6 p-4 bg-slate-950 min-h-screen">
       <div className="overflow-hidden rounded-2xl border border-white/10 bg-slate-900/40 backdrop-blur-sm shadow-2xl">
-        <div className="flex gap-1.5 justify-center bg-slate-900/50 p-1.5 rounded-2xl border border-white/5 self-center">
-          {(["auto", "tele", "fullGame"] as GameTime[]).map((time) => (
-            <button
-              key={time}
-              onClick={() => {
-                setGameTime(time);
-              }}
-              className={`px-5 py-2 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all border ${
-                gameTime === time
-                  ? "bg-emerald-500 text-slate-950 border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]"
-                  : "bg-transparent text-slate-500 border-transparent hover:text-slate-300"
-              }`}
-            >
-              {time}
-            </button>
-          ))}
-        </div>
         <table className="w-full text-left text-sm border-collapse">
           <thead className="bg-slate-800/50 border-b border-white/10">
             {table.getHeaderGroups().map((headerGroup) => (

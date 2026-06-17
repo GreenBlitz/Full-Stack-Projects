@@ -11,7 +11,9 @@ registerSW({ immediate: true });
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
-    <App></App>
+      <div className="bg-[#242424]">
+        <App></App>
+      </div>
     </BrowserRouter>
   </StrictMode>,
 );

@@ -14,10 +14,8 @@ import {
 import { right } from "fp-ts/lib/Either";
 import { getFormsCollection } from "./forms-router";
 import {
-  ApplicativePar,
   bindTo,
   flatMap,
-  fold,
   fromEither,
   map,
   tryCatch,
@@ -25,15 +23,10 @@ import {
 import { StatusCodes } from "http-status-codes";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
 import { mapObject } from "@repo/array-functions";
-import {
-  calcAverageGeneralFuelData,
-  generalCalculateFuel,
-} from "../fuel/fuel-general";
 import { castItem } from "@repo/type-utils";
 import { calculateAverageClimbsScore } from "../climb/score";
-import { getTeamBPS } from "./bps-router";
 import { traverseWithIndex } from "fp-ts/lib/Record";
-import { foldResponse,flatTryCatch } from "@repo/flow-utils";
+import { foldResponse, flatTryCatch } from "@repo/flow-utils";
 
 export const forecastRouter = Router();
 
@@ -81,30 +74,20 @@ forecastRouter.get("/", async (req, res) => {
     map((alliancesForms) =>
       mapObject(alliancesForms, Object.values<ScoutingForm[]>),
     ),
-
-    flatMap(addBPSes),
     map((alliancesTeamedForms) =>
-      mapObject(alliancesTeamedForms, ({ allianceTeamedForms, bpses }) =>
+      mapObject(alliancesTeamedForms, (allianceTeamedForms) =>
         allianceTeamedForms.map((teamForms) => ({
           climb: calculateAverageClimbsScore(teamForms),
-          fuel: calcAverageGeneralFuelData(
-            teamForms.map((form) => generalCalculateFuel(form, bpses)),
-          ),
         })),
       ),
     ),
     map((alliancesTeamedData) =>
       mapObject(alliancesTeamedData, (allianceTeamedData) =>
-        allianceTeamedData.map(convertGeneralToAllianceData).reduce(
+        allianceTeamedData.reduce(
           (acc, curr) => ({
             climb: {
               auto: acc.climb.auto + curr.climb.auto,
               tele: acc.climb.tele + curr.climb.tele,
-            },
-            fuel: {
-              auto: acc.fuel.auto + curr.fuel.auto,
-              tele: acc.fuel.tele + curr.fuel.tele,
-              fullGame: acc.fuel.fullGame + curr.fuel.fullGame,
             },
           }),
           defaultAllianceData,
@@ -120,18 +103,3 @@ interface AlliancesTeamedForms {
   redAlliance: ScoutingForm[][];
   blueAlliance: ScoutingForm[][];
 }
-
-const addBPSes = (alliancesTeamedForms: AlliancesTeamedForms) =>
-  pipe(
-    alliancesTeamedForms,
-    traverseWithIndex(ApplicativePar)(
-      (teamStringedNumber, allianceTeamedForms) =>
-        pipe(
-          getTeamBPS(parseInt(teamStringedNumber)),
-          map((bpses) => ({
-            allianceTeamedForms,
-            bpses,
-          })),
-        ),
-    ),
-  );

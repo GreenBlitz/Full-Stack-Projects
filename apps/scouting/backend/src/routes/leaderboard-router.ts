@@ -2,12 +2,8 @@
 
 import { Router } from "express";
 import { getFormsCollection } from "./forms-router";
-import {
-  map,
-  fold,
-  filterOrElse,
-} from "fp-ts/lib/TaskEither";
-import { mongofyQuery, flatTryCatch } from "@repo/flow-utils";
+import { map, fold, filterOrElse, bindTo } from "fp-ts/lib/TaskEither";
+import { mongofyQuery, flatTryCatch, foldResponse } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
 import { pipe } from "fp-ts/lib/function";
 import type {
@@ -73,13 +69,7 @@ leaderboardRouter.get("/", (req, res) =>
     })),
 
     map((forms) => createLeaderboard(forms)),
-    fold(
-      (error) => () =>
-        Promise.resolve(res.status(error.status).send(error.reason)),
-      (competitionScouters) => () =>
-        Promise.resolve(
-          res.status(StatusCodes.OK).json({ competitionScouters }),
-        ),
-    ),
+    bindTo("competitionScouters"),
+    foldResponse(res),
   )(),
 );
