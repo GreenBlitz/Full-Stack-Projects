@@ -5,7 +5,6 @@ import { registerSW } from "virtual:pwa-register";
 import "./index.css";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
-import StartMatchLocallyButton from "./scouter/components/StartMatchLocallyButton";
 
 registerSW({ immediate: true });
 
