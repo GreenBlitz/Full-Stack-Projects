@@ -2,7 +2,7 @@
 import { build, context } from "esbuild";
 import { spawn } from "child_process";
 
-const isDev = process.env.NODE_ENV === "DEV";
+const isDev = process.env.NODE_ENV !== "DEV";
 
 const bundlePath = "dist/bundle.js";
 

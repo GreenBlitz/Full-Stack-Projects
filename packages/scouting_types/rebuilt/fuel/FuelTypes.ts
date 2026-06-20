@@ -1,28 +1,9 @@
 //בס"ד
 
+import { GeneralFuelData } from "../general";
 import type { ClimbLevel, Point } from "../scouting_form";
 
-export interface GeneralFuelData {
-  fullGame: FuelObject;
-  auto: FuelObject;
-  tele: FuelObject;
-}
-
-export interface GeneralClimbData {
-  fullGame: number;
-  auto: number;
-  tele: number;
-}
-
-export interface GeneralData {
-  teamNumber: number;
-  fuelData: GeneralFuelData;
-  highestClimbLevel: ClimbLevel;
-  avarageClimbPoints: GeneralClimbData;
-}
-
 export type GameTime = keyof GeneralFuelData;
-
 
 export type FuelEvents = "scored" | "shot" | "missed" | "passed";
 

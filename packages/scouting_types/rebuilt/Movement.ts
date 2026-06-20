@@ -19,6 +19,7 @@ export const defaultMovement: t.TypeOf<typeof autoMovementCodec> = {
   bumpStuck: false,
 };
 
+export type MovementEvent = keyof typeof defaultMovement;
 export type AutoMovement = t.TypeOf<typeof autoMovementCodec>;
-export type TeleMovement = t.TypeOf<typeof teleMovementCodec>
+export type TeleMovement = t.TypeOf<typeof teleMovementCodec>;
 export type Movement = AutoMovement | TeleMovement;

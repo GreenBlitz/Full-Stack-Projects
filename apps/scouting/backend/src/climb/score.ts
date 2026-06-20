@@ -5,8 +5,8 @@ import type { ClimbLevel, ScoutingForm } from "@repo/scouting_types";
 
 export const CLIMB_SCORE_VALUES = { L0: 0, L1: 10, L2: 20, L3: 30 };
 
-const TELE_CLIMB_MULTIPLIER = 1;
-const AUTO_CLIMB_MULTIPLIER = 1.5;
+export const TELE_CLIMB_MULTIPLIER = 1;
+export const AUTO_CLIMB_MULTIPLIER = 1.5;
 export const calculateAverageClimbScore = (
   climbs: ClimbLevel[],
   isAuto: boolean,

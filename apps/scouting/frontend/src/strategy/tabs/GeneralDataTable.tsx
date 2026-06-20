@@ -25,8 +25,13 @@ interface TableRow {
   generalFuelData: GeneralFuelData;
 }
 
-export type Column = FuelEvents | "climb" | "max climb";
-
+export type Column =
+  | FuelEvents
+  | "climb"
+  | "max climb"
+  | "copr"
+  | "epa"
+  | "average points";
 type DataValue = ClimbLevel | number | undefined;
 
 type DataAccessor = (row: GeneralData, gameTime: GameTime) => DataValue;
@@ -36,7 +41,10 @@ const columnToKey: Record<Column, DataAccessor> = {
   missed: (row, gameTime) => row.fuelData[gameTime].missed,
   passed: (row, gameTime) => row.fuelData[gameTime].passed,
   climb: (row, gameTime) => row.avarageClimbPoints[gameTime],
-  "max climb": (row) => row.highestClimbLevel,
+  "max climb": (row) => row.avarageClimbPoints.highestClimbLevel,
+  copr: (row) => row.copr,
+  epa: (row) => row.epa,
+  "average points": (row) => row.averagePointsPerMatch,
 };
 
 const fetchGeneralData = async (filters = {}) => {
@@ -113,12 +121,14 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
           <span className="font-black text-emerald-400">{info.getValue()}</span>
         ),
       }),
-
+      createColumn("copr", "text-blue-400 font-medium"),
+      createColumn("epa", "text-yellow-400 font-medium"),
+      createColumn("average points", "text-cyan-400 font-medium"),
       createColumn("scored", "text-emerald-400 font-bold"),
-      createColumn("missed", "text-rose-500/90 font-medium"),
-      createColumn("passed", "text-orange-400 font-medium"),
       createColumn("climb", "text-purple-400 font-bold"),
       createColumn("max climb", "text-slate-400 uppercase text-[10px]"),
+      createColumn("missed", "text-rose-500/90 font-medium"),
+      createColumn("passed", "text-orange-400 font-medium"),
     ],
     [gameTime, sorting],
   );
