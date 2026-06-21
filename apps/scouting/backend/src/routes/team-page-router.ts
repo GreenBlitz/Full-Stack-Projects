@@ -8,7 +8,11 @@ import { StatusCodes } from "http-status-codes";
 import { bindTo, map } from "fp-ts/lib/TaskEither";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
 import { BeeScoutingForm } from "@repo/scouting_types";
-import { calculateAverage, mapObject } from "@repo/array-functions";
+import {
+  calculateAverage,
+  firstElement,
+  mapObject,
+} from "@repo/array-functions";
 import {
   calculateFuelForTeamPhase,
   calculateGeneralForTeam,
@@ -29,7 +33,10 @@ const findDataOverMatches = (
 const calculateTeamDataForTeam = (
   forms: BeeScoutingForm[],
 ): TeamPageTeamBeeData => {
-  const teamAverages = calculateGeneralForTeam(forms);
+  const teamAverages = calculateGeneralForTeam(
+    forms,
+    firstElement(forms).teamNumber.toString(),
+  );
 
   return {
     auto: {
