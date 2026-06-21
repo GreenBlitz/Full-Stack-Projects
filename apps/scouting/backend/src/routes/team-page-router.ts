@@ -9,12 +9,10 @@ import { bindTo, map } from "fp-ts/lib/TaskEither";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
 import { BeeScoutingForm } from "@repo/scouting_types";
 import {
-  calculateAverage,
   firstElement,
   mapObject,
 } from "@repo/array-functions";
 import {
-  calculateFuelForTeamPhase,
   calculateGeneralForTeam,
 } from "./general-router";
 import { TeamPageTeamBeeData } from "@repo/scouting_types/rebuilt/beeAScout/teamPage";

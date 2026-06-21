@@ -1,37 +1,24 @@
 // בס"ד
 import type {
-  GamePhase,
-  MatchedEntry,
   Match,
   TeamData,
 } from "@repo/scouting_types";
-import { useEffect, useMemo, useState, type FC } from "react";
+import { useEffect, useState, type FC } from "react";
 import { FRC_TEAM_NUMBERS } from "@repo/frc";
 import { firstElement } from "@repo/array-functions";
 import { TeamSelect } from "./TeamSelect";
-import { MovementChart } from "../../components/MovementChart";
-import { AccuracyChart } from "../../components/AccuracyChart";
-import { LineChart } from "../../components/LineChart";
 import { PhaseToggle } from "../../components/PhaseToggle";
 import { MetricsChart } from "../../components/MetricsChart";
-import { BarChart } from "../../components/BarChart";
 import { useLocalStorage } from "@repo/local_storage_hook";
-import { HeatMap } from "../../components/heatmap/HeatMap";
-import { redField } from "@repo/rebuilt_map";
 import { fetchTeamNumbers } from "../../fetches";
-import { PieGraph } from "../../components/PieChart";
 import { PitScoutResultsTab } from "../pit-scout/TeamPitShow";
 import { ScoutingFormView } from "../../ScoutingFormView";
 
-const METER_AND_HALF_CENTIMETERS = 150;
-const THREE_METER_CENTIMETERS = 300;
-const MORE_DISTANCE = 2000;
 
 const TEAM_DATA_URL = "/api/v1/team";
 const NO_DATA_ON_TEAM_STATUS = 502;
 async function fetchTeamData(team: number, recency?: number) {
-  const recencyQuery = recency ? `&recency=${recency}` : "";
-  const response = await fetch(`${TEAM_DATA_URL}?teams=${team}${recencyQuery}`);
+  const response = await fetch(`${TEAM_DATA_URL}?teams=${team}`);
 
   if (response.status === NO_DATA_ON_TEAM_STATUS) {
     alert(`No Data on ${team}`);
