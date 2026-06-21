@@ -72,12 +72,12 @@ const calculateGeneralForTeam = (
         defenseGames,
         (form) => form.super.defenseLevel,
       ),
-      didDefense: defenseGames.length,
+      timesDefended: defenseGames.length,
       evasionRating: calculateAverage(
         evasionGames,
         (form) => form.super.evasionLevel,
       ),
-      didEvasion: evasionGames.length,
+      timesEvaded: evasionGames.length,
     },
   };
 };

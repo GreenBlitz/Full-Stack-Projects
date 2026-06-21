@@ -11,9 +11,9 @@ export interface GeneralTeamBeeData {
   super: {
     driving: number;
     defenseRating: number;
-    didDefense: number;
+    timesDefended: number;
     evasionRating: number;
-    didEvasion: number;
+    timesEvaded: number;
   };
 }
 
