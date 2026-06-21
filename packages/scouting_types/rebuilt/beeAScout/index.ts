@@ -44,3 +44,5 @@ const beeScoutingFormCodec = t.type({
 });
 
 export type BeeScoutingForm = t.TypeOf<typeof beeScoutingFormCodec>;
+
+export * from "./general";

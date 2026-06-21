@@ -7,7 +7,11 @@ import {
   useReactTable,
   type SortingState,
 } from "@tanstack/react-table";
-import type { ClimbLevel, GamePeriod, GeneralData } from "@repo/scouting_types";
+import type {
+  ClimbLevel,
+  GamePeriod,
+  GeneralData,
+} from "@repo/scouting_types";
 import type React from "react";
 import { useState, useEffect, useMemo } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
@@ -65,7 +69,9 @@ const DIGITS_AFTER_DOT = 1;
 export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
   filters,
 }) => {
-  const [allGeneralData, setAllGeneralData] = useState<GeneralData[]>([]);
+  const [allGeneralData, setAllGeneralData] = useState<GeneralData[]>(
+    [],
+  );
   const [sorting, setSorting] = useState<SortingState>([]);
 
   useEffect(() => {
