@@ -27,7 +27,7 @@ import { getBeeScoutCollection } from "../googleSheets";
 
 export const generalRouter = Router();
 
-const calculateFuelForTeamPhase = (
+export const calculateFuelForTeamPhase = (
   phaseForms: { fuel: { scored: number; passed: number } }[],
 ) => ({
   fuelScored: calculateAverage(phaseForms, (forms) => forms.fuel.scored),

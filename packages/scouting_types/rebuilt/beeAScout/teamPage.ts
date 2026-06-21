@@ -8,16 +8,16 @@ const superCodec = t.type({
 });
 
 const gameSectionCode = t.type({
-  points: t.number,
-  passed: t.number,
-  scored: t.number,
+  fuelPassed: t.number,
+  fuelScored: t.number,
 });
 
 const teamDataCodec = t.type({
-  teamNumber: t.number,
   auto: gameSectionCode,
   tele: gameSectionCode,
   super: superCodec,
 });
 
-export type TeamData = t.TypeOf<typeof teamDataCodec>;
+export type TeamPageTeamBeeData = t.TypeOf<typeof teamDataCodec>;
+
+export type TeamPageBeeData = Record<string, TeamPageTeamBeeData>;
