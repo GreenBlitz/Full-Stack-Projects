@@ -38,7 +38,7 @@ const AUTO_NO_CLIMB_POINTS = 0;
 const AUTO_CLIMB_POINTS = 15;
 const TELE_CLIMB_LEVEL_POINTS = 10;
 
-const calculateGeneralForTeam = (
+export const calculateGeneralForTeam = (
   forms: BeeScoutingForm[],
 ): GeneralTeamBeeData => {
   const auto = {

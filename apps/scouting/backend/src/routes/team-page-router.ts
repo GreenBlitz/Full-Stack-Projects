@@ -8,33 +8,45 @@ import { StatusCodes } from "http-status-codes";
 import { bindTo, map } from "fp-ts/lib/TaskEither";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
 import { BeeScoutingForm } from "@repo/scouting_types";
-import { calculateAverage, mapObject } from "@repo/array-functions";
-import { calculateFuelForTeamPhase } from "./general-router";
-import { TeamPageTeamBeeData } from "@repo/scouting_types/rebuilt/beeAScout/teamPage";
+import { mapObject } from "@repo/array-functions";
+import { calculateGeneralForTeam } from "./general-router";
+import { TeamPageTeamBeeData } from "@repo/scouting_types/rebuilt/beeAScout";
 
 export const teamPageRouter = Router();
+
+const findDataOverMatches = (
+  period: "auto" | "tele",
+  type: "scored" | "passed",
+  forms: BeeScoutingForm[],
+): Record<string, number> => {
+  return Object.fromEntries(
+    forms.map((form) => [form.matchNumber, form[period].fuel[type]]),
+  );
+};
 
 const calculateTeamDataForTeam = (
   forms: BeeScoutingForm[],
 ): TeamPageTeamBeeData => {
-  const defenseGames = forms.filter((form) => form.super.didDefense);
-  const evasionGames = forms.filter((form) => form.super.didEvasions);
-  const auto = {
-    ...calculateFuelForTeamPhase(forms.map((form) => form.auto)),
-  };
-  const tele = {
-    ...calculateFuelForTeamPhase(forms.map((form) => form.tele)),
-  };
-  const superScout = {
-    defence: calculateAverage(defenseGames, (form) => form.super.defenseLevel),
-    evasion: calculateAverage(evasionGames, (form) => form.super.evasionLevel),
-    driving: calculateAverage(forms, (form) => form.super.driveLevel),
-  };
+  const teamAverages = calculateGeneralForTeam(forms);
 
   return {
-    auto,
-    tele,
-    super: superScout,
+    auto: {
+      fuelPassedAverage: teamAverages.auto.fuelPassed,
+      fuelScoredAverage: teamAverages.auto.fuelScored,
+      fuelScoredPerGame: findDataOverMatches("auto", "scored", forms),
+      fuelPassedPerGame: findDataOverMatches("auto", "passed", forms),
+    },
+    tele: {
+      fuelPassedAverage: teamAverages.tele.fuelPassed,
+      fuelScoredAverage: teamAverages.tele.fuelScored,
+      fuelScoredPerGame: findDataOverMatches("tele", "scored", forms),
+      fuelPassedPerGame: findDataOverMatches("tele", "passed", forms),
+    },
+    super: {
+      defense: teamAverages.super.defenseRating,
+      evasion: teamAverages.super.evasionRating,
+      driving: teamAverages.super.driving,
+    },
   };
 };
 
@@ -54,4 +66,3 @@ teamPageRouter.get("/", async (req, res) => {
     foldResponse(res),
   )();
 });
-

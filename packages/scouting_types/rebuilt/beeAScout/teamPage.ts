@@ -2,14 +2,16 @@
 import * as t from "io-ts";
 
 const superCodec = t.type({
-  defence: t.number,
+  defense: t.number,
   evasion: t.number,
   driving: t.number,
 });
 
 const gameSectionCode = t.type({
-  fuelPassed: t.number,
-  fuelScored: t.number,
+  fuelPassedAverage: t.number,
+  fuelScoredAverage: t.number,
+  fuelScoredPerGame: t.record(t.string, t.number),
+  fuelPassedPerGame: t.record(t.string, t.number),
 });
 
 const teamDataCodec = t.type({

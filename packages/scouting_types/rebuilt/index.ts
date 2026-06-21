@@ -8,4 +8,4 @@ export type * from "./tinder";
 export * from "./super_scout";
 export * from "./picklist";
 export * from "./pit_scout";
-export * from "./beeAScout/beeScoutingForm";
+export * from "./beeAScout";
