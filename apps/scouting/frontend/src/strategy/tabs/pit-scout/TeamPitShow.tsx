@@ -209,7 +209,6 @@ export const PitScoutResultsTab: FC<PitScoutResultsTabProps> = ({
     <div className="flex flex-col items-center gap-6 max-w-2xl mx-auto pb-12 text-slate-200">
       {selectedTeam && teamForms.length > 0 ? (
         <>
-          
           <div className="w-full bg-slate-800/40 border border-white/5 p-6 rounded-2xl">
             <h2 className="text-xs font-black uppercase tracking-[0.2em] text-amber-500 mb-6">
               Mechanical Capabilities
