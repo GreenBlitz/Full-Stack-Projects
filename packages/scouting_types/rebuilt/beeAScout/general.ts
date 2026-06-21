@@ -10,9 +10,11 @@ export interface GeneralTeamBeeData {
   full: GeneralBeePhaseData;
   super: {
     driving: number;
-    defense: number;
-    evasion: number;
+    defenseRating: number;
+    didDefense: number;
+    evasionRating: number;
+    didEvasion: number;
   };
 }
 
-export type GeneralBeeData = Record<string,GeneralTeamBeeData>;
+export type GeneralBeeData = Record<string, GeneralTeamBeeData>;

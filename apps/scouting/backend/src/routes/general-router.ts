@@ -34,17 +34,30 @@ const calculateFuelForTeamPhase = (
   fuelPassed: calculateAverage(phaseForms, (forms) => forms.fuel.passed),
 });
 
+const AUTO_NO_CLIMB_POINTS = 0;
+const AUTO_CLIMB_POINTS = 15;
+const TELE_CLIMB_LEVEL_POINTS = 10;
+
 const calculateGeneralForTeam = (
   forms: BeeScoutingForm[],
 ): GeneralTeamBeeData => {
   const auto = {
     ...calculateFuelForTeamPhase(forms.map((form) => form.auto)),
-    climbPoints: calculateAverage(forms, (form) => (form.auto.climb ? 15 : 0)),
+    climbPoints: calculateAverage(forms, (form) =>
+      form.auto.climb ? AUTO_CLIMB_POINTS : AUTO_NO_CLIMB_POINTS,
+    ),
   };
   const tele = {
     ...calculateFuelForTeamPhase(forms.map((form) => form.tele)),
-    climbPoints: calculateAverage(forms, (form) => form.tele.climb.height * 10),
+    climbPoints: calculateAverage(
+      forms,
+      (form) => form.tele.climb.height * TELE_CLIMB_LEVEL_POINTS,
+    ),
   };
+
+  const defenseGames = forms.filter((form) => form.super.didDefense);
+  const evasionGames = forms.filter((form) => form.super.didEvasions);
+
   return {
     auto,
     tele,
@@ -55,14 +68,16 @@ const calculateGeneralForTeam = (
     },
     super: {
       driving: calculateAverage(forms, (form) => form.super.driveLevel),
-      defense: calculateAverage(
-        forms.filter((form) => form.super.didDefense),
+      defenseRating: calculateAverage(
+        defenseGames,
         (form) => form.super.defenseLevel,
       ),
-      evasion: calculateAverage(
-        forms.filter((form) => form.super.didEvasions),
+      didDefense: defenseGames.length,
+      evasionRating: calculateAverage(
+        evasionGames,
         (form) => form.super.evasionLevel,
       ),
+      didEvasion: evasionGames.length,
     },
   };
 };
@@ -75,7 +90,7 @@ generalRouter.get("/", async (req, res) => {
       (collection) => collection.find().toArray(),
       (error) => ({
         status: StatusCodes.INTERNAL_SERVER_ERROR,
-        reason: `Could not get forms: ${error}`,
+        reason: `Could not get forms from DB: ${error}`,
       }),
     ),
     map(groupBy((form: BeeScoutingForm) => form.teamNumber.toString())),
