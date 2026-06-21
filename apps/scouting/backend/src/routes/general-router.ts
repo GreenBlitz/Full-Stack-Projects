@@ -39,6 +39,7 @@ const AUTO_CLIMB_POINTS = 15;
 const TELE_CLIMB_LEVEL_POINTS = 10;
 
 const calculateGeneralForTeam = (
+  team: string,
   forms: BeeScoutingForm[],
 ): GeneralTeamBeeData => {
   const auto = {
@@ -59,6 +60,7 @@ const calculateGeneralForTeam = (
   const evasionGames = forms.filter((form) => form.super.didEvasions);
 
   return {
+    team,
     auto,
     tele,
     full: {
@@ -94,7 +96,11 @@ generalRouter.get("/", async (req, res) => {
       }),
     ),
     map(groupBy((form: BeeScoutingForm) => form.teamNumber.toString())),
-    map((teamsForms) => mapObject(teamsForms, calculateGeneralForTeam)),
+    map((teamsForms) =>
+      mapObject(teamsForms, (teamForms, team) =>
+        calculateGeneralForTeam(team, teamForms),
+      ),
+    ),
     bindTo("generalData"),
     foldResponse(res),
   )();
