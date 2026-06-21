@@ -10,7 +10,7 @@ import {
 import type {
   ClimbLevel,
   GamePeriod,
-  GeneralTeamBeeData,
+  GeneralData,
 } from "@repo/scouting_types";
 import type React from "react";
 import { useState, useEffect, useMemo } from "react";
@@ -27,7 +27,7 @@ export type Column =
 
 type DataValue = ClimbLevel | number | undefined;
 
-type DataAccessor = (row: GeneralTeamBeeData) => DataValue;
+type DataAccessor = (row: GeneralData) => DataValue;
 const columnToKey: Record<Column, DataAccessor> = {
   EPA: ({ epa }) => epa,
   OPR: ({ opr }) => opr,
@@ -53,7 +53,7 @@ const fetchGeneralData = async (filters = {}) => {
     }
 
     const data = await response.json();
-    return data.generalData as GeneralTeamBeeData[];
+    return data.generalData as GeneralData[];
   } catch (err) {
     console.error("Fetch failed:", err);
     throw err;
@@ -69,7 +69,7 @@ const DIGITS_AFTER_DOT = 1;
 export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
   filters,
 }) => {
-  const [allGeneralData, setAllGeneralData] = useState<GeneralTeamBeeData[]>(
+  const [allGeneralData, setAllGeneralData] = useState<GeneralData[]>(
     [],
   );
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -79,7 +79,7 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
   }, [filters]);
 
   const tableData = allGeneralData;
-  const columnHelper = createColumnHelper<GeneralTeamBeeData>();
+  const columnHelper = createColumnHelper<GeneralData>();
 
   const createColumn = (headerAndId: Column, style: string) =>
     columnHelper.accessor((row) => columnToKey[headerAndId](row), {
