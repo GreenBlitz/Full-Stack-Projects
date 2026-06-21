@@ -40,6 +40,7 @@ const TELE_CLIMB_LEVEL_POINTS = 10;
 
 const calculateGeneralForTeam = (
   forms: BeeScoutingForm[],
+  team: string,
 ): GeneralTeamBeeData => {
   const auto = {
     ...calculateFuelForTeamPhase(forms.map((form) => form.auto)),
@@ -59,6 +60,7 @@ const calculateGeneralForTeam = (
   const evasionGames = forms.filter((form) => form.super.didEvasions);
 
   return {
+    team,
     auto,
     tele,
     full: {
