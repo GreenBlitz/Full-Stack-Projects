@@ -53,7 +53,10 @@ const formatData = (data: string[][]) => {
 };
 
 const structureData = (data: Record<string, string>[]): BeeScoutingForm[] => {
-  return data.map((row) => {
+  const unfilteredData = data.map((row) => {
+    if (row.D_Played === "0") {
+      return false;
+    }
     const toBool = (v: string) => v === "1" || v === "TRUE";
 
     const getTeleClimb = () =>
@@ -97,6 +100,7 @@ const structureData = (data: Record<string, string>[]): BeeScoutingForm[] => {
       comp: row.Comp,
     };
   });
+  return unfilteredData.filter((row): row is BeeScoutingForm => row !== false);
 };
 
 const updateData = async (db: Db) => {
@@ -113,7 +117,7 @@ const updateData = async (db: Db) => {
 
     if (structured.length < 10) {
       console.log(
-        "something went wrong - no data in new update in Bee A Scout",
+        `something went wrong - no data in new update in Bee A Scout, this is the data: ${structured}`,
       );
       return;
     }
