@@ -39,8 +39,8 @@ const AUTO_CLIMB_POINTS = 15;
 const TELE_CLIMB_LEVEL_POINTS = 10;
 
 const calculateGeneralForTeam = (
-  team: string,
   forms: BeeScoutingForm[],
+  team: string,
 ): GeneralTeamBeeData => {
   const auto = {
     ...calculateFuelForTeamPhase(forms.map((form) => form.auto)),
@@ -96,11 +96,7 @@ generalRouter.get("/", async (req, res) => {
       }),
     ),
     map(groupBy((form: BeeScoutingForm) => form.teamNumber.toString())),
-    map((teamsForms) =>
-      mapObject(teamsForms, (teamForms, team) =>
-        calculateGeneralForTeam(team, teamForms),
-      ),
-    ),
+    map((teamsForms) => mapObject(teamsForms, calculateGeneralForTeam)),
     bindTo("generalData"),
     foldResponse(res),
   )();
