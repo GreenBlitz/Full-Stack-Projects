@@ -67,7 +67,6 @@ const calculateGeneralForTeam = (
   };
 };
 
-//data passing
 generalRouter.get("/", async (req, res) => {
   await pipe(
     getBeeScoutCollection(),
