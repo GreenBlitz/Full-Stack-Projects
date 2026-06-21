@@ -10,7 +10,7 @@ import { groupBy } from "fp-ts/lib/NonEmptyArray";
 import { BeeScoutingForm } from "@repo/scouting_types";
 import { calculateAverage, mapObject } from "@repo/array-functions";
 import { calculateFuelForTeamPhase } from "./general-router";
-import { TeamPageTeamBeeData } from "@repo/scouting_types/rebuilt/beeAScout/teamPage";
+import { TeamPageTeamBeeData } from "@repo/scouting_types";
 
 export const teamPageRouter = Router();
 
