@@ -1,7 +1,7 @@
 // בס"ד
 import type { FC } from "react";
 import { NavLink, Outlet } from "react-router-dom";
-import { LuTable, LuSwords } from "react-icons/lu";
+import { LuTable } from "react-icons/lu";
 import { AiOutlineTeam } from "react-icons/ai";
 import type { IconType } from "react-icons/lib";
 
@@ -33,7 +33,6 @@ interface NavigationOption {
 const strategyNavigationOptions: NavigationOption[] = [
   { destination: "team", label: "Team", icon: AiOutlineTeam },
   { destination: "general", label: "General", icon: LuTable },
-  { destination: "tinder", label: "Tinder", icon: LuSwords },
 ];
 
 interface NavigationElementProps {
