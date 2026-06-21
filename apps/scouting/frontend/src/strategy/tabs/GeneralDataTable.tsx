@@ -10,36 +10,51 @@ import {
 import type {
   ClimbLevel,
   GamePeriod,
+  GeneralBeeData,
   GeneralData,
+  GeneralTeamBeeData,
 } from "@repo/scouting_types";
 import type React from "react";
 import { useState, useEffect, useMemo } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { HiOutlineChevronUpDown } from "react-icons/hi2";
+import { mapObject } from "@repo/array-functions";
 
 export type Column =
-  | "EPA"
-  | "OPR"
+  | "Score Tele"
+  | "Pass Tele"
+  | "Score Auto"
+  | "Pass Auto"
   | "Driving"
-  | "Evasion"
-  | "Defense"
-  | "Auto Fuel";
+  | "Evasion Rating"
+  | "Defense Rating"
+  | "Times Defended"
+  | "Times Evaded"
+  | "Score Full"
+  | "Pass Full"
+  | "Climb Full";
 
 type DataValue = ClimbLevel | number | undefined;
 
-type DataAccessor = (row: GeneralData) => DataValue;
+type DataAccessor = (row: GeneralTeamBeeData) => DataValue;
 const columnToKey: Record<Column, DataAccessor> = {
-  EPA: ({ epa }) => epa,
-  OPR: ({ opr }) => opr,
-  Driving: ({ driving }) => driving,
-  Defense: ({ defense }) => defense,
-  Evasion: ({ evasion }) => evasion,
-  "Auto Fuel": ({ autoFuel }) => autoFuel,
+  Driving: ({ super: { driving } }) => driving,
+  "Defense Rating": ({ super: { defenseRating } }) => defenseRating,
+  "Evasion Rating": ({ super: { evasionRating } }) => evasionRating,
+  "Score Tele": ({ tele: { fuelScored } }) => fuelScored,
+  "Pass Tele": ({ tele: { fuelPassed } }) => fuelPassed,
+  "Score Auto": ({ auto: { fuelScored } }) => fuelScored,
+  "Pass Auto": ({ auto: { fuelPassed } }) => fuelPassed,
+  "Times Defended": ({ super: { timesDefended } }) => timesDefended,
+  "Times Evaded": ({ super: { timesEvaded } }) => timesEvaded,
+  "Score Full": ({ full: { fuelScored } }) => fuelScored,
+  "Pass Full": ({ full: { fuelPassed } }) => fuelPassed,
+  "Climb Full": ({ full: { climbPoints } }) => climbPoints,
 };
 
 const fetchGeneralData = async (filters = {}) => {
   const params = new URLSearchParams(filters);
-  const url = `/api/v1/general/?${params.toString()}`;
+  const url = `/api/v1/general/`;
 
   try {
     const response = await fetch(url, {
@@ -53,7 +68,7 @@ const fetchGeneralData = async (filters = {}) => {
     }
 
     const data = await response.json();
-    return data.generalData as GeneralData[];
+    return data.generalData as GeneralBeeData;
   } catch (err) {
     console.error("Fetch failed:", err);
     throw err;
@@ -69,17 +84,20 @@ const DIGITS_AFTER_DOT = 1;
 export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
   filters,
 }) => {
-  const [allGeneralData, setAllGeneralData] = useState<GeneralData[]>(
-    [],
-  );
+  const [allGeneralData, setAllGeneralData] = useState<GeneralBeeData>({});
   const [sorting, setSorting] = useState<SortingState>([]);
 
   useEffect(() => {
     fetchGeneralData(filters).then(setAllGeneralData).catch(console.error);
   }, [filters]);
 
-  const tableData = allGeneralData;
-  const columnHelper = createColumnHelper<GeneralData>();
+  const tableData = Object.values(
+    mapObject(allGeneralData, (data, team) => ({
+      ...data,
+      team,
+    })),
+  );
+  const columnHelper = createColumnHelper<GeneralTeamBeeData>();
 
   const createColumn = (headerAndId: Column, style: string) =>
     columnHelper.accessor((row) => columnToKey[headerAndId](row), {
@@ -98,21 +116,31 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
 
   const columns = useMemo(
     () => [
-      columnHelper.accessor("teamNumber", {
+      columnHelper.accessor("team", {
         header: "Team Number",
         cell: (info) => (
           <span className="font-black text-emerald-400">{info.getValue()}</span>
         ),
       }),
 
-      // createColumn("climb", "text-purple-400 font-bold"),
-      // createColumn("max climb", "text-slate-400 uppercase text-[10px]"),
-      createColumn("EPA", "text-yellow-500 font-bold"),
-      createColumn("OPR", "text-blue-500 font-bold"),
+      createColumn("Score Tele", "text-red-500"),
+      createColumn("Pass Tele", "text-violet-500"),
+
+      createColumn("Score Auto", "text-blue-500"),
       createColumn("Driving", "text-orange-500"),
-      createColumn("Defense", "text-pink-500"),
-      createColumn("Evasion", "text-purple-500"),
-      createColumn("Auto Fuel", "text-red-500"),
+
+      createColumn("Defense Rating", "text-pink-500"),
+      createColumn("Times Defended", "text-pink-200"),
+
+      createColumn("Evasion Rating", "text-purple-500"),
+      createColumn("Times Evaded", "text-purple-200"),
+
+      createColumn("Climb Full", "text-purple-400 font-bold"),
+
+      createColumn("Pass Auto", "text-violet-500"),
+
+      createColumn("Score Full", "text-green-500"),
+      createColumn("Pass Full", "text-green-200"),
     ],
     [sorting],
   );
@@ -128,8 +156,8 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
 
   return (
     <div className="flex flex-col gap-6 p-4 bg-slate-950 min-h-screen">
-      <div className="overflow-hidden rounded-2xl border border-white/10 bg-slate-900/40 backdrop-blur-sm shadow-2xl">
-        <table className="w-full text-left text-sm border-collapse">
+      <div className="overflow-x-auto rounded-2xl border border-white/10 bg-slate-900/40 backdrop-blur-sm shadow-2xl">
+        <table className="w-full min-w-max text-left text-sm border-collapse">
           <thead className="bg-slate-800/50 border-b border-white/10">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>

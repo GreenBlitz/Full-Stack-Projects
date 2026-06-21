@@ -5,6 +5,7 @@ export interface GeneralBeePhaseData {
 }
 
 export interface GeneralTeamBeeData {
+  team: string;
   auto: GeneralBeePhaseData;
   tele: GeneralBeePhaseData;
   full: GeneralBeePhaseData;
