@@ -6,24 +6,8 @@ import type {
   PitScoutBoolean,
   PitScoutBooleanKey,
   PitScoutBooleanMetric,
-  PitScoutNumber,
-  PitScoutNumberKey,
 } from "@repo/scouting_types";
-import { NumberStats } from "./NumberStats";
 import { BooleanStats } from "./BooleanStats";
-
-export const NUMBER_FIELDS: {
-  statKey: PitScoutNumberKey;
-  label: string;
-  placeholder: string;
-}[] = [
-  {
-    statKey: "robotWeight",
-    label: "Robot Weight (lbs)",
-    placeholder: "e.g. 120",
-  },
-  { statKey: "ballCapacity", label: "Ball Capacity", placeholder: "e.g. 50" },
-];
 
 const PIT_SCOUT_URL = "/api/v1/pit/";
 
@@ -31,16 +15,13 @@ export const BOOLEAN_FIELDS: { statKey: PitScoutBooleanKey; label: string }[] =
   [
     { statKey: "hasTurret", label: "Has turret?" },
     { statKey: "canPassTrench", label: "Can pass trench?" },
-    { statKey: "canPassBumpEasily", label: "Can pass bump easily?" },
   ];
 
 const initialState: PitScout = {
   teamNumber: 0,
-  numberMetrics: { robotWeight: undefined, ballCapacity: undefined },
   booleanMetrics: {
     hasTurret: undefined,
     canPassTrench: undefined,
-    canPassBumpEasily: undefined,
   },
   extraInfo: undefined,
 };
@@ -52,11 +33,6 @@ export const PitScoutTab: FC = () => {
   >("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
-  const setNumberForm = (key: PitScoutNumberKey, value: number) =>
-    setForm((form) => ({
-      ...form,
-      numberMetrics: { ...form.numberMetrics, [key]: value || undefined },
-    }));
   const setBoolForm = (key: PitScoutBooleanKey, value: PitScoutBooleanMetric) =>
     setForm((form) => ({
       ...form,
@@ -121,18 +97,6 @@ export const PitScoutTab: FC = () => {
             placeholder="0000"
           />
         </div>
-      </div>
-
-      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
-        {NUMBER_FIELDS.map(({ statKey: key, label, placeholder }) => (
-          <NumberStats
-            statKey={key}
-            label={label}
-            placeholder={placeholder}
-            form={form}
-            setNumberForm={setNumberForm}
-          />
-        ))}
       </div>
 
       <div className="w-full bg-slate-800/40 border border-white/5 p-6 rounded-2xl">

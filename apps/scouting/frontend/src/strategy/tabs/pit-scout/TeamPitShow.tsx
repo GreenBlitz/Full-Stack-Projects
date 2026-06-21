@@ -5,9 +5,8 @@ import type {
   PitScout,
   PitScoutBooleanKey,
   PitScoutBooleanMetric,
-  PitScoutNumberKey,
 } from "@repo/scouting_types";
-import { BOOLEAN_FIELDS, NUMBER_FIELDS } from "./PitScoutTab";
+import { BOOLEAN_FIELDS } from "./PitScoutTab";
 
 const PIT_SCOUT_URL = "/api/v1/pit/";
 const NO_ANSWER = "N/A";
@@ -210,20 +209,6 @@ export const PitScoutResultsTab: FC<PitScoutResultsTabProps> = ({
     <div className="flex flex-col items-center gap-6 max-w-2xl mx-auto pb-12 text-slate-200">
       {selectedTeam && teamForms.length > 0 ? (
         <>
-          <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
-            {NUMBER_FIELDS.map(({ statKey, label }) => (
-              <StatCell
-                key={statKey}
-                label={label}
-                {...resolveField(
-                  teamForms,
-                  (f) => f.numberMetrics?.[statKey],
-                  (v) => v?.toString() ?? "N/A",
-                )}
-              />
-            ))}
-          </div>
-
           <div className="w-full bg-slate-800/40 border border-white/5 p-6 rounded-2xl">
             <h2 className="text-xs font-black uppercase tracking-[0.2em] text-amber-500 mb-6">
               Mechanical Capabilities
