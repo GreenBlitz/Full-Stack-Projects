@@ -1,94 +1,86 @@
 //בס"ד
 
 import { Router } from "express";
-import { getFormsCollection } from "./forms-router";
+import { formsRouter, getFormsCollection } from "./forms-router";
 import { pipe } from "fp-ts/lib/function";
 import { fold, map, bindTo, bind, flatMap } from "fp-ts/lib/TaskEither";
 import { mongofyQuery, flatTryCatch, foldResponse } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
 
 import {
+  BeeScoutingForm,
   excludeNoShowForms,
-  type GeneralData,
+  type GeneralTeamBeeData,
   type ScoutingForm,
 } from "@repo/scouting_types";
 import { findMaxClimbLevel } from "../climb/calculations";
 import { calculateAverageClimbsScore } from "../climb/score";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
 import { fetchTeamsCOPRs } from "./tba-router";
-import { calculateAverage, mapObject } from "@repo/array-functions";
+import {
+  calculateAverage,
+  calculateSum,
+  mapObject,
+} from "@repo/array-functions";
 import { getTeamsEPAs } from "../middleware/epa";
+import { getBeeScoutCollection } from "../googleSheets";
 
 export const generalRouter = Router();
 
-// const formsToGeneralData = (forms: ScoutingForm[]) => {
-//   const groupedForms = groupBy((form: ScoutingForm) =>
-//     form.teamNumber.toString(),
-//   )(forms);
+const calculateFuelForTeamPhase = (
+  phaseForms: { fuel: { scored: number; passed: number } }[],
+) => ({
+  fuelScored: calculateAverage(phaseForms, (forms) => forms.fuel.scored),
+  fuelPassed: calculateAverage(phaseForms, (forms) => forms.fuel.passed),
+});
 
-//   const allGeneralData: GeneralData[] = Object.entries(groupedForms).map(
-//     ([teamNumber, teamForms]) => {
-//       const generalData: GeneralData = {
-//         teamNumber: Number(teamNumber),
-//         highestClimbLevel: findMaxClimbLevel(teamForms),
-//         avarageClimbPoints: {
-//           fullGame:
-//             calculateAverageClimbsScore(teamForms).auto +
-//             calculateAverageClimbsScore(teamForms).tele,
-//           auto: calculateAverageClimbsScore(teamForms).auto,
-//           tele: calculateAverageClimbsScore(teamForms).tele,
-//         },
-//       };
+const calculateGeneralForTeam = (
+  forms: BeeScoutingForm[],
+): GeneralTeamBeeData => {
+  const auto = {
+    ...calculateFuelForTeamPhase(forms.map((form) => form.auto)),
+    climbPoints: calculateAverage(forms, (form) => (form.auto.climb ? 15 : 0)),
+  };
+  const tele = {
+    ...calculateFuelForTeamPhase(forms.map((form) => form.tele)),
+    climbPoints: calculateAverage(forms, (form) => form.tele.climb.height * 10),
+  };
+  return {
+    auto,
+    tele,
+    full: {
+      fuelScored: auto.fuelScored + tele.fuelScored,
+      fuelPassed: auto.fuelPassed + tele.fuelPassed,
+      climbPoints: auto.climbPoints + tele.climbPoints,
+    },
+    super: {
+      driving: calculateAverage(forms, (form) => form.super.driveLevel),
+      defense: calculateAverage(
+        forms.filter((form) => form.super.didDefense),
+        (form) => form.super.defenseLevel,
+      ),
+      evasion: calculateAverage(
+        forms.filter((form) => form.super.didEvasions),
+        (form) => form.super.evasionLevel,
+      ),
+    },
+  };
+};
 
-//       return generalData;
-//     },
-//   );
-
-//   return allGeneralData;
-// };
-
+//data passing
 generalRouter.get("/", async (req, res) => {
   await pipe(
-    getFormsCollection(),
+    getBeeScoutCollection(),
+
     flatTryCatch(
-      (collection) => collection.find(mongofyQuery(req.query)).toArray(),
+      (collection) => collection.find().toArray(),
       (error) => ({
         status: StatusCodes.INTERNAL_SERVER_ERROR,
-        reason: `DB Error: ${error}`,
+        reason: `Could not get forms: ${error}`,
       }),
     ),
-
-    map(excludeNoShowForms),
-
-    map(groupBy((form: ScoutingForm) => form.teamNumber.toString())),
-    map((teams) => mapObject(teams, (forms) => ({ forms }))),
-    flatMap(fetchTeamsCOPRs),
-    flatMap(getTeamsEPAs),
-    map((teams) =>
-      Object.entries(teams).map(
-        ([teamNumber, { forms, coprs, epa }]): GeneralData => ({
-          teamNumber: Number(teamNumber),
-          epa: epa?.breakdown.total_points ?? 0,
-          opr: coprs?.totalPoints ?? 0,
-          driving: calculateAverage(
-            forms.filter(({ tele }) => tele.driving?.rating),
-            ({ tele }) => tele.driving?.rating ?? 0,
-          ),
-          defense: calculateAverage(
-            forms.filter(({ tele }) => tele.defense?.rating),
-            ({ tele }) => tele.defense?.rating ?? 0,
-          ),
-          evasion: calculateAverage(
-            forms.filter(({ tele }) => tele.evasion?.rating),
-            ({ tele }) => tele.evasion?.rating ?? 0,
-          ),
-          autoFuel: calculateAverage(forms, ({ auto }) =>
-            Number(auto.balls === "more" ? 150 : auto.balls),
-          ),
-        }),
-      ),
-    ),
-
+    map(groupBy((form: BeeScoutingForm) => form.teamNumber.toString())),
+    map((teamsForms) => mapObject(teamsForms, calculateGeneralForTeam)),
     bindTo("generalData"),
     foldResponse(res),
   )();

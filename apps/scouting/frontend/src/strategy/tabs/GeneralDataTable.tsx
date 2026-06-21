@@ -7,7 +7,11 @@ import {
   useReactTable,
   type SortingState,
 } from "@tanstack/react-table";
-import type { ClimbLevel, GamePeriod, GeneralData } from "@repo/scouting_types";
+import type {
+  ClimbLevel,
+  GamePeriod,
+  GeneralTeamBeeData,
+} from "@repo/scouting_types";
 import type React from "react";
 import { useState, useEffect, useMemo } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
@@ -23,7 +27,7 @@ export type Column =
 
 type DataValue = ClimbLevel | number | undefined;
 
-type DataAccessor = (row: GeneralData) => DataValue;
+type DataAccessor = (row: GeneralTeamBeeData) => DataValue;
 const columnToKey: Record<Column, DataAccessor> = {
   EPA: ({ epa }) => epa,
   OPR: ({ opr }) => opr,
@@ -49,7 +53,7 @@ const fetchGeneralData = async (filters = {}) => {
     }
 
     const data = await response.json();
-    return data.generalData as GeneralData[];
+    return data.generalData as GeneralTeamBeeData[];
   } catch (err) {
     console.error("Fetch failed:", err);
     throw err;
@@ -65,7 +69,9 @@ const DIGITS_AFTER_DOT = 1;
 export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
   filters,
 }) => {
-  const [allGeneralData, setAllGeneralData] = useState<GeneralData[]>([]);
+  const [allGeneralData, setAllGeneralData] = useState<GeneralTeamBeeData[]>(
+    [],
+  );
   const [sorting, setSorting] = useState<SortingState>([]);
 
   useEffect(() => {
@@ -73,7 +79,7 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
   }, [filters]);
 
   const tableData = allGeneralData;
-  const columnHelper = createColumnHelper<GeneralData>();
+  const columnHelper = createColumnHelper<GeneralTeamBeeData>();
 
   const createColumn = (headerAndId: Column, style: string) =>
     columnHelper.accessor((row) => columnToKey[headerAndId](row), {
