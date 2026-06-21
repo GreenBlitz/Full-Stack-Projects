@@ -7,11 +7,19 @@ const superCodec = t.type({
   driving: t.number,
 });
 
-const gameSectionCode = t.type({
-  fuelPassedAverage: t.number,
-  fuelScoredAverage: t.number,
+const fuelAverageCodec = t.type({
+  passed: t.number,
+  scored: t.number,
+});
+
+const fuelPerGameCodec = t.type({
   fuelScoredPerGame: t.record(t.string, t.number),
   fuelPassedPerGame: t.record(t.string, t.number),
+});
+
+const gameSectionCode = t.type({
+  fuelAverage: fuelAverageCodec,
+  fuelPerGame: fuelPerGameCodec,
 });
 
 const teamDataCodec = t.type({

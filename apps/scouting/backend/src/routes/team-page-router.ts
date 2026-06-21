@@ -21,11 +21,10 @@ const findDataOverMatches = (
   period: "auto" | "tele",
   type: "scored" | "passed",
   forms: BeeScoutingForm[],
-): Record<string, number> => {
-  return Object.fromEntries(
+): Record<string, number> =>
+  Object.fromEntries(
     forms.map((form) => [form.matchNumber, form[period].fuel[type]]),
   );
-};
 
 const calculateTeamDataForTeam = (
   forms: BeeScoutingForm[],
@@ -34,16 +33,24 @@ const calculateTeamDataForTeam = (
 
   return {
     auto: {
-      fuelPassedAverage: teamAverages.auto.fuelPassed,
-      fuelScoredAverage: teamAverages.auto.fuelScored,
-      fuelScoredPerGame: findDataOverMatches("auto", "scored", forms),
-      fuelPassedPerGame: findDataOverMatches("auto", "passed", forms),
+      fuelAverage: {
+        passed: teamAverages.auto.fuelPassed,
+        scored: teamAverages.auto.fuelScored,
+      },
+      fuelPerGame: {
+        fuelScoredPerGame: findDataOverMatches("auto", "scored", forms),
+        fuelPassedPerGame: findDataOverMatches("auto", "passed", forms),
+      },
     },
     tele: {
-      fuelPassedAverage: teamAverages.tele.fuelPassed,
-      fuelScoredAverage: teamAverages.tele.fuelScored,
-      fuelScoredPerGame: findDataOverMatches("tele", "scored", forms),
-      fuelPassedPerGame: findDataOverMatches("tele", "passed", forms),
+      fuelAverage: {
+        passed: teamAverages.tele.fuelPassed,
+        scored: teamAverages.tele.fuelScored,
+      },
+      fuelPerGame: {
+        fuelScoredPerGame: findDataOverMatches("tele", "scored", forms),
+        fuelPassedPerGame: findDataOverMatches("tele", "passed", forms),
+      },
     },
     super: {
       defense: teamAverages.super.defenseRating,
