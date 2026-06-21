@@ -53,7 +53,9 @@ const formatData = (data: string[][]) => {
 };
 
 const structureData = (data: Record<string, string>[]): BeeScoutingForm[] => {
-  return data.map((row) => {
+  return data.filter((form) => {
+      form.D_Played === "1";
+    }).map((row) => {
     const toBool = (v: string) => v === "1" || v === "TRUE";
 
     const getTeleClimb = () =>
