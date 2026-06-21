@@ -136,7 +136,7 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
       createColumn("Times Evaded", "text-purple-200"),
 
       createColumn("Climb Full", "text-purple-400 font-bold"),
-      
+
       createColumn("Pass Auto", "text-violet-500"),
 
       createColumn("Score Full", "text-green-500"),
@@ -156,8 +156,8 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
 
   return (
     <div className="flex flex-col gap-6 p-4 bg-slate-950 min-h-screen">
-      <div className="overflow-hidden rounded-2xl border border-white/10 bg-slate-900/40 backdrop-blur-sm shadow-2xl">
-        <table className="w-full text-left text-sm border-collapse">
+      <div className="overflow-x-auto rounded-2xl border border-white/10 bg-slate-900/40 backdrop-blur-sm shadow-2xl">
+        <table className="w-full min-w-max text-left text-sm border-collapse">
           <thead className="bg-slate-800/50 border-b border-white/10">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
