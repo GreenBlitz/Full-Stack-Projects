@@ -7,11 +7,14 @@ import { TeamSelect } from "./TeamSelect";
 import { useLocalStorage } from "@repo/local_storage_hook";
 import { fetchTeamNumbers } from "../../fetches";
 import { StatView } from "./StatView";
+import { PitScoutResultsTab } from "../pit-scout/TeamPitShow";
 
 const TEAM_DATA_URL = "/api/v1/teamPage";
 const NO_DATA_ON_TEAM_STATUS = 502;
 async function fetchTeamData(team: number) {
-  const response = await fetch(`${TEAM_DATA_URL}?teams=${team}`);
+  const response = await fetch(
+    `${TEAM_DATA_URL}?teamNumber=${team.toString()}`,
+  );
 
   if (response.status === NO_DATA_ON_TEAM_STATUS) {
     alert(`No Data on ${team} yet`);
@@ -19,18 +22,11 @@ async function fetchTeamData(team: number) {
   }
 
   const data: {
-    teams: Record<number, TeamPageTeamBeeData>;
+    teamPageData: Record<number, TeamPageTeamBeeData>;
   } = await response.json();
-  return firstElement(Object.values(data.teams));
+  return firstElement(Object.values(data.teamPageData));
 }
 
-const PIT_SCOUT_URL = "/api/v1/pit";
-const fetchPitScoutData = async (team: number) => {
-  const response = await fetch(``);
-};
-
-const graphSection =
-  "w-96 h-64 p-4 items-center bg-slate-900/40 backdrop-blur-md border border-white/10 rounded-3xl shadow-2xl";
 export const TeamTab: FC = () => {
   const [teamData, setTeamData] = useState<TeamPageTeamBeeData>();
   const [teamNumber, setTeamNumber] = useLocalStorage<number | null>(
@@ -59,23 +55,29 @@ export const TeamTab: FC = () => {
   }, []);
 
   return (
-    <div className="flex flex-col text-black items-center bg-slate-950">
-      <TeamSelect
-        teamNumber={teamNumber ?? undefined}
-        setTeamNumber={setTeamNumber}
-        scoutedTeams={scoutedTeams ?? []}
-      />
+    <div className="flex flex-col text-slate-200 items-center justify-start min-h-screen bg-slate-950 px-4 py-6 w-full">
+      <div className="w-full max-w-2xl bg-slate-900/40 backdrop-blur-md border border-white/5 p-4 rounded-2xl mb-4 flex justify-center items-center">
+        <TeamSelect
+          teamNumber={teamNumber ?? undefined}
+          setTeamNumber={setTeamNumber}
+          scoutedTeams={scoutedTeams ?? []}
+        />
+      </div>
 
-      <StatView
-        statContent={teamData?.auto.fuelAverage.scored.toString()}
-        statName={"Avg Auto Points"}
-      />
-      <StatView
-        statContent={teamData?.tele.fuelAverage.scored.toString()}
-        statName={"Avg teleop Points"}
-      />
-      <StatView statContent={""} statName={"Passes Trench?"} />
-      <StatView statContent={""} statName={"Is Turret?"} />
+      <div className="w-full max-w-2xl flex flex-col gap-4">
+        <div className="grid grid-cols-2 gap-4 w-full">
+          <StatView
+            statContent={teamData?.auto.fuelAverage.scored.toString()}
+            statName={"Auto Points"}
+          />
+          <StatView
+            statContent={teamData?.tele.fuelAverage.scored.toString()}
+            statName={"Teleop Points"}
+          />
+        </div>
+
+        <PitScoutResultsTab teamNumber={teamNumber} />
+      </div>
     </div>
   );
 };
