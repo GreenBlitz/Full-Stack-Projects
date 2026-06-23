@@ -23,11 +23,18 @@ export const TeamSelect: FC<TeamSelectProps> = ({
   gameRecency,
   scoutedTeams,
 }) => {
-  const { true: actualScoutedTeams, false: otherTeams } = useMemo(
+  const actualScoutedTeams = useMemo(
     () =>
-      partition(FRC_TEAMS, (team) => scoutedTeams.includes(team.teamNumber)),
+      FRC_TEAMS.filter((team) =>
+        scoutedTeams.map(Number).includes(team.teamNumber),
+      ),
     [scoutedTeams],
   );
+  // const { true: actualScoutedTeams, false: otherTeams } = useMemo(
+  //   () =>
+  //     partition(FRC_TEAMS, (team) => scoutedTeams.includes(team.teamNumber)),
+  //   [scoutedTeams],
+  // );
   return (
     <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md mx-auto p-4 bg-slate-900/40 backdrop-blur-sm rounded-2xl border border-white/10 shadow-2xl">
       <div className="relative flex-1">
@@ -54,30 +61,24 @@ export const TeamSelect: FC<TeamSelectProps> = ({
           <LuUsers size={16} />
         </div>
         <select
-          className="w-full pl-10 pr-4 py-3 bg-slate-950/50 border border-white/5 rounded-xl text-slate-200 appearance-none focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500/50 transition-all cursor-pointer font-bold text-sm"
-          onChange={(event) => {
-            setTeamNumber(Number(event.currentTarget.value));
-          }}
           value={teamNumber ?? "none"}
+          onChange={(event) => setTeamNumber(Number(event.currentTarget.value))}
+          className="..."
         >
-          <option
-            disabled
-            value="none"
-            selected
-            className="bg-slate-900 text-slate-500"
-          >
+          <option disabled value="none" className="bg-slate-900 text-slate-500">
             Select Team
           </option>
-          {actualScoutedTeams.map((team) => (
+          {scoutedTeams.map((num) => (
             <option
-              key={team.teamNumber}
-              value={team.teamNumber}
-              className="bg-emerald-500 text-slate-200"
+              key={num}
+              value={num}
+              className="bg-slate-900 text-slate-200"
             >
-              {team.teamNumber} | {team.nickname}
+              {num}
             </option>
           ))}
-          {otherTeams.map((team) => (
+        </select>
+        {/* {otherTeams.map((team) => (
             <option
               key={team.teamNumber}
               value={team.teamNumber}
@@ -85,8 +86,8 @@ export const TeamSelect: FC<TeamSelectProps> = ({
             >
               {team.teamNumber} | {team.nickname}
             </option>
-          ))}
-        </select>
+          ))} */}
+
         <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
           <svg
             width="10"
@@ -101,23 +102,6 @@ export const TeamSelect: FC<TeamSelectProps> = ({
             <path d="M1 1L5 5L9 1" />
           </svg>
         </div>
-      </div>
-      <div className="relative ">
-        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-500/50">
-          <FaRegClock size={16} />
-        </div>
-        <input
-          onChange={(event) => {
-            setRecency(
-              event.currentTarget.value
-                ? Number(event.currentTarget.value)
-                : null,
-            );
-          }}
-          value={gameRecency === EMPTY_INPUT ? undefined : gameRecency}
-          type="number"
-          className="w-20 pl-10 pr-2 py-3 bg-slate-950/50 border border-white/5 rounded-xl text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500/50 transition-all font-mono"
-        />
       </div>
     </div>
   );
