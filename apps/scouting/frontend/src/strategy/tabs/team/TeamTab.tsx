@@ -40,6 +40,9 @@ export const TeamTab: FC = () => {
     "team/recency",
     null,
   );
+
+  const [hasData, setHasData] = useState<boolean>();
+
   const [scoutedTeams, setScoutedTeams] = useState<number[]>();
 
   const [formIndex, setFormIndex] = useState(0);
@@ -51,8 +54,10 @@ export const TeamTab: FC = () => {
 
   useEffect(() => {
     if (!teamNumber || !FRC_TEAM_NUMBERS.includes(teamNumber)) {
+      setHasData(false);
       return;
     }
+    setHasData(true);
     fetchTeamData(teamNumber, gameRecency ?? undefined)
       .then(setTeamData)
       .catch(alert);
