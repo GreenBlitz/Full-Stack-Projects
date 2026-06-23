@@ -7,9 +7,7 @@ import { LuHash } from "react-icons/lu";
 
 interface TeamSelectProps {
   teamNumber?: number;
-  gameRecency?: number;
   setTeamNumber: (team: number | null) => void;
-  setRecency: (recency: number | null) => void;
   scoutedTeams: number[];
 }
 
@@ -18,8 +16,6 @@ const EMPTY_INPUT = 0;
 export const TeamSelect: FC<TeamSelectProps> = ({
   teamNumber,
   setTeamNumber,
-  setRecency,
-  gameRecency,
   scoutedTeams,
 }) => {
   const { true: actualScoutedTeams, false: otherTeams } = useMemo(
