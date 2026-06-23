@@ -1,8 +1,7 @@
 // בס"ד
 import { partition } from "@repo/array-functions";
 import { FRC_TEAMS } from "@repo/frc";
-import { useEffect, useMemo, type FC } from "react";
-import { FaRegClock } from "react-icons/fa";
+import { useMemo, type FC } from "react";
 import { LuUsers } from "react-icons/lu";
 import { LuHash } from "react-icons/lu";
 
