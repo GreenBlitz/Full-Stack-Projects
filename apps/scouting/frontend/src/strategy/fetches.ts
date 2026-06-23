@@ -1,8 +1,8 @@
 //בס"ד
-const formsUrl = "/api/v1/forms/";
+const teamPageUrl = "/api/v1/teamPage/";
 
 export const fetchTeamNumbers = async () => {
-  const url = `${formsUrl}teams`;
+  const url = `${teamPageUrl}teamNumbers`;
 
   const response = await fetch(url, {
     method: "GET",
@@ -14,5 +14,5 @@ export const fetchTeamNumbers = async () => {
     throw new Error(`Server Error: ${errorText}`);
   }
   const data = await response.json();
-  return data.teamNumbers.sort() as number[];
+  return data.teamNumbers.map(Number).sort() as number[];
 };

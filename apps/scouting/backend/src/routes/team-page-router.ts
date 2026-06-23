@@ -8,16 +8,9 @@ import { StatusCodes } from "http-status-codes";
 import { bindTo, map } from "fp-ts/lib/TaskEither";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
 import { BeeScoutingForm } from "@repo/scouting_types";
-import {
-  calculateAverage,
-  firstElement,
-  mapObject,
-} from "@repo/array-functions";
-import {
-  calculateFuelForTeamPhase,
-  calculateGeneralForTeam,
-} from "./general-router";
-import { TeamPageTeamBeeData } from "@repo/scouting_types/rebuilt/beeAScout/teamPage";
+import { firstElement, mapObject } from "@repo/array-functions";
+import { calculateGeneralForTeam } from "./general-router";
+import { TeamPageTeamBeeData } from "@repo/scouting_types";
 
 export const teamPageRouter = Router();
 
@@ -80,6 +73,23 @@ teamPageRouter.get("/", async (req, res) => {
     map(groupBy((form: BeeScoutingForm) => form.teamNumber.toString())),
     map((teamsForms) => mapObject(teamsForms, calculateTeamDataForTeam)),
     bindTo("teamPageData"),
+    foldResponse(res),
+  )();
+});
+
+teamPageRouter.get("/teamNumbers", async (req, res) => {
+  await pipe(
+    getBeeScoutCollection(),
+    flatTryCatch(
+      (collection) => collection.find(mongofyQuery({})).toArray(),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `DB Error: ${error}`,
+      }),
+    ),
+    map((forms) => forms.map((form) => Number(form.teamNumber))),
+    map((numbers) => [...new Set(numbers)]),
+    bindTo("teamNumbers"),
     foldResponse(res),
   )();
 });
