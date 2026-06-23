@@ -67,12 +67,7 @@ export const TeamTab: FC = () => {
   }, [teamNumber, gameRecency]);
 
   useEffect(() => {
-    fetchTeamNumbers()
-      .then((teams) => {
-        console.log("fetched team numbers:", teams);
-        setScoutedTeams(teams);
-      })
-      .catch(console.error);
+    fetchTeamNumbers().then(setScoutedTeams()).catch(console.error);
   }, []);
 
   return (
