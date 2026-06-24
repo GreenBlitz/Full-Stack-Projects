@@ -794,7 +794,7 @@ export const FRC_TEAMS = [
     lng: null,
     location_name: null,
     motto: null,
-    name: "Hakfar Hayarok School&Hakfar Hayarok",
+    name: "Hakfar Hayarok School & Hakfar Hayarok",
     nickname: "GreenBlitz",
     postal_code: "4780000",
     rookie_year: 2013,
