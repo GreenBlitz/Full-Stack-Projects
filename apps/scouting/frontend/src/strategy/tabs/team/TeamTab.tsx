@@ -93,15 +93,15 @@ export const TeamTab: FC = () => {
 
         <div className="grid grid-cols-3 gap-4 w-full">
           <StatView
-            statContent={teamData?.super.defense.toFixed(2).toString()}
+            statContent={teamData?.super.defense?.toFixed(2).toString()}
             statName={"Defense"}
           />
           <StatView
-            statContent={teamData?.super.evasion.toFixed(2).toString()}
+            statContent={teamData?.super.evasion?.toFixed(2).toString()}
             statName={"Evasion"}
           />
           <StatView
-            statContent={teamData?.super.driving.toFixed(2).toString()}
+            statContent={teamData?.super.driving?.toFixed(2).toString()}
             statName={"Driving"}
           />
         </div>
