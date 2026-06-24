@@ -2,12 +2,15 @@
 import { partition } from "@repo/array-functions";
 import { FRC_TEAMS } from "@repo/frc";
 import { useMemo, type FC } from "react";
+import { FaRegClock } from "react-icons/fa";
 import { LuUsers } from "react-icons/lu";
 import { LuHash } from "react-icons/lu";
 
 interface TeamSelectProps {
   teamNumber?: number;
+  recency?: number;
   setTeamNumber: (team: number | null) => void;
+  setRecency: (recency: number | null) => void;
   scoutedTeams: number[];
 }
 
@@ -15,7 +18,9 @@ const EMPTY_INPUT = 0;
 
 export const TeamSelect: FC<TeamSelectProps> = ({
   teamNumber,
+  recency,
   setTeamNumber,
+  setRecency,
   scoutedTeams,
 }) => {
   const { true: actualScoutedTeams, false: otherTeams } = useMemo(
@@ -96,6 +101,23 @@ export const TeamSelect: FC<TeamSelectProps> = ({
             <path d="M1 1L5 5L9 1" />
           </svg>
         </div>
+      </div>
+      <div className="relative ">
+        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-500/50">
+          <FaRegClock size={16} />
+        </div>
+        <input
+          onChange={(event) => {
+            setRecency(
+              event.currentTarget.value
+                ? Number(event.currentTarget.value)
+                : null,
+            );
+          }}
+          value={recency === EMPTY_INPUT ? undefined : recency}
+          type="number"
+          className="w-20 pl-10 pr-2 py-3 bg-slate-950/50 border border-white/5 rounded-xl text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500/50 transition-all font-mono"
+        />
       </div>
     </div>
   );
