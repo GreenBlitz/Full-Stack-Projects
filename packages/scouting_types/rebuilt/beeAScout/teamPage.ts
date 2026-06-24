@@ -1,10 +1,14 @@
 //בס"ד
 import * as t from "io-ts";
 
+const superPerGameCodec = t.record(t.string, t.number);
+
 const superCodec = t.type({
   defense: t.number,
   evasion: t.number,
   driving: t.number,
+  defensePerGame: superPerGameCodec,
+  evasionPerGame: superPerGameCodec,
 });
 
 const fuelAverageCodec = t.type({
