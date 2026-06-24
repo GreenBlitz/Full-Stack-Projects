@@ -8,7 +8,7 @@ import { useLocalStorage } from "@repo/local_storage_hook";
 import { fetchTeamNumbers } from "../../fetches";
 import { StatView } from "./StatView";
 import { PitScoutResultsTab } from "../pit-scout/TeamPitShow";
-import { SuperLineChart } from "./SuperLineChart";
+import { SuperBarChart } from "./SuperBarChart";
 import { ThrowBarChart } from "./ThrowBarChart";
 
 const TEAM_DATA_URL = "/api/v1/teamPage";
@@ -100,7 +100,7 @@ export const TeamTab: FC = () => {
       </div>
       {teamData && (
         <div className="w-full max-w-2xl" style={{ height: "300px" }}>
-          <SuperLineChart superData={teamData.super} />
+          <SuperBarChart superData={teamData.super} />
         </div>
       )}
       {teamData && (

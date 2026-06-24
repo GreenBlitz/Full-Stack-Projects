@@ -1,19 +1,19 @@
 import type { TeamPageTeamBeeData } from "@repo/scouting_types";
 import type { FC } from "react";
-import type { PointDataset } from "../../Dataset";
-import { LineChart } from "../../components/LineChart";
+import type { BarDataset, PointDataset } from "../../Dataset";
+import { BarChart } from "../../components/BarChart";
 
-export const SuperLineChart: FC<{ superData: TeamPageTeamBeeData["super"] }> = ({
+export const SuperBarChart: FC<{ superData: TeamPageTeamBeeData["super"] }> = ({
   superData,
 }) => {
-  const datasets: PointDataset<string>[] = [
+  const datasets: BarDataset<string>[] = [
     {
       name: "Defense",
       color: "red",
       points: Object.fromEntries(
         Object.entries(superData.defensePerGame).map(([match, value]) => [
           match,
-          { value },
+          value,
         ]),
       ),
     },
@@ -23,11 +23,11 @@ export const SuperLineChart: FC<{ superData: TeamPageTeamBeeData["super"] }> = (
       points: Object.fromEntries(
         Object.entries(superData.evasionPerGame).map(([match, value]) => [
           match,
-          { value },
+          value,
         ]),
       ),
     },
   ];
 
-  return <LineChart dataSetsProps={datasets} min={0} max={5} />;
+  return <BarChart dataSetsProps={datasets} min={0} max={5} />;
 };
