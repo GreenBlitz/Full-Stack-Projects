@@ -67,16 +67,35 @@ export const TeamTab: FC = () => {
       <div className="w-full max-w-2xl flex flex-col gap-4">
         <div className="grid grid-cols-2 gap-4 w-full">
           <StatView
-            statContent={teamData?.auto.fuelAverage.scored.toString()}
+            statContent={teamData?.auto.fuelAverage.scored
+              .toFixed(2)
+              .toString()}
             statName={"Auto Points"}
           />
           <StatView
-            statContent={teamData?.tele.fuelAverage.scored.toString()}
+            statContent={teamData?.tele.fuelAverage.scored
+              .toFixed(2)
+              .toString()}
             statName={"Teleop Points"}
           />
         </div>
 
         <PitScoutResultsTab teamNumber={teamNumber} />
+
+        <div className="grid grid-cols-3 gap-4 w-full">
+          <StatView
+            statContent={teamData?.super.defense.toFixed(2).toString()}
+            statName={"Defense"}
+          />
+          <StatView
+            statContent={teamData?.super.evasion.toFixed(2).toString()}
+            statName={"Evasion"}
+          />
+          <StatView
+            statContent={teamData?.super.driving.toFixed(2).toString()}
+            statName={"Driving"}
+          />
+        </div>
       </div>
     </div>
   );
