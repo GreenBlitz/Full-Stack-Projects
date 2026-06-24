@@ -105,8 +105,7 @@ const structureData = (data: Record<string, string>[]): BeeScoutingForm[] => {
 
 const updateData = async (db: Db) => {
   try {
-    console.log(process.env.CHAMPS_SHEETS_ID);
-    const raw = await getSheetData(process.env.CHAMPS_SHEETS_ID, sheetsRange);
+    const raw = await getSheetData(process.env.EXAMPLE_SHEETS_ID, sheetsRange);
     if (!raw) {
       console.log("No data returned from Bee A Scout google sheets");
       return;
