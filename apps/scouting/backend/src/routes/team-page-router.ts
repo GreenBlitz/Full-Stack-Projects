@@ -15,13 +15,19 @@ import { TeamPageTeamBeeData } from "@repo/scouting_types";
 export const teamPageRouter = Router();
 
 const findDataOverMatches = (
-  period: "auto" | "tele",
-  type: "scored" | "passed",
+  section: "auto" | "tele" | "super",
+  type: "scored" | "passed" | "defenseLevel" | "evasionLevel",
   forms: BeeScoutingForm[],
-): Record<string, number> =>
-  Object.fromEntries(
-    forms.map((form) => [form.matchNumber, form[period].fuel[type]]),
+): Record<string, number> => {
+  if (section === "super") {
+    return Object.fromEntries(
+      forms.map((form) => [form.matchNumber, form[section][type]]),
+    );
+  }
+  return Object.fromEntries(
+    forms.map((form) => [form.matchNumber, form[section].fuel[type]]),
   );
+};
 
 const calculateTeamDataForTeam = (
   forms: BeeScoutingForm[],
@@ -56,6 +62,8 @@ const calculateTeamDataForTeam = (
       defense: teamAverages.super.defenseRating,
       evasion: teamAverages.super.evasionRating,
       driving: teamAverages.super.driving,
+      defensePerGame: findDataOverMatches("super", "defenseLevel", forms),
+      evasionPerGame: findDataOverMatches("super", "evasionLevel", forms),
     },
   };
 };

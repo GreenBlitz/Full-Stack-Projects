@@ -8,6 +8,7 @@ import { useLocalStorage } from "@repo/local_storage_hook";
 import { fetchTeamNumbers } from "../../fetches";
 import { StatView } from "./StatView";
 import { PitScoutResultsTab } from "../pit-scout/TeamPitShow";
+import { SuperLineChart } from "./SuperLineChart";
 
 const TEAM_DATA_URL = "/api/v1/teamPage";
 const NO_DATA_ON_TEAM_STATUS = 502;
@@ -63,7 +64,6 @@ export const TeamTab: FC = () => {
           scoutedTeams={scoutedTeams ?? []}
         />
       </div>
-
       <div className="w-full max-w-2xl flex flex-col gap-4">
         <div className="grid grid-cols-2 gap-4 w-full">
           <StatView
@@ -78,6 +78,11 @@ export const TeamTab: FC = () => {
 
         <PitScoutResultsTab teamNumber={teamNumber} />
       </div>
+      {teamData && (
+        <div className="w-full max-w-2xl" style={{ height: "300px" }}>
+          <SuperLineChart superData={teamData.super} />
+        </div>
+      )}
     </div>
   );
 };
