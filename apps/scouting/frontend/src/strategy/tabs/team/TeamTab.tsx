@@ -99,18 +99,20 @@ export const TeamTab: FC = () => {
         </div>
       </div>
       {teamData && (
-        <div className="w-full max-w-2xl" style={{ height: "300px" }}>
+        <div className="w-full max-w-2xl my-5">
           <SuperBarChart superData={teamData.super} />
         </div>
       )}
+
       {teamData && (
-        <div className="w-full max-w-2xl" style={{ height: "300px" }}>
-          <ThrowBarChart periodData={teamData.tele} max={400} />
+        <div className="w-full max-w-2xl my-5">
+          <ThrowBarChart periodData={teamData.tele} max={400} title="Teleop" />
         </div>
       )}
+
       {teamData && (
-        <div className="w-full max-w-2xl" style={{ height: "300px" }}>
-          <ThrowBarChart periodData={teamData.auto} max={70} />
+        <div className="w-full max-w-2xl my-5">
+          <ThrowBarChart periodData={teamData.auto} max={70} title="Auto" />
         </div>
       )}
     </div>
