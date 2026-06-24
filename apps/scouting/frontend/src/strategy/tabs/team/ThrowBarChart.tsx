@@ -8,7 +8,8 @@ const maxHeightWiggleRoom = 1.1; //10% offset so it doesnt go to the very top
 export const ThrowBarChart: FC<{
   periodData: TeamPageTeamBeeData["auto" | "tele"];
   max: number;
-}> = ({ periodData, max }) => {
+  title: string;
+}> = ({ periodData, max, title }) => {
   const datasets = [
     {
       name: "Scored",
@@ -38,11 +39,20 @@ export const ThrowBarChart: FC<{
     (value) => value,
   );
   return (
-    <BarChart
-      dataSetsProps={datasets}
-      min={0}
-      max={Math.max(max, maxHeight * maxHeightWiggleRoom)}
-      stacked
-    />
+    <>
+      <div className="w-full max-w-xl mx-auto bg-slate-900/40 backdrop-blur-md border border-white/5 p-4 rounded-2xl text-center">
+        <p className="text-xs text-slate-200 uppercase tracking-wider font-bold">
+          {title}
+        </p>
+      </div>
+      <div className="flex justify-center w-full h-76">
+        <BarChart
+          dataSetsProps={datasets}
+          min={0}
+          max={Math.max(max, maxHeight * maxHeightWiggleRoom)}
+          stacked
+        />
+      </div>
+    </>
   );
 };

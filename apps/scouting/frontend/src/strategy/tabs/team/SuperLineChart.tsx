@@ -3,9 +3,9 @@ import type { FC } from "react";
 import type { PointDataset } from "../../Dataset";
 import { LineChart } from "../../components/LineChart";
 
-export const SuperLineChart: FC<{ superData: TeamPageTeamBeeData["super"] }> = ({
-  superData,
-}) => {
+export const SuperLineChart: FC<{
+  superData: TeamPageTeamBeeData["super"];
+}> = ({ superData }) => {
   const datasets: PointDataset<string>[] = [
     {
       name: "Defense",
@@ -29,5 +29,16 @@ export const SuperLineChart: FC<{ superData: TeamPageTeamBeeData["super"] }> = (
     },
   ];
 
-  return <LineChart dataSetsProps={datasets} min={0} max={5} />;
+  return (
+    <>
+      <div className="w-full max-w-xl mx-auto bg-slate-900/40 backdrop-blur-md border border-white/5 p-4 rounded-2xl text-center">
+        <p className="text-xs text-slate-200 uppercase tracking-wider font-bold">
+          Super
+        </p>
+      </div>
+      <div className="flex justify-center w-full h-76">
+        <LineChart dataSetsProps={datasets} min={0} max={5} />
+      </div>
+    </>
+  );
 };
