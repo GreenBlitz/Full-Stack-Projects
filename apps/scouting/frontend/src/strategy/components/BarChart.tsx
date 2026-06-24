@@ -34,7 +34,8 @@ export interface LineChartProps {
 }
 const convertDataToBarChartFormat = ({
   dataSetsProps,
-}: LineChartProps): ChartData<"bar", number[], string> => {
+  stacked,
+}: BarChartProps): ChartData<"bar", number[], string> => {
   const defaultColors = ["red", "violet", "orange"];
 
   const labels = Array.from(
@@ -47,13 +48,22 @@ const convertDataToBarChartFormat = ({
       return {
         label: dataset.name,
         data: labels.map((label) => dataset.points[label] ?? null),
-        backgroundColor: defaultColors,
+        backgroundColor: stacked ? dataset.color : defaultColors,
       };
     }),
   };
 };
 
-export const BarChart: FC<LineChartProps> = ({ dataSetsProps, min, max }) => {
+interface BarChartProps extends LineChartProps {
+  stacked?: boolean;
+}
+
+export const BarChart: FC<BarChartProps> = ({
+  dataSetsProps,
+  min,
+  max,
+  stacked,
+}) => {
   const options: ChartOptions<"bar"> = {
     scales: {
       x: {
@@ -64,6 +74,7 @@ export const BarChart: FC<LineChartProps> = ({ dataSetsProps, min, max }) => {
             weight: "bold",
           },
         },
+        stacked,
       },
       y: {
         min,
@@ -78,9 +89,10 @@ export const BarChart: FC<LineChartProps> = ({ dataSetsProps, min, max }) => {
         grid: {
           color: "rgba(255, 255, 255, 0.2)",
         },
+        stacked,
       },
     },
   };
-  const data = convertDataToBarChartFormat({ dataSetsProps });
+  const data = convertDataToBarChartFormat({ dataSetsProps, stacked });
   return <Bar data={data} options={options} />;
 };

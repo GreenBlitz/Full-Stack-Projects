@@ -9,6 +9,7 @@ import { fetchTeamNumbers } from "../../fetches";
 import { StatView } from "./StatView";
 import { PitScoutResultsTab } from "../pit-scout/TeamPitShow";
 import { SuperLineChart } from "./SuperLineChart";
+import { ThrowBarChart } from "./ThrowBarChart";
 
 const TEAM_DATA_URL = "/api/v1/teamPage";
 const NO_DATA_ON_TEAM_STATUS = 502;
@@ -100,6 +101,16 @@ export const TeamTab: FC = () => {
       {teamData && (
         <div className="w-full max-w-2xl" style={{ height: "300px" }}>
           <SuperLineChart superData={teamData.super} />
+        </div>
+      )}
+      {teamData && (
+        <div className="w-full max-w-2xl" style={{ height: "300px" }}>
+          <ThrowBarChart periodData={teamData.tele} max={400} />
+        </div>
+      )}
+      {teamData && (
+        <div className="w-full max-w-2xl" style={{ height: "300px" }}>
+          <ThrowBarChart periodData={teamData.auto} max={70} />
         </div>
       )}
     </div>
