@@ -66,7 +66,7 @@ picklistRouter.get("/list/:picklist", async (req, res) => {
   )();
 });
 
-picklistRouter.post("/", async (req, res) => {
+picklistRouter.post("/list", async (req, res) => {
   await pipe(
     getPicklistCollection(),
     bindTo("picklistCollection"),

@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { DragDropContext, Droppable, type DropResult } from "@hello-pangea/dnd";
 import { ListItem } from "./ListItem";
-import type { DataPicklistBee, GeneralTeamBeeData } from "@repo/scouting_types";
+import type {
+  DataPicklistBee,
+  GeneralTeamBeeData,
+  PicklistBee,
+} from "@repo/scouting_types";
 import { getTeamName } from "@repo/frc";
 import { useLocalStorage } from "@repo/local_storage_hook";
 
@@ -12,8 +16,17 @@ export interface TeamListData {
 }
 
 const PICKLIST_URL = "/api/v1/picklist/list";
-async function fetchPicklist(name: string): Promise<TeamListData[]> {
+const fetchPicklist = async (
+  name: string,
+  withAlerts?: boolean,
+): Promise<TeamListData[] | undefined> => {
   const response = await fetch(`${PICKLIST_URL}/${name}`);
+
+  if (!response.ok) {
+    withAlerts && alert(`Could not load branch ${name}`);
+    return;
+  }
+  withAlerts && alert(`Loaded branch ${name}`);
 
   const data: DataPicklistBee = await response.json();
 
@@ -22,15 +35,36 @@ async function fetchPicklist(name: string): Promise<TeamListData[]> {
     teamName: getTeamName(parseInt(team)),
     avgFuel: fuelScored,
   }));
-}
+};
+
+const savePicklist = async (name: string, list: string[]) => {
+  const picklist: PicklistBee = { name, list };
+  const response = await fetch(PICKLIST_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(picklist),
+  });
+
+  if (response.ok) {
+    alert("Saved!");
+    return;
+  }
+  alert(`Couldnt Save! ${await response.text()}`);
+};
 
 export const Picklist: React.FC = () => {
   const [teams, setTeams] = useState<TeamListData[]>([]);
   const [branch, setBranch] = useLocalStorage("picklist/branch", "master");
 
+  const loadBranch = async (withAlerts?: boolean) => {
+    const newTeams = await fetchPicklist(branch, withAlerts);
+    setTeams(newTeams ?? teams);
+  };
   useEffect(() => {
-    fetchPicklist(branch).then(setTeams);
-  }, [branch]);
+    loadBranch();
+  }, []);
 
   // This handles the state update when an item finishes moving
   const handleOnDragEnd = (result: DropResult) => {
@@ -48,6 +82,44 @@ export const Picklist: React.FC = () => {
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-slate-900 text-white rounded-xl shadow-md border border-slate-800">
+      <div className="flex flex-col sm:flex-row gap-3 items-end sm:items-center justify-between p-4 mb-6 bg-slate-800/40 border border-slate-800 rounded-lg">
+        <div className="w-full sm:w-auto flex-1">
+          <label
+            htmlFor="branch-input"
+            className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5"
+          >
+            Branch Name
+          </label>
+          <input
+            id="branch-input"
+            type="text"
+            value={branch}
+            onChange={(e) => setBranch(e.target.value.toLowerCase())}
+            placeholder="e.g., playoff-predictions"
+            className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-md text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500 transition-colors"
+          />
+        </div>
+
+        <div className="flex gap-2 w-full sm:w-auto">
+          <button
+            onClick={() => loadBranch(true)}
+            className="flex-1 sm:flex-none px-4 py-2 bg-slate-800 hover:bg-slate-700 active:bg-slate-700 border border-slate-700 text-sm font-medium rounded-md transition-colors"
+          >
+            Load
+          </button>
+          <button
+            onClick={() =>
+              savePicklist(
+                branch,
+                teams.map(({ teamNumber }) => teamNumber.toString()),
+              )
+            }
+            className="flex-1 sm:flex-none px-4 py-2 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-sm font-medium rounded-md shadow-sm transition-colors"
+          >
+            Save
+          </button>
+        </div>
+      </div>
       {/* Header bar mirroring the list table layout */}
       <div className="grid grid-cols-12 gap-4 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-slate-400 border-b border-slate-800">
         <div className="col-span-1 text-center">#</div>
@@ -55,7 +127,6 @@ export const Picklist: React.FC = () => {
         <div className="col-span-6">Team Name</div>
         <div className="col-span-3 text-right">Avg Points</div>
       </div>
-
       <DragDropContext onDragEnd={handleOnDragEnd}>
         <Droppable droppableId="teams-list">
           {(provided) => (
