@@ -11,6 +11,7 @@ import { leaderboardRouter } from "./leaderboard-router";
 import { tinderRouter } from "./tinder-router";
 import { pitScoutRouter } from "./pit-scout-router";
 import { teamPageRouter } from "./team-page-router";
+import { picklistRouter } from "./picklist-router";
 
 export const apiRouter = Router();
 
@@ -24,6 +25,7 @@ apiRouter.use("/leaderboard", leaderboardRouter);
 apiRouter.use("/tinder", tinderRouter);
 apiRouter.use("/pit", pitScoutRouter);
 apiRouter.use("/teamPage", teamPageRouter);
+apiRouter.use("/picklist", picklistRouter);
 
 apiRouter.get("/health", (req, res) => {
   res.status(StatusCodes.OK).send({ message: "Healthy!" });
