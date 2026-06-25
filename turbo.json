@@ -6,7 +6,8 @@
     "BACKEND_PORT",
     "TBA_API_KEY",
     "NODE_ENV",
-    "CHAMPS_SHEETS_ID"
+    "CHAMPS_SHEETS_ID",
+    "MONGO_URI"
   ],
 
   "tasks": {
