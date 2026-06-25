@@ -68,7 +68,7 @@ const savePicklist = async (name: string, list: string[]) => {
 };
 
 export const Picklist: React.FC = () => {
-  const [teams, setTeams] = useState<TeamListData[]>([]);
+  const [teams, setTeams] = useLocalStorage<TeamListData[]>("picklist/teams",[]);
   const [branch, setBranch] = useLocalStorage("picklist/branch", "master");
   const [allBranches, setAllBranches] = useState<string[]>([]);
 
