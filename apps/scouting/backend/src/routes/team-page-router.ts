@@ -31,10 +31,15 @@ const findDataOverMatches = (
 
 const calculateTeamDataForTeam = (
   forms: BeeScoutingForm[],
+  recency: number,
 ): TeamPageTeamBeeData => {
+  const recentForms = forms
+    .sort((formA, formB) => formA.matchNumber - formB.matchNumber)
+    .slice(-recency);
+
   const teamAverages = calculateGeneralForTeam(
-    forms,
-    firstElement(forms).teamNumber.toString(),
+    recentForms,
+    firstElement(recentForms).teamNumber.toString(),
   );
 
   return {
@@ -44,8 +49,8 @@ const calculateTeamDataForTeam = (
         scored: teamAverages.auto.fuelScored,
       },
       fuelPerGame: {
-        fuelScoredPerGame: findDataOverMatches("auto", "scored", forms),
-        fuelPassedPerGame: findDataOverMatches("auto", "passed", forms),
+        fuelScoredPerGame: findDataOverMatches("auto", "scored", recentForms),
+        fuelPassedPerGame: findDataOverMatches("auto", "passed", recentForms),
       },
     },
     tele: {
@@ -54,21 +59,24 @@ const calculateTeamDataForTeam = (
         scored: teamAverages.tele.fuelScored,
       },
       fuelPerGame: {
-        fuelScoredPerGame: findDataOverMatches("tele", "scored", forms),
-        fuelPassedPerGame: findDataOverMatches("tele", "passed", forms),
+        fuelScoredPerGame: findDataOverMatches("tele", "scored", recentForms),
+        fuelPassedPerGame: findDataOverMatches("tele", "passed", recentForms),
       },
     },
     super: {
       defense: teamAverages.super.defenseRating,
       evasion: teamAverages.super.evasionRating,
       driving: teamAverages.super.driving,
-      defensePerGame: findDataOverMatches("super", "defenseLevel", forms),
-      evasionPerGame: findDataOverMatches("super", "evasionLevel", forms),
+      defensePerGame: findDataOverMatches("super", "defenseLevel", recentForms),
+      evasionPerGame: findDataOverMatches("super", "evasionLevel", recentForms),
     },
   };
 };
 
-teamPageRouter.get("/", async (req, res) => {
+const parseRecency = (recencyString: string) =>
+  parseInt(recencyString ?? "100");
+
+teamPageRouter.get("/:recency", async (req, res) => {
   await pipe(
     getBeeScoutCollection(),
     flatTryCatch(
@@ -79,7 +87,11 @@ teamPageRouter.get("/", async (req, res) => {
       }),
     ),
     map(groupBy((form: BeeScoutingForm) => form.teamNumber.toString())),
-    map((teamsForms) => mapObject(teamsForms, calculateTeamDataForTeam)),
+    map((teamsForms) =>
+      mapObject(teamsForms, (forms) =>
+        calculateTeamDataForTeam(forms, parseRecency(req.params.recency)),
+      ),
+    ),
     bindTo("teamPageData"),
     foldResponse(res),
   )();

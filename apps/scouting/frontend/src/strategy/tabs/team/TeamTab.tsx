@@ -13,9 +13,11 @@ import { ThrowBarChart } from "./ThrowBarChart";
 
 const TEAM_DATA_URL = "/api/v1/teamPage";
 const NO_DATA_ON_TEAM_STATUS = 502;
-async function fetchTeamData(team: number) {
+
+const allGamesRecency = 100;
+async function fetchTeamData(team: number, recency: number | null) {
   const response = await fetch(
-    `${TEAM_DATA_URL}?teamNumber=${team.toString()}`,
+    `${TEAM_DATA_URL}/${recency ?? allGamesRecency}?teamNumber=${team.toString()}`,
   );
 
   if (response.status === NO_DATA_ON_TEAM_STATUS) {
@@ -31,6 +33,10 @@ async function fetchTeamData(team: number) {
 
 export const TeamTab: FC = () => {
   const [teamData, setTeamData] = useState<TeamPageTeamBeeData>();
+  const [recency, setRecency] = useLocalStorage<number | null>(
+    "team/recency",
+    null,
+  );
   const [teamNumber, setTeamNumber] = useLocalStorage<number | null>(
     "team/teamNumber",
     null,
@@ -49,8 +55,8 @@ export const TeamTab: FC = () => {
     if (!teamNumber || !FRC_TEAM_NUMBERS.includes(teamNumber)) {
       return;
     }
-    fetchTeamData(teamNumber).then(setTeamData).catch(alert);
-  }, [teamNumber]);
+    fetchTeamData(teamNumber, recency).then(setTeamData).catch(alert);
+  }, [teamNumber, recency]);
 
   useEffect(() => {
     fetchTeamNumbers().then(setScoutedTeams).catch(console.error);
@@ -61,7 +67,9 @@ export const TeamTab: FC = () => {
       <div className="w-full max-w-2xl bg-slate-900/40 backdrop-blur-md border border-white/5 p-4 rounded-2xl mb-4 flex justify-center items-center">
         <TeamSelect
           teamNumber={teamNumber ?? undefined}
+          recency={recency ?? undefined}
           setTeamNumber={setTeamNumber}
+          setRecency={setRecency}
           scoutedTeams={scoutedTeams ?? []}
         />
       </div>
@@ -85,15 +93,15 @@ export const TeamTab: FC = () => {
 
         <div className="grid grid-cols-3 gap-4 w-full">
           <StatView
-            statContent={teamData?.super.defense.toFixed(2).toString()}
+            statContent={teamData?.super.defense?.toFixed(2).toString()}
             statName={"Defense"}
           />
           <StatView
-            statContent={teamData?.super.evasion.toFixed(2).toString()}
+            statContent={teamData?.super.evasion?.toFixed(2).toString()}
             statName={"Evasion"}
           />
           <StatView
-            statContent={teamData?.super.driving.toFixed(2).toString()}
+            statContent={teamData?.super.driving?.toFixed(2).toString()}
             statName={"Driving"}
           />
         </div>
