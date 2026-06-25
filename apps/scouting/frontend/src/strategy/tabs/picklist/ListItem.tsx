@@ -6,7 +6,11 @@ export const ListItem: FC<{ team: TeamListData; index: number }> = ({
   team,
   index,
 }) => (
-  <Draggable key={team.id} draggableId={team.id} index={index}>
+  <Draggable
+    key={team.teamNumber}
+    draggableId={team.teamNumber.toString()}
+    index={index}
+  >
     {(provided, snapshot) => (
       <div
         ref={provided.innerRef}
@@ -32,7 +36,7 @@ export const ListItem: FC<{ team: TeamListData; index: number }> = ({
         </div>
 
         <div className="col-span-3 text-right font-mono font-bold text-emerald-400">
-          {team.avgPoints.toFixed(1)}
+          {team.avgFuel.toFixed(1)}
         </div>
       </div>
     )}

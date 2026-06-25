@@ -1406,6 +1406,10 @@ export const FRC_TEAMS = [
 ];
 export const FRC_TEAM_NUMBERS = FRC_TEAMS.map((team) => team.teamNumber);
 
+export const getTeamName = (team: number) =>
+  FRC_TEAMS.find(({ teamNumber }) => teamNumber === team)?.nickname ??
+  "Unknown Team";
+
 export type TeamString<N extends number = number> = `frc${N}`;
 export const teamStringToTeamNumber = <
   N extends number,

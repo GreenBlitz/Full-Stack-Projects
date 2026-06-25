@@ -1,44 +1,36 @@
-import React, { useState, type FC } from "react";
-import {
-  DragDropContext,
-  Droppable,
-  Draggable,
-  type DropResult,
-} from "@hello-pangea/dnd";
+import React, { useEffect, useState } from "react";
+import { DragDropContext, Droppable, type DropResult } from "@hello-pangea/dnd";
 import { ListItem } from "./ListItem";
+import type { DataPicklistBee, GeneralTeamBeeData } from "@repo/scouting_types";
+import { getTeamName } from "@repo/frc";
+import { useLocalStorage } from "@repo/local_storage_hook";
 
 export interface TeamListData {
-  id: string;
   teamNumber: number;
   teamName: string;
-  avgPoints: number;
+  avgFuel: number;
 }
 
-const INITIAL_TEAMS: TeamListData[] = [
-  {
-    id: "team-4590",
-    teamNumber: 4590,
-    teamName: "GreenBlitz",
-    avgPoints: 42.5,
-  },
-  { id: "team-1690", teamNumber: 1690, teamName: "Orbit", avgPoints: 48.2 },
-  {
-    id: "team-254",
-    teamNumber: 254,
-    teamName: "The Cheesy Poofs",
-    avgPoints: 51.7,
-  },
-  {
-    id: "team-118",
-    teamNumber: 118,
-    teamName: "The Robonauts",
-    avgPoints: 39.4,
-  },
-  { id: "team-3339", teamNumber: 3339, teamName: "BumbleB", avgPoints: 36.1 },
-];
+const PICKLIST_URL = "/api/v1/picklist/list";
+async function fetchPicklist(name: string): Promise<TeamListData[]> {
+  const response = await fetch(`${PICKLIST_URL}/${name}`);
+
+  const data: DataPicklistBee = await response.json();
+
+  return data.list.map(({ team, full: { fuelScored } }) => ({
+    teamNumber: parseInt(team),
+    teamName: getTeamName(parseInt(team)),
+    avgFuel: fuelScored,
+  }));
+}
 
 export const Picklist: React.FC = () => {
-  const [teams, setTeams] = useState<TeamListData[]>(INITIAL_TEAMS);
+  const [teams, setTeams] = useState<TeamListData[]>([]);
+  const [branch, setBranch] = useLocalStorage("picklist/branch", "master");
+
+  useEffect(() => {
+    fetchPicklist(branch).then(setTeams);
+  }, [branch]);
 
   // This handles the state update when an item finishes moving
   const handleOnDragEnd = (result: DropResult) => {
@@ -83,5 +75,3 @@ export const Picklist: React.FC = () => {
     </div>
   );
 };
-
-
