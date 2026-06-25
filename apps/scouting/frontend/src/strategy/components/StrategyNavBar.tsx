@@ -4,6 +4,7 @@ import { NavLink, Outlet } from "react-router-dom";
 import { LuTable } from "react-icons/lu";
 import { AiOutlineTeam } from "react-icons/ai";
 import type { IconType } from "react-icons/lib";
+import { FaClipboardList } from "react-icons/fa";
 
 const NavigationElement: FC<NavigationElementProps> = ({
   isActive,
@@ -33,6 +34,7 @@ interface NavigationOption {
 const strategyNavigationOptions: NavigationOption[] = [
   { destination: "team", label: "Team", icon: AiOutlineTeam },
   { destination: "general", label: "General", icon: LuTable },
+  { destination: "picklist", label: "Picklist", icon: FaClipboardList },
 ];
 
 interface NavigationElementProps {

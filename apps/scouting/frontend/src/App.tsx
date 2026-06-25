@@ -14,6 +14,7 @@ import { StrategyNavigationBar } from "./strategy/components/StrategyNavBar";
 import { SuperScoutTab } from "./strategy/tabs/super-scout/SuperScoutTab";
 import { Tinder } from "./strategy/tabs/Tinder";
 import { PitScoutTab } from "./strategy/tabs/pit-scout/PitScoutTab";
+import { Picklist } from "./strategy/tabs/picklist/Picklist";
 
 const App: FC = () => {
   return (
@@ -32,6 +33,7 @@ const App: FC = () => {
         <Route path="compare" element={<CompareTwo />} />
         <Route path="super" element={<SuperScoutTab />} />
         <Route path="tinder" element={<Tinder />} />
+        <Route path="picklist" element={<Picklist />} />
       </Route>
       <Route path="*" element={<ScoutedMatches />} />
     </Routes>
