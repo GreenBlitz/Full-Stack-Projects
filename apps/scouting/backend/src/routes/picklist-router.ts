@@ -12,21 +12,24 @@ import {
 import { getTotalGeneralData } from "./general-router";
 import { getDb } from "../middleware/db";
 import { StatusCodes } from "http-status-codes";
-import { GeneralBeeData, GeneralTeamBeeData } from "@repo/scouting_types";
+import { GeneralBeeData } from "@repo/scouting_types";
 import { right as rightEither } from "fp-ts/lib/Either";
-import * as t from "io-ts";
+import {
+  PicklistBee,
+  picklistBeeCodec,
+} from "@repo/scouting_types";
 
 export const picklistRouter = Router();
 
-const picklistCodec = t.type({ name: t.string, list: t.array(t.string) });
-type Picklist = t.TypeOf<typeof picklistCodec>;
-
 export const getPicklistCollection = flow(
   getDb,
-  map((db) => db.collection<Picklist>("picklist")),
+  map((db) => db.collection<PicklistBee>("picklist")),
 );
 
-const createNewPickList = (data: GeneralBeeData, name: string): Picklist => ({
+const createNewPickList = (
+  data: GeneralBeeData,
+  name: string,
+): PicklistBee => ({
   name,
   list: Object.entries(data)
     .map(([team, data]) => ({
@@ -72,7 +75,7 @@ picklistRouter.post("/", async (req, res) => {
     bind("picklist", () =>
       pipe(
         rightEither(req),
-        createBodyVerificationPipe(picklistCodec),
+        createBodyVerificationPipe(picklistBeeCodec),
         fromEither,
       ),
     ),
