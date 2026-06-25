@@ -2,7 +2,7 @@
 
 import { Router } from "express";
 import { formsRouter, getFormsCollection } from "./forms-router";
-import { pipe } from "fp-ts/lib/function";
+import { pipe, flow } from "fp-ts/lib/function";
 import { fold, map, bindTo, bind, flatMap } from "fp-ts/lib/TaskEither";
 import { mongofyQuery, flatTryCatch, foldResponse } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
@@ -84,20 +84,21 @@ export const calculateGeneralForTeam = (
   };
 };
 
-generalRouter.get("/", async (req, res) => {
-  await pipe(
-    getBeeScoutCollection(),
+export const getTotalGeneralData = flow(
+  getBeeScoutCollection,
 
-    flatTryCatch(
-      (collection) => collection.find().toArray(),
-      (error) => ({
-        status: StatusCodes.INTERNAL_SERVER_ERROR,
-        reason: `Could not get forms from DB: ${error}`,
-      }),
-    ),
-    map(groupBy((form: BeeScoutingForm) => form.teamNumber.toString())),
-    map((teamsForms) => mapObject(teamsForms, calculateGeneralForTeam)),
-    bindTo("generalData"),
-    foldResponse(res),
-  )();
+  flatTryCatch(
+    (collection) => collection.find().toArray(),
+    (error) => ({
+      status: StatusCodes.INTERNAL_SERVER_ERROR,
+      reason: `Could not get forms from DB: ${error}`,
+    }),
+  ),
+  map(groupBy((form: BeeScoutingForm) => form.teamNumber.toString())),
+  map((teamsForms) => mapObject(teamsForms, calculateGeneralForTeam)),
+  bindTo("generalData"),
+);
+
+generalRouter.get("/", async (req, res) => {
+  await pipe(getTotalGeneralData(), foldResponse(res))();
 });
