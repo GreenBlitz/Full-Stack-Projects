@@ -61,7 +61,7 @@ picklistRouter.get("/list/:picklist", async (req, res) => {
       name: picklist.name,
       list: picklist.list.map((team) => generalData[team]),
     })),
-    map((picklist) =>picklist satisfies DataPicklistBee),
+    map((picklist) => picklist satisfies DataPicklistBee),
     foldResponse(res),
   )();
 });
