@@ -12,12 +12,9 @@ import {
 import { getTotalGeneralData } from "./general-router";
 import { getDb } from "../middleware/db";
 import { StatusCodes } from "http-status-codes";
-import { GeneralBeeData } from "@repo/scouting_types";
+import { DataPicklistBee, GeneralBeeData } from "@repo/scouting_types";
 import { right as rightEither } from "fp-ts/lib/Either";
-import {
-  PicklistBee,
-  picklistBeeCodec,
-} from "@repo/scouting_types";
+import { PicklistBee, picklistBeeCodec } from "@repo/scouting_types";
 
 export const picklistRouter = Router();
 
@@ -43,7 +40,7 @@ const createNewPickList = (
     .map(({ team }) => team),
 });
 
-picklistRouter.get("/:picklist", async (req, res) => {
+picklistRouter.get("/list/:picklist", async (req, res) => {
   await pipe(
     getTotalGeneralData(),
     bind("picklistCollection", getPicklistCollection),
@@ -64,11 +61,12 @@ picklistRouter.get("/:picklist", async (req, res) => {
       name: picklist.name,
       list: picklist.list.map((team) => generalData[team]),
     })),
+    map((picklist) => picklist satisfies DataPicklistBee),
     foldResponse(res),
   )();
 });
 
-picklistRouter.post("/", async (req, res) => {
+picklistRouter.post("/list", async (req, res) => {
   await pipe(
     getPicklistCollection(),
     bindTo("picklistCollection"),
@@ -89,6 +87,22 @@ picklistRouter.post("/", async (req, res) => {
         reason: `Error inserting into DB ${error}`,
       }),
     ),
+    foldResponse(res),
+  )();
+});
+
+picklistRouter.get("/lists", async (req, res) => {
+  await pipe(
+    getPicklistCollection(),
+
+    flatTryCatch(
+      (collection) => collection.find().toArray(),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `Error inserting into DB ${error}`,
+      }),
+    ),
+    map((lists) => lists.map(({ name }) => name)),
     foldResponse(res),
   )();
 });
