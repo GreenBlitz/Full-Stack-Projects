@@ -2,9 +2,11 @@
 
 import type {
   PitScout,
-  PitScoutNumberKey,
+  // PitScoutNumberKey,
 } from "@repo/scouting_types";
 import type { FC } from "react";
+
+type PitScoutNumberKey = ""; //placeholder since its causing errors
 
 interface NumberStatsProps {
   statKey: PitScoutNumberKey;
@@ -32,7 +34,7 @@ export const NumberStats: FC<NumberStatsProps> = ({
       <input
         type="number"
         className="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-2.5 outline-none focus:border-amber-500/50 transition-all text-sm font-medium"
-        value={form.numberMetrics[statKey] ?? ""}
+        // value={form.numberMetrics[statKey] ?? ""}
         onChange={(event) =>
           setNumberForm(statKey, parseFloat(event.target.value))
         }

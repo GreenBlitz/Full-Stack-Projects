@@ -1,5 +1,5 @@
 import * as t from "io-ts";
-import { GeneralTeamBeeData } from "./general";
+import { type GeneralTeamBeeData } from "./general";
 
 export const picklistBeeCodec = t.type({
   name: t.string,
