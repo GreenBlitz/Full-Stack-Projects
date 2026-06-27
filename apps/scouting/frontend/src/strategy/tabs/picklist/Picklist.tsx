@@ -8,6 +8,7 @@ import type {
 } from "@repo/scouting_types";
 import { getTeamName } from "@repo/frc";
 import { useLocalStorage } from "@repo/local_storage_hook";
+import { isEmpty } from "@repo/array-functions";
 
 export interface TeamListData {
   teamNumber: number;
@@ -68,7 +69,10 @@ const savePicklist = async (name: string, list: string[]) => {
 };
 
 export const Picklist: React.FC = () => {
-  const [teams, setTeams] = useLocalStorage<TeamListData[]>("picklist/teams",[]);
+  const [teams, setTeams] = useLocalStorage<TeamListData[]>(
+    "picklist/teams",
+    [],
+  );
   const [branch, setBranch] = useLocalStorage("picklist/branch", "master");
   const [allBranches, setAllBranches] = useState<string[]>([]);
 
@@ -78,7 +82,9 @@ export const Picklist: React.FC = () => {
     setBranch(name);
   };
   useEffect(() => {
-    loadBranch(branch);
+    if (isEmpty(teams)) {
+      loadBranch(branch);
+    }
     fetchBranches().then(setAllBranches);
   }, []);
 
