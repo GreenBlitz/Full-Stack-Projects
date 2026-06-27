@@ -4,6 +4,7 @@ import { map, right, type TaskEither, tryCatch } from "fp-ts/TaskEither";
 import type { EndpointError } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
 import { pipe } from "fp-ts/lib/function";
+import { error } from "console";
 
 const url = process.env.MONGO_URI ?? "mongodb://localhost:27017";
 const dbName = "scouting";
@@ -67,7 +68,11 @@ export const getDb = (): TaskEither<EndpointError, Db> =>
     ? right(db)
     : pipe(
         tryCatch(
-          () => client.connect(),
+          () =>
+            client.connect().catch((error) => {
+              console.log(error);
+              throw new Error(error);
+            }),
           (error) => ({
             status: StatusCodes.INTERNAL_SERVER_ERROR,
             reason: `Database not connected: ${JSON.stringify(error)}`,
