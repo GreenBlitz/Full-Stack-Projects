@@ -70,8 +70,8 @@ const calculateTeamDataForTeam = (
       defensePerGame: findDataOverMatches("super", "defenseLevel", recentForms),
       evasionPerGame: findDataOverMatches("super", "evasionLevel", recentForms),
     },
-
     notes: forms.map((form)=> form.notes)
+
   };
 };
 

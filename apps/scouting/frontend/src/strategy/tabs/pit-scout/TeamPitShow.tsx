@@ -114,7 +114,7 @@ const BooleanStatCell: FC<BooleanStatCellProps> = (props) => {
   );
 };
 
-const NotesCell: FC<{ notes: string[] }> = ({ notes }) => {
+export const NotesCell: FC<{ notes: string[] }> = ({ notes }) => {
   if (notes.length === 0) return null;
   return (
     <div className="w-full flex flex-col gap-2 mt-2">

@@ -7,7 +7,7 @@ import { TeamSelect } from "./TeamSelect";
 import { useLocalStorage } from "@repo/local_storage_hook";
 import { fetchTeamNumbers } from "../../fetches";
 import { StatView } from "./StatView";
-import { PitScoutResultsTab } from "../pit-scout/TeamPitShow";
+import { NotesCell, PitScoutResultsTab } from "../pit-scout/TeamPitShow";
 import { SuperBarChart } from "./SuperBarChart";
 import { ThrowBarChart } from "./ThrowBarChart";
 
@@ -121,6 +121,12 @@ export const TeamTab: FC = () => {
       {teamData && (
         <div className="w-full max-w-2xl my-5">
           <ThrowBarChart periodData={teamData.auto} max={70} title="Auto" />
+        </div>
+      )}
+
+      {teamData && (
+        <div>
+          <NotesCell notes={teamData.notes}/>
         </div>
       )}
     </div>
