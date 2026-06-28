@@ -96,8 +96,9 @@ const structureData = (data: Record<string, string>[]): BeeScoutingForm[] => {
         didEvasions: toBool(row.G_wasDefended),
         evasionLevel: Number(row.G_CopeWithDefence || 0),
       },
+      comp: row.Comp, 
+      notes: row.G_Comments,
 
-      comp: row.Comp,
     };
   });
   return unfilteredData.filter((row): row is BeeScoutingForm => row !== false);
@@ -105,8 +106,8 @@ const structureData = (data: Record<string, string>[]): BeeScoutingForm[] => {
 
 const updateData = async (db: Db) => {
   try {
-    console.log(process.env.CHAMPS_SHEETS_ID);
-    const raw = await getSheetData(process.env.CHAMPS_SHEETS_ID, sheetsRange);
+    console.log(process.env.DIS1_CHAMPS_ID);
+    const raw = await getSheetData(process.env.DIS1_CHAMPS_ID, sheetsRange);
     if (!raw) {
       console.log("No data returned from Bee A Scout google sheets");
       return;
