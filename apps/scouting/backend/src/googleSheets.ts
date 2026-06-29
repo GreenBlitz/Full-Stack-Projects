@@ -11,6 +11,8 @@ import { firstElement } from "@repo/array-functions";
 
 const sheetsRange = "teamPerMatch";
 
+const DIS1_SHEETS = "1-V___4ap8EHyyuqQS8m3SLbXOEmdxlOILD8gGPWott4"
+
 const SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"];
 const KEY_FILE_PATH = path.join(__dirname, "../src/sheets-key.json");
 
@@ -106,8 +108,8 @@ const structureData = (data: Record<string, string>[]): BeeScoutingForm[] => {
 
 const updateData = async (db: Db) => {
   try {
-    console.log(process.env.DIS1_CHAMPS_ID);
-    const raw = await getSheetData(process.env.DIS1_CHAMPS_ID, sheetsRange);
+    console.log(DIS1_SHEETS);
+    const raw = await getSheetData(DIS1_SHEETS, sheetsRange);
     if (!raw) {
       console.log("No data returned from Bee A Scout google sheets");
       return;
