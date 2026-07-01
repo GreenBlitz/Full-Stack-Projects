@@ -109,14 +109,15 @@ const structureData = (data: Record<string, string>[]): BeeScoutingForm[] => {
 
 const updateData = async (db: Db) => {
   try {
-    console.log(DIS1_SHEETS);
-    const raw = await getSheetData(DIS1_SHEETS, sheetsRange);
-    if (!raw) {
-      console.log("No data returned from Bee A Scout google sheets");
-      return;
-    }
+    console.log("dis 1: "+DIS1_SHEETS);
+    console.log("dis 2: "+DIS2_SHEETS);
 
-    const structured = structureData(formatData(raw));
+    const rawDis1= await getSheetData(DIS1_SHEETS, sheetsRange);
+    const rawDis2= await getSheetData(DIS2_SHEETS, sheetsRange);
+
+    const rawCombined = [...(rawDis1 ?? []), ...(rawDis2 ?? [])];
+
+    const structured = structureData(formatData(rawCombined));
     const collection = db.collection<BeeScoutingForm>("beeScout");
 
     if (structured.length < 10) {
