@@ -15,7 +15,7 @@ const TEAM_DATA_URL = "/api/v1/teamPage";
 const NO_DATA_ON_TEAM_STATUS = 502;
 
 const allGamesRecency = 100;
-async function fetchTeamData(team: number, recency: number | null) {
+export async function fetchTeamData(team: number, recency: number | null) {
   const response = await fetch(
     `${TEAM_DATA_URL}/${recency ?? allGamesRecency}?teamNumber=${team.toString()}`,
   );
