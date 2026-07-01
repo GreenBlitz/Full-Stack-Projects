@@ -16,7 +16,7 @@ export const StatView: React.FC<StatViewProps> = ({
         {statName}
       </label>
 
-      <span className="text-4xl font-black tracking-tight text-white block mt-auto truncate">
+      <span className="text-2xl sm:text-4xl font-black tracking-tight text-white block mt-auto break-all whitespace-normal">
         {statContent || "—"}
       </span>
     </div>
