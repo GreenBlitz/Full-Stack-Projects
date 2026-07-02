@@ -70,7 +70,7 @@ export const TeamTab: FC = () => {
         <div className="grid grid-cols-2 gap-4 w-full">
           <StatView
             statContent={teamData?.total.fuelAverage.scored.toFixed(2)}
-            statName={"total points"}
+            statName={"Total Points"}
           />
           <StatView
             statContent={teamData?.auto.fuelAverage.scored.toFixed(2)}
@@ -106,7 +106,7 @@ export const TeamTab: FC = () => {
           <ThrowBarChart
             periodData={teamData.total}
             max={400}
-            title="full game"
+            title="Full Game"
           />
         </div>
       )}

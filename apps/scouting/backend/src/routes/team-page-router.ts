@@ -15,7 +15,7 @@ import { TeamPageTeamBeeData } from "@repo/scouting_types";
 export const teamPageRouter = Router();
 
 const findDataOverMatches = (
-  section: "auto" | "tele" | "super" | "total",
+  section: "auto" | "tele" | "super" | "full",
   type: "scored" | "passed" | "defenseLevel" | "evasionLevel",
   forms: BeeScoutingForm[],
 ): Record<string, number> => {
@@ -24,7 +24,7 @@ const findDataOverMatches = (
       forms.map((form) => [form.matchNumber, form[section][type]]),
     );
   }
-  if (section === "total") {
+  if (section === "full") {
     return Object.fromEntries(
       forms.map((form) => [
         form.matchNumber,
@@ -73,12 +73,12 @@ const calculateTeamDataForTeam = (
     },
     total: {
       fuelAverage: {
-        passed: teamAverages.auto.fuelPassed + teamAverages.tele.fuelPassed,
-        scored: teamAverages.auto.fuelScored + teamAverages.tele.fuelScored,
+        passed: teamAverages.full.fuelPassed,
+        scored: teamAverages.full.fuelScored,
       },
       fuelPerGame: {
-        fuelScoredPerGame: findDataOverMatches("total", "scored", recentForms),
-        fuelPassedPerGame: findDataOverMatches("total", "passed", recentForms),
+        fuelScoredPerGame: findDataOverMatches("full", "scored", recentForms),
+        fuelPassedPerGame: findDataOverMatches("full", "passed", recentForms),
       },
     },
     super: {
