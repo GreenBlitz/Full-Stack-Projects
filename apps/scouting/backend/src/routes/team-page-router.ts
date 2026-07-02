@@ -15,13 +15,21 @@ import { TeamPageTeamBeeData } from "@repo/scouting_types";
 export const teamPageRouter = Router();
 
 const findDataOverMatches = (
-  section: "auto" | "tele" | "super",
+  section: "auto" | "tele" | "super" | "total",
   type: "scored" | "passed" | "defenseLevel" | "evasionLevel",
   forms: BeeScoutingForm[],
 ): Record<string, number> => {
   if (section === "super") {
     return Object.fromEntries(
       forms.map((form) => [form.matchNumber, form[section][type]]),
+    );
+  }
+  if (section === "total") {
+    return Object.fromEntries(
+      forms.map((form) => [
+        form.matchNumber,
+        form.auto.fuel[type] + form.tele.fuel[type],
+      ]),
     );
   }
   return Object.fromEntries(
@@ -63,6 +71,16 @@ const calculateTeamDataForTeam = (
         fuelPassedPerGame: findDataOverMatches("tele", "passed", recentForms),
       },
     },
+    total: {
+      fuelAverage: {
+        passed: teamAverages.auto.fuelPassed + teamAverages.tele.fuelPassed,
+        scored: teamAverages.auto.fuelScored + teamAverages.tele.fuelScored,
+      },
+      fuelPerGame: {
+        fuelScoredPerGame: findDataOverMatches("total", "scored", recentForms),
+        fuelPassedPerGame: findDataOverMatches("total", "passed", recentForms),
+      },
+    },
     super: {
       defense: teamAverages.super.defenseRating,
       evasion: teamAverages.super.evasionRating,
@@ -70,8 +88,7 @@ const calculateTeamDataForTeam = (
       defensePerGame: findDataOverMatches("super", "defenseLevel", recentForms),
       evasionPerGame: findDataOverMatches("super", "evasionLevel", recentForms),
     },
-    notes: forms.map((form)=> form.notes)
-
+    notes: forms.map((form) => form.notes),
   };
 };
 
