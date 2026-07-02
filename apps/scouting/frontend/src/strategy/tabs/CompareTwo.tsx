@@ -12,13 +12,13 @@ import { fetchTeamData } from "./team/TeamTab";
 import { useLocalStorage } from "@repo/local_storage_hook";
 import { partition } from "@repo/array-functions";
 import { FRC_TEAMS } from "@repo/frc";
+import { ThrowBarChart } from "./team/ThrowBarChart";
+import { SuperBarChart } from "./team/SuperBarChart";
 
-const compareUrl = "/api/v1/compare/";
+const superStats = ["defense", "evasion", "driving"] as const;
 
 const NEEDED_SELECTED_TEAMS = 2;
-const DEFAULT_LEVEL = 0;
 const FIRST_INDEX = 0;
-const MIN_AMOUNT_CLIMB = 0;
 
 interface StatBoxProps {
   label: string;
@@ -84,10 +84,6 @@ export const CompareTwo: React.FC = () => {
       setIsLoading(false);
     }
   };
-  const { true: actualScoutedTeams, false: otherTeams } = useMemo(
-    () => partition(FRC_TEAMS, (team) => teamNumbers.includes(team.teamNumber)),
-    [teamNumbers],
-  );
 
   const getStatColor = (
     thisTeamStat: number,
@@ -107,7 +103,13 @@ export const CompareTwo: React.FC = () => {
     Number(
       (team.auto.fuelAverage.scored + team.tele.fuelAverage.scored).toFixed(2),
     );
+  const getAutoPoints = (team: TeamPageTeamBeeData) =>
+    Number(team.auto.fuelAverage.scored.toFixed(2));
 
+  const getSuperRank = (
+    team: TeamPageTeamBeeData,
+    superStat: "defense" | "evasion" | "driving",
+  ) => Number(team.super[superStat]?.toFixed(2));
 
   return (
     <div className="flex flex-col gap-8 p-8 bg-slate-950 min-h-screen text-slate-200">
@@ -117,23 +119,21 @@ export const CompareTwo: React.FC = () => {
             Select Teams
           </span>
           <div className="flex flex-wrap justify-center gap-3">
-            {otherTeams
-              .map((team) => team.teamNumber)
-              .map((teamNumber) => (
-                <button
-                  key={teamNumber}
-                  onClick={() => {
-                    toggleTeamSelection(teamNumber);
-                  }}
-                  className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all border ${
-                    selectedTeams.includes(teamNumber)
-                      ? "bg-emerald-500 text-slate-950 border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.3)] scale-105"
-                      : "bg-transparent text-slate-400 border-white/5 hover:border-emerald-500/50 hover:text-emerald-400"
-                  }`}
-                >
-                  {teamNumber}
-                </button>
-              ))}
+            {teamNumbers.map((teamNumber) => (
+              <button
+                key={teamNumber}
+                onClick={() => {
+                  toggleTeamSelection(teamNumber);
+                }}
+                className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all border ${
+                  selectedTeams.includes(teamNumber)
+                    ? "bg-emerald-500 text-slate-950 border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.3)] scale-105"
+                    : "bg-transparent text-slate-400 border-white/5 hover:border-emerald-500/50 hover:text-emerald-400"
+                }`}
+              >
+                {teamNumber}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -149,7 +149,7 @@ export const CompareTwo: React.FC = () => {
       </div>
 
       {comparisonData && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="grid grid-cols-2 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500 w-full overflow-x-auto">
           {Object.values(comparisonData).map(
             (team: TeamPageTeamBeeData, idx) => {
               const otherTeam =
@@ -159,7 +159,7 @@ export const CompareTwo: React.FC = () => {
               return (
                 <div
                   key={selectedTeams[idx]}
-                  className="bg-slate-900/40 border border-white/10 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-sm"
+                  className="bg-slate-900/40 border border-white/10 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-sm min-w-[300px]" // Added min-w to keep it readable if shrunk too far
                 >
                   <div className="bg-slate-900 border-b border-white/10 py-6 text-center">
                     <span className="text-[10px] uppercase tracking-[0.4em] font-bold text-emerald-500/60 block mb-1">
@@ -170,15 +170,63 @@ export const CompareTwo: React.FC = () => {
                     </span>
                   </div>
 
-                  <StatBox
-                    label={"total points"}
-                    value={getTotalPoints(team)}
-                    color={getStatColor(
-                      getTotalPoints(team),
-                      getTotalPoints(otherTeam),
-                    )}
-                  />
+                  <div className="grid grid-cols-2 border-b border-white/5 divide-x divide-white/5">
+                    <StatBox
+                      label={"total points"}
+                      value={getTotalPoints(team)}
+                      color={getStatColor(
+                        getTotalPoints(team),
+                        getTotalPoints(otherTeam),
+                      )}
+                    />
+                    <StatBox
+                      label={"auto points"}
+                      value={getAutoPoints(team)}
+                      color={getStatColor(
+                        getAutoPoints(team),
+                        getAutoPoints(otherTeam),
+                      )}
+                    />
+                  </div>
 
+                  {team && (
+                    <div className="w-full max-w-2xl my-5">
+                      <ThrowBarChart
+                        periodData={team.tele}
+                        max={400}
+                        title="Teleop"
+                      />
+                    </div>
+                  )}
+
+                  {team && (
+                    <div className="w-full max-w-2xl my-5">
+                      <ThrowBarChart
+                        periodData={team.auto}
+                        max={70}
+                        title="Auto"
+                      />
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full">
+                    {superStats.map((stat) => (
+                      <StatBox
+                        key={stat}
+                        label={stat}
+                        value={getSuperRank(team, stat)}
+                        color={getStatColor(
+                          getSuperRank(team, stat),
+                          getSuperRank(otherTeam, stat),
+                        )}
+                      />
+                    ))}
+                  </div>
+                  {team && (
+                    <div className="w-full max-w-2xl my-5">
+                      <SuperBarChart superData={team.super} />
+                    </div>
+                  )}
                 </div>
               );
             },

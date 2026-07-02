@@ -44,12 +44,6 @@ export const TeamTab: FC = () => {
 
   const [scoutedTeams, setScoutedTeams] = useState<number[]>();
 
-  // const [formIndex, setFormIndex] = useState(0);
-
-  // // reset index when team changes
-  // useEffect(() => {
-  //   setFormIndex(0);
-  // }, [teamNumber]);
 
   useEffect(() => {
     if (!teamNumber || !FRC_TEAM_NUMBERS.includes(teamNumber)) {
