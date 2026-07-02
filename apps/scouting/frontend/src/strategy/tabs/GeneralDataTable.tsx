@@ -122,24 +122,17 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
           <span className="font-black text-emerald-400">{info.getValue()}</span>
         ),
       }),
-
+      createColumn("Score Full", "text-green-500"),
+      createColumn("Score Auto", "text-blue-500"),
+      createColumn("Defense Rating", "text-pink-500"),
       createColumn("Score Tele", "text-red-500"),
       createColumn("Pass Tele", "text-violet-500"),
-
-      createColumn("Score Auto", "text-blue-500"),
       createColumn("Driving", "text-orange-500"),
-
-      createColumn("Defense Rating", "text-pink-500"),
       createColumn("Times Defended", "text-pink-200"),
-
       createColumn("Evasion Rating", "text-purple-500"),
       createColumn("Times Evaded", "text-purple-200"),
-
       createColumn("Climb Full", "text-purple-400 font-bold"),
-
       createColumn("Pass Auto", "text-violet-500"),
-
-      createColumn("Score Full", "text-green-500"),
       createColumn("Pass Full", "text-green-200"),
     ],
     [sorting],
