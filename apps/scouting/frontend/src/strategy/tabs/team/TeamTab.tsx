@@ -70,16 +70,12 @@ export const TeamTab: FC = () => {
       <div className="w-full max-w-2xl flex flex-col gap-4">
         <div className="grid grid-cols-2 gap-4 w-full">
           <StatView
-            statContent={teamData?.auto.fuelAverage.scored
-              .toFixed(2)
-              .toString()}
-            statName={"Auto Points"}
+            statContent={teamData?.total.fuelAverage.scored.toFixed(2)}
+            statName={"Total Points"}
           />
           <StatView
-            statContent={teamData?.tele.fuelAverage.scored
-              .toFixed(2)
-              .toString()}
-            statName={"Teleop Points"}
+            statContent={teamData?.auto.fuelAverage.scored.toFixed(2)}
+            statName={"Auto Points"}
           />
         </div>
 
@@ -108,7 +104,11 @@ export const TeamTab: FC = () => {
 
       {teamData && (
         <div className="w-full max-w-2xl my-5">
-          <ThrowBarChart periodData={teamData.tele} max={400} title="Teleop" />
+          <ThrowBarChart
+            periodData={teamData.total}
+            max={400}
+            title="Full Game"
+          />
         </div>
       )}
 
@@ -120,7 +120,7 @@ export const TeamTab: FC = () => {
 
       {teamData && (
         <div>
-          <NotesCell notes={teamData.notes}/>
+          <NotesCell notes={teamData.notes} />
         </div>
       )}
     </div>
