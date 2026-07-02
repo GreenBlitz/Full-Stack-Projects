@@ -14,5 +14,5 @@ export const fetchTeamNumbers = async () => {
     throw new Error(`Server Error: ${errorText}`);
   }
   const data = await response.json();
-  return data.teamNumbers.map(Number).sort() as number[];
+  return data.teamNumbers.map(Number).sort((a: number, b: number) => a - b);
 };
