@@ -11,7 +11,7 @@ import { NotesCell, PitScoutResultsTab } from "../pit-scout/TeamPitShow";
 import { SuperBarChart } from "./SuperBarChart";
 import { ThrowBarChart } from "./ThrowBarChart";
 
-const TEAM_DATA_URL = "/api/v1/teamPage";
+const TEAM_DATA_URL = "/api/v1/teamPage/matches";
 const NO_DATA_ON_TEAM_STATUS = 502;
 
 const allGamesRecency = 100;
