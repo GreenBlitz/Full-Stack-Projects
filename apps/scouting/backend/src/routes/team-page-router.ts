@@ -78,7 +78,7 @@ const calculateTeamDataForTeam = (
 const parseRecency = (recencyString: string) =>
   parseInt(recencyString ?? "100");
 
-teamPageRouter.get("/:recency", async (req, res) => {
+teamPageRouter.get("/matches/:recency", async (req, res) => {
   await pipe(
     getBeeScoutCollection(),
     flatTryCatch(

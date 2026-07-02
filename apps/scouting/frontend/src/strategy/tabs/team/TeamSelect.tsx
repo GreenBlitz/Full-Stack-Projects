@@ -72,7 +72,7 @@ export const TeamSelect: FC<TeamSelectProps> = ({
             <option
               key={team.teamNumber}
               value={team.teamNumber}
-              className="bg-emerald-500 text-slate-200"
+              className="bg-slate-500 text-slate-200"
             >
               {team.teamNumber} | {team.nickname}
             </option>
@@ -81,7 +81,7 @@ export const TeamSelect: FC<TeamSelectProps> = ({
             <option
               key={team.teamNumber}
               value={team.teamNumber}
-              className="bg-slate-900 text-slate-200"
+              className="bg-red-900 text-slate-200"
             >
               {team.teamNumber} | {team.nickname}
             </option>
