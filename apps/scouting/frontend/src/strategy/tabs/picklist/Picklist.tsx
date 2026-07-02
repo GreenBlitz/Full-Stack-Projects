@@ -13,7 +13,9 @@ import { isEmpty } from "@repo/array-functions";
 export interface TeamListData {
   teamNumber: number;
   teamName: string;
-  avgFuel: number;
+  totalPoints: number;
+  autoPoints: number;
+  defense: number;
 }
 
 const PICKLIST_URL = "/api/v1/picklist/list";
@@ -31,11 +33,15 @@ const fetchPicklist = async (
 
   const data: DataPicklistBee = await response.json();
 
-  return data.list.map(({ team, full: { fuelScored } }) => ({
-    teamNumber: parseInt(team),
-    teamName: getTeamName(parseInt(team)),
-    avgFuel: fuelScored,
-  }));
+  return data.list
+    .map(({ team, auto, full, super: superData }) => ({
+      teamNumber: Number(team),
+      teamName: getTeamName(Number(team)),
+      totalPoints: full.fuelScored,
+      autoPoints: auto.fuelScored,
+      defense: superData.defenseRating,
+    }))
+    .sort((a, b) => b.totalPoints - a.totalPoints);
 };
 
 const PICKLISTS_URL = "/api/v1/picklist/lists";
@@ -176,8 +182,10 @@ export const Picklist: React.FC = () => {
       <div className="grid grid-cols-12 gap-4 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-slate-400 border-b border-slate-800">
         <div className="col-span-1 text-center">#</div>
         <div className="col-span-2">Team No.</div>
-        <div className="col-span-6">Team Name</div>
-        <div className="col-span-3 text-right">Avg Points</div>
+        <div className="col-span-4">Team Name</div>
+        <div className="col-span-2 text-right">Total</div>
+        <div className="col-span-2 text-right">Auto</div>
+        <div className="col-span-1 text-right">Def</div>
       </div>
       <DragDropContext onDragEnd={handleOnDragEnd}>
         <Droppable droppableId="teams-list">
