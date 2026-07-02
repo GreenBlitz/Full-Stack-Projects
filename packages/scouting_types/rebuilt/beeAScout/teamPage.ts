@@ -29,8 +29,9 @@ const gameSectionCode = t.type({
 const teamDataCodec = t.type({
   auto: gameSectionCode,
   tele: gameSectionCode,
+  total: gameSectionCode,
   super: superCodec,
-  notes: t.array(t.string)
+  notes: t.array(t.string),
 });
 
 export type TeamPageTeamBeeData = t.TypeOf<typeof teamDataCodec>;
