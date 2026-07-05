@@ -10,6 +10,7 @@ import { getTeamName } from "@repo/frc";
 import { useLocalStorage } from "@repo/local_storage_hook";
 import { isEmpty } from "@repo/array-functions";
 import { RecencyInput } from "../team/TeamSelect";
+import { allGamesRecency } from "../team/TeamTab";
 
 export interface TeamListData {
   teamNumber: number;
@@ -22,7 +23,7 @@ export interface TeamListData {
 const PICKLIST_URL = "/api/v1/picklist/list";
 const fetchPicklist = async (
   name: string,
-  recency: number = 100,
+  recency: number = allGamesRecency,
   withAlerts?: boolean,
 ): Promise<TeamListData[] | undefined> => {
   const response = await fetch(`${PICKLIST_URL}/${name}/${recency}`);
