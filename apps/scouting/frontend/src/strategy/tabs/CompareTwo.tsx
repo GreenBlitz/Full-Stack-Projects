@@ -8,6 +8,7 @@ import { fetchTeamData } from "./team/TeamTab";
 import { useLocalStorage } from "@repo/local_storage_hook";
 import { ThrowBarChart } from "./team/ThrowBarChart";
 import { SuperBarChart } from "./team/SuperBarChart";
+import { RecencyInput } from "./team/TeamSelect";
 
 const superStats = ["defense", "evasion", "driving"] as const;
 
@@ -103,6 +104,8 @@ export const CompareTwo: React.FC = () => {
   return (
     <div className="flex flex-col gap-8 p-8 bg-slate-950 min-h-screen text-slate-200">
       <div className="flex flex-col items-center gap-6 p-6 bg-slate-900/40 rounded-2xl border border-white/10 backdrop-blur-md">
+        <RecencyInput setRecency={setRecency} recency={recency ?? undefined} />
+
         <div className="flex flex-col items-center gap-3">
           <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">
             Select Teams
@@ -148,7 +151,7 @@ export const CompareTwo: React.FC = () => {
               return (
                 <div
                   key={selectedTeams[idx]}
-                  className="bg-slate-900/40 border border-white/10 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-sm min-w-[300px]" // Added min-w to keep it readable if shrunk too far
+                  className="bg-slate-900/40 border border-white/10 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-sm min-w-75" // Added min-w to keep it readable if shrunk too far
                 >
                   <div className="bg-slate-900 border-b border-white/10 py-6 text-center">
                     <span className="text-[10px] uppercase tracking-[0.4em] font-bold text-emerald-500/60 block mb-1">
