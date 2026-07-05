@@ -102,23 +102,33 @@ export const TeamSelect: FC<TeamSelectProps> = ({
           </svg>
         </div>
       </div>
-      <div className="relative ">
-        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-500/50">
-          <FaRegClock size={16} />
-        </div>
-        <input
-          onChange={(event) => {
-            setRecency(
-              event.currentTarget.value
-                ? Number(event.currentTarget.value)
-                : null,
-            );
-          }}
-          value={recency === EMPTY_INPUT ? undefined : recency}
-          type="number"
-          className="w-20 pl-10 pr-2 py-3 bg-slate-950/50 border border-white/5 rounded-xl text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500/50 transition-all font-mono"
-        />
-      </div>
+      <RecencyInput recency={recency} setRecency={setRecency} />
     </div>
   );
 };
+
+interface RecencyInputProps {
+  recency: number | undefined;
+  setRecency: (recency: number | null) => void;
+}
+
+export const RecencyInput: FC<RecencyInputProps> = ({
+  recency,
+  setRecency,
+}) => (
+  <div className="relative">
+    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-500/50">
+      <FaRegClock size={16} />
+    </div>
+    <input
+      onChange={(event) => {
+        setRecency(
+          event.currentTarget.value ? Number(event.currentTarget.value) : null,
+        );
+      }}
+      value={recency === EMPTY_INPUT ? undefined : recency}
+      type="number"
+      className="w-20 pl-10 pr-2 py-3 bg-slate-950/50 border border-white/5 rounded-xl text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500/50 transition-all font-mono"
+    />
+  </div>
+);

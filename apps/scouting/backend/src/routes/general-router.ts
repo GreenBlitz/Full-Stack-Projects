@@ -24,6 +24,7 @@ import {
 } from "@repo/array-functions";
 import { getTeamsEPAs } from "../middleware/epa";
 import { getBeeScoutCollection } from "../googleSheets";
+import { applyRecency } from "./team-page-router";
 
 export const generalRouter = Router();
 
@@ -84,21 +85,28 @@ export const calculateGeneralForTeam = (
   };
 };
 
-export const getTotalGeneralData = flow(
-  getBeeScoutCollection,
+export const getTotalGeneralData = (recency: number) =>
+  pipe(
+    getBeeScoutCollection(),
 
-  flatTryCatch(
-    (collection) => collection.find().toArray(),
-    (error) => ({
-      status: StatusCodes.INTERNAL_SERVER_ERROR,
-      reason: `Could not get forms from DB: ${error}`,
-    }),
-  ),
-  map(groupBy((form: BeeScoutingForm) => form.teamNumber.toString())),
-  map((teamsForms) => mapObject(teamsForms, calculateGeneralForTeam)),
-  bindTo("generalData"),
-);
+    flatTryCatch(
+      (collection) => collection.find().toArray(),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `Could not get forms from DB: ${error}`,
+      }),
+    ),
+    map(groupBy((form: BeeScoutingForm) => form.teamNumber.toString())),
+    map((teamsForms) =>
+      mapObject(teamsForms, (forms) => applyRecency(forms, recency)),
+    ),
+    map((teamsForms) => mapObject(teamsForms, calculateGeneralForTeam)),
+    bindTo("generalData"),
+  );
 
-generalRouter.get("/", async (req, res) => {
-  await pipe(getTotalGeneralData(), foldResponse(res))();
+generalRouter.get("/:recency", async (req, res) => {
+  await pipe(
+    getTotalGeneralData(parseInt(req.params.recency)),
+    foldResponse(res),
+  )();
 });

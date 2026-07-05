@@ -19,6 +19,8 @@ import { useState, useEffect, useMemo } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { HiOutlineChevronUpDown } from "react-icons/hi2";
 import { mapObject } from "@repo/array-functions";
+import { useLocalStorage } from "@repo/local_storage_hook";
+import { RecencyInput } from "./team/TeamSelect";
 
 export type Column =
   | "Score Tele"
@@ -52,9 +54,9 @@ const columnToKey: Record<Column, DataAccessor> = {
   "Climb Full": ({ full: { climbPoints } }) => climbPoints,
 };
 
-const fetchGeneralData = async (filters = {}) => {
+const fetchGeneralData = async (recency: number, filters = {}) => {
   const params = new URLSearchParams(filters);
-  const url = `/api/v1/general/`;
+  const url = `/api/v1/general/${recency}`;
 
   try {
     const response = await fetch(url, {
@@ -86,10 +88,16 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
 }) => {
   const [allGeneralData, setAllGeneralData] = useState<GeneralBeeData>({});
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [recency, setRecency] = useLocalStorage<number | null>(
+    "general/recency",
+    null,
+  );
 
   useEffect(() => {
-    fetchGeneralData(filters).then(setAllGeneralData).catch(console.error);
-  }, [filters]);
+    fetchGeneralData(recency ?? 100, filters)
+      .then(setAllGeneralData)
+      .catch(console.error);
+  }, [filters, recency]);
 
   const tableData = Object.values(
     mapObject(allGeneralData, (data, team) => ({
@@ -149,6 +157,10 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
 
   return (
     <div className="flex flex-col gap-6 p-4 bg-slate-950 min-h-screen">
+      <div className="flex flex-row gap-3 justify-center items-center mx-auto p-4 bg-slate-900/40 backdrop-blur-sm rounded-2xl border border-white/10 shadow-2xl">
+        <h2 className="font-bold mb-1">Recency</h2>
+        <RecencyInput setRecency={setRecency} recency={recency ?? undefined} />
+      </div>
       <div className="overflow-x-auto rounded-2xl border border-white/10 bg-slate-900/40 backdrop-blur-sm shadow-2xl">
         <table className="w-full min-w-max text-left text-sm border-collapse">
           <thead className="bg-slate-800/50 border-b border-white/10">

@@ -37,13 +37,16 @@ const findDataOverMatches = (
   );
 };
 
+export const applyRecency = (forms: BeeScoutingForm[], recency: number) =>
+  forms
+    .sort((formA, formB) => formA.matchNumber - formB.matchNumber)
+    .slice(-recency);
+
 const calculateTeamDataForTeam = (
   forms: BeeScoutingForm[],
   recency: number,
 ): TeamPageTeamBeeData => {
-  const recentForms = forms
-    .sort((formA, formB) => formA.matchNumber - formB.matchNumber)
-    .slice(-recency);
+  const recentForms = applyRecency(forms, recency);
 
   const teamAverages = calculateGeneralForTeam(
     recentForms,
