@@ -85,6 +85,25 @@ interface GeneralDataTableProps {
 
 const DIGITS_AFTER_DOT = 1;
 
+const getPinnedStyles = (
+  column: any,
+  isHeader?: boolean,
+): React.CSSProperties => {
+  const isPinned = column.getIsPinned();
+
+  return {
+    position: isPinned ? "sticky" : "relative",
+    left: isPinned === "left" ? `${column.getStart("left")}px` : undefined,
+    right: isPinned === "right" ? `${column.getAfter("right")}px` : undefined,
+    zIndex: isPinned ? 5 : 0,
+    backgroundColor: isPinned
+      ? isHeader
+        ? "#121A2D"
+        : "#070D1F"
+      : "transparent",
+  };
+};
+
 export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
   filters,
 }) => {
@@ -152,7 +171,13 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
   const table = useReactTable({
     data: tableData,
     columns,
-    state: { sorting },
+    state: {
+      sorting,
+      columnPinning: {
+        left: ["team"],
+        right: [],
+      },
+    },
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -172,6 +197,7 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
+                    style={getPinnedStyles(header.column, true)}
                     className="px-6 py-4 font-black text-slate-400 uppercase tracking-widest text-[10px] cursor-pointer select-none transition-colors hover:bg-slate-800"
                     onClick={header.column.getToggleSortingHandler()}
                   >
@@ -206,7 +232,11 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
                   className="hover:bg-emerald-500/5 transition-colors group"
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="px-6 py-4 whitespace-nowrap">
+                    <td
+                      key={cell.id}
+                      style={getPinnedStyles(cell.column)}
+                      className="px-6 py-4 whitespace-nowrap"
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),
