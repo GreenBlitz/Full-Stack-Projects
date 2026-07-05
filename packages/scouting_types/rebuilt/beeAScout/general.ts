@@ -16,6 +16,7 @@ export interface GeneralTeamBeeData {
     evasionRating: number;
     timesEvaded: number;
   };
+  timesPlayed: number;
 }
 
 export type GeneralBeeData = Record<string, GeneralTeamBeeData>;
