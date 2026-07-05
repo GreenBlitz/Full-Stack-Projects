@@ -32,6 +32,7 @@ const teamDataCodec = t.type({
   total: gameSectionCode,
   super: superCodec,
   notes: t.array(t.string),
+  timesStole: t.number,
 });
 
 export type TeamPageTeamBeeData = t.TypeOf<typeof teamDataCodec>;

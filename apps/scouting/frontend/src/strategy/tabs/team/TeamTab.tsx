@@ -44,7 +44,6 @@ export const TeamTab: FC = () => {
 
   const [scoutedTeams, setScoutedTeams] = useState<number[]>();
 
-
   useEffect(() => {
     if (!teamNumber || !FRC_TEAM_NUMBERS.includes(teamNumber)) {
       return;
@@ -81,7 +80,7 @@ export const TeamTab: FC = () => {
 
         <PitScoutResultsTab teamNumber={teamNumber} />
 
-        <div className="grid grid-cols-3 gap-4 w-full">
+        <div className="grid grid-cols-4 gap-4 w-full">
           <StatView
             statContent={teamData?.super.defense?.toFixed(2).toString()}
             statName={"Defense"}
@@ -93,6 +92,10 @@ export const TeamTab: FC = () => {
           <StatView
             statContent={teamData?.super.driving?.toFixed(2).toString()}
             statName={"Driving"}
+          />
+          <StatView
+            statContent={teamData?.timesStole?.toFixed(2)}
+            statName={"Times Stole"}
           />
         </div>
       </div>
