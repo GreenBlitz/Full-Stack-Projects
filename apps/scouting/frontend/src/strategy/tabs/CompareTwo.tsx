@@ -8,6 +8,7 @@ import { fetchTeamData } from "./team/TeamTab";
 import { useLocalStorage } from "@repo/local_storage_hook";
 import { ThrowBarChart } from "./team/ThrowBarChart";
 import { SuperBarChart } from "./team/SuperBarChart";
+import { RecencyInput } from "./team/TeamSelect";
 
 const superStats = ["defense", "evasion", "driving"] as const;
 
@@ -126,15 +127,23 @@ export const CompareTwo: React.FC = () => {
           </div>
         </div>
 
-        <button
-          onClick={() => {
-            void handleCompare();
-          }}
-          disabled={selectedTeams.length !== NEEDED_SELECTED_TEAMS || isLoading}
-          className="px-12 py-3 bg-emerald-500 text-slate-950 text-xs font-black uppercase tracking-widest rounded-xl disabled:opacity-20 hover:bg-emerald-400 transition-all active:scale-95 shadow-lg shadow-emerald-900/20"
-        >
-          {isLoading ? "Loading..." : "Compare"}
-        </button>
+        <div className="flex flex-row">
+          <button
+            onClick={() => {
+              void handleCompare();
+            }}
+            disabled={
+              selectedTeams.length !== NEEDED_SELECTED_TEAMS || isLoading
+            }
+            className="px-12 py-3 mr-4 bg-emerald-500 text-slate-950 text-xs font-black uppercase tracking-widest rounded-xl disabled:opacity-20 hover:bg-emerald-400 transition-all active:scale-95 shadow-lg shadow-emerald-900/20"
+          >
+            {isLoading ? "Loading..." : "Compare"}
+          </button>
+          <RecencyInput
+            setRecency={setRecency}
+            recency={recency ?? undefined}
+          />
+        </div>
       </div>
 
       {comparisonData && (
@@ -148,7 +157,7 @@ export const CompareTwo: React.FC = () => {
               return (
                 <div
                   key={selectedTeams[idx]}
-                  className="bg-slate-900/40 border border-white/10 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-sm min-w-[300px]" // Added min-w to keep it readable if shrunk too far
+                  className="bg-slate-900/40 border border-white/10 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-sm min-w-75" // Added min-w to keep it readable if shrunk too far
                 >
                   <div className="bg-slate-900 border-b border-white/10 py-6 text-center">
                     <span className="text-[10px] uppercase tracking-[0.4em] font-bold text-emerald-500/60 block mb-1">
