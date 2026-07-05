@@ -82,6 +82,7 @@ export const calculateGeneralForTeam = (
       ),
       timesEvaded: evasionGames.length,
     },
+    timesPlayed: forms.length,
   };
 };
 
