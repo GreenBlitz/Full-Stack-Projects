@@ -104,8 +104,6 @@ export const CompareTwo: React.FC = () => {
   return (
     <div className="flex flex-col gap-8 p-8 bg-slate-950 min-h-screen text-slate-200">
       <div className="flex flex-col items-center gap-6 p-6 bg-slate-900/40 rounded-2xl border border-white/10 backdrop-blur-md">
-        <RecencyInput setRecency={setRecency} recency={recency ?? undefined} />
-
         <div className="flex flex-col items-center gap-3">
           <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">
             Select Teams
@@ -129,15 +127,23 @@ export const CompareTwo: React.FC = () => {
           </div>
         </div>
 
-        <button
-          onClick={() => {
-            void handleCompare();
-          }}
-          disabled={selectedTeams.length !== NEEDED_SELECTED_TEAMS || isLoading}
-          className="px-12 py-3 bg-emerald-500 text-slate-950 text-xs font-black uppercase tracking-widest rounded-xl disabled:opacity-20 hover:bg-emerald-400 transition-all active:scale-95 shadow-lg shadow-emerald-900/20"
-        >
-          {isLoading ? "Loading..." : "Compare"}
-        </button>
+        <div className="flex flex-row">
+          <button
+            onClick={() => {
+              void handleCompare();
+            }}
+            disabled={
+              selectedTeams.length !== NEEDED_SELECTED_TEAMS || isLoading
+            }
+            className="px-12 py-3 mr-4 bg-emerald-500 text-slate-950 text-xs font-black uppercase tracking-widest rounded-xl disabled:opacity-20 hover:bg-emerald-400 transition-all active:scale-95 shadow-lg shadow-emerald-900/20"
+          >
+            {isLoading ? "Loading..." : "Compare"}
+          </button>
+          <RecencyInput
+            setRecency={setRecency}
+            recency={recency ?? undefined}
+          />
+        </div>
       </div>
 
       {comparisonData && (
