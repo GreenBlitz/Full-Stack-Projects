@@ -1,17 +1,11 @@
 //בס"ד
 
-import type {
-  CompareData,
-  TeamPageTeamBeeData,
-  TeleClimbLevel,
-} from "@repo/scouting_types";
+import type { CompareData, TeamPageTeamBeeData } from "@repo/scouting_types";
 import type React from "react";
-import { useEffect, useMemo, useState, type FC } from "react";
+import { useEffect, useState } from "react";
 import { fetchTeamNumbers } from "../fetches";
 import { fetchTeamData } from "./team/TeamTab";
 import { useLocalStorage } from "@repo/local_storage_hook";
-import { partition } from "@repo/array-functions";
-import { FRC_TEAMS } from "@repo/frc";
 import { ThrowBarChart } from "./team/ThrowBarChart";
 import { SuperBarChart } from "./team/SuperBarChart";
 
@@ -98,11 +92,6 @@ export const CompareTwo: React.FC = () => {
       ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
       : "bg-rose-500/5 text-rose-500/60 border-rose-500/10";
   };
-
-  const getTotalPoints = (team: TeamPageTeamBeeData) =>
-    Number(
-      (team.auto.fuelAverage.scored + team.tele.fuelAverage.scored).toFixed(2),
-    );
   const getAutoPoints = (team: TeamPageTeamBeeData) =>
     Number(team.auto.fuelAverage.scored.toFixed(2));
 
@@ -173,10 +162,10 @@ export const CompareTwo: React.FC = () => {
                   <div className="grid grid-cols-2 border-b border-white/5 divide-x divide-white/5">
                     <StatBox
                       label={"total points"}
-                      value={getTotalPoints(team)}
+                      value={team?.total.fuelAverage.scored.toFixed(2)}
                       color={getStatColor(
-                        getTotalPoints(team),
-                        getTotalPoints(otherTeam),
+                        team?.total.fuelAverage.scored,
+                        otherTeam?.total.fuelAverage.scored,
                       )}
                     />
                     <StatBox
@@ -192,9 +181,9 @@ export const CompareTwo: React.FC = () => {
                   {team && (
                     <div className="w-full max-w-2xl my-5">
                       <ThrowBarChart
-                        periodData={team.tele}
+                        periodData={team.total}
                         max={400}
-                        title="Teleop"
+                        title="Full Game"
                       />
                     </div>
                   )}
