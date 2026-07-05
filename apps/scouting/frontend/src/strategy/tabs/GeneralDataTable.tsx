@@ -21,6 +21,7 @@ import { HiOutlineChevronUpDown } from "react-icons/hi2";
 import { mapObject } from "@repo/array-functions";
 import { useLocalStorage } from "@repo/local_storage_hook";
 import { RecencyInput } from "./team/TeamSelect";
+import { allGamesRecency } from "./team/TeamTab";
 
 export type Column =
   | "Score Tele"
@@ -96,7 +97,7 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
   );
 
   useEffect(() => {
-    fetchGeneralData(recency ?? 100, filters)
+    fetchGeneralData(recency ?? allGamesRecency, filters)
       .then(setAllGeneralData)
       .catch(console.error);
   }, [filters, recency]);

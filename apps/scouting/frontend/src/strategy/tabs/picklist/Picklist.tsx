@@ -9,6 +9,8 @@ import type {
 import { getTeamName } from "@repo/frc";
 import { useLocalStorage } from "@repo/local_storage_hook";
 import { isEmpty } from "@repo/array-functions";
+import { RecencyInput } from "../team/TeamSelect";
+import { allGamesRecency } from "../team/TeamTab";
 
 export interface TeamListData {
   teamNumber: number;
@@ -21,9 +23,10 @@ export interface TeamListData {
 const PICKLIST_URL = "/api/v1/picklist/list";
 const fetchPicklist = async (
   name: string,
+  recency: number = allGamesRecency,
   withAlerts?: boolean,
 ): Promise<TeamListData[] | undefined> => {
-  const response = await fetch(`${PICKLIST_URL}/${name}`);
+  const response = await fetch(`${PICKLIST_URL}/${name}/${recency}`);
 
   if (!response.ok) {
     withAlerts && alert(`Could not load branch ${name}`);
@@ -82,11 +85,37 @@ export const Picklist: React.FC = () => {
   const [branch, setBranch] = useLocalStorage("picklist/branch", "master");
   const [allBranches, setAllBranches] = useState<string[]>([]);
 
+  const [recency, setRecency] = useLocalStorage<number | null>(
+    "picklist/recency",
+    null,
+  );
+
   const loadBranch = async (name: string, withAlerts?: boolean) => {
-    const newTeams = await fetchPicklist(name, withAlerts);
+    const newTeams = await fetchPicklist(
+      name,
+      recency ?? undefined,
+      withAlerts,
+    );
     setTeams(newTeams ?? teams);
     setBranch(name);
   };
+
+  const updateData = async (newRecency: number | null = recency) => {
+    const newTeams = await fetchPicklist(branch, newRecency ?? undefined);
+    if (!newTeams) {
+      return;
+    }
+
+    const newData = teams.map(
+      (team) =>
+        newTeams.find(
+          (newTeamData) => newTeamData.teamNumber === team.teamNumber,
+        ) ?? team,
+    );
+    setTeams(newData);
+    alert(`updated recency to ${newRecency}`);
+  };
+
   useEffect(() => {
     if (isEmpty(teams)) {
       loadBranch(branch);
@@ -149,6 +178,13 @@ export const Picklist: React.FC = () => {
             >
               Save
             </button>
+            <RecencyInput
+              setRecency={(newRecency) => {
+                setRecency(newRecency);
+                updateData(newRecency);
+              }}
+              recency={recency ?? undefined}
+            />
           </div>
         </div>
 

@@ -1,11 +1,10 @@
 //בס"ד
 
-import { Request, Router } from "express";
+import { Router } from "express";
 import { flow, pipe } from "fp-ts/lib/function";
 import { map, bind, right, fromEither, bindTo } from "fp-ts/lib/TaskEither";
 import {
   createBodyVerificationPipe,
-  createLog,
   flatTryCatch,
   foldResponse,
 } from "@repo/flow-utils";
@@ -40,9 +39,9 @@ const createNewPickList = (
     .map(({ team }) => team),
 });
 
-picklistRouter.get("/list/:picklist", async (req, res) => {
+picklistRouter.get("/list/:picklist/:recency", async (req, res) => {
   await pipe(
-    getTotalGeneralData(),
+    getTotalGeneralData(parseInt(req.params.recency)),
     bind("picklistCollection", getPicklistCollection),
     bind("name", () => right(req.params.picklist)),
     flatTryCatch(
