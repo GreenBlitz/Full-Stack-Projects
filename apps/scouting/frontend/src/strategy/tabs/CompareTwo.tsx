@@ -39,7 +39,7 @@ export const CompareTwo: React.FC = () => {
   );
   const [isLoading, setIsLoading] = useState(false);
   const [recency, setRecency] = useLocalStorage<number | null>(
-    "team/recency",
+    "compare/recency",
     null,
   );
 
