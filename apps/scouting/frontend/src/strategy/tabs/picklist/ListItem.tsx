@@ -35,15 +35,15 @@ export const ListItem: FC<{ team: TeamListData; index: number }> = ({
           {team?.teamName}
         </div>
 
-        <div className="col-span-2 text-right font-mono font-bold text-emerald-400">
+        <div className="text-xs sm:text-sm col-span-2 text-right font-mono font-bold text-emerald-400">
           {team.totalPoints?.toFixed(1)}
         </div>
 
-        <div className="col-span-2 text-right font-mono text-cyan-400">
+        <div className="text-xs sm:text-sm col-span-2 text-right font-mono text-cyan-400">
           {team.autoPoints?.toFixed(1)}
         </div>
 
-        <div className="col-span-1 text-right font-mono text-amber-400">
+        <div className="text-xs sm:text-sm col-span-1 text-right font-mono text-amber-400">
           {team.defense?.toFixed(2)}
         </div>
       </div>
