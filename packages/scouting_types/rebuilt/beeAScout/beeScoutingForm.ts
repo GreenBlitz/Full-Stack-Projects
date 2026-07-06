@@ -41,7 +41,8 @@ const beeScoutingFormCodec = t.type({
   tele: teleCodec,
   super: superCodec,
   comp: t.string,
-  notes: t.string
+  notes: t.string,
+  timesStole: t.number,
 });
 
 export type BeeScoutingForm = t.TypeOf<typeof beeScoutingFormCodec>;
