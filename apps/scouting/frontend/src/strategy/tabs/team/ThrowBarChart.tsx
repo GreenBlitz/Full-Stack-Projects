@@ -51,7 +51,11 @@ export const ThrowBarChart: FC<{
         <BarChart
           dataSetsProps={datasets}
           min={0}
-          max={Math.max(max, maxHeight(periodData) * maxHeightWiggleRoom)}
+          max={Number(
+            Math.max(max, maxHeight(periodData) * maxHeightWiggleRoom).toFixed(
+              2,
+            ),
+          )}
           stacked
         />
       </div>
