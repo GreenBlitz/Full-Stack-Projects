@@ -8,7 +8,7 @@ import { StatusCodes } from "http-status-codes";
 import { bindTo, map } from "fp-ts/lib/TaskEither";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
 import { BeeScoutingForm } from "@repo/scouting_types";
-import { firstElement, mapObject } from "@repo/array-functions";
+import { calculateSum, firstElement, mapObject } from "@repo/array-functions";
 import { calculateGeneralForTeam } from "./general-router";
 import { TeamPageTeamBeeData } from "@repo/scouting_types";
 
@@ -92,10 +92,7 @@ const calculateTeamDataForTeam = (
       evasionPerGame: findDataOverMatches("super", "evasionLevel", recentForms),
     },
     notes: recentForms.map((form) => form.notes),
-    timesStole: recentForms.reduce(
-      (stole, currentForm) => stole + currentForm.timesStole,
-      0,
-    ),
+    timesStole: calculateSum(recentForms, (form) => form.timesStole),
   };
 };
 
