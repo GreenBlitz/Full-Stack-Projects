@@ -2,16 +2,17 @@
 
 import type { CompareData, TeamPageTeamBeeData } from "@repo/scouting_types";
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { fetchTeamNumbers } from "../fetches";
 import { fetchTeamData } from "./team/TeamTab";
 import { useLocalStorage } from "@repo/local_storage_hook";
-import { ThrowBarChart } from "./team/ThrowBarChart";
+import { maxHeight, ThrowBarChart } from "./team/ThrowBarChart";
 import { SuperBarChart } from "./team/SuperBarChart";
 import { RecencyInput } from "./team/TeamSelect";
+import { first } from "fp-ts/lib/Semigroup";
 
 const superStats = ["defense", "evasion", "driving"] as const;
-
+const MAX_HEIGHT_WIGGLE_ROOM = 1.1;
 const NEEDED_SELECTED_TEAMS = 2;
 const FIRST_INDEX = 0;
 
@@ -43,6 +44,28 @@ export const CompareTwo: React.FC = () => {
     "compare/recency",
     null,
   );
+
+  const maxTotalScore = useMemo(() => {
+    if (!comparisonData) return 450;
+
+    return (
+      Math.max(
+        maxHeight(comparisonData.teamOne.total),
+        maxHeight(comparisonData.teamTwo.total),
+      ) * MAX_HEIGHT_WIGGLE_ROOM
+    );
+  }, [comparisonData]);
+
+  const maxAutoScore = useMemo(() => {
+    if (!comparisonData) return 70;
+
+    return (
+      Math.max(
+        maxHeight(comparisonData.teamOne.auto),
+        maxHeight(comparisonData.teamTwo.auto),
+      ) * MAX_HEIGHT_WIGGLE_ROOM
+    );
+  }, [comparisonData]);
 
   useEffect(() => {
     fetchTeamNumbers().then(setTeamNumbers).catch(console.error);
@@ -191,7 +214,7 @@ export const CompareTwo: React.FC = () => {
                     <div className="w-full max-w-2xl my-5">
                       <ThrowBarChart
                         periodData={team.total}
-                        max={400}
+                        max={maxTotalScore}
                         title="Full Game"
                       />
                     </div>
@@ -201,7 +224,7 @@ export const CompareTwo: React.FC = () => {
                     <div className="w-full max-w-2xl my-5">
                       <ThrowBarChart
                         periodData={team.auto}
-                        max={70}
+                        max={maxAutoScore}
                         title="Auto"
                       />
                     </div>
