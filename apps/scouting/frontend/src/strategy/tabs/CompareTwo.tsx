@@ -2,11 +2,11 @@
 
 import type { CompareData, TeamPageTeamBeeData } from "@repo/scouting_types";
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { fetchTeamNumbers } from "../fetches";
 import { fetchTeamData } from "./team/TeamTab";
 import { useLocalStorage } from "@repo/local_storage_hook";
-import { ThrowBarChart } from "./team/ThrowBarChart";
+import { maxHeight, ThrowBarChart } from "./team/ThrowBarChart";
 import { SuperBarChart } from "./team/SuperBarChart";
 import { RecencyInput } from "./team/TeamSelect";
 import { first } from "fp-ts/lib/Semigroup";
@@ -44,8 +44,28 @@ export const CompareTwo: React.FC = () => {
     "compare/recency",
     null,
   );
-  const [maxTotalScore, setMaxTotalScore] = useState<number>(400);
-  const [maxAutoScore, setMaxAutoScore] = useState<number>(70);
+
+  const maxTotalScore = useMemo(() => {
+    if (!comparisonData) return 450;
+
+    return (
+      Math.max(
+        maxHeight(comparisonData.teamOne.total),
+        maxHeight(comparisonData.teamTwo.total),
+      ) * MAX_HEIGHT_WIGGLE_ROOM
+    );
+  }, [comparisonData]);
+
+  const maxAutoScore = useMemo(() => {
+    if (!comparisonData) return 70;
+
+    return (
+      Math.max(
+        maxHeight(comparisonData.teamOne.auto),
+        maxHeight(comparisonData.teamTwo.auto),
+      ) * MAX_HEIGHT_WIGGLE_ROOM
+    );
+  }, [comparisonData]);
 
   useEffect(() => {
     fetchTeamNumbers().then(setTeamNumbers).catch(console.error);
@@ -58,24 +78,6 @@ export const CompareTwo: React.FC = () => {
         : prev.length < NEEDED_SELECTED_TEAMS
           ? [...prev, selectedTeamNumber]
           : prev,
-    );
-  };
-
-  const getMaxBarHeight = (
-    team: TeamPageTeamBeeData,
-    phase: "auto" | "total",
-  ) => {
-    const { fuelPassedPerGame, fuelScoredPerGame } = team[phase].fuelPerGame;
-
-    const keys = new Set([
-      ...Object.keys(fuelPassedPerGame),
-      ...Object.keys(fuelScoredPerGame),
-    ]);
-
-    return Math.max(
-      ...Array.from(keys).map(
-        (key) => (fuelPassedPerGame[key] ?? 0) + (fuelScoredPerGame[key] ?? 0),
-      ),
     );
   };
 
@@ -92,20 +94,6 @@ export const CompareTwo: React.FC = () => {
         alert("team data not found");
         return;
       }
-
-      setMaxTotalScore(
-        Math.max(
-          getMaxBarHeight(firstTeam, "total"),
-          getMaxBarHeight(secondTeam, "total"),
-        ) * MAX_HEIGHT_WIGGLE_ROOM,
-      );
-
-      setMaxAutoScore(
-        Math.max(
-          getMaxBarHeight(firstTeam, "auto"),
-          getMaxBarHeight(secondTeam, "auto"),
-        ) * MAX_HEIGHT_WIGGLE_ROOM,
-      );
 
       setComparisonData({ teamOne: firstTeam, teamTwo: secondTeam });
     } catch (err) {
