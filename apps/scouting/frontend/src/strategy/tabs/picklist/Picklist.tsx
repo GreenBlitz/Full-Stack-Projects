@@ -36,15 +36,13 @@ const fetchPicklist = async (
 
   const data: DataPicklistBee = await response.json();
 
-  return data.list
-    .map(({ team, auto, full, super: superData }) => ({
-      teamNumber: Number(team),
-      teamName: getTeamName(Number(team)),
-      totalPoints: full.fuelScored,
-      autoPoints: auto.fuelScored,
-      defense: superData.defenseRating,
-    }))
-    .sort((a, b) => b.totalPoints - a.totalPoints);
+  return data.list.map(({ team, auto, full, super: superData }) => ({
+    teamNumber: Number(team),
+    teamName: getTeamName(Number(team)),
+    totalPoints: full.fuelScored,
+    autoPoints: auto.fuelScored,
+    defense: superData.defenseRating,
+  }));
 };
 
 const PICKLISTS_URL = "/api/v1/picklist/lists";
