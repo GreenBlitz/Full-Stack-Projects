@@ -13,6 +13,7 @@ const sheetsRange = "teamPerMatch";
 
 const DIS1_SHEETS = "1-V___4ap8EHyyuqQS8m3SLbXOEmdxlOILD8gGPWott4";
 const DIS2_SHEETS = "1hSeyFbC_jHAvKJ4egzjXniyr0PuuyCPVM4nVCxm9DXA";
+const DCMP_SHEETS = "1fDkguEWZcUk7wBVQNIjBazM9-z_kyCCgvndGjyPMIYs";
 
 const SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"];
 const KEY_FILE_PATH = path.join(__dirname, "../src/sheets-key.json");
@@ -109,15 +110,24 @@ const structureData = (data: Record<string, string>[]): BeeScoutingForm[] => {
 
 const updateData = async (db: Db) => {
   try {
-    console.log("dis 1: " + DIS1_SHEETS);
-    console.log("dis 2: " + DIS2_SHEETS);
+    // console.log("dis 1: " + DIS1_SHEETS);
+    // console.log("dis 2: " + DIS2_SHEETS);
 
-    const rawDis1 = await getSheetData(DIS1_SHEETS, sheetsRange);
-    const rawDis2 = await getSheetData(DIS2_SHEETS, sheetsRange);
+    console.log("dcmp: " + DCMP_SHEETS);
 
-    const rawCombined = [...(rawDis1 ?? []), ...(rawDis2 ?? [])];
+    // const rawDis1 = await getSheetData(DIS1_SHEETS, sheetsRange);
+    // const rawDis2 = await getSheetData(DIS2_SHEETS, sheetsRange);
 
-    const structured = structureData(formatData(rawCombined));
+    // const rawCombined = [...(rawDis1 ?? []), ...(rawDis2 ?? [])];
+
+    const rawDcmp = await getSheetData(DCMP_SHEETS, sheetsRange);
+
+    if (!rawDcmp) {
+      console.log("connection to sheets failed");
+      return;
+    }
+
+    const structured = structureData(formatData(rawDcmp));
     const collection = db.collection<BeeScoutingForm>("beeScout");
 
     if (structured.length < 10) {
