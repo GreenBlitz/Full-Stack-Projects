@@ -83,6 +83,7 @@ export const calculateGeneralForTeam = (
       timesEvaded: evasionGames.length,
     },
     timesPlayed: forms.length,
+    timesStole: calculateSum(forms, (form) => form.timesStole),
   };
 };
 

@@ -36,7 +36,8 @@ export type Column =
   | "Score Full"
   | "Pass Full"
   | "Climb Full"
-  | "Games Played";
+  | "Games Played"
+  | "Times Stole";
 
 type DataValue = ClimbLevel | number | undefined;
 
@@ -55,6 +56,7 @@ const columnToKey: Record<Column, DataAccessor> = {
   "Pass Full": ({ full: { fuelPassed } }) => fuelPassed,
   "Climb Full": ({ full: { climbPoints } }) => climbPoints,
   "Games Played": ({ timesPlayed }) => timesPlayed,
+  "Times Stole": ({ timesStole }) => timesStole,
 };
 
 const fetchGeneralData = async (recency: number, filters = {}) => {
@@ -164,6 +166,7 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
       createColumn("Climb Full", "text-purple-400 font-bold"),
       createColumn("Pass Auto", "text-violet-500"),
       createColumn("Pass Full", "text-green-200"),
+      createColumn("Times Stole", "text-yellow-500"),
       createColumn("Games Played", "text-orange-600"),
     ],
     [sorting],
