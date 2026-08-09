@@ -23,40 +23,5 @@ export const ClimbSection: FC<ClimbSectionProps> = ({
   onBack,
   alliance,
 }) => {
-  const updateClimbForm = (updates: Climb) => {
-    const phase = "L2" in updates.climbTime ? "tele" : "auto";
-
-    setForm((prevForm) => ({
-      ...prevForm,
-      [phase]: {
-        ...prevForm[phase],
-        climb: {
-          ...prevForm[phase].climb,
-          ...updates,
-        },
-      },
-    }));
-  };
-
-  const backButton = (
-    <button
-      className={`h-full w-20 m${alliance === "blue" ? "r" : "l"}-4 bg-${alliance}-500 uppercase`}
-      onClick={onBack}
-    >
-      {name}
-    </button>
-  );
-  return (
-    <div className="flex flex-row h-full w-full">
-      {alliance === "blue" && backButton}
-      <ClimbInput
-        isAuto={isAuto}
-        originTime={originTime}
-        updateClimbForm={updateClimbForm}
-        currentForm={currentForm}
-        alliance={alliance}
-      />
-      {alliance === "red" && backButton}
-    </div>
-  );
+  return <></>;
 };

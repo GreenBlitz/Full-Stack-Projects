@@ -1,10 +1,11 @@
 // בס"ד
 import type { FC } from "react";
 import { NavLink, Outlet } from "react-router-dom";
-import { LuTable, LuSwords } from "react-icons/lu";
+import { LuTable } from "react-icons/lu";
 import { AiOutlineTeam } from "react-icons/ai";
 import type { IconType } from "react-icons/lib";
-import { TiWeatherCloudy } from "react-icons/ti";
+import { FaClipboardList } from "react-icons/fa";
+import { FaArrowsAltH } from "react-icons/fa";
 
 const NavigationElement: FC<NavigationElementProps> = ({
   isActive,
@@ -34,8 +35,8 @@ interface NavigationOption {
 const strategyNavigationOptions: NavigationOption[] = [
   { destination: "team", label: "Team", icon: AiOutlineTeam },
   { destination: "general", label: "General", icon: LuTable },
-  { destination: "compare", label: "Compare", icon: LuSwords },
-  { destination: "forecast", label: "Forecast", icon: TiWeatherCloudy },
+  { destination: "picklist", label: "Picklist", icon: FaClipboardList },
+  { destination: "compare", label: "Compare", icon: FaArrowsAltH },
 ];
 
 interface NavigationElementProps {

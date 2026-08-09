@@ -1,231 +1,130 @@
 // בס"ד
-import type {
-  FuelEvents,
-  FuelObject,
-  GamePhase,
-  MatchedEntry,
-  Match,
-  TeamData,
-} from "@repo/scouting_types";
-import { useEffect, useMemo, useState, type FC } from "react";
+import type { Match, TeamPageTeamBeeData } from "@repo/scouting_types";
+import { useEffect, useState, type FC } from "react";
 import { FRC_TEAM_NUMBERS } from "@repo/frc";
 import { firstElement } from "@repo/array-functions";
 import { TeamSelect } from "./TeamSelect";
-import { MovementChart } from "../../components/MovementChart";
-import { AccuracyChart } from "../../components/AccuracyChart";
-import { LineChart } from "../../components/LineChart";
-import { PhaseToggle } from "../../components/PhaseToggle";
-import { MetricsChart } from "../../components/MetricsChart";
-import { BarChart } from "../../components/BarChart";
-import { calculateMedianClimbs, getClimbDataset } from "../../ClimbProcessing";
 import { useLocalStorage } from "@repo/local_storage_hook";
-import { HeatMap } from "../../components/heatmap/HeatMap";
-import { redField } from "@repo/rebuilt_map";
 import { fetchTeamNumbers } from "../../fetches";
-import { PieGraph } from "../../components/PieChart";
+import { StatView } from "./StatView";
+import { NotesCell, PitScoutResultsTab } from "../pit-scout/TeamPitShow";
+import { SuperBarChart } from "./SuperBarChart";
+import { ThrowBarChart } from "./ThrowBarChart";
 
-const METER_AND_HALF_CENTIMETERS = 150;
-const THREE_METER_CENTIMETERS = 300;
-const MORE_DISTANCE = 2000;
-
-const TEAM_DATA_URL = "/api/v1/team";
+const TEAM_DATA_URL = "/api/v1/teamPage/matches";
 const NO_DATA_ON_TEAM_STATUS = 502;
-async function fetchTeamData(team: number, recency?: number) {
-  const recencyQuery = recency ? `&recency=${recency}` : "";
-  const response = await fetch(`${TEAM_DATA_URL}?teams=${team}${recencyQuery}`);
+
+export const allGamesRecency = 100;
+export async function fetchTeamData(team: number, recency: number | null) {
+  const response = await fetch(
+    `${TEAM_DATA_URL}/${recency ?? allGamesRecency}?teamNumber=${team.toString()}`,
+  );
 
   if (response.status === NO_DATA_ON_TEAM_STATUS) {
-    alert(`No Data on ${team}`);
+    alert(`No Data on ${team} yet`);
     return undefined;
   }
 
   const data: {
-    teams: Record<number, TeamData>;
+    teamPageData: Record<number, TeamPageTeamBeeData>;
   } = await response.json();
-  return firstElement(Object.values(data.teams));
+  return firstElement(Object.values(data.teamPageData));
 }
 
-const NO_FUEL_SHOT = 0;
-const calculateAccuracy = (fuel: FuelObject) =>
-  fuel.shot > NO_FUEL_SHOT ? fuel.scored / fuel.shot : NO_FUEL_SHOT;
-
-const FIRST_MATCH_TYPE_CHARACTER = 0;
-
-const formatNoShowMatch = (m: Match) =>
-  `${m.type[FIRST_MATCH_TYPE_CHARACTER]}${m.number}`;
-
-const createShotDataset = (data: MatchedEntry<FuelObject>[], key: FuelEvents) =>
-  Object.fromEntries(
-    data.map((entry) => [
-      entry.match.type[FIRST_MATCH_TYPE_CHARACTER] + entry.match.number,
-      { value: entry[key] },
-    ]),
-  );
-
-const graphSection =
-  "w-96 h-64 p-4 items-center bg-slate-900/40 backdrop-blur-md border border-white/10 rounded-3xl shadow-2xl";
 export const TeamTab: FC = () => {
-  const [phase, setPhase] = useState<GamePhase>("tele");
-  const [teamData, setTeamData] = useState<TeamData>();
+  const [teamData, setTeamData] = useState<TeamPageTeamBeeData>();
+  const [recency, setRecency] = useLocalStorage<number | null>(
+    "team/recency",
+    null,
+  );
   const [teamNumber, setTeamNumber] = useLocalStorage<number | null>(
     "team/teamNumber",
     null,
   );
-  const [gameRecency, setGameRecency] = useLocalStorage<number | null>(
-    "team/recency",
-    null,
-  );
-  const [scoutedTeams, setScoutedTeams] = useState<number[]>();
 
-  const data = useMemo(() => teamData?.[phase], [teamData, phase]);
+  const [scoutedTeams, setScoutedTeams] = useState<number[]>();
 
   useEffect(() => {
     if (!teamNumber || !FRC_TEAM_NUMBERS.includes(teamNumber)) {
       return;
     }
-    fetchTeamData(teamNumber, gameRecency ?? undefined)
-      .then(setTeamData)
-      .catch(alert);
-  }, [teamNumber, gameRecency]);
+    fetchTeamData(teamNumber, recency).then(setTeamData).catch(alert);
+  }, [teamNumber, recency]);
 
   useEffect(() => {
     fetchTeamNumbers().then(setScoutedTeams).catch(console.error);
   }, []);
 
   return (
-    <div className="flex flex-col text-black items-center bg-slate-950">
-      <TeamSelect
-        teamNumber={teamNumber ?? undefined}
-        gameRecency={gameRecency ?? undefined}
-        setTeamNumber={setTeamNumber}
-        setRecency={setGameRecency}
-        scoutedTeams={scoutedTeams ?? []}
-      />
-      <PhaseToggle activeMode={phase} setActiveMode={setPhase} />
-
-      {teamData && (teamData.noShowMatches?.length ?? 0) > 0 ? (
-        <div
-          className={`${graphSection} w-full max-w-2xl text-left text-slate-200`}
-        >
-          <span className="font-black tracking-wider uppercase text-orange-400 text-lg block mb-2">
-            No-show matches (excluded from stats)
-          </span>
-          <ul className="list-disc list-inside text-sm space-y-1">
-            {(teamData.noShowMatches ?? []).map((m) => (
-              <li key={`${m.type}-${m.number}`}>{formatNoShowMatch(m)}</li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
-
-      {data && (
-        <AccuracyChart
-          metrics={{
-            meterAndHalf: calculateAccuracy(
-              data.accuracy[METER_AND_HALF_CENTIMETERS],
-            ),
-            threeMeter: calculateAccuracy(
-              data.accuracy[THREE_METER_CENTIMETERS],
-            ),
-            more: calculateAccuracy(data.accuracy[MORE_DISTANCE]),
-          }}
+    <div className="flex flex-col text-slate-200 items-center justify-start min-h-screen bg-slate-950 px-4 py-6 w-full">
+      <div className="w-full max-w-2xl bg-slate-900/40 backdrop-blur-md border border-white/5 p-4 rounded-2xl mb-4 flex justify-center items-center">
+        <TeamSelect
+          teamNumber={teamNumber ?? undefined}
+          recency={recency ?? undefined}
+          setTeamNumber={setTeamNumber}
+          setRecency={setRecency}
+          scoutedTeams={scoutedTeams ?? []}
         />
+      </div>
+      <div className="w-full max-w-2xl flex flex-col gap-4">
+        <div className="grid grid-cols-2 gap-4 w-full">
+          <StatView
+            statContent={teamData?.total.fuelAverage.scored.toFixed(2)}
+            statName={"Total Points"}
+          />
+          <StatView
+            statContent={teamData?.auto.fuelAverage.scored.toFixed(2)}
+            statName={"Auto Points"}
+          />
+        </div>
+
+        <PitScoutResultsTab teamNumber={teamNumber} />
+
+        <div className="grid grid-cols-4 gap-4 w-full">
+          <StatView
+            statContent={teamData?.super.defense?.toFixed(2).toString()}
+            statName={"Defense"}
+          />
+          <StatView
+            statContent={teamData?.super.evasion?.toFixed(2).toString()}
+            statName={"Evasion"}
+          />
+          <StatView
+            statContent={teamData?.super.driving?.toFixed(2).toString()}
+            statName={"Driving"}
+          />
+          <StatView
+            statContent={teamData?.timesStole?.toFixed(2)}
+            statName={"Times Stole"}
+          />
+        </div>
+      </div>
+      {teamData && (
+        <div className="w-full max-w-2xl my-5">
+          <SuperBarChart superData={teamData.super} />
+        </div>
       )}
 
-      {data && (
-        <div className={graphSection}>
-          <PieGraph
-            name={"Distance Shots"}
-            points={{
-              "Meter And Half": {
-                value: data.accuracy[METER_AND_HALF_CENTIMETERS].amount,
-                color: "red",
-              },
-              "Three Meter": {
-                value: data.accuracy[THREE_METER_CENTIMETERS].amount,
-                color: "blue",
-              },
-              More: {
-                value: data.accuracy[MORE_DISTANCE].amount,
-                color: "orange",
-              },
-            }}
+      {teamData && (
+        <div className="w-full max-w-2xl my-5">
+          <ThrowBarChart
+            periodData={teamData.total}
+            max={400}
+            title="Full Game"
           />
         </div>
       )}
 
-      {data && (
-        <div className={`${graphSection} text-center`}>
-          <span className="font-black tracking-wider uppercase text-slate-400 text-2xl">
-            shoot positions
-          </span>
-          <div className="w-full h-48">
-            <HeatMap
-              positions={data.fuel.flatMap((fuel) => fuel.positions)}
-              path={redField}
-              aspectRatio={0} //bro this does nothing
-            />
-          </div>
+      {teamData && (
+        <div className="w-full max-w-2xl my-5">
+          <ThrowBarChart periodData={teamData.auto} max={70} title="Auto" />
         </div>
       )}
 
-      {data && (
-        <div className={graphSection}>
-          <LineChart
-            dataSetsProps={[
-              {
-                name: "Scored",
-                points: createShotDataset(data.fuel, "scored"),
-              },
-              {
-                name: "Missed",
-                points: createShotDataset(data.fuel, "missed"),
-              },
-              {
-                name: "Shot",
-                points: createShotDataset(data.fuel, "shot"),
-              },
-              {
-                name: "Pass",
-                points: createShotDataset(data.fuel, "passed"),
-              },
-            ]}
-          />
+      {teamData && (
+        <div>
+          <NotesCell notes={teamData.notes} />
         </div>
-      )}
-      {data && "climbs" in data && (
-        <div className={graphSection}>
-          <LineChart
-            min={0}
-            dataSetsProps={[
-              {
-                name: "Climb",
-                points: getClimbDataset(data),
-                size: 10,
-                color: "#10b981",
-              },
-            ]}
-          />
-        </div>
-      )}
-      {data && "climbs" in data && (
-        <div className={graphSection}>
-          <BarChart
-            dataSetsProps={[
-              {
-                name: "Median Climb Time",
-                points: calculateMedianClimbs(data, phase),
-                color: "green",
-              },
-            ]}
-          />
-        </div>
-      )}
-      {data && "movement" in data && (
-        <MovementChart movements={data.movement} />
-      )}
-      {teamData && phase === "fullGame" && (
-        <MetricsChart {...teamData.metrics} />
       )}
     </div>
   );

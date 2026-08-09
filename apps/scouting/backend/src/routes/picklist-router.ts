@@ -1,129 +1,107 @@
 //בס"ד
 
 import { Router } from "express";
-import { getFormsCollection } from "./forms-router";
+import { flow, pipe } from "fp-ts/lib/function";
+import { map, bind, right, fromEither, bindTo } from "fp-ts/lib/TaskEither";
 import {
-  flatMap,
-  filterOrElse,
-  map,
-  bindTo,
-  bind,
-  tryCatch,
-} from "fp-ts/lib/TaskEither";
-import { pipe } from "fp-ts/lib/function";
-import { mongofyQuery, flatTryCatch, foldResponse } from "@repo/flow-utils";
+  createBodyVerificationPipe,
+  flatTryCatch,
+  foldResponse,
+} from "@repo/flow-utils";
+import { getTotalGeneralData } from "./general-router";
+import { getDb } from "../middleware/db";
 import { StatusCodes } from "http-status-codes";
-import { isSingleTeam } from "../verification/functions";
-import { getTeamBPSes } from "./bps-router";
-import { firstElement } from "@repo/array-functions";
-import {
-  BPS,
-  ScoutingForm,
-  PicklistStats,
-  PicklistGameStats,
-  GamePeriod,
-  SuperScout,
-} from "@repo/scouting_types";
-import {
-  calcAverageGeneralFuelData,
-  calculateAverageScoredFuel,
-  formsToFuelData,
-} from "../fuel/fuel-general";
-import { splitByDistances } from "../fuel/distance-split";
-import { processTeam } from "./teams-router";
-import { calculateAverageClimbScore } from "../climb/score";
-import { getSuperCollection } from "./super-scout-router";
-import { processAvarageTeamSuperScouting } from "../superScout/calculations";
+import { DataPicklistBee, GeneralBeeData } from "@repo/scouting_types";
+import { right as rightEither } from "fp-ts/lib/Either";
+import { PicklistBee, picklistBeeCodec } from "@repo/scouting_types";
 
 export const picklistRouter = Router();
 
-const createPicklistStats: (
-  forms: ScoutingForm[],
-  bpses: Record<string, BPS[]>,
-  superForms: SuperScout[],
-) => PicklistStats = (forms, bpses, superForms) => ({
-  teleop: createGamePeriodPicklistStats(forms, bpses, "teleop"),
-  auto: createGamePeriodPicklistStats(forms, bpses, "auto"),
-  superScouting: processAvarageTeamSuperScouting(
-    firstElement(forms).teamNumber,
-    superForms,
-  ),
+export const getPicklistCollection = flow(
+  getDb,
+  map((db) => db.collection<PicklistBee>("picklist")),
+);
+
+const createNewPickList = (
+  data: GeneralBeeData,
+  name: string,
+): PicklistBee => ({
+  name,
+  list: Object.entries(data)
+    .map(([team, data]) => ({
+      team,
+      data,
+    }))
+    .sort(
+      (teamA, teamB) => teamB.data.full.fuelScored - teamA.data.full.fuelScored,
+      //sorts from highest score to lowest
+    )
+    .map(({ team }) => team),
 });
 
-const CLOSE_FUEL_DISTANCE = 150;
-const MEDIUM_FUEL_DISTANCE = 300;
-const FAR_FUEL_DISTANCE = 2000;
-const createGamePeriodPicklistStats: (
-  forms: ScoutingForm[],
-  bpses: Record<string, BPS[]>,
-  gamePeriod: GamePeriod,
-) => PicklistGameStats = (forms, bpses, gamePeriod) => {
-  const teamData = processTeam(bpses[firstElement(forms).teamNumber], forms);
-  return {
-    fuel: calculateAverageScoredFuel(
-      forms,
-      gamePeriod,
-      bpses[firstElement(forms).teamNumber],
-    ),
-    closeFuel:
-      teamData[gamePeriod].accuracy[CLOSE_FUEL_DISTANCE].amount / forms.length,
-    mediumFuel:
-      teamData[gamePeriod].accuracy[MEDIUM_FUEL_DISTANCE].amount / forms.length,
-    farFuel:
-      teamData[gamePeriod].accuracy[FAR_FUEL_DISTANCE].amount / forms.length,
-    climb: calculateAverageClimbScore(
-      teamData.auto.climbs.map((currentClimb) => currentClimb.level),
-      gamePeriod == "auto",
-    ),
-  };
-};
-
-picklistRouter.get("/", (req, res) =>
-  pipe(
-    getFormsCollection(),
+picklistRouter.get("/list/:picklist/:recency", async (req, res) => {
+  await pipe(
+    getTotalGeneralData(parseInt(req.params.recency)),
+    bind("picklistCollection", getPicklistCollection),
+    bind("name", () => right(req.params.picklist)),
     flatTryCatch(
-      (collection) => collection.find(mongofyQuery(req.query)).toArray(),
+      async ({ generalData, picklistCollection, name }) => ({
+        generalData,
+        picklist:
+          (await picklistCollection.findOne({ name })) ??
+          createNewPickList(generalData, name),
+      }),
       (error) => ({
         status: StatusCodes.INTERNAL_SERVER_ERROR,
-        reason: `DB Error: ${error}`,
+        reason: `Error Getting List From DB: ${error}`,
       }),
     ),
-    filterOrElse(isSingleTeam, () => ({
-      status: StatusCodes.BAD_REQUEST,
-      reason: "Picklist: Forms contain data from multiple different teams.",
+    map(({ generalData, picklist }) => ({
+      name: picklist.name,
+      list: picklist.list.map((team) => generalData[team]),
     })),
-    bindTo("forms"),
-    bind("bpsData", ({ forms }) =>
-      getTeamBPSes({ [firstElement(forms).teamNumber]: forms }),
-    ),
+    map((picklist) => picklist satisfies DataPicklistBee),
+    foldResponse(res),
+  )();
+});
 
-    bind("superForms", () =>
+picklistRouter.post("/list", async (req, res) => {
+  await pipe(
+    getPicklistCollection(),
+    bindTo("picklistCollection"),
+    bind("picklist", () =>
       pipe(
-        getSuperCollection(),
-        flatMap((collection) =>
-          tryCatch(
-            () => collection.find().toArray(),
-            (error) => ({
-              status: StatusCodes.INTERNAL_SERVER_ERROR,
-              reason: `SuperScout DB Error: ${error}`,
-            }),
-          ),
-        ),
+        rightEither(req),
+        createBodyVerificationPipe(picklistBeeCodec),
+        fromEither,
       ),
     ),
-
-    map(({ forms, bpsData, superForms }) => {
-      const { teamNumber } = firstElement(forms);
-      const teamBpsResult = bpsData[teamNumber];
-
-      return createPicklistStats(
-        forms,
-        {
-          [teamNumber]: teamBpsResult.bpses,
-        },
-        superForms,
-      );
-    }),
+    flatTryCatch(
+      ({ picklist, picklistCollection }) =>
+        picklistCollection.replaceOne({ name: picklist.name }, picklist, {
+          upsert: true, //makes it add the picklist if it cant find one with the same name
+        }),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `Error inserting into DB ${error}`,
+      }),
+    ),
     foldResponse(res),
-  )(),
-);
+  )();
+});
+
+picklistRouter.get("/lists", async (req, res) => {
+  await pipe(
+    getPicklistCollection(),
+
+    flatTryCatch(
+      (collection) => collection.find().toArray(),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `Error inserting into DB ${error}`,
+      }),
+    ),
+    map((lists) => lists.map(({ name }) => name)),
+    foldResponse(res),
+  )();
+});

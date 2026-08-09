@@ -1,86 +1,114 @@
 //בס"ד
 
 import { Router } from "express";
-import { getFormsCollection } from "./forms-router";
-import { pipe } from "fp-ts/lib/function";
-import { fold, map, bindTo, bind } from "fp-ts/lib/TaskEither";
-import { mongofyQuery, flatTryCatch } from "@repo/flow-utils";
+import { formsRouter, getFormsCollection } from "./forms-router";
+import { pipe, flow } from "fp-ts/lib/function";
+import { fold, map, bindTo, bind, flatMap } from "fp-ts/lib/TaskEither";
+import { mongofyQuery, flatTryCatch, foldResponse } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
 
 import {
+  BeeScoutingForm,
   excludeNoShowForms,
-  type BPS,
-  type GeneralData,
+  type GeneralTeamBeeData,
   type ScoutingForm,
-  type TeamNumberAndFuelData,
 } from "@repo/scouting_types";
 import { findMaxClimbLevel } from "../climb/calculations";
 import { calculateAverageClimbsScore } from "../climb/score";
-import { formsToFuelData } from "../fuel/fuel-general";
-import { getAllBPSes } from "./bps-router";
-import { isEmpty } from "@repo/array-functions";
+import { groupBy } from "fp-ts/lib/NonEmptyArray";
+import { fetchTeamsCOPRs } from "./tba-router";
+import {
+  calculateAverage,
+  calculateSum,
+  mapObject,
+} from "@repo/array-functions";
+import { getTeamsEPAs } from "../middleware/epa";
+import { getBeeScoutCollection } from "../googleSheets";
+import { applyRecency } from "./team-page-router";
 
 export const generalRouter = Router();
 
-const formsToGeneralData = (
-  forms: ScoutingForm[],
-  bpses: Record<string, BPS[]>,
-) => {
-  const calculatedFuel: TeamNumberAndFuelData = formsToFuelData(bpses)(forms);
+export const calculateFuelForTeamPhase = (
+  phaseForms: { fuel: { scored: number; passed: number } }[],
+) => ({
+  fuelScored: calculateAverage(phaseForms, (forms) => forms.fuel.scored),
+  fuelPassed: calculateAverage(phaseForms, (forms) => forms.fuel.passed),
+});
 
-  const allGeneralData: GeneralData[] = Object.entries(calculatedFuel).map(
-    (teamNumberAndFuelData) => {
-      const [teamNumber, fuelData] = teamNumberAndFuelData;
-      const teamForms = forms.filter(
-        (form) => form.teamNumber.toString() === teamNumber,
-      );
+const AUTO_NO_CLIMB_POINTS = 0;
+const AUTO_CLIMB_POINTS = 15;
+const TELE_CLIMB_LEVEL_POINTS = 10;
 
-      const generalData: GeneralData = {
-        teamNumber: Number(teamNumber),
-        fuelData: fuelData,
-        highestClimbLevel: findMaxClimbLevel(teamForms),
-        avarageClimbPoints: {
-          fullGame:
-            calculateAverageClimbsScore(teamForms).auto +
-            calculateAverageClimbsScore(teamForms).tele,
-          auto: calculateAverageClimbsScore(teamForms).auto,
-          tele: calculateAverageClimbsScore(teamForms).tele,
-        },
-      };
+export const calculateGeneralForTeam = (
+  forms: BeeScoutingForm[],
+  team: string,
+): GeneralTeamBeeData => {
+  const auto = {
+    ...calculateFuelForTeamPhase(forms.map((form) => form.auto)),
+    climbPoints: calculateAverage(forms, (form) =>
+      form.auto.climb ? AUTO_CLIMB_POINTS : AUTO_NO_CLIMB_POINTS,
+    ),
+  };
+  const tele = {
+    ...calculateFuelForTeamPhase(forms.map((form) => form.tele)),
+    climbPoints: calculateAverage(
+      forms,
+      (form) => form.tele.climb.height * TELE_CLIMB_LEVEL_POINTS,
+    ),
+  };
 
-      return generalData;
+  const defenseGames = forms.filter((form) => form.super.didDefense);
+  const evasionGames = forms.filter((form) => form.super.didEvasions);
+
+  return {
+    team,
+    auto,
+    tele,
+    full: {
+      fuelScored: auto.fuelScored + tele.fuelScored,
+      fuelPassed: auto.fuelPassed + tele.fuelPassed,
+      climbPoints: auto.climbPoints + tele.climbPoints,
     },
-  );
-
-  return allGeneralData;
+    super: {
+      driving: calculateAverage(forms, (form) => form.super.driveLevel),
+      defenseRating: calculateAverage(
+        defenseGames,
+        (form) => form.super.defenseLevel,
+      ),
+      timesDefended: defenseGames.length,
+      evasionRating: calculateAverage(
+        evasionGames,
+        (form) => form.super.evasionLevel,
+      ),
+      timesEvaded: evasionGames.length,
+    },
+    timesPlayed: forms.length,
+    timesStole: calculateSum(forms, (form) => form.timesStole),
+  };
 };
 
-generalRouter.get("/", async (req, res) => {
-  await pipe(
-    getFormsCollection(),
+export const getTotalGeneralData = (recency: number) =>
+  pipe(
+    getBeeScoutCollection(),
+
     flatTryCatch(
-      (collection) => collection.find(mongofyQuery(req.query)).toArray(),
+      (collection) => collection.find().toArray(),
       (error) => ({
         status: StatusCodes.INTERNAL_SERVER_ERROR,
-        reason: `DB Error: ${error}`,
+        reason: `Could not get forms from DB: ${error}`,
       }),
     ),
-
-    bindTo("forms"),
-    map(({ forms }) => ({ forms: excludeNoShowForms(forms) })),
-    bind("teamBpses", ({ forms }) => getAllBPSes(forms)),
-    map(({ forms, teamBpses }) => ({
-      forms: forms.filter((form) => !isEmpty(teamBpses[form.teamNumber])),
-      teamBpses,
-    })),
-
-    map(({ forms, teamBpses }) => formsToGeneralData(forms, teamBpses)),
-
-    fold(
-      (error) => () =>
-        Promise.resolve(res.status(error.status).send(error.reason)),
-      (generalData) => () =>
-        Promise.resolve(res.status(StatusCodes.OK).json({ generalData })),
+    map(groupBy((form: BeeScoutingForm) => form.teamNumber.toString())),
+    map((teamsForms) =>
+      mapObject(teamsForms, (forms) => applyRecency(forms, recency)),
     ),
+    map((teamsForms) => mapObject(teamsForms, calculateGeneralForTeam)),
+    bindTo("generalData"),
+  );
+
+generalRouter.get("/:recency", async (req, res) => {
+  await pipe(
+    getTotalGeneralData(parseInt(req.params.recency)),
+    foldResponse(res),
   )();
 });

@@ -9,39 +9,59 @@ import {
 } from "@tanstack/react-table";
 import type {
   ClimbLevel,
-  FuelEvents,
-  GameTime,
+  GamePeriod,
+  GeneralBeeData,
   GeneralData,
-  GeneralFuelData,
-  TeamNumberAndFuelData,
+  GeneralTeamBeeData,
 } from "@repo/scouting_types";
 import type React from "react";
 import { useState, useEffect, useMemo } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { HiOutlineChevronUpDown } from "react-icons/hi2";
+import { mapObject } from "@repo/array-functions";
+import { useLocalStorage } from "@repo/local_storage_hook";
+import { RecencyInput } from "./team/TeamSelect";
+import { allGamesRecency } from "./team/TeamTab";
 
-interface TableRow {
-  teamNumber: number;
-  generalFuelData: GeneralFuelData;
-}
-
-export type Column = FuelEvents | "climb" | "max climb";
+export type Column =
+  | "Score Tele"
+  | "Pass Tele"
+  | "Score Auto"
+  | "Pass Auto"
+  | "Driving"
+  | "Evasion Rating"
+  | "Defense Rating"
+  | "Times Defended"
+  | "Times Evaded"
+  | "Score Full"
+  | "Pass Full"
+  | "Climb Full"
+  | "Games Played"
+  | "Times Stole";
 
 type DataValue = ClimbLevel | number | undefined;
 
-type DataAccessor = (row: GeneralData, gameTime: GameTime) => DataValue;
+type DataAccessor = (row: GeneralTeamBeeData) => DataValue;
 const columnToKey: Record<Column, DataAccessor> = {
-  scored: (row, gameTime) => row.fuelData[gameTime].scored,
-  shot: (row, gameTime) => row.fuelData[gameTime].shot,
-  missed: (row, gameTime) => row.fuelData[gameTime].missed,
-  passed: (row, gameTime) => row.fuelData[gameTime].passed,
-  climb: (row, gameTime) => row.avarageClimbPoints[gameTime],
-  "max climb": (row) => row.highestClimbLevel,
+  Driving: ({ super: { driving } }) => driving,
+  "Defense Rating": ({ super: { defenseRating } }) => defenseRating,
+  "Evasion Rating": ({ super: { evasionRating } }) => evasionRating,
+  "Score Tele": ({ tele: { fuelScored } }) => fuelScored,
+  "Pass Tele": ({ tele: { fuelPassed } }) => fuelPassed,
+  "Score Auto": ({ auto: { fuelScored } }) => fuelScored,
+  "Pass Auto": ({ auto: { fuelPassed } }) => fuelPassed,
+  "Times Defended": ({ super: { timesDefended } }) => timesDefended,
+  "Times Evaded": ({ super: { timesEvaded } }) => timesEvaded,
+  "Score Full": ({ full: { fuelScored } }) => fuelScored,
+  "Pass Full": ({ full: { fuelPassed } }) => fuelPassed,
+  "Climb Full": ({ full: { climbPoints } }) => climbPoints,
+  "Games Played": ({ timesPlayed }) => timesPlayed,
+  "Times Stole": ({ timesStole }) => timesStole,
 };
 
-const fetchGeneralData = async (filters = {}) => {
+const fetchGeneralData = async (recency: number, filters = {}) => {
   const params = new URLSearchParams(filters);
-  const url = `/api/v1/general/?${params.toString()}`;
+  const url = `/api/v1/general/${recency}`;
 
   try {
     const response = await fetch(url, {
@@ -55,7 +75,7 @@ const fetchGeneralData = async (filters = {}) => {
     }
 
     const data = await response.json();
-    return data.generalData as GeneralData[];
+    return data.generalData as GeneralBeeData;
   } catch (err) {
     console.error("Fetch failed:", err);
     throw err;
@@ -68,30 +88,51 @@ interface GeneralDataTableProps {
 
 const DIGITS_AFTER_DOT = 1;
 
+const getPinnedStyles = (
+  column: any,
+  isHeader?: boolean,
+): React.CSSProperties => {
+  const isPinned = column.getIsPinned();
+
+  return {
+    position: isPinned ? "sticky" : "relative",
+    left: isPinned === "left" ? `${column.getStart("left")}px` : undefined,
+    right: isPinned === "right" ? `${column.getAfter("right")}px` : undefined,
+    zIndex: isPinned ? 5 : 0,
+    backgroundColor: isPinned
+      ? isHeader
+        ? "#121A2D"
+        : "#070D1F"
+      : "transparent",
+  };
+};
+
 export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
   filters,
 }) => {
-  const [allGeneralData, setAllGeneralData] = useState<GeneralData[]>([]);
-  const [gameTime, setGameTime] = useState<GameTime>("tele");
+  const [allGeneralData, setAllGeneralData] = useState<GeneralBeeData>({});
   const [sorting, setSorting] = useState<SortingState>([]);
-
-  useEffect(() => {
-    fetchGeneralData(filters).then(setAllGeneralData).catch(console.error);
-  }, [filters]);
-
-  const tableData = useMemo(
-    () =>
-      allGeneralData.map((generalData) => ({
-        ...generalData,
-        _uiKey: gameTime,
-      })),
-    [allGeneralData, gameTime],
+  const [recency, setRecency] = useLocalStorage<number | null>(
+    "general/recency",
+    null,
   );
 
-  const columnHelper = createColumnHelper<GeneralData>();
+  useEffect(() => {
+    fetchGeneralData(recency ?? allGamesRecency, filters)
+      .then(setAllGeneralData)
+      .catch(console.error);
+  }, [filters, recency]);
+
+  const tableData = Object.values(
+    mapObject(allGeneralData, (data, team) => ({
+      ...data,
+      team,
+    })),
+  );
+  const columnHelper = createColumnHelper<GeneralTeamBeeData>();
 
   const createColumn = (headerAndId: Column, style: string) =>
-    columnHelper.accessor((row) => columnToKey[headerAndId](row, gameTime), {
+    columnHelper.accessor((row) => columnToKey[headerAndId](row), {
       id: headerAndId,
       header: headerAndId,
       sortingFn: "alphanumeric",
@@ -107,26 +148,40 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
 
   const columns = useMemo(
     () => [
-      columnHelper.accessor("teamNumber", {
+      columnHelper.accessor("team", {
         header: "Team Number",
         cell: (info) => (
           <span className="font-black text-emerald-400">{info.getValue()}</span>
         ),
       }),
-
-      createColumn("scored", "text-emerald-400 font-bold"),
-      createColumn("missed", "text-rose-500/90 font-medium"),
-      createColumn("passed", "text-orange-400 font-medium"),
-      createColumn("climb", "text-purple-400 font-bold"),
-      createColumn("max climb", "text-slate-400 uppercase text-[10px]"),
+      createColumn("Score Full", "text-green-500"),
+      createColumn("Score Auto", "text-blue-500"),
+      createColumn("Defense Rating", "text-pink-500"),
+      createColumn("Score Tele", "text-red-500"),
+      createColumn("Pass Tele", "text-violet-500"),
+      createColumn("Driving", "text-orange-500"),
+      createColumn("Times Defended", "text-pink-200"),
+      createColumn("Evasion Rating", "text-purple-500"),
+      createColumn("Times Evaded", "text-purple-200"),
+      createColumn("Climb Full", "text-purple-400 font-bold"),
+      createColumn("Pass Auto", "text-violet-500"),
+      createColumn("Pass Full", "text-green-200"),
+      createColumn("Times Stole", "text-yellow-500"),
+      createColumn("Games Played", "text-orange-600"),
     ],
-    [gameTime, sorting],
+    [sorting],
   );
 
   const table = useReactTable({
     data: tableData,
     columns,
-    state: { sorting },
+    state: {
+      sorting,
+      columnPinning: {
+        left: ["team"],
+        right: [],
+      },
+    },
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -134,31 +189,19 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
 
   return (
     <div className="flex flex-col gap-6 p-4 bg-slate-950 min-h-screen">
-      <div className="overflow-hidden rounded-2xl border border-white/10 bg-slate-900/40 backdrop-blur-sm shadow-2xl">
-        <div className="flex gap-1.5 justify-center bg-slate-900/50 p-1.5 rounded-2xl border border-white/5 self-center">
-          {(["auto", "tele", "fullGame"] as GameTime[]).map((time) => (
-            <button
-              key={time}
-              onClick={() => {
-                setGameTime(time);
-              }}
-              className={`px-5 py-2 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all border ${
-                gameTime === time
-                  ? "bg-emerald-500 text-slate-950 border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]"
-                  : "bg-transparent text-slate-500 border-transparent hover:text-slate-300"
-              }`}
-            >
-              {time}
-            </button>
-          ))}
-        </div>
-        <table className="w-full text-left text-sm border-collapse">
+      <div className="flex flex-row gap-3 justify-center items-center mx-auto p-4 bg-slate-900/40 backdrop-blur-sm rounded-2xl border border-white/10 shadow-2xl">
+        <h2 className="font-bold mb-1">Recency</h2>
+        <RecencyInput setRecency={setRecency} recency={recency ?? undefined} />
+      </div>
+      <div className="overflow-x-auto rounded-2xl border border-white/10 bg-slate-900/40 backdrop-blur-sm shadow-2xl">
+        <table className="w-full min-w-max text-left text-sm border-collapse">
           <thead className="bg-slate-800/50 border-b border-white/10">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
+                    style={getPinnedStyles(header.column, true)}
                     className="px-6 py-4 font-black text-slate-400 uppercase tracking-widest text-[10px] cursor-pointer select-none transition-colors hover:bg-slate-800"
                     onClick={header.column.getToggleSortingHandler()}
                   >
@@ -193,7 +236,11 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
                   className="hover:bg-emerald-500/5 transition-colors group"
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="px-6 py-4 whitespace-nowrap">
+                    <td
+                      key={cell.id}
+                      style={getPinnedStyles(cell.column)}
+                      className="px-6 py-4 whitespace-nowrap"
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),

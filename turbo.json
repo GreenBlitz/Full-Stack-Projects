@@ -4,8 +4,11 @@
   "globalPassThroughEnv": [
     "FRONTEND_PORT",
     "BACKEND_PORT",
+    "TBA_API_KEY",
     "NODE_ENV",
-    "TBA_API_KEY"
+    "CHAMPS_SHEETS_ID",
+    "MONGO_URI", 
+    "DIS1_CHAMPS_ID"
   ],
 
   "tasks": {
