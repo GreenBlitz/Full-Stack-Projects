@@ -1,14 +1,13 @@
 // בס"ד
 import { BitArray, rangeArr } from "../BitArray";
 import type { Serde } from "../types";
-import isOdd from "is-odd";
 
 export const serdeUnsignedInt = (bitCount: number): Serde<number> => ({
   serializer(serialiedData: BitArray, unsignedInt: number) {
     const array = new BitArray();
 
     rangeArr(bitCount).forEach((i) => {
-      array.insertBool(isOdd(unsignedInt >> i));
+      array.insertBool(((unsignedInt >> i) & 1) === 1);
     });
     serialiedData.insertBitArray(array);
   },
@@ -17,7 +16,7 @@ export const serdeUnsignedInt = (bitCount: number): Serde<number> => ({
 
     const sum = rangeArr(bitCount).reduce(
       (acc, i) => acc + (Number(serializedData.consumeBool()) << i),
-      sumStartingValue
+      sumStartingValue,
     );
     return sum;
   },
