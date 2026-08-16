@@ -93,15 +93,19 @@ export const useYoutubePlayer = (
       ytContainerRef.current.innerHTML = "";
       ytContainerRef.current.appendChild(playerDiv);
 
-      createYTPlayer(win, playerId, source.videoId,
+      createYTPlayer(
+        win,
+        playerId,
+        source.videoId,
         (event) => {
           if (state.destroyed) {
             event.target.destroy();
             return;
           }
           state.ytPlayer = event.target;
-          (playerRef as React.MutableRefObject<VideoPlayerHandle | null>).current =
-            createYtHandle(event.target);
+          (
+            playerRef as React.MutableRefObject<VideoPlayerHandle | null>
+          ).current = createYtHandle(event.target);
 
           state.pollIntervalId = window.setInterval(() => {
             if (!state.ytPlayer) return;
@@ -122,7 +126,8 @@ export const useYoutubePlayer = (
       state.destroyed = true;
       if (state.pollIntervalId != null) clearInterval(state.pollIntervalId);
       state.ytPlayer?.destroy();
-      (playerRef as React.MutableRefObject<VideoPlayerHandle | null>).current = null;
+      (playerRef as React.MutableRefObject<VideoPlayerHandle | null>).current =
+        null;
     };
   }, [source, playerRef]);
 
