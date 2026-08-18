@@ -9,8 +9,10 @@ const CHANNEL_GREEN = 1;
 const CHANNEL_BLUE = 2;
 const CHANNEL_ALPHA = 3;
 const RAMP_INDEX_STEP = 1;
-const defaultColor = { stop: NORMALIZED_MIN, color: 
-  { red: BYTE_ZERO, green: BYTE_ZERO, blue: BYTE_ZERO } };
+const defaultColor = {
+  stop: NORMALIZED_MIN,
+  color: { red: BYTE_ZERO, green: BYTE_ZERO, blue: BYTE_ZERO },
+};
 interface ColorStop {
   stop: number;
   color: ColorRGB;
@@ -25,7 +27,7 @@ const COLOR_RAMP: ColorStop[] = [
   { stop: 0, color: { red: 0, green: 0, blue: 255 } },
   { stop: 0.2, color: { red: 0, green: 128, blue: 255 } },
   { stop: 0.4, color: { red: 0, green: 255, blue: 255 } },
-  { stop: 0.6, color: { red: 0, green: 255, blue: 0 }},
+  { stop: 0.6, color: { red: 0, green: 255, blue: 0 } },
   { stop: 0.8, color: { red: 255, green: 255, blue: 0 } },
   { stop: 1, color: { red: 255, green: 0, blue: 0 } },
 ];
@@ -47,12 +49,12 @@ const getRampColor = (value: number): ColorRGB => {
     NORMALIZED_MAX,
     Math.max(
       NORMALIZED_MIN,
-      (value - NORMALIZED_MIN) / (NORMALIZED_MAX - NORMALIZED_MIN || NORMALIZED_MAX),
+      (value - NORMALIZED_MIN) /
+        (NORMALIZED_MAX - NORMALIZED_MIN || NORMALIZED_MAX),
     ),
   );
   const lastIndex = COLOR_RAMP.length - RAMP_INDEX_STEP;
-  const [first = defaultColor] =
-    COLOR_RAMP;
+  const [first = defaultColor] = COLOR_RAMP;
   if (normalized <= first.stop) {
     return first.color;
   }
@@ -60,7 +62,9 @@ const getRampColor = (value: number): ColorRGB => {
   const fallback = COLOR_RAMP[lastIndex]?.color ?? first.color;
   const match = { value: fallback };
   // Find the color stop where the normalized value falls within its range.
-  const currentStopIndex = COLOR_RAMP.findIndex((stop) => normalized <= stop.stop);
+  const currentStopIndex = COLOR_RAMP.findIndex(
+    (stop) => normalized <= stop.stop,
+  );
   if (currentStopIndex > NORMALIZED_MIN) {
     // Get the current and previous stops to interpolate between them.
     const currentStop = COLOR_RAMP[currentStopIndex];
@@ -88,7 +92,10 @@ export const colorizeHeatmapImageData = (
     if (alpha === BYTE_ZERO) {
       return;
     }
-    const intensity = Math.min(NORMALIZED_MAX, (alpha / BYTE_MAX) * intensityGain);
+    const intensity = Math.min(
+      NORMALIZED_MAX,
+      (alpha / BYTE_MAX) * intensityGain,
+    );
     const color = getRampColor(intensity);
     data[index + CHANNEL_RED] = color.red;
     data[index + CHANNEL_GREEN] = color.green;
