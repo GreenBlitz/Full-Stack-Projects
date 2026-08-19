@@ -138,3 +138,129 @@ function doubledLargerThanHundred(numbers: number[]) {
 function analizeNumbers(numbers: number[]) {
   return [sumArray(numbers), hasEven(numbers), positiveOnly(numbers)];
 }
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+function getUserName(user: User) {
+  return user.name;
+}
+
+function verifyEmails(users: User[]) {
+  const emails = users.map((user) => user.email);
+  for (let i = 0; i < emails.length; i++) {
+    if (emails.includes(emails[i], i + 1)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function findUserByID(users: User[], id: number) {
+  return users.filter((user) => user.id === id).at(0);
+}
+
+function findFirstUser(users: User[]) {
+  users.sort((a, b) => a.id - b.id).at(0);
+}
+
+function addUser(users: User[], name: string, email: string) {
+  let id = 1;
+  const sortedUsers = [...users].sort((a, b) => a.id - b.id);
+  for (let i = 0; i < sortedUsers.length; i++) {
+    if (sortedUsers[i].id === id) {
+      id++;
+    }
+  }
+  users.push({ id, name, email });
+}
+
+interface UserDB {
+  users: User[];
+  admin: User;
+  isSQL: boolean;
+}
+
+function getEmails(db: UserDB) {
+  return db.users.map((user) => user.email);
+}
+
+function combineDB(db1: UserDB, db2: UserDB): UserDB {
+  let isDB1 = db1.admin.id > db2.admin.id;
+  return {
+    users: isDB1 ? db1.users.concat(db2.users) : db2.users.concat(db1.users),
+    admin: isDB1 ? db2.admin : db2.admin,
+    isSQL: db1.isSQL || db2.isSQL,
+  };
+}
+
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+}
+
+interface ProductWithDiscount extends Product {
+  discountPercentage: number;
+}
+
+interface Store {
+  products: Product[];
+  discounts: ProductWithDiscount[];
+}
+
+function getLowestItems(
+  store: Store,
+): [discounted: ProductWithDiscount, regular: Product] {
+  const discounted: ProductWithDiscount = store.discounts.reduce(
+    (previousValue, currentValue) => {
+      return calculateDiscount(
+        previousValue.price,
+        previousValue.discountPercentage,
+      ) > calculateDiscount(currentValue.price, currentValue.discountPercentage)
+        ? previousValue
+        : currentValue;
+    },
+  );
+  const regular = store.products.reduce((previousValue, currentValue) => {
+    return previousValue.price > currentValue.price
+      ? previousValue
+      : currentValue;
+  });
+  return [discounted, regular];
+}
+
+function getProductByID(store: Store, id: number) {
+  return (
+    store.products.find((product) => product.id === id) ??
+    store.discounts.find((discount) => discount.id === id)
+  );
+}
+
+function getTotalPrice(store: Store) {
+  return (
+    store.products.reduce(
+      (previousValue, currentValue) => previousValue + currentValue.price,
+      0,
+    ) +
+    store.discounts.reduce(
+      (previousValue, currentValue) =>
+        previousValue +
+        calculateDiscount(currentValue.price, currentValue.discountPercentage),
+      0,
+    )
+  );
+}
+
+function applyStoreDiscount(store: Store, discountPercentage: number) {
+  store.products.forEach((product) => {
+    product.price = calculateDiscount(product.price, discountPercentage);
+  });
+  store.discounts.forEach((product) => {
+    product.discountPercentage += discountPercentage;
+  });
+  return store;
+}
