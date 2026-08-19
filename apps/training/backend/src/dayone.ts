@@ -38,6 +38,53 @@ function ispalindrom(str:string):boolean{
         new += str[str.length-i];
     return(new==str)   
 }
-
-
+function findmaxeivar(numbers:number[]){
+    let max= numbers[0]
+    for (let i = 1;i<numbers.length+1;i++) {
+        if (numbers[i]>max){
+            max=numbers[i];
+        return max
 }
+function sumpositiveNumbers(numbers:number[]){
+    let sum=""
+    for(let i=1; i<numbers.length;i++){
+        if (numbers[i]%2==0){
+            sum+=i;
+        }}
+    return sum
+function getLongestString(words:string[]){
+let hello=words[0].length
+    for(let i=1; i<words.length;i++){
+        if (words[i].length>hello){
+            let hello=words[i]
+        }
+    return(hello)
+function calculate(price:number,discount:number){
+const newprice= price- price*(discount/100)
+    return(newprice)
+}
+function findSecondLargest(numbers:number[]){
+    let max1=numbers[0]
+    let max2==0
+    for(let i=1;i<numbers.length;i++){
+        if(numbers[i]>max[1]){
+            max2=max1
+            max1=numbers[i]
+        return(max2)
+    
+
+    }
+
+
+
+
+
+
+
+
+        
+
+
+    }
+
+
