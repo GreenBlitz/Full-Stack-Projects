@@ -204,4 +204,5 @@ function includes(numbers: number[], num) {
     return re
 }
 
-console.log(includes(number2, 9))
+console.log(includes(number2, 10))
+
