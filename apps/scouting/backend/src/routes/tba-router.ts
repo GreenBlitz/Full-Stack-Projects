@@ -52,8 +52,7 @@ import { teamStringToTeamNumber } from "@repo/frc";
 
 export const tbaRouter = Router();
 
-const TBA_KEY =
-  "";
+const TBA_KEY = "";
 const TBA_URL = "https://www.thebluealliance.com/api/v3";
 
 const currentEvent = "2026new";
