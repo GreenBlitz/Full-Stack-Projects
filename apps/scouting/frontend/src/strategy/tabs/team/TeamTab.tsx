@@ -5,7 +5,7 @@ import { FRC_TEAM_NUMBERS } from "@repo/frc";
 import { firstElement } from "@repo/array-functions";
 import { TeamSelect } from "./TeamSelect";
 import { useLocalStorage } from "@repo/local_storage_hook";
-import { fetchTeamNumbers } from "../../fetches";
+import { fetchTeamNumbers } from "../../api/fetches";
 import { StatView } from "./StatView";
 import { NotesCell, PitScoutResultsTab } from "../pit-scout/TeamPitShow";
 import { SuperBarChart } from "./SuperBarChart";

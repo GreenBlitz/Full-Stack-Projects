@@ -1,6 +1,6 @@
 import type { TeamPageTeamBeeData } from "@repo/scouting_types";
 import type { FC } from "react";
-import type { BarDataset } from "../../Dataset";
+import type { BarDataset } from "../../../types/Dataset";
 import { BarChart } from "../../components/BarChart";
 
 export const SuperBarChart: FC<{
