@@ -3,7 +3,7 @@
 import type { CompareData, TeamPageTeamBeeData } from "@repo/scouting_types";
 import type React from "react";
 import { useEffect, useMemo, useState } from "react";
-import { fetchTeamNumbers } from "../fetches";
+import { fetchTeamNumbers } from "../api/fetches";
 import { fetchTeamData } from "./team/TeamTab";
 import { useLocalStorage } from "@repo/local_storage_hook";
 import { maxHeight, ThrowBarChart } from "./team/ThrowBarChart";
