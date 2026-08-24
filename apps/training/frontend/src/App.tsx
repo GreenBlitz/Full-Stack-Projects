@@ -1,36 +1,25 @@
-// בס"ד
-import { useState, type FC } from "react";
+import { Ducks } from "./ducks/Ducks.tsx";
+import type { Duck } from "./ducks/DuckCard.tsx";
+import { useEffect, useState } from "react";
 
-const counterStartingValue = 0;
-const countIncrement = 1;
-const maxCountingValue = 5;
-const importantMessage = "MI BOMBO";
-const App: FC = () => {
-  const [count, setCount] = useState<string | number>(counterStartingValue);
-
-  return (
-    <div className="mx-auto">
-      <h1>GreenBlitz Full-Stack Project:</h1>
-      <div className="card">
-        <button
-          onClick={() => {
-            setCount((prevCount) =>
-              typeof prevCount === "number"
-                ? prevCount >= maxCountingValue
-                  ? importantMessage
-                  : prevCount + countIncrement
-                : prevCount + "!",
-            );
-          }}
-        >
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-    </div>
+function App() {
+  const initialDucks: Duck[] = [
+    { name: "Momo", color: "yellow", age: 67 },
+    { name: "Donald", color: "white", age: 21 },
+    { name: "Daffy", color: "black", age: 41 },
+  ];
+  const [ducks, setDucks] = useState<Duck[]>(
+    JSON.parse(localStorage.getItem("ducks") ?? JSON.stringify(initialDucks)),
   );
-};
+  useEffect(() => {
+    document.title = `Duck Corp (${ducks.length})`;
+    localStorage.setItem("ducks", JSON.stringify(ducks));
+  }, [ducks]);
+  return (
+    <>
+      <Ducks ducks={ducks} setDucks={setDucks} />
+    </>
+  );
+}
 
 export default App;

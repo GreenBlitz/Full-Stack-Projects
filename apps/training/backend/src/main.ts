@@ -1,14 +1,54 @@
-// בס"ד
-import express from "express";
-import { apiRouter } from "./routes";
+import express, { type Express } from "express";
 
-const app = express();
+const app: Express = express();
+const port = 3000;
 
-const defaultPort = 4590;
-const port = process.env.BACKEND_PORT ?? defaultPort;
+app.use(express.json());
 
-app.use("/api/v1", apiRouter);
+interface Duck {
+  id: number;
+  name: string;
+  color: string;
+  age: number;
+}
+
+let ducks: Duck[] = [
+  { id: 0, name: "Momo", color: "yellow", age: 67 },
+  { id: 1, name: "Donald", color: "white", age: 21 },
+  { id: 2, name: "Daffy", color: "black", age: 41 },
+];
+
+app.get("/", (_req, res) => {
+  res.send("Welcome!");
+});
+
+app.get("/ducks", (_req, res) => {
+  res.send(ducks);
+});
+
+app.get("/ducks/:id", (req, res) => {
+  const duck = ducks.find((duck: Duck) => duck.id === Number(req.params.id));
+  if (duck) {
+    res.send(duck);
+  } else {
+    res.sendStatus(404);
+  }
+});
+
+app.post("/ducks", (req, res) => {
+  const [name, color, age] = req.body;
+  const id = ducks.at(-1)?.id ?? 1;
+  const duck: Duck = { id, name, color, age };
+  ducks.push(duck);
+  res.status(200).send(duck);
+});
+
+app.delete("/ducks/:id", (req, res) => {
+  const id = Number(req.params.id);
+  ducks = ducks.filter((duck) => duck.id !== id);
+  res.sendStatus(200);
+});
 
 app.listen(port, () => {
-  console.log(`Production server running at http://localhost:${port}`);
+  console.log(`Example app listening on port ${port}`);
 });
