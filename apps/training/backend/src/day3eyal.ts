@@ -44,3 +44,6 @@ function drawCard(deck: Deck): OptianalCard{
 const AD: Card = {suit:"diamonds", rank:"A"}
 const deckk : Deck = [KH,AD]
 console.log(drawCard(deckk))    
+
+
+
