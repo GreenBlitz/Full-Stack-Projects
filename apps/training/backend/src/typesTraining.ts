@@ -129,10 +129,12 @@ function getlowestItems(store: Store): {
 function getProductById(
   store: Store,
   id: number,
-): Product | ProductWithDiscount {
+): Product | ProductWithDiscount | undefined {
   return (
     store.products.find((product: Product) => product.id === id) ??
-    store.discounts.find((discounted: ProductWithDiscount) => product.id === id)
+    store.discounts.find(
+      (discounted: ProductWithDiscount) => discounted.id === id,
+    )
   );
 }
 
@@ -148,6 +150,23 @@ function totalPrice(store: Store): number {
       )
       .reduce((total: number, current: number) => total + current)
   );
+}
+
+function applyStoreDiscount(store: Store, discount: number): Store {
+  const products: Product[] = store.products.map((product: Product) => ({
+    id: product.id,
+    name: product.name,
+    price: product.price - product.price * discount,
+  }));
+  const discounts: ProductWithDiscount[] = store.discounts.map(
+    (discounted: ProductWithDiscount) => ({
+      id: discounted.id,
+      name: discounted.name,
+      price: discounted.price - discounted.price * discount,
+      discountPrecentage: discounted.discountPrecentage,
+    }),
+  );
+  return { products: products, discounts: discounts };
 }
 
 const users: User[] = [
