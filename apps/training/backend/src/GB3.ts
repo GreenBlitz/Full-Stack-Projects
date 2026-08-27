@@ -45,7 +45,5 @@ function flipCard(flippableCard: FlippableCard): FlippableCard {
 //11
 function drawCard(deck: Deck): OptionalCard {
   if (deck.length === 0) return undefined;
-  else {
-    deck[0];
-  }
+  else return deck[0];
 }
