@@ -1,3 +1,4 @@
+import * as fetches from "../fetches.ts";
 import { type Duck, DuckCard } from "./DuckCard.tsx";
 import {
   type ChangeEvent,
@@ -17,7 +18,12 @@ export function Ducks({ ducks, setDucks }: DucksProps) {
   const [filter, setFilter] = useState("");
   const filterChanger = (changeEvent: ChangeEvent<HTMLInputElement>) =>
     setFilter(changeEvent.target.value);
-  const removeLastDuck = () => setDucks((prevState) => prevState.slice(0, -1));
+  const removeLastDuck = () => {
+    const duck = ducks.at(-1);
+    if (duck) {
+      fetches.deleteDuck(duck.id).then(setDucks);
+    }
+  };
   const duckSortingFunctionsMap = new Map<string, (a: Duck, b: Duck) => number>(
     [
       [

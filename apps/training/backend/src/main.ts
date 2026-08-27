@@ -58,7 +58,6 @@ const colors: string[] = [
   "orange",
   "brown",
   "yellow",
-  "green",
   "blue",
   "purple",
   "green",
@@ -109,10 +108,10 @@ app.post("/ducks", (req, res) => {
     const name: string = req.body.name;
     const color: string = req.body.color;
     const age: number = req.body.age;
-    const id = ducks.at(-1)?.id ?? 1;
+    const id = 1 + (ducks.at(-1)?.id ?? 0);
     const duck: Duck = { id, name, color, age };
     ducks.push(duck);
-    res.status(201).send(duck);
+    res.status(201).send(ducks);
   } catch (Error) {
     res.sendStatus(400);
   }
@@ -121,7 +120,7 @@ app.post("/ducks", (req, res) => {
 app.delete("/ducks/:id", (req, res) => {
   const id = Number(req.params.id);
   ducks = ducks.filter((duck) => duck.id !== id);
-  res.sendStatus(200);
+  res.status(200).send(ducks);
 });
 
 app.patch("/ducks/:id", (req, res) => {

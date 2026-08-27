@@ -1,3 +1,4 @@
+import * as fetches from "./fetches.ts";
 import { Ducks } from "./ducks/Ducks.tsx";
 import type { Duck } from "./ducks/DuckCard.tsx";
 import { useEffect, useState } from "react";
@@ -8,13 +9,11 @@ function App() {
     { id: 2, name: "Donald", color: "white", age: 21 },
     { id: 3, name: "Daffy", color: "black", age: 41 },
   ];
-  const [ducks, setDucks] = useState<Duck[]>(
-    JSON.parse(localStorage.getItem("ducks") ?? JSON.stringify(initialDucks)),
-  );
+  const [ducks, setDucks] = useState<Duck[]>(initialDucks);
   useEffect(() => {
     document.title = `Duck Corp (${ducks.length})`;
-    localStorage.setItem("ducks", JSON.stringify(ducks));
-  }, [ducks]);
+    fetches.getDucks().then(setDucks);
+  }, ducks);
   return (
     <>
       <Ducks ducks={ducks} setDucks={setDucks} />
