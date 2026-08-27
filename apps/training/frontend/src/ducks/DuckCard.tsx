@@ -1,21 +1,22 @@
 export type Duck = {
-    name: string,
-    color: string,
-    age: number
-}
+  id: number;
+  name: string;
+  color: string;
+  age: number;
+};
 
 export type DuckCardProps = {
-    duck: Duck
-}
+  duck: Duck;
+};
 
-export function DuckCard({duck}: DuckCardProps) {
-    return (
-        <div className="duck-card">
-            <h4>{duck.name}</h4>
-            <p>
-                color: {duck.color} <br/>
-                age: {duck.age}
-            </p>
-        </div>
-    );
+export function DuckCard({ duck }: DuckCardProps) {
+  return (
+    <div className="duck-card">
+      <h4>{duck.name}</h4>
+      <p>
+        color: {duck.color} <br />
+        age: {duck.age}
+      </p>
+    </div>
+  );
 }

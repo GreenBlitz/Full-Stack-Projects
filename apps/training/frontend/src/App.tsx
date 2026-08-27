@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 
 function App() {
   const initialDucks: Duck[] = [
-    { name: "Momo", color: "yellow", age: 67 },
-    { name: "Donald", color: "white", age: 21 },
-    { name: "Daffy", color: "black", age: 41 },
+    { id: 1, name: "Momo", color: "yellow", age: 67 },
+    { id: 2, name: "Donald", color: "white", age: 21 },
+    { id: 3, name: "Daffy", color: "black", age: 41 },
   ];
   const [ducks, setDucks] = useState<Duck[]>(
     JSON.parse(localStorage.getItem("ducks") ?? JSON.stringify(initialDucks)),
