@@ -61,6 +61,30 @@ function getEmails(db: UserDB): string[] {
   return db.users.map((user: User) => user.email);
 }
 
+function choosePreferedAdmin(db1: UserDB, db2: UserDB): User {
+  return db1.admin.id > db2.admin.id ? db1.admin : db2.admin;
+}
+
+function removeUser(db: UserDB, user: User): User[] {
+  return db.users.filter((currentUser: User) => currentUser !== user);
+}
+
+function combineUsers(users1: User[], users2: User[]): User[] {
+  return [...users1, ...users2];
+}
+
+function combineDB(db1: UserDB, db2: UserDB): UserDB {
+  const adminUser: User = choosePreferedAdmin(db1, db2);
+  const users1: User[] = removeUser(db1, adminUser);
+  const users2: User[] = removeUser(db2, adminUser);
+  const users: User[] = combineUsers(users1, users2);
+  users.unshift(adminUser);
+  for (let i = 0; i < users.length; i++) {
+    users[i].id = i + 1;
+  }
+  return { users: users, admin: adminUser, isSql: db1.isSql || db2.isSql };
+}
+
 const users: User[] = [
   { id: 3, name: "Merav", email: "dfdsjfsdojhfjo@fjofsjf" },
 ];
