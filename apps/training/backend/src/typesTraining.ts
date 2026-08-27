@@ -10,6 +10,37 @@ interface UserDB {
   isSql: boolean;
 }
 
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+}
+
+interface ProductWithDiscount extends Product {
+  discountPrecentage: number;
+}
+
+interface Store {
+  products: Product[];
+  discounts: ProductWithDiscount[];
+}
+
+function productSortFunction(product1: Product, product2: Product): number {
+  return product1.price - product2.price;
+}
+
+function productWithDiscountSortFunction(
+  discount1: ProductWithDiscount,
+  discount2: ProductWithDiscount,
+): number {
+  return (
+    discount1.price -
+    discount1.price * discount1.discountPrecentage -
+    discount2.price -
+    discount2.price * discount2.discountPrecentage
+  );
+}
+
 function userSortFunction(user1: User, user2: User): number {
   return user1.id - user2.id;
 }
@@ -83,6 +114,40 @@ function combineDB(db1: UserDB, db2: UserDB): UserDB {
     users[i].id = i + 1;
   }
   return { users: users, admin: adminUser, isSql: db1.isSql || db2.isSql };
+}
+
+function getlowestItems(store: Store): {
+  discounted: ProductWithDiscount;
+  regular: Product;
+} {
+  return {
+    discounted: [...store.discounts].sort(productWithDiscountSortFunction)[0],
+    regular: [...store.products].sort(productSortFunction)[0],
+  };
+}
+
+function getProductById(
+  store: Store,
+  id: number,
+): Product | ProductWithDiscount {
+  return (
+    store.products.find((product: Product) => product.id === id) ??
+    store.discounts.find((discounted: ProductWithDiscount) => product.id === id)
+  );
+}
+
+function totalPrice(store: Store): number {
+  return (
+    store.products
+      .map((product: Product) => product.price)
+      .reduce((total: number, current: number) => total + current) +
+    store.discounts
+      .map(
+        (discount: ProductWithDiscount) =>
+          discount.price - discount.price * discount.discountPrecentage,
+      )
+      .reduce((total: number, current: number) => total + current)
+  );
 }
 
 const users: User[] = [
