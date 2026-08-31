@@ -1,13 +1,15 @@
 import axios from "axios";
 import type { Duck } from "./ducks/DuckCard.tsx";
 
-export async function getDucks(): Promise<Duck[]> {
-  const response = await axios.get<Duck[]>("localhost:3000/ducks");
+export async function getDucks(nameQuery: string = ""): Promise<Duck[]> {
+  const response = await axios.get<Duck[]>(
+    "http://localhost:8000/ducks?name=" + nameQuery,
+  );
   return response.data;
 }
 
 export async function deleteDuck(id: number): Promise<Duck[]> {
-  const response = await axios.delete("localhost:3000/ducks/" + id);
+  const response = await axios.delete("http://localhost:8000/ducks/" + id);
   return response.data;
 }
 
@@ -17,8 +19,8 @@ export async function addDuck(
   age: number,
 ): Promise<Duck[]> {
   const response = await axios.post(
-    "localhost:3000/ducks",
-    `{ name: \"${name}\", color: \"${color}\", age: ${age} }`,
+    "http://localhost:8000/ducks",
+    `{ \"name\": \"${name}\", \"color\": \"${color}\", \"age\": ${age} }`,
   );
   return response.data;
 }

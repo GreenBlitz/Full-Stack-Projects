@@ -4,16 +4,13 @@ import type { Duck } from "./ducks/DuckCard.tsx";
 import { useEffect, useState } from "react";
 
 function App() {
-  const initialDucks: Duck[] = [
-    { id: 1, name: "Momo", color: "yellow", age: 67 },
-    { id: 2, name: "Donald", color: "white", age: 21 },
-    { id: 3, name: "Daffy", color: "black", age: 41 },
-  ];
-  const [ducks, setDucks] = useState<Duck[]>(initialDucks);
+  const [ducks, setDucks] = useState<Duck[]>([]);
   useEffect(() => {
     document.title = `Duck Corp (${ducks.length})`;
-    fetches.getDucks().then(setDucks);
   }, ducks);
+  useEffect(() => {
+    fetches.getDucks().then(setDucks);
+  }, []);
   return (
     <>
       <Ducks ducks={ducks} setDucks={setDucks} />

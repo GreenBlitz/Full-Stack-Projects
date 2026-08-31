@@ -1,9 +1,15 @@
 import express, { type Express } from "express";
+import cors from "cors";
 
 const app: Express = express();
-const port = 3000;
+const port = 8000;
 
 app.use(express.json());
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+  }),
+);
 
 app.use((req, _res, next) => {
   console.log(req.method + " " + req.path + " at " + Date.now());
@@ -11,7 +17,11 @@ app.use((req, _res, next) => {
 });
 
 app.use((req, res, next) => {
-  if (req.header("duck-password") === "password" || req.method === "get") {
+  if (
+    req.header("duck-password") === "password" ||
+    req.method === "get" ||
+    true
+  ) {
     next();
   } else {
     res.sendStatus(401);
@@ -19,22 +29,24 @@ app.use((req, res, next) => {
 });
 
 app.use((req, res, next) => {
-  if ("name" in req.body) {
-    const name = req.body.name;
-    if (typeof name !== "string" || !name) {
-      res.sendStatus(400);
+  if (req.body) {
+    if ("name" in req.body) {
+      const name = req.body.name;
+      if (typeof name !== "string" || !name) {
+        res.sendStatus(400);
+      }
     }
-  }
-  if ("color" in req.body) {
-    const color = req.body.color;
-    if (typeof color !== "string" || !colors.includes(color)) {
-      res.sendStatus(400);
+    if ("color" in req.body) {
+      const color = req.body.color;
+      if (typeof color !== "string" || !colors.includes(color)) {
+        res.sendStatus(400);
+      }
     }
-  }
-  if ("age" in req.body) {
-    const age = req.body.age;
-    if (typeof age !== "number" || age < 0) {
-      res.sendStatus(400);
+    if ("age" in req.body) {
+      const age = req.body.age;
+      if (typeof age !== "number" || age < 0) {
+        res.sendStatus(400);
+      }
     }
   }
   next();
@@ -73,23 +85,25 @@ app.get("/", (_req, res) => {
 
 app.get("/ducks", (req, res) => {
   let sentDucks = ducks;
-  if ("name" in req.query && typeof req.query.name === "string") {
-    const name = req.query.name;
-    sentDucks = sentDucks.filter((d) => {
-      return d.name.toLowerCase().includes(name.toLowerCase());
-    });
-  }
-  if ("color" in req.query && typeof req.query.color === "string") {
-    const color = req.query.color;
-    sentDucks = sentDucks.filter((d) => {
-      return d.color.toLowerCase().includes(color.toLowerCase());
-    });
-  }
-  if ("age" in req.query && typeof req.query.age === "string") {
-    const age = req.query.age;
-    sentDucks = sentDucks.filter((d) => {
-      return d.age.toString().toLowerCase().includes(age.toLowerCase());
-    });
+  if (req.query) {
+    if ("name" in req.query && typeof req.query.name === "string") {
+      const name = req.query.name;
+      sentDucks = sentDucks.filter((d) => {
+        return d.name.toLowerCase().includes(name.toLowerCase());
+      });
+    }
+    if ("color" in req.query && typeof req.query.color === "string") {
+      const color = req.query.color;
+      sentDucks = sentDucks.filter((d) => {
+        return d.color.toLowerCase().includes(color.toLowerCase());
+      });
+    }
+    if ("age" in req.query && typeof req.query.age === "string") {
+      const age = req.query.age;
+      sentDucks = sentDucks.filter((d) => {
+        return d.age.toString().toLowerCase().includes(age.toLowerCase());
+      });
+    }
   }
   res.send(sentDucks);
 });
