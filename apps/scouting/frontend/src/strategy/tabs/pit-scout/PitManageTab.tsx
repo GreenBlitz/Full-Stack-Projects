@@ -90,36 +90,50 @@ export const PitManageTab = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5">
-            {data.map((pitScout) => (
-              <tr
-                key={pitScout.teamNumber}
-                className="transition-colors hover:bg-emerald-500/4"
-              >
-                <td className="px-5 py-5 font-mono text-lg font-black text-white">
-                  {pitScout.teamNumber}
-                </td>
-                <td className="px-5 py-5">
-                  <Capability value={pitScout.booleanMetrics.hasTurret} />
-                </td>
-                <td className="px-5 py-5">
-                  <Capability value={pitScout.booleanMetrics.canPassTrench} />
-                </td>
-                <td className="max-w-sm px-5 py-5 text-sm text-slate-400">
-                  <span className="block truncate">
-                    {pitScout.extraInfo || "—"}
-                  </span>
-                </td>
-                <td className="px-5 py-5 text-right">
-                  <button
-                    onClick={() => openEditModal(pitScout)}
-                    title={`Edit team ${pitScout.teamNumber}`}
-                    className="inline-flex rounded-lg border border-white/10 p-2 text-slate-400 transition hover:border-emerald-400/50 hover:bg-emerald-400/10 hover:text-emerald-300"
-                  >
-                    <LuPen className="h-4 w-4" />
-                  </button>
+            {data.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={5}
+                  className="px-5 py-12 text-center text-sm font-bold text-slate-500"
+                >
+                  <div className="flex flex-col items-center gap-2">
+                    <LuCircleX className="h-10 w-10" />
+                    No pit data yet
+                  </div>
                 </td>
               </tr>
-            ))}
+            ) : (
+              data.map((pitScout) => (
+                <tr
+                  key={pitScout.teamNumber}
+                  className="transition-colors hover:bg-emerald-500/4"
+                >
+                  <td className="px-5 py-5 font-mono text-lg font-black text-white">
+                    {pitScout.teamNumber}
+                  </td>
+                  <td className="px-5 py-5">
+                    <Capability value={pitScout.booleanMetrics.hasTurret} />
+                  </td>
+                  <td className="px-5 py-5">
+                    <Capability value={pitScout.booleanMetrics.canPassTrench} />
+                  </td>
+                  <td className="max-w-sm px-5 py-5 text-sm text-slate-400">
+                    <span className="block truncate">
+                      {pitScout.extraInfo || "—"}
+                    </span>
+                  </td>
+                  <td className="px-5 py-5 text-right">
+                    <button
+                      onClick={() => openEditModal(pitScout)}
+                      title={`Edit team ${pitScout.teamNumber}`}
+                      className="inline-flex rounded-lg border border-white/10 p-2 text-slate-400 transition hover:border-emerald-400/50 hover:bg-emerald-400/10 hover:text-emerald-300"
+                    >
+                      <LuPen className="h-4 w-4" />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
