@@ -3,7 +3,6 @@
 import { useState, type FC } from "react";
 import type {
   PitScout,
-  PitScoutBoolean,
   PitScoutBooleanKey,
   PitScoutBooleanMetric,
 } from "@repo/scouting_types";
@@ -128,7 +127,7 @@ export const PitScoutTab: FC = () => {
           extra information
         </h2>
         <textarea
-          className="w-full bg-slate-900/50 border border-white/10 rounded-xl p-4 min-h-[120px] outline-none focus:border-amber-500/50 transition-all text-sm resize-none placeholder:text-slate-700"
+          className="w-full bg-slate-900/50 border border-white/10 rounded-xl p-4 min-h-30 outline-none focus:border-amber-500/50 transition-all text-sm resize-none placeholder:text-slate-700"
           value={form.extraInfo ?? ""}
           onChange={(event) => setExtraForm(event.target.value)}
           placeholder="Enter extra observations..."
