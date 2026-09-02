@@ -76,6 +76,14 @@ export const PitScoutTab: FC = () => {
 
   return (
     <div className="flex flex-col items-center gap-6 max-w-2xl mx-auto pb-12 text-slate-200">
+      <div className="fixed top-5 left-5">
+        <a
+          href="/pit/manage"
+          className="px-4 py-2 bg-white text-slate-950 text-xs font-black uppercase tracking-widest rounded-xl hover:bg-amber-400 transition-all active:scale-95 shadow-lg shadow-amber-900/20"
+        >
+          Manage Pit Data
+        </a>
+      </div>
       <div className="w-full bg-slate-800/40 border border-white/5 p-6 rounded-2xl backdrop-blur-sm shadow-xl">
         <h2 className="text-xs font-black uppercase tracking-[0.2em] text-amber-500 mb-4">
           Team Identification
