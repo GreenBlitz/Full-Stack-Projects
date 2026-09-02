@@ -8,6 +8,7 @@ import { BsXLg as X } from "react-icons/bs";
 import { BOOLEAN_FIELDS } from "./PitScoutTab";
 import { BooleanStats } from "./BooleanStats";
 import { PIT_SCOUT_URL } from "./PitScoutTab";
+import { useEscapeKey } from "../../hooks/useEscapeKey";
 
 interface PitEditModalProps {
   isOpen: boolean;
@@ -22,6 +23,7 @@ export const PitEditModal: React.FC<PitEditModalProps> = ({
   onSuccess,
   pitData,
 }) => {
+  useEscapeKey(onClose);
   const [formData, setFormData] = useState<PitScout>(pitData);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
