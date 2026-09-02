@@ -1,4 +1,4 @@
-import { DuckCard } from "./components/DuckCard";
+import { DuckCard } from "./components/Duck";
 
 // בס"ד
 function App() {
