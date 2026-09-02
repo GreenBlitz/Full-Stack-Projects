@@ -9,7 +9,7 @@ import type {
 } from "@repo/scouting_types";
 import { BooleanStats } from "./BooleanStats";
 
-const PIT_SCOUT_URL = "/api/v1/pit/";
+export const PIT_SCOUT_URL = "/api/v1/pit/";
 
 export const BOOLEAN_FIELDS: { statKey: PitScoutBooleanKey; label: string }[] =
   [
