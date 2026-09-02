@@ -21,13 +21,13 @@ type Rank =
   | "k";
 
 //4
-interface card {
+interface Card {
   suit: Suit;
   rank: Rank;
 }
 
 //5
-interface flippable {
+interface Flippable {
   isfaceup: boolean;
 }
 
@@ -35,18 +35,18 @@ interface flippable {
 type FlippableCard = Card & Flippable;
 
 //7
-type OptionalCard = card | undefined;
+type OptionalCard = Card | undefined;
 
 //8
-type Daek = card | flippable;
+type Daek = Card[] | FlippableCard[];
 
 //part 2
 
 //1
 
-const card1: card = { suit: "hearts", rank: "7" };
+const card1: Card = { suit: "hearts", rank: "7" };
 
-function getCardName(card: card) {
+function getCardName(card: Card) {
   console.log(card.rank, ", ", card.suit);
 }
 
@@ -54,4 +54,14 @@ getCardName(card1);
 
 //2
 
-const fl_card1: FlippableCard;
+function flipCard(card: FlippableCard): FlippableCard {
+  card.isfaceup = !card.isfaceup;
+  return card;
+}
+
+//3
+
+function drawCard(deck: Daek): Card | undefined {
+  return deck.length > 0 ? deck[0] : undefined;
+}
+
