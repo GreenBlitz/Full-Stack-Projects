@@ -9,7 +9,11 @@ export async function getDucks(nameQuery: string = ""): Promise<Duck[]> {
 }
 
 export async function deleteDuck(id: number): Promise<Duck[]> {
-  const response = await axios.delete("http://localhost:8000/ducks/" + id);
+  const response = await axios.delete("http://localhost:8000/ducks/" + id, {
+    headers: {
+      duck_password: "password",
+    },
+  });
   return response.data;
 }
 
@@ -20,7 +24,16 @@ export async function addDuck(
 ): Promise<Duck[]> {
   const response = await axios.post(
     "http://localhost:8000/ducks",
-    `{ \"name\": \"${name}\", \"color\": \"${color}\", \"age\": ${age} }`,
+    {
+      name: name,
+      color: color,
+      age: age,
+    },
+    {
+      headers: {
+        duck_password: "password",
+      },
+    },
   );
   return response.data;
 }

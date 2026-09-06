@@ -15,8 +15,9 @@ export type DucksProps = {
 };
 
 export function Ducks({ ducks, setDucks }: DucksProps) {
+  const [filter, setFilter] = useState("");
   const filterChanger = (changeEvent: ChangeEvent<HTMLInputElement>) =>
-    fetches.getDucks(changeEvent.target.value).then(setDucks);
+    setFilter(changeEvent.target.value);
   const removeLastDuck = () => {
     const duck = ducks.at(-1);
     if (duck) {
@@ -72,12 +73,17 @@ export function Ducks({ ducks, setDucks }: DucksProps) {
       </select>
       <label> reverse: </label>
       <input type={"checkbox"} onChange={duckSortingFunctionReverse} />
-      {ducks.sort(duckSortingFunction).map((duck: Duck) => (
-        <>
-          <DuckCard duck={duck} />
-          <br />
-        </>
-      ))}
+      {ducks
+        .filter((duck: Duck) =>
+          duck.name.toLowerCase().includes(filter.toLowerCase()),
+        )
+        .sort(duckSortingFunction)
+        .map((duck: Duck) => (
+          <>
+            <DuckCard duck={duck} />
+            <br />
+          </>
+        ))}
       <button className={"remove-button"} onClick={removeLastDuck}>
         Remove Last
       </button>

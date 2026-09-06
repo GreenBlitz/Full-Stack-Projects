@@ -17,11 +17,7 @@ app.use((req, _res, next) => {
 });
 
 app.use((req, res, next) => {
-  if (
-    req.header("duck-password") === "password" ||
-    req.method === "get" ||
-    true
-  ) {
+  if (req.header("duck_password") === "password" || req.method === "GET") {
     next();
   } else {
     res.sendStatus(401);
@@ -43,7 +39,7 @@ app.use((req, res, next) => {
       }
     }
     if ("age" in req.body) {
-      const age = req.body.age;
+      const age = Number(req.body.age);
       if (typeof age !== "number" || age < 0) {
         res.sendStatus(400);
       }
