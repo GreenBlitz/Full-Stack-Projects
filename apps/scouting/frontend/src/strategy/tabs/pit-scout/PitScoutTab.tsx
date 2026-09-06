@@ -7,6 +7,7 @@ import type {
   PitScoutBooleanMetric,
 } from "@repo/scouting_types";
 import { BooleanStats } from "./BooleanStats";
+import FRC_TEAMS from "../../../../data/teams.json";
 
 export const PIT_SCOUT_URL = "/api/v1/pit/";
 
@@ -31,6 +32,26 @@ export const PitScoutTab: FC = () => {
     "idle" | "loading" | "success" | "error"
   >("idle");
   const [errorMsg, setErrorMsg] = useState("");
+  const isValidTeamNumber =
+    form.teamNumber !== 0 &&
+    FRC_TEAMS.some((team) => team.team_number === form.teamNumber);
+
+  const handleChangeTeamNumber = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const value = Number(event.currentTarget.value);
+    if (value != 0 && !FRC_TEAMS.some((team) => team.team_number === value)) {
+      setErrorMsg("Invalid team number.");
+      setStatus("error");
+    } else {
+      setErrorMsg("");
+      setStatus("idle");
+    }
+    setForm((form) => ({
+      ...form,
+      teamNumber: value,
+    }));
+  };
 
   const setBoolForm = (key: PitScoutBooleanKey, value: PitScoutBooleanMetric) =>
     setForm((form) => ({
@@ -87,12 +108,7 @@ export const PitScoutTab: FC = () => {
             type="number"
             className="bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 text-xl font-mono focus:border-amber-500/50 outline-none transition-all placeholder:text-slate-700"
             value={form.teamNumber || ""}
-            onChange={(event) =>
-              setForm((form) => ({
-                ...form,
-                teamNumber: parseInt(event.target.value) || 0,
-              }))
-            }
+            onChange={handleChangeTeamNumber}
             placeholder="0000"
           />
         </div>
@@ -129,7 +145,7 @@ export const PitScoutTab: FC = () => {
       <div className="w-full flex flex-col items-center gap-4 mt-4">
         <button
           onClick={handleSubmit}
-          disabled={status === "loading"}
+          disabled={status === "loading" || !isValidTeamNumber}
           className="w-full max-w-xs py-4 bg-emerald-500 text-slate-950 text-xs font-black uppercase tracking-widest rounded-xl
             disabled:opacity-40 hover:bg-emerald-400 transition-all active:scale-95
             shadow-lg shadow-emerald-900/20"
