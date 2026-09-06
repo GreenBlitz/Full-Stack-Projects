@@ -3,13 +3,34 @@ import { useEffect, useState } from "react";
 import { LuCircleCheck, LuCircleX, LuMinus, LuPen } from "react-icons/lu";
 import { PitEditModal } from "./PitEditModal";
 import { PIT_SCOUT_URL } from "./PitScoutTab";
+import axios from "axios";
 
 const fetchPitData = async (): Promise<PitScout[]> => {
-  const response = await fetch(PIT_SCOUT_URL);
-  if (!response.ok) {
-    throw new Error("Failed to load pit data");
+  const response = await axios.get<PitScout[]>(PIT_SCOUT_URL);
+  return response.data;
+};
+
+const Capability = ({ value }: { value: boolean | undefined }) => {
+  if (value === undefined) {
+    return (
+      <span className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500">
+        <LuMinus className="h-3.5 w-3.5" />
+        Unknown
+      </span>
+    );
   }
-  return response.json();
+
+  return value ? (
+    <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-300">
+      <LuCircleCheck className="h-4 w-4" />
+      Yes
+    </span>
+  ) : (
+    <span className="inline-flex items-center gap-1.5 text-xs font-bold text-rose-300">
+      <LuCircleX className="h-4 w-4" />
+      No
+    </span>
+  );
 };
 
 export const PitManageTab = () => {
@@ -47,29 +68,6 @@ export const PitManageTab = () => {
 
   const refreshData = async () => {
     setData(await fetchPitData());
-  };
-
-  const Capability = ({ value }: { value: boolean | undefined }) => {
-    if (value === undefined) {
-      return (
-        <span className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500">
-          <LuMinus className="h-3.5 w-3.5" />
-          Unknown
-        </span>
-      );
-    }
-
-    return value ? (
-      <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-300">
-        <LuCircleCheck className="h-4 w-4" />
-        Yes
-      </span>
-    ) : (
-      <span className="inline-flex items-center gap-1.5 text-xs font-bold text-rose-300">
-        <LuCircleX className="h-4 w-4" />
-        No
-      </span>
-    );
   };
 
   return (

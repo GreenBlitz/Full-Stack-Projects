@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
 import type {
   PitScout,
   PitScoutBooleanKey,
   PitScoutBooleanMetric,
 } from "@repo/scouting_types";
-import { BsXLg as X } from "react-icons/bs";
+import { BsXLg as XIcon } from "react-icons/bs";
 import { BOOLEAN_FIELDS } from "./PitScoutTab";
 import { BooleanStats } from "./BooleanStats";
 import { PIT_SCOUT_URL } from "./PitScoutTab";
@@ -52,22 +53,19 @@ export const PitEditModal: React.FC<PitEditModalProps> = ({
     }
 
     try {
-      const res = await fetch(PIT_SCOUT_URL, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      await axios.put(PIT_SCOUT_URL, formData);
       setLoading(false);
-      if (res.ok) {
-        await onSuccess();
-        onClose();
-      } else {
-        const text = await res.text();
-        setErrorMsg(text || "Submission failed.");
-      }
+      await onSuccess();
+      onClose();
     } catch (error) {
       setLoading(false);
-      setErrorMsg(error instanceof Error ? error.message : "Network error.");
+      setErrorMsg(
+        axios.isAxiosError(error)
+          ? error.response?.data || error.message
+          : error instanceof Error
+            ? error.message
+            : "Network error.",
+      );
     }
   };
 
@@ -75,22 +73,21 @@ export const PitEditModal: React.FC<PitEditModalProps> = ({
     setLoading(true);
 
     try {
-      const res = await fetch(PIT_SCOUT_URL, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ teamNumber: pitData.teamNumber }),
+      await axios.delete(PIT_SCOUT_URL, {
+        data: { teamNumber: pitData.teamNumber },
       });
       setLoading(false);
-      if (res.ok) {
-        await onSuccess();
-        onClose();
-      } else {
-        const text = await res.text();
-        setErrorMsg(text || "Deletion failed.");
-      }
+      await onSuccess();
+      onClose();
     } catch (error) {
       setLoading(false);
-      setErrorMsg(error instanceof Error ? error.message : "Network error.");
+      setErrorMsg(
+        axios.isAxiosError(error)
+          ? error.response?.data || error.message
+          : error instanceof Error
+            ? error.message
+            : "Network error.",
+      );
     }
   };
 
@@ -106,7 +103,7 @@ export const PitEditModal: React.FC<PitEditModalProps> = ({
             onClick={onClose}
             className="rounded-lg border border-white/10 p-2 text-slate-400 transition hover:border-white/25 hover:bg-white/5 hover:text-white"
           >
-            <X className="h-4 w-4" />
+            <XIcon className="h-4 w-4" />
           </button>
         </div>
 

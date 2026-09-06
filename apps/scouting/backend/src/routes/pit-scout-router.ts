@@ -34,24 +34,25 @@ pitScoutRouter.post("/", async (req, res) => {
   )();
 });
 
-pitScoutRouter.patch("/", async (req, res) => {
+pitScoutRouter.put("/", async (req, res) => {
   await pipe(
     rightEither(req),
     createBodyVerificationPipe(pitScoutCodec),
     fromEither,
     bindTo("pitScout"),
     bind("collection", getPitCollection),
+    map(({ pitScout, collection }) => ({
+      collection,
+      pitScout: (({ _id, ...pitScoutFields }) => pitScoutFields)(
+        pitScout as PitScout & { _id?: unknown },
+      ),
+    })),
     flatTryCatch(
-      ({ pitScout, collection }) => {
-        const { _id, ...pitScoutFields } = pitScout as PitScout & {
-          _id?: unknown;
-        };
-
-        return collection.updateOne(
+      ({ pitScout, collection }) =>
+        collection.updateOne(
           { teamNumber: pitScout.teamNumber },
-          { $set: pitScoutFields },
-        );
-      },
+          { $set: pitScout },
+        ),
       (error) => ({
         status: StatusCodes.INTERNAL_SERVER_ERROR,
         reason: `Error Updating Pit Scout: ${error}`,
