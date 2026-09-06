@@ -1,6 +1,11 @@
-import { DuckCard } from "./Ido_comp/DuckCard";
+///1
 
-// בס"ד
+interface DuckVerse {
+  name: string;
+  colour: string;
+  age: number;
+}
+
 const the_duck_list = [
   { name: "Asaf", colour: "red", age: 250 },
   { name: "Daniel", colour: "blue", age: 18 },
@@ -12,10 +17,15 @@ const the_duck_list = [
   { name: "Ariel", colour: "pink", age: 16 },
   { name: "David", colour: "white", age: 38 },
   { name: "Emma", colour: "cyan", age: 29 },
-];
-import { useState, type FC } from "react";
-const App: FC = () => {
-  return <DuckCard name="Zib" colour="white" age={6} />;
-};
+].map;
 
-export default App;
+
+export function DuckCard({ name, colour, age }: DuckVerse) {
+  let txt = "name: " + name + ", colour: " + colour + ", age: " + age;
+  return (
+    <>
+      <h1>{txt}</h1>
+    </>
+  );
+}
+

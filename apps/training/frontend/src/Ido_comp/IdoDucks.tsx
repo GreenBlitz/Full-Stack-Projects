@@ -1,6 +1,4 @@
-import { DuckCard } from "./Ido_comp/DuckCard";
 
-// בס"ד
 const the_duck_list = [
   { name: "Asaf", colour: "red", age: 250 },
   { name: "Daniel", colour: "blue", age: 18 },
@@ -13,9 +11,9 @@ const the_duck_list = [
   { name: "David", colour: "white", age: 38 },
   { name: "Emma", colour: "cyan", age: 29 },
 ];
-import { useState, type FC } from "react";
-const App: FC = () => {
-  return <DuckCard name="Zib" colour="white" age={6} />;
-};
 
-export default App;
+const the_html_duck_list = the_duck_list.map((the_duck) => {
+  const string_duck: string = "name: " + the_duck.name + ", colour: " + the_duck.colour + ", age: " + the_duck.age
+  return string_duck;
+});
+
