@@ -187,10 +187,35 @@ interface flippable {
 }
 type Flippablecard = "card" & "flippable";
 type OptionalCard = "win" | "lose" | "draw";
-type Deck = card | flippablecard;
-function getCardName(cards: card) {
-  for (let i = 0; i < cards.rank.length; i++) {
-    return cards.rank[i];
-  }
-  console.log(getCardName(cards));
+type Deck = card | Flippablecard;
+function getCardName(hisSuit: Suit, hisRank: Rank) {
+  return hisRank + " of " + hisSuit;
 }
+console.log(getCardName("heart", "A"));
+
+function flipcard(flipedonot: flippable) {
+  if ((flipedonot.isFaceUp = true)) {
+    flipedonot.isFaceUp = false;
+    return flipedonot.isFaceUp;
+  } else if ((flipedonot.isFaceUp = true)) {
+    flipedonot.isFaceUp = true;
+    return flipedonot.isFaceUp;
+  }
+}
+
+const x: flippable = { isFaceUp: true };
+console.log(flipcard(x));
+const card: card = {
+  suit: "heart",
+  rank: "4",
+};
+function drawCard(so: Deck, op?: OptionalCard) {
+  if (so) {
+    return so.rank[0] + " of " + so.suit;
+  } else if (so) {
+    return "undefind";
+  }
+  return op;
+}
+
+console.log(drawCard(card));
