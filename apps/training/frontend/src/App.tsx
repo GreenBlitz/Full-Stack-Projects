@@ -8,6 +8,8 @@ import { CountDuck } from "./componentsEyal/CountDucks";
 import { HowManyDucks } from "./componentsEyal/titleDucks";
 import { CountDuckByColor } from "./componentsEyal/countDuckbyColor";
 import { RngDuck } from "./componentsEyal/RngDuck";
+import { AddDuck } from "./componentsEyal/AddDuck";
+import "./styling.css";
 
 const initialDucks: Duck[] = [
   {
@@ -57,14 +59,21 @@ const App: FC = () => {
       <h1> Meet the "ducks"</h1>
       <Ducks ducks={ducks} />
       <RemoveLastDuck ducks={ducks} setDucks={setDucks} />
+      <AddDuck
+        onAddDuck={(newDuck) => {
+          setDucks((currentDucks) => [...currentDucks, newDuck]);
+        }}
+      />
       <CountDuck ducks={ducks}></CountDuck>
       <HowManyDucks ducks={ducks}></HowManyDucks>
-      <input type="text" placeholder="enter a duck color" value={color}  onChange={(event) => setColor(event.target.value)} />
+      <input style={{ backgroundColor: "lightgray", border: "1px solid #ccc", padding: "10px" }} type="text" placeholder="enter a duck color" value={color}  onChange={(event) => setColor(event.target.value)} />
       <CountDuckByColor ducks={ducks} color={color} />
-      <button onClick={() => setRandomDuck(RngDuck({ ducks }))} disabled={ducks.length === 0}>
-        Random Duck
-      </button>
-      {randomDuck && <Ducks ducks={[randomDuck]} />}
+      <button onClick={() => setDucks([...ducks].sort((a, b) => a.DuckName.localeCompare(b.DuckName)))}>Sort Ducks by Name</button>
+      <button onClick={() => setDucks([...ducks].sort((a, b) => a.DuckColor.localeCompare(b.DuckColor)))}>Sort Ducks by color</button>
+      <button onClick={() => setDucks([...ducks].sort((a, b) => a.DuckAge - b.DuckAge))}>Sort Ducks by age</button>
+      <button onClick={() => setRandomDuck(RngDuck({ ducks }))} disabled={ducks.length === 0}>Random Duck</button>
+       {randomDuck && <Ducks ducks={[randomDuck]} />}
+
     </div>
   );
 };

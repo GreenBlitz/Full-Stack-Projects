@@ -1,0 +1,18 @@
+h1 {
+    color: #780668;
+    font-family: "verry nice font";
+}
+button{
+    background-color: hotpink;
+    color: white;
+    border-color: darkmagenta;
+    border: radius 50px;
+    padding: 10px;
+}
+input{
+    background-color: white;
+    text-align: center;
+    color: hotpink;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
