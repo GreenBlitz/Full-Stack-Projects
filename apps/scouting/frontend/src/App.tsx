@@ -15,11 +15,14 @@ import { SuperScoutTab } from "./strategy/tabs/super-scout/SuperScoutTab";
 import { Tinder } from "./strategy/tabs/Tinder";
 import { PitScoutTab } from "./strategy/tabs/pit-scout/PitScoutTab";
 import { Picklist } from "./strategy/tabs/picklist/Picklist";
+import { PitManageTab } from "./strategy/tabs/pit-scout/PitManageTab";
 
 const App: FC = () => {
   return (
     <Routes>
-      <Route path="pit" element={<PitScoutTab />} />
+      <Route path="/pit" element={<PitScoutTab />} />
+      <Route path="/pit/manage" element={<PitManageTab />} />
+
       <Route path="/scout" element={<ScoutMatch />} />
       <Route
         path="/leaderboard"
