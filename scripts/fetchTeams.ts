@@ -2,13 +2,10 @@ import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import dotenv from "dotenv";
 
-dotenv.config({ path: path.resolve(process.cwd(), ".dev.env") });
+dotenv.config({ path: path.resolve(process.cwd(), ".secret.env") });
 
 const TBA_URL = "https://www.thebluealliance.com/api/v3/district/2026isr/teams";
-const outputPath = path.resolve(
-  process.cwd(),
-  "apps/scouting/frontend/data/teams.json",
-);
+const outputPath = path.resolve(process.cwd(), "packages/frc/teams.json");
 
 const fetchTeams = async () => {
   const apiKey = process.env.TBA_API_KEY;
