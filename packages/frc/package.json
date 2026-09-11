@@ -4,6 +4,7 @@
   "type": "module",
   "private": true,
   "exports": {
+    "./teams.json": "./teams.json",
     ".": "./index.ts"
   },
   "dependencies": {},
