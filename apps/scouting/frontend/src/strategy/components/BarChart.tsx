@@ -13,7 +13,7 @@ import {
 } from "chart.js";
 
 import type { ChartData, ChartOptions } from "chart.js";
-import type { BarDataset, PieDataset } from "../../types/Dataset";
+import type { BarDataset, PieDataset } from "../../types";
 import type { FC } from "react";
 
 ChartJS.register(
