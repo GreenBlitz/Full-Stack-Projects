@@ -58,7 +58,7 @@ export const StrategyNavigationBar: FC = () => {
                   relative flex flex-1 items-center justify-center gap-2 py-3 rounded-xl transition-all duration-300
                   ${
                     isActive
-                      ? "bg-emerald-500 text-slate-950 shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+                      ? "bg-white text-slate-950 shadow-[0_0_20px_rgba(16,185,129,0.3)]"
                       : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
                   }
                 `}
