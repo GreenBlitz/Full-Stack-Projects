@@ -32,15 +32,15 @@ export const PitScoutTab: FC = () => {
     "idle" | "loading" | "success" | "error"
   >("idle");
   const [errorMsg, setErrorMsg] = useState("");
-  const isValidTeamNumber =
-    form.teamNumber !== 0 &&
-    FRC_TEAMS.some((team) => team.team_number === form.teamNumber);
+  const isValidTeamNumber = (teamNumber: number = form.teamNumber) =>
+    teamNumber !== 0 &&
+    FRC_TEAMS.some((team) => team.team_number === teamNumber);
 
   const handleChangeTeamNumber = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const value = Number(event.currentTarget.value);
-    if (value != 0 && !FRC_TEAMS.some((team) => team.team_number === value)) {
+    if (!isValidTeamNumber(value)) {
       setErrorMsg("Invalid team number.");
       setStatus("error");
     } else {
@@ -145,7 +145,7 @@ export const PitScoutTab: FC = () => {
       <div className="w-full flex flex-col items-center gap-4 mt-4">
         <button
           onClick={handleSubmit}
-          disabled={status === "loading" || !isValidTeamNumber}
+          disabled={status === "loading" || !isValidTeamNumber()}
           className="w-full max-w-xs py-4 bg-emerald-500 text-slate-950 text-xs font-black uppercase tracking-widest rounded-xl
             disabled:opacity-40 hover:bg-emerald-400 transition-all active:scale-95
             shadow-lg shadow-emerald-900/20"
