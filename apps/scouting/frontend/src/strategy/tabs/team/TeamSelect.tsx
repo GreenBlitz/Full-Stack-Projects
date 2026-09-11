@@ -4,7 +4,7 @@ import { useMemo, type FC } from "react";
 import { FaRegClock } from "react-icons/fa";
 import { LuUsers } from "react-icons/lu";
 import { LuHash } from "react-icons/lu";
-import FRC_TEAMS from "../../../../data/teams.json";
+import FRC_TEAMS from "@repo/frc/teams.json";
 
 interface TeamSelectProps {
   teamNumber?: number;
