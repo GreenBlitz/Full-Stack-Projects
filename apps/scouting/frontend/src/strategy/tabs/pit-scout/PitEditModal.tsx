@@ -10,6 +10,7 @@ import { BOOLEAN_FIELDS } from "./PitScoutTab";
 import { BooleanStats } from "./BooleanStats";
 import { PIT_SCOUT_URL } from "./PitScoutTab";
 import { useEscapeKey } from "../../hooks/useEscapeKey";
+import { getErrorMessage } from "@repo/axios";
 
 interface PitEditModalProps {
   isOpen: boolean;
@@ -47,25 +48,15 @@ export const PitEditModal: React.FC<PitEditModalProps> = ({
 
   const handleSubmit = async () => {
     setLoading(true);
-    if (!formData.teamNumber) {
-      setErrorMsg("Team number is required.");
-      return;
-    }
 
     try {
       await axios.put(PIT_SCOUT_URL, formData);
-      setLoading(false);
       await onSuccess();
       onClose();
     } catch (error) {
+      setErrorMsg(getErrorMessage(error));
+    } finally {
       setLoading(false);
-      setErrorMsg(
-        axios.isAxiosError(error)
-          ? error.response?.data || error.message
-          : error instanceof Error
-            ? error.message
-            : "Network error.",
-      );
     }
   };
 
@@ -76,11 +67,9 @@ export const PitEditModal: React.FC<PitEditModalProps> = ({
       await axios.delete(PIT_SCOUT_URL, {
         data: { teamNumber: pitData.teamNumber },
       });
-      setLoading(false);
       await onSuccess();
       onClose();
     } catch (error) {
-      setLoading(false);
       setErrorMsg(
         axios.isAxiosError(error)
           ? error.response?.data || error.message
@@ -88,6 +77,8 @@ export const PitEditModal: React.FC<PitEditModalProps> = ({
             ? error.message
             : "Network error.",
       );
+    } finally {
+      setLoading(false);
     }
   };
 

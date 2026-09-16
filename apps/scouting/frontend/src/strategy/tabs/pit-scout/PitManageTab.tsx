@@ -10,7 +10,7 @@ const fetchPitData = async (): Promise<PitScout[]> => {
   return response.data;
 };
 
-const Capability = ({ value }: { value: boolean | undefined }) => {
+const MechanicalCapability = ({ value }: { value: boolean | undefined }) => {
   if (value === undefined) {
     return (
       <span className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500">
@@ -36,7 +36,7 @@ const Capability = ({ value }: { value: boolean | undefined }) => {
 export const PitManageTab = () => {
   const [data, setData] = useState<PitScout[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedPitData, setSelectedPitData] = useState<PitScout | null>(null);
 
@@ -110,10 +110,14 @@ export const PitManageTab = () => {
                     {pitScout.teamNumber}
                   </td>
                   <td className="px-5 py-5">
-                    <Capability value={pitScout.booleanMetrics.hasTurret} />
+                    <MechanicalCapability
+                      value={pitScout.booleanMetrics.hasTurret}
+                    />
                   </td>
                   <td className="px-5 py-5">
-                    <Capability value={pitScout.booleanMetrics.canPassTrench} />
+                    <MechanicalCapability
+                      value={pitScout.booleanMetrics.canPassTrench}
+                    />
                   </td>
                   <td className="max-w-sm px-5 py-5 text-sm text-slate-400">
                     <span className="block truncate">
