@@ -7,7 +7,7 @@ import type {
   PitScoutBooleanMetric,
 } from "@repo/scouting_types";
 import { BooleanStats } from "./BooleanStats";
-import FRC_TEAMS from "../../../../data/teams.json";
+import FRC_TEAMS from "@repo/frc/teams.json";
 
 export const PIT_SCOUT_URL = "/api/v1/pit/";
 
