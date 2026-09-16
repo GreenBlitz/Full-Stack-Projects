@@ -20,7 +20,8 @@
     "react-dom": "^19.1.1",
     "tailwindcss": "^4.1.16",
     "tsx": "^4.21.0",
-    "http-proxy-middleware": "^3.0.5"
+    "http-proxy-middleware": "^3.0.5",
+    "@repo/frc": "*"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
