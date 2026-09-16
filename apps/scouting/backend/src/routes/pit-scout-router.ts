@@ -3,7 +3,14 @@
 import { Router } from "express";
 import { flow, pipe } from "fp-ts/lib/function";
 import { getDb } from "../middleware/db";
-import { bind, bindTo, fromEither, map } from "fp-ts/lib/TaskEither";
+import {
+  bind,
+  bindTo,
+  fromEither,
+  map,
+  chain,
+  tryCatch,
+} from "fp-ts/lib/TaskEither";
 import {
   createBodyVerificationPipe,
   flatTryCatch,
@@ -20,6 +27,19 @@ export const pitScoutRouter = Router();
 export const getPitCollection = flow(
   getDb,
   map((db) => db.collection<PitScout>("pit")),
+  chain((collection) =>
+    // create index for teamNumber to ensure uniqueness
+    pipe(
+      tryCatch(
+        () => collection.createIndex({ teamNumber: 1 }, { unique: true }),
+        (error) => ({
+          status: StatusCodes.INTERNAL_SERVER_ERROR,
+          reason: `Error creating index for pit scout collection: ${error}`,
+        }),
+      ),
+      map(() => collection),
+    ),
+  ),
 );
 
 pitScoutRouter.post("/", async (req, res) => {
@@ -29,7 +49,25 @@ pitScoutRouter.post("/", async (req, res) => {
     fromEither,
     bindTo("pitScout"),
     bind("collection", getPitCollection),
-    map(({ pitScout, collection }) => collection.insertOne(pitScout)),
+    flatTryCatch(
+      ({ pitScout, collection }) => collection.insertOne(pitScout),
+      (error) => ({
+        status:
+          error &&
+          typeof error === "object" &&
+          "code" in error &&
+          error.code === 11000
+            ? StatusCodes.CONFLICT
+            : StatusCodes.INTERNAL_SERVER_ERROR,
+        reason:
+          error &&
+          typeof error === "object" &&
+          "code" in error &&
+          error.code === 11000
+            ? `A pit scout form already exists for team ${req.body.teamNumber}.`
+            : `Error Creating Pit Scout: ${error}`,
+      }),
+    ),
     foldResponse(res),
   )();
 });
