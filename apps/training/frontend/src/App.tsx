@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Duck, type DuckProps } from "./components/Duck";
 import { Ducks, type DucksProps } from "./components/Ducks";
+import { DuckForm } from "./components/DuckForm";
 
 // בס"ד
 function App() {
@@ -15,10 +16,11 @@ function App() {
   
   return (
     <>
-      <Ducks ducks={ducks} />
+      {/* <Ducks ducks={ducks} />
       <button type="button" onClick={() => setDucks(ducks.slice(0, -1))}>
         Delete Duck
-      </button>
+      </button> */}
+      <DuckForm/>
     </>
   );
 }
