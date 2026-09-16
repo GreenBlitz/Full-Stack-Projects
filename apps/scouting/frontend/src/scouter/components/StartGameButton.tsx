@@ -8,7 +8,10 @@ interface StartGameButtonProps {
 
 const MIN_MATCH_NUMBER = 1;
 
-const StartGameButton: FC<StartGameButtonProps> = ({ matchNumber, matchType }) => {
+const StartGameButton: FC<StartGameButtonProps> = ({
+  matchNumber,
+  matchType,
+}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string>("");
 
@@ -48,12 +51,15 @@ const StartGameButton: FC<StartGameButtonProps> = ({ matchNumber, matchType }) =
     }
   };
 
-  const isDisabled = isLoading || !matchNumber || matchNumber < MIN_MATCH_NUMBER;
+  const isDisabled =
+    isLoading || !matchNumber || matchNumber < MIN_MATCH_NUMBER;
 
   return (
     <div className="flex flex-col items-center gap-2">
       <button
-        onClick={() => { void handleStartGame(); }}
+        onClick={() => {
+          void handleStartGame();
+        }}
         disabled={isDisabled}
         className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
           isDisabled
@@ -64,7 +70,9 @@ const StartGameButton: FC<StartGameButtonProps> = ({ matchNumber, matchType }) =
         {isLoading ? "Starting game..." : "Start game"}
       </button>
       {message && (
-        <p className={`text-sm ${message.includes("Error") ? "text-red-500" : "text-green-500"}`}>
+        <p
+          className={`text-sm ${message.includes("Error") ? "text-red-500" : "text-green-500"}`}
+        >
           {message}
         </p>
       )}

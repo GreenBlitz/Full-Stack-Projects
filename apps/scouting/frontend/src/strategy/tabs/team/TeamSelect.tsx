@@ -5,7 +5,7 @@ import { FaRegClock } from "react-icons/fa";
 import { LuUsers } from "react-icons/lu";
 import { LuHash } from "react-icons/lu";
 
- const FRC_TEAMS = [
+const FRC_TEAMS = [
   {
     address: null,
     city: "Modi'in-Maccabim Reu't",

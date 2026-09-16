@@ -9,8 +9,18 @@ interface HeatMapOverlayProps {
   height: number;
 }
 
-export const HeatMapOverlay: FC<HeatMapOverlayProps> = ({ points, radius, width, height }) => (
+export const HeatMapOverlay: FC<HeatMapOverlayProps> = ({
+  points,
+  radius,
+  width,
+  height,
+}) => (
   <div className="absolute inset-0 z-[3] pointer-events-none opacity-80">
-    <HeatMapIntensityCanvas points={points} radius={radius} width={width} height={height} />
+    <HeatMapIntensityCanvas
+      points={points}
+      radius={radius}
+      width={width}
+      height={height}
+    />
   </div>
 );

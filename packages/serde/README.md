@@ -222,7 +222,7 @@ const userSerde = serdeRecord(
     age: serdeUnsignedInt(8),
     tags: serdeArray(serdeString()),
     email: serdeOptional(serdeString()),
-  })
+  }),
 );
 
 const user = {

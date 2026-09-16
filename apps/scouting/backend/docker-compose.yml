@@ -16,7 +16,6 @@ services:
     environment:
       - MONGO_URI=mongodb://mongodb:27017
 
-
   mongodb:
     image: mongo:latest
     restart: unless-stopped

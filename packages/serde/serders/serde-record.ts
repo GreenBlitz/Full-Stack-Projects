@@ -81,7 +81,10 @@ export const serdeRecord = <T>(
 export const serdeRecordFieldsBuilder = (
   fieldNamesSerdes: Record<string, Serde<any>>,
 ): FieldsRecordSerde<any> => {
-  const recordSerde: FieldsRecordSerde<any> = { serializer: {}, deserializer: {} };
+  const recordSerde: FieldsRecordSerde<any> = {
+    serializer: {},
+    deserializer: {},
+  };
   Object.entries(fieldNamesSerdes).forEach(([fieldName, fieldSerde]) => {
     recordSerde.serializer[fieldName] = fieldSerde.serializer;
     recordSerde.deserializer[fieldName] = fieldSerde.deserializer;

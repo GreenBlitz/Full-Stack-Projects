@@ -3,7 +3,7 @@
 const defaultRangeStart = 0;
 export const rangeArr = (
   length: number,
-  rangeStart = defaultRangeStart
+  rangeStart = defaultRangeStart,
 ): number[] => {
   return Array.from({ length }).map((zero, i) => i + rangeStart);
 };
@@ -26,10 +26,8 @@ export class BitArray {
   public insertUInt8Array(data: Uint8Array, totalBitCount: number): void {
     rangeArr(totalBitCount).forEach((i) => {
       const currentNumber = data[Math.floor(i / BIT_ARRAY_LENGTH)];
-      const bitSelector = FIRST_BIT_SELECTOR << i % BIT_ARRAY_LENGTH;
-      this.boolArr.push(
-        Boolean((currentNumber & bitSelector))
-      );
+      const bitSelector = FIRST_BIT_SELECTOR << (i % BIT_ARRAY_LENGTH);
+      this.boolArr.push(Boolean(currentNumber & bitSelector));
     });
     this.bitCount += totalBitCount;
   }
@@ -42,7 +40,7 @@ export class BitArray {
     const returnedArr = new Uint8Array(Math.ceil(bitCount / BIT_ARRAY_LENGTH));
     rangeArr(bitCount).forEach((i) => {
       returnedArr[Math.floor(i / BIT_ARRAY_LENGTH)] |=
-        Number(this.boolArr.shift()) << i % BIT_ARRAY_LENGTH;
+        Number(this.boolArr.shift()) << (i % BIT_ARRAY_LENGTH);
     });
     this.bitCount -= bitCount;
     return returnedArr;
