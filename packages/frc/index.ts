@@ -1,4 +1,5 @@
 import FRC_TEAMS from "./teams.json";
+export { FRC_TEAMS };
 export const FRC_TEAM_NUMBERS = FRC_TEAMS.map((team) => team.team_number);
 
 export const getTeamName = (team: number) =>
