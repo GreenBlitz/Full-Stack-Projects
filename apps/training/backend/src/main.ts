@@ -1,21 +1,24 @@
-// בס"ד
 import express from "express";
-import { apiRouter } from "./routes";
 
 const app = express();
 
-const defaultPort = 4590;
-const port = process.env.BACKEND_PORT ?? defaultPort;
+app.use((_req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+    next();
+});
 
-app.use("/api/v1", apiRouter);
+app.listen(3001, () => {
+    console.log("Server is wasdawsdasdawdsaddwasdwasdwasdasddaddasdw running!");
+});
 
-app.listen(port, () => {
-  console.log(`Production server running at http://localhost:${port}`);
+app.get("/student", (req, res) => {
+    res.json({name:"abcda", grade: 95});
+});
+
+app.get("/school", (req, res) => {
+    res.json({name:"gregory", city:"joevile", students:"abdaabdaaaabda"});
 });
 
 
 
-function greet ( name: string): string {
-    return `Hello, ${name}! Welcome to the training session.`;
-}
-console.log(greet("joe"));
+

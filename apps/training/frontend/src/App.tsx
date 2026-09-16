@@ -1,6 +1,6 @@
 // בס"ד
 import type { FC } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Duck } from "./componentsEyal/DuckCard";
 import { Ducks } from "./componentsEyal/Ducks";
 import { RemoveLastDuck } from "./componentsEyal/RemoveDuck";
@@ -9,6 +9,9 @@ import { HowManyDucks } from "./componentsEyal/titleDucks";
 import { CountDuckByColor } from "./componentsEyal/countDuckbyColor";
 import { RngDuck } from "./componentsEyal/RngDuck";
 import { AddDuck } from "./componentsEyal/AddDuck";
+import axios from "axios";
+
+
 import "./styling.css";
 
 const initialDucks: Duck[] = [
@@ -49,10 +52,22 @@ const initialDucks: Duck[] = [
   },
 ];
 
+async function getSchool() {
+  const response = await axios.get(
+    "http://localhost:3001/school"
+  );
+  console.log(response.data);
+}
+
 const App: FC = () => {
   const [ducks, setDucks] = useState<Duck[]>(initialDucks);
   const [color, setColor] = useState("");
   const [randomDuck, setRandomDuck] = useState<Duck>();
+  useEffect(() => {
+    getSchool().catch((error) => {
+      console.error("Could not load school:", error);
+    });
+  }, []);
 
   return (
     <div>
@@ -79,3 +94,4 @@ const App: FC = () => {
 };
 
 export default App;
+
