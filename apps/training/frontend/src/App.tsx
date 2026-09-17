@@ -11,15 +11,17 @@ function App() {
     { name: "Zib", color: "yellow", age: 46 },
     { name: "Maor", color: "magenta", age: 16 },
   ];
-  const [ducks, setDucks] = useState(initialDucks);
 
+  try{
+    initialDucks.push(submittedDuck);
+  }
   
   return (
     <>
-      {/* <Ducks ducks={ducks} />
+      <Ducks ducks={ducks} />
       <button type="button" onClick={() => setDucks(ducks.slice(0, -1))}>
         Delete Duck
-      </button> */}
+      </button>
       <DuckForm/>
     </>
   );
