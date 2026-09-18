@@ -1,59 +1,17 @@
 //בס"ד
 
 import { Router } from "express";
-import { getFormsCollection } from "./forms-router";
-import { map, fold, filterOrElse, bindTo } from "fp-ts/lib/TaskEither";
-import { mongofyQuery, flatTryCatch, foldResponse } from "@repo/flow-utils";
+import { bindTo } from "fp-ts/lib/TaskEither";
+import { flatTryCatch, foldResponse, mongofyQuery } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
 import { pipe } from "fp-ts/lib/function";
-import type {
-  CompetitionLeaderboard,
-  Scouter,
-  ScoutingForm,
-} from "@repo/scouting_types";
-import { firstElement, isEmpty } from "@repo/array-functions";
-import { isSingleCompetition } from "../verification/functions";
-
-const INCREMENT = 1;
-const NOT_FOUND_INDEX = -1;
+import { getScouterCollection } from "../googleSheets";
 
 export const leaderboardRouter = Router();
 
-const createLeaderboard = (
-  forms: ScoutingForm[],
-): CompetitionLeaderboard | null => {
-  if (isEmpty(forms)) return null;
-
-  const competitionName = firstElement(forms).competition;
-
-  const scouters = forms.reduce((accumulator: Scouter[], form) => {
-    const existingIndex = accumulator.findIndex(
-      (scouter) => scouter.name === form.scouterName,
-    );
-
-    if (existingIndex === NOT_FOUND_INDEX) {
-      return [
-        ...accumulator,
-        { name: form.scouterName, scoutedMatches: INCREMENT },
-      ];
-    }
-
-    return accumulator.map((scouter, index) =>
-      index === existingIndex
-        ? { ...scouter, scoutedMatches: scouter.scoutedMatches + INCREMENT }
-        : scouter,
-    );
-  }, []);
-
-  return {
-    competition: competitionName,
-    Scouters: scouters,
-  };
-};
-
 leaderboardRouter.get("/", (req, res) =>
   pipe(
-    getFormsCollection(),
+    getScouterCollection(),
     flatTryCatch(
       (collection) => collection.find(mongofyQuery(req.query)).toArray(),
       (error) => ({
@@ -61,14 +19,6 @@ leaderboardRouter.get("/", (req, res) =>
         reason: `DB Error: ${error}`,
       }),
     ),
-
-    filterOrElse(isSingleCompetition, () => ({
-      status: StatusCodes.BAD_REQUEST,
-      reason:
-        "Leaderboard Validation Error: Forms contain data from multiple different competitions.",
-    })),
-
-    map((forms) => createLeaderboard(forms)),
     bindTo("competitionScouters"),
     foldResponse(res),
   )(),

@@ -1,23 +1,22 @@
 //בס"ד
 
 import { Router } from "express";
-import { getBeeScoutCollection } from "../googleSheets";
+import { getTeamMatchDataCollection } from "../googleSheets";
 import { pipe } from "fp-ts/lib/function";
-import { mongofyQuery, flatTryCatch, foldResponse } from "@repo/flow-utils";
+import { flatTryCatch, foldResponse, mongofyQuery } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
 import { bindTo, map } from "fp-ts/lib/TaskEither";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
-import { BeeScoutingForm } from "@repo/scouting_types";
+import { TeamMatchData, TeamPageTeamBeeData } from "@repo/scouting_types";
 import { calculateSum, firstElement, mapObject } from "@repo/array-functions";
 import { calculateGeneralForTeam } from "./general-router";
-import { TeamPageTeamBeeData } from "@repo/scouting_types";
 
 export const teamPageRouter = Router();
 
 const findDataOverMatches = (
   section: "auto" | "tele" | "super" | "full",
   type: "scored" | "passed" | "defenseLevel" | "evasionLevel",
-  forms: BeeScoutingForm[],
+  forms: TeamMatchData[],
 ): Record<string, number> => {
   if (section === "super") {
     return Object.fromEntries(
@@ -37,13 +36,13 @@ const findDataOverMatches = (
   );
 };
 
-export const applyRecency = (forms: BeeScoutingForm[], recency: number) =>
+export const applyRecency = (forms: TeamMatchData[], recency: number) =>
   forms
     .sort((formA, formB) => formA.matchNumber - formB.matchNumber)
     .slice(-recency);
 
 const calculateTeamDataForTeam = (
-  forms: BeeScoutingForm[],
+  forms: TeamMatchData[],
   recency: number,
 ): TeamPageTeamBeeData => {
   const recentForms = applyRecency(forms, recency);
@@ -101,7 +100,7 @@ const parseRecency = (recencyString: string) =>
 
 teamPageRouter.get("/matches/:recency", async (req, res) => {
   await pipe(
-    getBeeScoutCollection(),
+    getTeamMatchDataCollection(),
     flatTryCatch(
       (Collection) => Collection.find(mongofyQuery(req.query)).toArray(),
       (error) => ({
@@ -109,7 +108,7 @@ teamPageRouter.get("/matches/:recency", async (req, res) => {
         reason: `error fetching data from DB in teamPage ${error}`,
       }),
     ),
-    map(groupBy((form: BeeScoutingForm) => form.teamNumber.toString())),
+    map(groupBy((form: TeamMatchData) => form.teamNumber.toString())),
     map((teamsForms) =>
       mapObject(teamsForms, (forms) =>
         calculateTeamDataForTeam(forms, parseRecency(req.params.recency)),
@@ -122,7 +121,7 @@ teamPageRouter.get("/matches/:recency", async (req, res) => {
 
 teamPageRouter.get("/teamNumbers", async (req, res) => {
   await pipe(
-    getBeeScoutCollection(),
+    getTeamMatchDataCollection(),
     flatTryCatch(
       (collection) => collection.find(mongofyQuery({})).toArray(),
       (error) => ({

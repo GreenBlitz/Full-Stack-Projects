@@ -1,7 +1,7 @@
 // בס"ד
 
 import type React from "react";
-import { useMemo, useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Competition, CompetitionLeaderboard } from "@repo/scouting_types";
 import { isEmpty } from "@repo/array-functions";
 
@@ -53,8 +53,8 @@ export const Leaderboard: React.FC<ScouterLeaderboardProps> = ({
   }, [competition]);
 
   const sortedScouters = useMemo(() => {
-    if (!data?.Scouters) return [];
-    return [...data.Scouters].sort((scouter1, scouter2) => {
+    if (!data?.scouters) return [];
+    return [...data.scouters].sort((scouter1, scouter2) => {
       if (scouter2.scoutedMatches !== scouter1.scoutedMatches) {
         return scouter2.scoutedMatches - scouter1.scoutedMatches;
       }
