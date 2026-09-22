@@ -42,6 +42,15 @@ export const getPitCollection = flow(
   ),
 );
 
+const isDuplicateKeyError = (error: unknown): boolean => {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error as { code: unknown }).code === 11000 // MongoDB duplicate key error
+  );
+};
+
 pitScoutRouter.post("/", async (req, res) => {
   await pipe(
     rightEither(req),
@@ -51,22 +60,18 @@ pitScoutRouter.post("/", async (req, res) => {
     bind("collection", getPitCollection),
     flatTryCatch(
       ({ pitScout, collection }) => collection.insertOne(pitScout),
-      (error) => ({
-        status:
-          error &&
-          typeof error === "object" &&
-          "code" in error &&
-          error.code === 11000
+      (error) => {
+        const isDuplicate = isDuplicateKeyError(error);
+
+        return {
+          status: isDuplicate
             ? StatusCodes.CONFLICT
             : StatusCodes.INTERNAL_SERVER_ERROR,
-        reason:
-          error &&
-          typeof error === "object" &&
-          "code" in error &&
-          error.code === 11000
+          reason: isDuplicate
             ? `A pit scout form already exists for team ${req.body.teamNumber}.`
             : `Error Creating Pit Scout: ${error}`,
-      }),
+        };
+      },
     ),
     foldResponse(res),
   )();
