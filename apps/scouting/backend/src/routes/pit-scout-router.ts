@@ -23,6 +23,7 @@ import { StatusCodes } from "http-status-codes";
 import * as t from "io-ts";
 
 export const pitScoutRouter = Router();
+const MONGODB_DUPLICATE_KEY_ERROR = 11000;
 
 export const getPitCollection = flow(
   getDb,
@@ -47,7 +48,7 @@ const isDuplicateKeyError = (error: unknown): boolean => {
     typeof error === "object" &&
     error !== null &&
     "code" in error &&
-    (error as { code: unknown }).code === 11000 // MongoDB duplicate key error
+    (error as { code: unknown }).code === MONGODB_DUPLICATE_KEY_ERROR
   );
 };
 
