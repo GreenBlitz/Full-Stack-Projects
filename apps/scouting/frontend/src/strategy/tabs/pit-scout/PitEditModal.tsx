@@ -70,13 +70,7 @@ export const PitEditModal: React.FC<PitEditModalProps> = ({
       await onSuccess();
       onClose();
     } catch (error) {
-      setErrorMsg(
-        axios.isAxiosError(error)
-          ? error.response?.data || error.message
-          : error instanceof Error
-            ? error.message
-            : "Network error.",
-      );
+      setErrorMsg(getErrorMessage(error));
     } finally {
       setLoading(false);
     }
