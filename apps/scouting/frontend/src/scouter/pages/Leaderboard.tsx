@@ -13,11 +13,8 @@ export const scouterColor: Record<string, string> = {
   Roni: "text-pink-300",
 };
 
-const fetchCompetitionData = async (competition: Competition) => {
-  const params = new URLSearchParams({ competition: competition });
-  const url = `${leaderboardUrl}?${params.toString()}`;
-
-  const response = await fetch(url, {
+const fetchCompetitionData = async () => {
+  const response = await fetch(leaderboardUrl, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   });
@@ -42,7 +39,7 @@ export const Leaderboard: React.FC<ScouterLeaderboardProps> = ({
 
   useEffect(() => {
     setLoading(true);
-    fetchCompetitionData(competition)
+    fetchCompetitionData()
       .then((res) => {
         setData(res);
         setLoading(false);

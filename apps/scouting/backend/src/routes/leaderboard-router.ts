@@ -1,7 +1,7 @@
 //בס"ד
 
 import { Router } from "express";
-import { bindTo } from "fp-ts/lib/TaskEither";
+import { bindTo, map } from "fp-ts/lib/TaskEither";
 import { flatTryCatch, foldResponse, mongofyQuery } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
 import { pipe } from "fp-ts/lib/function";
@@ -19,6 +19,9 @@ leaderboardRouter.get("/", (req, res) =>
         reason: `DB Error: ${error}`,
       }),
     ),
+    map((scouters) => {
+      return { scouters: scouters };
+    }),
     bindTo("competitionScouters"),
     foldResponse(res),
   )(),

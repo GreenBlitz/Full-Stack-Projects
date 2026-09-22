@@ -25,12 +25,12 @@ const NOT_FOUND_INDEX = -1;
 
 export const getTeamMatchDataCollection = flow(
   getDb,
-  map((db) => db.collection<TeamMatchData>("beeScout")),
+  map((db) => db.collection<TeamMatchData>("teamMatchData")),
 );
 
 export const getScouterCollection = flow(
   getDb,
-  map((db) => db.collection<Scouter>("matchForm")),
+  map((db) => db.collection<Scouter>("scouters")),
 );
 
 const googleAuthentication = new google.auth.GoogleAuth({
@@ -170,7 +170,7 @@ const structureScoutersData = (data: Record<string, string>[]): Scouter[] => {
 const updateTeamMatchData = async (db: Db, data: string[][]) => {
   try {
     const structured = structureTeamMatchData(formatData(data));
-    const collection = db.collection<TeamMatchData>("beeScout");
+    const collection = db.collection<TeamMatchData>("teamMatchData");
 
     if (structured.length < 10) {
       console.log(
@@ -192,7 +192,7 @@ const updateTeamMatchData = async (db: Db, data: string[][]) => {
 const updateScoutersData = async (db: Db, data: string[][]) => {
   try {
     const structured = structureScoutersData(formatData(data));
-    const collection = db.collection<Scouter>("matchForm");
+    const collection = db.collection<Scouter>("scouters");
 
     if (structured.length < 10) {
       console.log(
