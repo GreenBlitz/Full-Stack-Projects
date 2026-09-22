@@ -230,7 +230,7 @@ export const startGoogleSheetsSync = () => {
         const scoutersData = (await fetchData(scoutersSheetsRange)) ?? [];
         updateScoutersData(db, scoutersData);
         setInterval(
-          () => updateTeamMatchData(db, scoutersData),
+          () => updateScoutersData(db, scoutersData),
           MILISECONDS_IN_FIVE_MINUTES,
         );
       },
