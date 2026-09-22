@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 
 dotenv.config({ path: path.resolve(process.cwd(), ".secret.env") });
 
-const TBA_URL = "https://www.thebluealliance.com/api/v3/district/2026isr/teams";
+const TBA_URL = "https://www.thebluealliance.com/api/v3";
 const outputPath = path.resolve(process.cwd(), "packages/frc/teams.json");
 
 const fetchTeams = async () => {
@@ -14,17 +14,24 @@ const fetchTeams = async () => {
     throw new Error("TBA_API_KEY is required to fetch teams.");
   }
 
-  const response = await fetch(TBA_URL, {
-    headers: { "X-TBA-Auth-Key": apiKey },
+  const headers = {
+    "X-TBA-Auth-Key": apiKey,
+  };
+
+  const seasonResponse = await fetch(`${TBA_URL}/status`, { headers });
+  const { current_season: season } = await seasonResponse.json();
+
+  const teamsResponse = await fetch(`${TBA_URL}/district/${season}isr/teams`, {
+    headers,
   });
 
-  if (!response.ok) {
+  if (!teamsResponse.ok) {
     throw new Error(
-      `TBA request failed with ${response.status} ${response.statusText}.`,
+      `TBA teams request failed with ${teamsResponse.status} ${teamsResponse.statusText}.`,
     );
   }
 
-  const teams = await response.json();
+  const teams = await teamsResponse.json();
   await mkdir(path.dirname(outputPath), { recursive: true });
   await writeFile(outputPath, `${JSON.stringify(teams, null, 2)}\n`, "utf8");
 
