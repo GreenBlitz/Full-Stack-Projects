@@ -1,26 +1,48 @@
-import { useState } from "react";
+import {
+  useState,
+  type Dispatch,
+  type SetStateAction,
+  type SyntheticEvent,
+} from "react";
 import { createPortal } from "react-dom";
+import type { DucksProps } from "./Ducks";
+import type { DuckProps } from "./Duck";
 
-export function DuckForm() {
+export interface DuckFormProps {
+  ducks: DuckProps[];
+  setDucks: Dispatch<
+    SetStateAction<
+      {
+        name: string;
+        color: string;
+        age: number;
+      }[]
+    >
+  >;
+}
+
+export function DuckForm({ ducks, setDucks }: DuckFormProps) {
   const [inputs, setInputs] = useState({
     duckName: "",
     duckColor: "",
     duckAge: -1,
   });
 
-  const [submittedDuck, setSubmittedDuck] = useState<null | typeof inputs>(
-    null,
-  );
-
-  function handleChange(e: any) {
+  function handleChange(e) {
     const name = e.target.name;
     const value = e.target.value;
     setInputs((values) => ({ ...values, [name]: value }));
   }
 
-  function handleSubmit(e: any) {
+  function handleSubmit(e) {
     e.preventDefault();
-    setSubmittedDuck(inputs);
+    const newDucks = ducks.map((duck) => duck);
+    newDucks.push({
+      name: inputs.duckName,
+      color: inputs.duckColor,
+      age: inputs.duckAge,
+    });
+    setDucks(newDucks);
   }
 
   return (
@@ -55,11 +77,6 @@ export function DuckForm() {
         <br />
         <button type="submit">Add Duck</button>
       </form>
-      {submittedDuck &&
-        createPortal(
-          submittedDuck,
-          document.body,
-        )}
     </>
   );
 }
