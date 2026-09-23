@@ -15,6 +15,7 @@ import { Tinder } from "./strategy/tabs/Tinder";
 import { PitScoutTab } from "./strategy/tabs/pit-scout/PitScoutTab";
 import { Picklist } from "./strategy/tabs/picklist/Picklist";
 import { PitManageTab } from "./strategy/tabs/pit-scout/PitManageTab";
+import { ScoutingPass } from "./scouter/pages/ScoutingPass";
 
 const App: FC = () => {
   return (
@@ -24,7 +25,14 @@ const App: FC = () => {
       <Route path="/pit" element={<PitScoutTab />} />
       <Route path="/pit/manage" element={<PitManageTab />} />
       <Route path="/scout" element={<ScoutMatch />} />
-      <Route path="/leaderboard" element={<Leaderboard />} />
+      <Route
+        path="/leaderboard"
+        element={<Leaderboard competition={CURRENT_COMPETITION} />}
+      />
+      <Route
+        path="/scouting-pass"
+        element={<ScoutingPass competition={CURRENT_COMPETITION} />}
+      />
       <Route path="/settings" element={<SettingsPage />} />
       <Route path="/strategy" element={<StrategyNavigationBar />}>
         <Route path="team" element={<TeamTab />} />
