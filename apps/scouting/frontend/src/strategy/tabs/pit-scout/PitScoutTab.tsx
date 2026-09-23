@@ -86,7 +86,11 @@ export const PitScoutTab: FC = () => {
       } else {
         const text = await res.text();
         setStatus("error");
-        setErrorMsg(text || "Submission failed.");
+        setErrorMsg(
+          res.status === 409
+            ? "A pit scout form already exists for this team."
+            : text || "Submission failed.",
+        );
       }
     } catch (error) {
       setStatus("error");

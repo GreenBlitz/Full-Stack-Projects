@@ -70,7 +70,7 @@ export const PitEditModal: React.FC<PitEditModalProps> = ({
       await onSuccess();
       onClose();
     } catch (error) {
-      setErrorMsg(getErrorMessage(error));
+      setErrorMsg(setErrorMsg(getErrorMessage(error));
     } finally {
       setLoading(false);
     }
