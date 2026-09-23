@@ -1,13 +1,10 @@
 //בס"ד
 
-import type { Competition } from "../scouting_form";
-
-export interface Scouter {
+export interface ScouterInfo {
   name: string;
   scoutedMatches: number;
 }
 
 export interface CompetitionLeaderboard {
-  competition: Competition;
-  Scouters: Scouter[];
+  scouters: ScouterInfo[];
 }

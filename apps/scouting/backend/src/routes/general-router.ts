@@ -1,29 +1,19 @@
 //בס"ד
 
 import { Router } from "express";
-import { formsRouter, getFormsCollection } from "./forms-router";
-import { pipe, flow } from "fp-ts/lib/function";
-import { fold, map, bindTo, bind, flatMap } from "fp-ts/lib/TaskEither";
-import { mongofyQuery, flatTryCatch, foldResponse } from "@repo/flow-utils";
+import { pipe } from "fp-ts/lib/function";
+import { bindTo, map } from "fp-ts/lib/TaskEither";
+import { flatTryCatch, foldResponse } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
 
-import {
-  BeeScoutingForm,
-  excludeNoShowForms,
-  type GeneralTeamBeeData,
-  type ScoutingForm,
-} from "@repo/scouting_types";
-import { findMaxClimbLevel } from "../climb/calculations";
-import { calculateAverageClimbsScore } from "../climb/score";
+import { type GeneralTeamBeeData, TeamMatchData } from "@repo/scouting_types";
 import { groupBy } from "fp-ts/lib/NonEmptyArray";
-import { fetchTeamsCOPRs } from "./tba-router";
 import {
   calculateAverage,
   calculateSum,
   mapObject,
 } from "@repo/array-functions";
-import { getTeamsEPAs } from "../middleware/epa";
-import { getBeeScoutCollection } from "../googleSheets";
+import { getBeeTeamMatchDataCollection } from "../googleSheets";
 import { applyRecency } from "./team-page-router";
 
 export const generalRouter = Router();
@@ -40,7 +30,7 @@ const AUTO_CLIMB_POINTS = 15;
 const TELE_CLIMB_LEVEL_POINTS = 10;
 
 export const calculateGeneralForTeam = (
-  forms: BeeScoutingForm[],
+  forms: TeamMatchData[],
   team: string,
 ): GeneralTeamBeeData => {
   const auto = {
@@ -89,7 +79,7 @@ export const calculateGeneralForTeam = (
 
 export const getTotalGeneralData = (recency: number) =>
   pipe(
-    getBeeScoutCollection(),
+    getBeeTeamMatchDataCollection(),
 
     flatTryCatch(
       (collection) => collection.find().toArray(),
@@ -98,7 +88,7 @@ export const getTotalGeneralData = (recency: number) =>
         reason: `Could not get forms from DB: ${error}`,
       }),
     ),
-    map(groupBy((form: BeeScoutingForm) => form.teamNumber.toString())),
+    map(groupBy((form: TeamMatchData) => form.teamNumber.toString())),
     map((teamsForms) =>
       mapObject(teamsForms, (forms) => applyRecency(forms, recency)),
     ),
