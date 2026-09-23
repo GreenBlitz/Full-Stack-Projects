@@ -1,8 +1,10 @@
 // בס"ד
-import { defineConfig, type PluginOption } from "vite";
+import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
+import reactCompiler from "babel-plugin-react-compiler";
+
 const SECS_PER_MIN = 60;
 const MINS_PER_HOUR = 60;
 const HOURS_PER_DAY = 24;
@@ -25,7 +27,7 @@ export default defineConfig({
   plugins: [
     react({
       babel: {
-        plugins: [["babel-plugin-react-compiler"]],
+        plugins: [[reactCompiler]],
       },
     }),
     tailwindcss(),

@@ -1,7 +1,7 @@
 // בס"ד
 import type { FC } from "react";
 import { ScoutMatch } from "./scouter/pages/ScoutMatch";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { ScoutedMatches } from "./scouter/pages/ScoutedMatches";
 import { TeamTab } from "./strategy/tabs/team/TeamTab";
 import { MatchForecast } from "./strategy/tabs/forecast/MatchForecast";
@@ -19,9 +19,10 @@ import { PitManageTab } from "./strategy/tabs/pit-scout/PitManageTab";
 const App: FC = () => {
   return (
     <Routes>
+      <Route path="/" element={<Navigate to="/strategy" replace />} />
+
       <Route path="/pit" element={<PitScoutTab />} />
       <Route path="/pit/manage" element={<PitManageTab />} />
-
       <Route path="/scout" element={<ScoutMatch />} />
       <Route path="/leaderboard" element={<Leaderboard />} />
       <Route path="/settings" element={<SettingsPage />} />
