@@ -19,9 +19,7 @@ leaderboardRouter.get("/", (req, res) =>
         reason: `DB Error: ${error}`,
       }),
     ),
-    map((scouters) => {
-      return { scouters: scouters };
-    }),
+    map((scouters) => ({ scouters })),
     bindTo("competitionScouters"),
     foldResponse(res),
   )(),

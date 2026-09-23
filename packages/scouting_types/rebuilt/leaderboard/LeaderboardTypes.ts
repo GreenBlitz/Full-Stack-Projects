@@ -1,10 +1,10 @@
 //בס"ד
 
-export interface Scouter {
+export interface ScouterInfo {
   name: string;
   scoutedMatches: number;
 }
 
 export interface CompetitionLeaderboard {
-  scouters: Scouter[];
+  scouters: ScouterInfo[];
 }
