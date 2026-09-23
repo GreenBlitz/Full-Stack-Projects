@@ -3,22 +3,17 @@ import { useEffect, useMemo, useState } from "react";
 import {
   SCOUTING_PASS_LEVELS,
   SCOUTING_PASS_TIERS,
-  type Competition,
   type CompetitionLeaderboard,
-  type Scouter,
+  type ScouterInfo,
   type ScoutingPassLevel,
 } from "@repo/scouting_types";
 import { isEmpty } from "@repo/array-functions";
 import { fetchCompetitionData } from "./Leaderboard";
 import { ScoutingPassTier } from "../components/ScoutingPassTier";
 
-interface ScoutingPassProps {
-  competition: Competition;
-}
-
-export const ScoutingPass: React.FC<ScoutingPassProps> = ({ competition }) => {
+export const ScoutingPass: React.FC = () => {
   const [data, setData] = useState<CompetitionLeaderboard | null>(null);
-  const [scouter, setScouter] = useState<Scouter | null>(null);
+  const [scouter, setScouter] = useState<ScouterInfo | null>(null);
   const [isLoading, setLoading] = useState<boolean>(true);
   const scouterLevel = useMemo(
     () =>
@@ -40,7 +35,7 @@ export const ScoutingPass: React.FC<ScoutingPassProps> = ({ competition }) => {
       .catch(() => {
         setLoading(false);
       });
-  }, [competition]);
+  }, []);
 
   const sortedScouters = useMemo(() => {
     // sort by name alphabetically
@@ -59,7 +54,7 @@ export const ScoutingPass: React.FC<ScoutingPassProps> = ({ competition }) => {
   if (!data) {
     return (
       <div className="bg-slate-900 border border-red-500/20 rounded-xl p-10 text-center text-slate-500 italic">
-        Failed to load scouting data for {competition}.
+        Failed to load scouting data.
       </div>
     );
   }
@@ -68,7 +63,7 @@ export const ScoutingPass: React.FC<ScoutingPassProps> = ({ competition }) => {
     <div className="bg-slate-900 border border-emerald-500/20 rounded-xl overflow-hidden shadow-2xl">
       <div className="bg-emerald-500/10 p-4 border-b border-emerald-500/20">
         <h2 className="text-emerald-400 font-black tracking-tighter text-xl uppercase">
-          Scouting Pass for {competition}
+          Scouting Pass
         </h2>
       </div>
       <div className="p-4 flex items-center justify-center">

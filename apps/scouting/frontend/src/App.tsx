@@ -25,14 +25,8 @@ const App: FC = () => {
       <Route path="/pit" element={<PitScoutTab />} />
       <Route path="/pit/manage" element={<PitManageTab />} />
       <Route path="/scout" element={<ScoutMatch />} />
-      <Route
-        path="/leaderboard"
-        element={<Leaderboard competition={CURRENT_COMPETITION} />}
-      />
-      <Route
-        path="/scouting-pass"
-        element={<ScoutingPass competition={CURRENT_COMPETITION} />}
-      />
+      <Route path="/leaderboard" element={<Leaderboard />} />
+      <Route path="/scouting-pass" element={<ScoutingPass />} />
       <Route path="/settings" element={<SettingsPage />} />
       <Route path="/strategy" element={<StrategyNavigationBar />}>
         <Route path="team" element={<TeamTab />} />
