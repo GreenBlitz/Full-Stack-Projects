@@ -1,5 +1,5 @@
 //בס"ד
-import { Scouter, TeamMatchData } from "@repo/scouting_types";
+import { ScouterInfo, TeamMatchData } from "@repo/scouting_types";
 import { google } from "googleapis";
 import { Db } from "mongodb";
 
@@ -30,7 +30,7 @@ export const getBeeTeamMatchDataCollection = flow(
 
 export const getBeeScouterCollection = flow(
   getDb,
-  map((db) => db.collection<Scouter>("beeScouters")),
+  map((db) => db.collection<ScouterInfo>("beeScouters")),
 );
 
 const googleAuthentication = new google.auth.GoogleAuth({
@@ -137,8 +137,8 @@ const structureBeeTeamMatchData = (
 
 const structureBeeScoutersData = (
   data: Record<string, string>[],
-): Scouter[] => {
-  return data.reduce((accumulator: Scouter[], row) => {
+): ScouterInfo[] => {
+  return data.reduce((accumulator: ScouterInfo[], row) => {
     if (row.D_ScouterTeam !== LEADERBOARD_TEAM) {
       return accumulator;
     }
@@ -184,7 +184,7 @@ const updateBeeTeamMatchData = async (db: Db, data: string[][]) => {
 const updateBeeScoutersData = async (db: Db, data: string[][]) => {
   try {
     const structured = structureBeeScoutersData(formatData(data));
-    const collection = db.collection<Scouter>("beeScouters");
+    const collection = db.collection<ScouterInfo>("beeScouters");
 
     if (structured.length < 10) {
       console.log(
