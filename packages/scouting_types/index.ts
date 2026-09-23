@@ -9,3 +9,5 @@ export * from "./teams";
 export * from "./alliance";
 
 export * from "./dataset";
+
+export * from "./scouting-pass";

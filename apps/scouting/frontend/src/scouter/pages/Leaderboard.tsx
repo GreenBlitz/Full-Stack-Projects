@@ -14,7 +14,7 @@ export const scouterColor: Record<string, string> = {
   Roni: "text-pink-300",
 };
 
-const fetchCompetitionData = async () => {
+export const fetchCompetitionData = async () => {
   const response = await axios.get(leaderboardUrl).catch((errorText) => {
     throw new Error(`Server Error: ${errorText}`);
   });
