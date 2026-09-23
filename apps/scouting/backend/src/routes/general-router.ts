@@ -13,7 +13,7 @@ import {
   calculateSum,
   mapObject,
 } from "@repo/array-functions";
-import { getTeamMatchDataCollection } from "../googleSheets";
+import { getBeeTeamMatchDataCollection } from "../googleSheets";
 import { applyRecency } from "./team-page-router";
 
 export const generalRouter = Router();
@@ -79,7 +79,7 @@ export const calculateGeneralForTeam = (
 
 export const getTotalGeneralData = (recency: number) =>
   pipe(
-    getTeamMatchDataCollection(),
+    getBeeTeamMatchDataCollection(),
 
     flatTryCatch(
       (collection) => collection.find().toArray(),

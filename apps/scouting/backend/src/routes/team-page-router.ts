@@ -1,7 +1,7 @@
 //בס"ד
 
 import { Router } from "express";
-import { getTeamMatchDataCollection } from "../googleSheets";
+import { getBeeTeamMatchDataCollection } from "../googleSheets";
 import { pipe } from "fp-ts/lib/function";
 import { flatTryCatch, foldResponse, mongofyQuery } from "@repo/flow-utils";
 import { StatusCodes } from "http-status-codes";
@@ -100,7 +100,7 @@ const parseRecency = (recencyString: string) =>
 
 teamPageRouter.get("/matches/:recency", async (req, res) => {
   await pipe(
-    getTeamMatchDataCollection(),
+    getBeeTeamMatchDataCollection(),
     flatTryCatch(
       (Collection) => Collection.find(mongofyQuery(req.query)).toArray(),
       (error) => ({
@@ -121,7 +121,7 @@ teamPageRouter.get("/matches/:recency", async (req, res) => {
 
 teamPageRouter.get("/teamNumbers", async (req, res) => {
   await pipe(
-    getTeamMatchDataCollection(),
+    getBeeTeamMatchDataCollection(),
     flatTryCatch(
       (collection) => collection.find(mongofyQuery({})).toArray(),
       (error) => ({

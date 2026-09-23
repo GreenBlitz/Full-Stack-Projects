@@ -2,7 +2,8 @@
 
 import type React from "react";
 import { useEffect, useMemo, useState } from "react";
-import type { Competition, CompetitionLeaderboard } from "@repo/scouting_types";
+import axios from "axios";
+import type { CompetitionLeaderboard } from "@repo/scouting_types";
 import { isEmpty } from "@repo/array-functions";
 
 const leaderboardUrl = "/api/v1/leaderboard/";
@@ -14,26 +15,14 @@ export const scouterColor: Record<string, string> = {
 };
 
 const fetchCompetitionData = async () => {
-  const response = await fetch(leaderboardUrl, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
+  const response = await axios.get(leaderboardUrl).catch((errorText) => {
     throw new Error(`Server Error: ${errorText}`);
-  }
-
-  const data = await response.json();
+  });
+  const data = response.data;
   return data.competitionScouters as CompetitionLeaderboard;
 };
-interface ScouterLeaderboardProps {
-  competition: Competition;
-}
 
-export const Leaderboard: React.FC<ScouterLeaderboardProps> = ({
-  competition,
-}) => {
+export const Leaderboard: React.FC = () => {
   const [data, setData] = useState<CompetitionLeaderboard | null>(null);
   const [isLoading, setLoading] = useState<boolean>(true);
 
@@ -47,7 +36,7 @@ export const Leaderboard: React.FC<ScouterLeaderboardProps> = ({
       .catch(() => {
         setLoading(false);
       });
-  }, [competition]);
+  }, []);
 
   const sortedScouters = useMemo(() => {
     if (!data?.scouters) return [];
@@ -70,7 +59,7 @@ export const Leaderboard: React.FC<ScouterLeaderboardProps> = ({
   if (!data) {
     return (
       <div className="bg-slate-900 border border-red-500/20 rounded-xl p-10 text-center text-slate-500 italic">
-        Failed to load leaderboard for {competition}.
+        Failed to load leaderboard.
       </div>
     );
   }

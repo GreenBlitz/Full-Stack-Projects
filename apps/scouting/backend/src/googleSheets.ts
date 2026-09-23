@@ -9,8 +9,8 @@ import { flow, pipe } from "fp-ts/lib/function";
 import { fold, map } from "fp-ts/lib/TaskEither";
 import { firstElement } from "@repo/array-functions";
 
-const teamMatchSheetsRange = "teamPerMatch";
-const scoutersSheetsRange = "raw data";
+const beeTeamMatchSheetsRange = "teamPerMatch";
+const beeScoutersSheetsRange = "raw data";
 
 const DIS1_SHEETS = "1-V___4ap8EHyyuqQS8m3SLbXOEmdxlOILD8gGPWott4";
 const DIS2_SHEETS = "1hSeyFbC_jHAvKJ4egzjXniyr0PuuyCPVM4nVCxm9DXA";
@@ -23,14 +23,14 @@ const LEADERBOARD_TEAM = "4590 - GreenBlitz";
 const INCREMENT = 1;
 const NOT_FOUND_INDEX = -1;
 
-export const getTeamMatchDataCollection = flow(
+export const getBeeTeamMatchDataCollection = flow(
   getDb,
-  map((db) => db.collection<TeamMatchData>("teamMatchData")),
+  map((db) => db.collection<TeamMatchData>("beeTeamMatchData")),
 );
 
-export const getScouterCollection = flow(
+export const getBeeScouterCollection = flow(
   getDb,
-  map((db) => db.collection<Scouter>("scouters")),
+  map((db) => db.collection<Scouter>("beeScouters")),
 );
 
 const googleAuthentication = new google.auth.GoogleAuth({
@@ -66,32 +66,22 @@ const formatData = (data: string[][]) => {
   });
 };
 
-const fetchData = async (spreadSheetsRange: string) => {
+const fetchData = async (sheetID: string, spreadSheetsRange: string) => {
   try {
-    // console.log("dis 1: " + DIS1_SHEETS);
-    // console.log("dis 2: " + DIS2_SHEETS);
+    const rawSheetData = await getSheetData(sheetID, spreadSheetsRange);
 
-    console.log("dcmp: " + DCMP_SHEETS);
-
-    // const rawDis1 = await getSheetData(DIS1_SHEETS, spreadSheetsRange);
-    // const rawDis2 = await getSheetData(DIS2_SHEETS, spreadSheetsRange);
-
-    // const rawCombined = [...(rawDis1 ?? []), ...(rawDis2 ?? [])];
-
-    const rawDcmp = await getSheetData(DCMP_SHEETS, spreadSheetsRange);
-
-    if (!rawDcmp) {
+    if (!rawSheetData) {
       console.log("connection to sheets failed");
     }
 
-    return rawDcmp;
+    return rawSheetData;
   } catch (err) {
     console.error(`ERROR in fetch ${spreadSheetsRange} data:`, err);
     return [];
   }
 };
 
-const structureTeamMatchData = (
+const structureBeeTeamMatchData = (
   data: Record<string, string>[],
 ): TeamMatchData[] => {
   const unfilteredData = data.map((row) => {
@@ -145,7 +135,9 @@ const structureTeamMatchData = (
   return unfilteredData.filter((row): row is TeamMatchData => row !== false);
 };
 
-const structureScoutersData = (data: Record<string, string>[]): Scouter[] => {
+const structureBeeScoutersData = (
+  data: Record<string, string>[],
+): Scouter[] => {
   return data.reduce((accumulator: Scouter[], row) => {
     if (row.D_ScouterTeam !== LEADERBOARD_TEAM) {
       return accumulator;
@@ -167,46 +159,46 @@ const structureScoutersData = (data: Record<string, string>[]): Scouter[] => {
   }, []);
 };
 
-const updateTeamMatchData = async (db: Db, data: string[][]) => {
+const updateBeeTeamMatchData = async (db: Db, data: string[][]) => {
   try {
-    const structured = structureTeamMatchData(formatData(data));
-    const collection = db.collection<TeamMatchData>("teamMatchData");
+    const structured = structureBeeTeamMatchData(formatData(data));
+    const collection = db.collection<TeamMatchData>("beeTeamMatchData");
 
     if (structured.length < 10) {
       console.log(
-        `something went wrong - no data in new Team Match Data update, this is the data: ${structured}`,
+        `something went wrong - no data in new Bee a scout Team Match Data update, this is the data: ${structured}`,
       );
       return;
     }
     await collection.deleteMany({});
     await collection.insertMany(structured);
 
-    console.log("Updated Team Match Data");
+    console.log("Updated Bee a scout Team Match Data");
     return structured;
   } catch (err) {
-    console.error("ERROR in Team Match Data update:", err);
+    console.error("ERROR in Bee a scout Team Match Data update:", err);
     return [];
   }
 };
 
-const updateScoutersData = async (db: Db, data: string[][]) => {
+const updateBeeScoutersData = async (db: Db, data: string[][]) => {
   try {
-    const structured = structureScoutersData(formatData(data));
-    const collection = db.collection<Scouter>("scouters");
+    const structured = structureBeeScoutersData(formatData(data));
+    const collection = db.collection<Scouter>("beeScouters");
 
     if (structured.length < 10) {
       console.log(
-        `something went wrong - no data in new update in Scouters, this is the data: ${structured}`,
+        `something went wrong - no data in new update in Bee a scout Scouters, this is the data: ${structured}`,
       );
       return;
     }
     await collection.deleteMany({});
     await collection.insertMany(structured);
 
-    console.log("Updated Scouters Data");
+    console.log("Updated Bee a scout Scouters Data");
     return structured;
   } catch (err) {
-    console.error("ERROR in Scouters updateData:", err);
+    console.error("ERROR in Bee a scout Scouters updateData:", err);
     return [];
   }
 };
@@ -220,17 +212,19 @@ export const startGoogleSheetsSync = () => {
       (err) => async () =>
         console.error("DB connection with google sheets failed:", err.reason),
       (db) => async () => {
-        const teamMatchData = (await fetchData(teamMatchSheetsRange)) ?? [];
-        updateTeamMatchData(db, teamMatchData);
+        const teamMatchData =
+          (await fetchData(DCMP_SHEETS, beeTeamMatchSheetsRange)) ?? [];
+        updateBeeTeamMatchData(db, teamMatchData);
         setInterval(
-          () => updateTeamMatchData(db, teamMatchData),
+          () => updateBeeTeamMatchData(db, teamMatchData),
           MILISECONDS_IN_FIVE_MINUTES,
         );
 
-        const scoutersData = (await fetchData(scoutersSheetsRange)) ?? [];
-        updateScoutersData(db, scoutersData);
+        const scoutersData =
+          (await fetchData(DCMP_SHEETS, beeScoutersSheetsRange)) ?? [];
+        updateBeeScoutersData(db, scoutersData);
         setInterval(
-          () => updateScoutersData(db, scoutersData),
+          () => updateBeeScoutersData(db, scoutersData),
           MILISECONDS_IN_FIVE_MINUTES,
         );
       },
