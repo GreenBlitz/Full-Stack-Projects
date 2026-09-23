@@ -1,0 +1,17 @@
+import { Duck, type DuckProps } from "./Duck";
+
+export interface DucksProps {
+  ducks: DuckProps[];
+}
+
+export function Ducks({ ducks }: DucksProps) {
+  return (
+    <>
+      <div>
+        {ducks.map((duck) => (
+          <Duck name={duck.name} colour={duck.colour} age={duck.age} />
+        ))}
+      </div>
+    </>
+  );
+}
