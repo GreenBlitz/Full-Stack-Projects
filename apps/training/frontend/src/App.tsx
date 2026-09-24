@@ -1,6 +1,6 @@
 // בס"ד
-import { useState, type FC } from "react";
-import { DuckCard, type DuckCardProps } from "./components/DuckCard";
+import { useState, type FC, type SetStateAction } from "react";
+import { type DuckCardProps } from "./components/DuckCard";
 import { Duck } from "./components/Ducks";
 const initialDucks: DuckCardProps[] = [
   { name: "Avi", color: "red", age: 4 },
@@ -11,10 +11,49 @@ const initialDucks: DuckCardProps[] = [
 
 const App: FC = () => {
   const [ducks, setDucks] = useState(initialDucks);
+  const [name, setName] = useState("");
+  const [color, setColor] = useState("");
+  const [age, setAge] = useState(0);
+
+  const handleNameChange = (name: { target: { value: string } }) => {
+    setName(name.target.value);
+  };
+  const handleColorChange = (color: { target: { value: string } }) => {
+    setColor(color.target.value);
+  };
+  const handleAgeChange = (age: { target: { value: string } }) => {
+    setAge(Number(age.target.value));
+  };
+  const handleSubmit = (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+    if (name === "" || color === "") {
+      alert("you cannot submit a duck without a name or a color");
+      return;
+    }
+    setDucks((prev) => prev.concat({ name, color, age }));
+    setName("");
+    setColor("");
+    setAge(0);
+  };
+
   return (
     <>
       <Duck ducks={ducks} />
       <br />
+      <form onSubmit={handleSubmit}>
+        <label htmlFor="name">Duck's name</label>
+        <input value={name} id="name" onChange={handleNameChange} type="text" />
+        <label htmlFor="color">Duck's color</label>
+        <input
+          value={color}
+          id="color"
+          onChange={handleColorChange}
+          type="text"
+        />
+        <label htmlFor="age">Duck's age</label>
+        <input value={age} id="age" onChange={handleAgeChange} type="number" />
+        <button type="submit">Submit</button>
+      </form>
       <button
         className="remove-duck"
         type="button"

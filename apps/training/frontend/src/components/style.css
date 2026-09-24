@@ -6,6 +6,7 @@
   border-radius: 5px;
   display: inline-block;
   padding: 10px;
+  margin: 4px;
 }
 
 .remove-duck {
@@ -23,7 +24,7 @@
   height: 40px;
   line-height: 20px;
   list-style: none;
-  margin: 0;
+  margin: 5px;
   outline: none;
   padding: 10px 16px;
   position: relative;
@@ -37,4 +38,29 @@
 
 .remove-duck:hover {
   background-color: #f082ac;
+}
+
+form {
+  border-radius: 5px;
+  background-color: #363638;
+  padding: 20px;
+  width: 25%;
+  margin: 5px;
+}
+
+label {
+  display: block;
+  color: rgb(192, 191, 193);
+}
+
+input[type="text"],
+input[type="number"],
+select {
+  width: 95%;
+  padding: 12px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 3px solid #4e4e53;
+  border-radius: 4px;
+  box-sizing: border-box;
 }
