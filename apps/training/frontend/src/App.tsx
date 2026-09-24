@@ -10,12 +10,18 @@ const initialDucks: DuckCardProps[] = [
 ];
 
 const App: FC = () => {
-  const [ducks, setDucks] = useState(initialDucks)
+  const [ducks, setDucks] = useState(initialDucks);
   return (
     <>
       <Duck ducks={ducks} />
       <br />
-      <button className="remove-duck" type="button" onClick={() => setDucks(ducks.slice(0, -1))}>Remove a duck</button>
+      <button
+        className="remove-duck"
+        type="button"
+        onClick={() => setDucks((prev) => prev.slice(0, -1))}
+      >
+        Remove a duck
+      </button>
     </>
   );
 };
