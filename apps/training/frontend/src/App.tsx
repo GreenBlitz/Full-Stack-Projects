@@ -2,6 +2,8 @@
 import { useState, type FC, type SetStateAction } from "react";
 import { type DuckCardProps } from "./components/DuckCard";
 import { Duck } from "./components/Ducks";
+import { DuckMessage } from "./components/DuckMessage";
+import { DuckFilterInput } from "./components/DuckFilterInput";
 const initialDucks: DuckCardProps[] = [
   { name: "Avi", color: "red", age: 4 },
   { name: "Moshe", color: "blue", age: 12 },
@@ -14,6 +16,7 @@ const App: FC = () => {
   const [name, setName] = useState("");
   const [color, setColor] = useState("");
   const [age, setAge] = useState(0);
+  const [filter, setFilter] = useState("");
 
   const handleNameChange = (name: { target: { value: string } }) => {
     setName(name.target.value);
@@ -38,7 +41,9 @@ const App: FC = () => {
 
   return (
     <>
-      <Duck ducks={ducks} />
+      <DuckMessage ducksNumber={ducks.length} />
+      <DuckFilterInput setFilter={setFilter} />
+      <Duck ducks={ducks.filter((duck) => duck.name.includes(filter))} />
       <br />
       <form onSubmit={handleSubmit}>
         <label htmlFor="name">Duck's name</label>
