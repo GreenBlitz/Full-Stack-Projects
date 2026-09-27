@@ -1,9 +1,11 @@
 // בס"ד
-import { useState, type FC, type SetStateAction } from "react";
+import { useState, type FC, useEffect } from "react";
 import { type DuckCardProps } from "./components/DuckCard";
 import { Duck } from "./components/Ducks";
 import { DuckMessage } from "./components/DuckMessage";
 import { DuckFilterInput } from "./components/DuckFilterInput";
+import { SortDucks, type SortKey } from "./components/SortDucks";
+
 const initialDucks: DuckCardProps[] = [
   { name: "Avi", color: "red", age: 4 },
   { name: "Moshe", color: "blue", age: 12 },
@@ -12,11 +14,19 @@ const initialDucks: DuckCardProps[] = [
 ];
 
 const App: FC = () => {
-  const [ducks, setDucks] = useState(initialDucks);
+  const [ducks, setDucks] = useState<DuckCardProps[]>(() =>{
+  const saved = localStorage.getItem("ducks");
+  return saved ? JSON.parse(saved) : initialDucks;
+  });
   const [name, setName] = useState("");
   const [color, setColor] = useState("");
   const [age, setAge] = useState(0);
   const [filter, setFilter] = useState("");
+  const [sortKey, setSortKey] = useState<SortKey>("");
+
+  useEffect(() => {
+    localStorage.setItem("ducks", JSON.stringify(ducks));
+  }, [ducks]);
 
   const handleNameChange = (name: { target: { value: string } }) => {
     setName(name.target.value);
@@ -43,6 +53,13 @@ const App: FC = () => {
     <>
       <DuckMessage ducksNumber={ducks.length} />
       <DuckFilterInput setFilter={setFilter} />
+      <SortDucks
+        ducks={ducks}
+        sortKey={sortKey}
+        setDucks={setDucks}
+        setSortKey={setSortKey}
+      />
+      <br/>
       <Duck ducks={ducks.filter((duck) => duck.name.includes(filter))} />
       <br />
       <form onSubmit={handleSubmit}>
