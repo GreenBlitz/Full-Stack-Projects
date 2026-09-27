@@ -1,3 +1,6 @@
+import { useEffect } from "react";
+import { useState, type Dispatch, type SetStateAction } from "react";
+
 export interface DuckProps {
   name: string;
   color: string;
@@ -5,7 +8,6 @@ export interface DuckProps {
 }
 
 export function Duck({ name, color, age }: DuckProps) {
-  //1&2
   return (
     <>
       <div className="border-2 border-purple-500 max-w-fit">

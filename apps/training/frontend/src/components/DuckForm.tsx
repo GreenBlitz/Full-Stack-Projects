@@ -36,7 +36,7 @@ export function DuckForm({ ducks, setDucks }: DuckFormProps) {
 
   function handleSubmit(e) {
     e.preventDefault();
-    const newDucks = ducks.map((duck) => duck);
+    const newDucks = [...ducks];
     newDucks.push({
       name: inputs.duckName,
       color: inputs.duckColor,
