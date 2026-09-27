@@ -2,16 +2,17 @@ import { type ScoutingPassTier as ScoutingPassTierProps } from "@repo/scouting_t
 
 export const ScoutingPassTier: React.FC<
   ScoutingPassTierProps & { active: boolean }
-> = ({ tier, xp, reward, active }) => {
+> = ({ xp, reward, icon, active }) => {
+  const Icon = icon;
   return (
     <div
-      className={
+      className={`flex flex-col items-center text-center gap-1 p-2 rounded-lg ${
         active
           ? "bg-emerald-500/20 border border-emerald-500/50"
           : "bg-slate-800 border border-slate-600"
-      }
+      }`}
     >
-      <h3>Tier {tier}</h3>
+      {Icon && <Icon className="h-10 w-10" />}
       <p>XP: {xp}</p>
       <p>Reward: {reward}</p>
     </div>

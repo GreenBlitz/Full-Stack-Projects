@@ -1,5 +1,5 @@
 import type React from "react";
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import {
   SCOUTING_PASS_LEVELS,
   SCOUTING_PASS_TIERS,
@@ -10,6 +10,12 @@ import {
 import { isEmpty } from "@repo/array-functions";
 import { fetchCompetitionData } from "./Leaderboard";
 import { ScoutingPassTier } from "../components/ScoutingPassTier";
+
+const getSegmentFill = (xp: number, prevXp: number, nextXp: number) => {
+  if (xp >= nextXp) return 100;
+  if (xp <= prevXp) return 0;
+  return ((xp - prevXp) / (nextXp - prevXp)) * 100;
+};
 
 export const ScoutingPass: React.FC = () => {
   const [data, setData] = useState<CompetitionLeaderboard | null>(null);
@@ -98,7 +104,7 @@ export const ScoutingPass: React.FC = () => {
         </select>
       </div>
       {scouter && (
-        <div className="p-4 w-1/2 mx-auto flex flex-col items-center justify-center gap-4 bg-slate-800 rounded-2xl shadow-lg shadow-black/20">
+        <div className="p-4 w-4/5 mx-auto flex flex-col items-center justify-center gap-4 bg-slate-800 rounded-2xl shadow-lg shadow-black/20">
           <h3 className="font-bold text-lg">{scouter.name}'s Scouting Pass</h3>
           <div className="flex flex-row items-center gap-2">
             <span
@@ -110,13 +116,30 @@ export const ScoutingPass: React.FC = () => {
               {scouterLevel.title}
             </span>
           </div>
-          <div className="flex flex-row gap-2">
-            {SCOUTING_PASS_TIERS.map((tier) => (
-              <ScoutingPassTier
-                {...tier}
-                active={tier.xp <= scouter.scoutedMatches}
-              />
-            ))}
+          <div className="flex flex-row items-center w-full">
+            {SCOUTING_PASS_TIERS.map((tier, i) => {
+              const prevXp = SCOUTING_PASS_TIERS[i - 1]?.xp ?? tier.xp;
+              return (
+                <Fragment key={tier.tier}>
+                  {i > 0 && (
+                    <div className="flex-1 h-1 bg-slate-700 relative">
+                      <div
+                        className="absolute inset-y-0 left-0 bg-emerald-500"
+                        style={{
+                          width: `${getSegmentFill(scouter.scoutedMatches, prevXp, tier.xp)}%`,
+                        }}
+                      />
+                    </div>
+                  )}
+                  <div className="w-25">
+                    <ScoutingPassTier
+                      {...tier}
+                      active={tier.xp <= scouter.scoutedMatches}
+                    />
+                  </div>
+                </Fragment>
+              );
+            })}
           </div>
         </div>
       )}

@@ -9,6 +9,7 @@ export interface ScoutingPassTier {
   tier: number;
   xp: number;
   reward: string;
+  icon?: React.ComponentType<{ className?: string }>;
 }
 
 export const SCOUTING_PASS_LEVELS: ScoutingPassLevel[] = [
