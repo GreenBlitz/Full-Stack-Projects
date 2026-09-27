@@ -35,13 +35,6 @@ const App: FC = () => {
       >
         del duck WIwi
       </button>
-      <button
-        style={{ background: "#185372", color: "#fc9dff" }}
-        type="button"
-        onClick={() => set_the_duck_list(the_duck_list.slice(0, -1))}
-      >
-        lamore duck WIwi
-      </button>
       <MoreDuck />
     </>
   );
