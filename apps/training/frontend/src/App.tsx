@@ -18,24 +18,53 @@ const App: FC = () => {
     { name: "David", colour: "white", age: 38 },
     { name: "Emma", colour: "cyan", age: 29 },
   ]);
+
   return (
     <>
-      <div style={{ color: "#fc9dff" }}>
-        <Duck name="Zib" colour="white" age={6} />
+      <div
+        style={{
+          color: "#9df0ff",
+          border: "2px solid #741477",
+          borderRadius: "50px",
+          padding: "12px",
+          marginBottom: "50px",
+        }}
+      >
+        <h1>The Ducks</h1>
       </div>
-      <br />
-      <div style={{ color: "#fc9dff" }}>
+
+      <div
+        style={{
+          color: "#fc9dff",
+          border: "2px solid #741477",
+          borderRadius: "50px",
+          padding: "20px",
+          marginBottom: "16px",
+        }}
+      >
         <Ducks ducks={the_duck_list} />
       </div>
-      <br />
+
       <button
-        style={{ background: "#185372", color: "#fc9dff" }}
+        style={{
+          background: "#185372",
+          color: "#fc9dff",
+          border: "2px solid #fc9dff",
+          borderRadius: "50px",
+          padding: "8px 16px",
+          cursor: "pointer",
+          marginBottom: "16px",
+        }}
         type="button"
         onClick={() => set_the_duck_list(the_duck_list.slice(0, -1))}
       >
         del duck WIwi
       </button>
-      <MoreDuck />
+
+      <MoreDuck
+        the_duck_list={the_duck_list}
+        set_the_duck_list={set_the_duck_list}
+      />
     </>
   );
 };
