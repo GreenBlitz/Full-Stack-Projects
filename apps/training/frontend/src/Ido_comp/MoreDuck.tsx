@@ -55,7 +55,7 @@ export function MoreDuck({ the_duck_list, set_the_duck_list }: la_more_prop) {
       <br />
       <input
         value={age}
-        onChange={(e) => setAge(e.target.value)}
+        onChange={(e) => setAge(Number(e.target.value))}
         type="number"
       />
 
