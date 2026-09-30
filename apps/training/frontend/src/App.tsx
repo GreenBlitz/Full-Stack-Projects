@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLocalStorage } from "usehooks-ts";
 import { Duck, type DuckProps } from "./components/Duck";
 import { Ducks, type DucksProps } from "./components/Ducks";
 import { DuckForm } from "./components/DuckForm";
@@ -6,7 +7,7 @@ import { Input } from "./components/Input";
 
 // בס"ד
 function App() {
-  const [ducks, setDucks] = useState([
+  const [ducks, setDucks] = useLocalStorage("ducks-key", [
     { name: "Henry", color: "white", age: 15 },
     { name: "Nahum", color: "black", age: 14 },
     { name: "Zib", color: "yellow", age: 46 },
@@ -15,7 +16,7 @@ function App() {
 
   const [filter, setFilter] = useState("");
 
-  const visibleDucks = ducks.filter((duck) =>
+  const visibleDucks = ducks.filter((duck: DuckProps) =>
     duck.name.toLowerCase().includes(filter.toLowerCase()),
   );
 
