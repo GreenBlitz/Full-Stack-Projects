@@ -4,6 +4,7 @@ import { useState, type FC } from "react";
 import { Duck } from "./Ido_comp/Duck";
 import { Ducks } from "./Ido_comp/Ducks";
 import { MoreDuck } from "./Ido_comp/MoreDuck";
+import { Duck_Situation } from "./Ido_comp/DuckSituation";
 
 const App: FC = () => {
   const [the_duck_list, set_the_duck_list] = useState([
@@ -65,6 +66,7 @@ const App: FC = () => {
         the_duck_list={the_duck_list}
         set_the_duck_list={set_the_duck_list}
       />
+      <Duck_Situation {...the_duck_list} />
     </>
   );
 };
