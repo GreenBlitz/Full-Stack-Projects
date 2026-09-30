@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Duck, type DuckProps } from "./components/Duck";
 import { Ducks, type DucksProps } from "./components/Ducks";
 import { DuckForm } from "./components/DuckForm";
+import { Input } from "./components/Input";
 
 // בס"ד
 function App() {
@@ -11,10 +12,53 @@ function App() {
     { name: "Zib", color: "yellow", age: 46 },
     { name: "Maor", color: "magenta", age: 16 },
   ]);
+
+  const [filter, setFilter] = useState("");
+
+  const visibleDucks = ducks.filter((duck) =>
+    duck.name.toLowerCase().includes(filter.toLowerCase()),
+  );
+
   return (
     <>
       {(document.title = `Ducks (${ducks.length})`)}
-      <Ducks ducks={ducks} />
+      <div>
+        <button
+          onClick={() =>
+            setDucks(
+              [...ducks].sort((a, b) => {
+                return a.name.localeCompare(b.name);
+              }),
+            )
+          }
+        >
+          By Name
+        </button>
+        <button
+          onClick={() =>
+            setDucks(
+              [...ducks].sort((a, b) => {
+                return a.color.localeCompare(b.color);
+              }),
+            )
+          }
+        >
+          By Color
+        </button>
+        <button
+          onClick={() =>
+            setDucks(
+              [...ducks].sort((a, b) => {
+                return a.age - b.age;
+              }),
+            )
+          }
+        >
+          By Age
+        </button>
+      </div>
+      <br />
+      <Ducks ducks={visibleDucks} />
       <button type="button" onClick={() => setDucks(ducks.slice(0, -1))}>
         Delete Duck
       </button>
@@ -26,6 +70,7 @@ function App() {
             ? "המצב בשליטה👍"
             : "האתר מוצף בברווזים🚨"}
       </div>
+      <Input filter={filter} setFilter={setFilter} />
     </>
   );
 }

@@ -25,7 +25,7 @@ export function DuckForm({ ducks, setDucks }: DuckFormProps) {
   const [inputs, setInputs] = useState({
     duckName: "",
     duckColor: "",
-    duckAge: -1,
+    duckAge: null,
   });
 
   function handleChange(e) {
