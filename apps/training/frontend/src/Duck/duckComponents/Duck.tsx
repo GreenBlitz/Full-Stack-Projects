@@ -14,7 +14,7 @@ export function Duck({ name, color, age }: DuckProps) {
         <link href="CSS.css" rel="stylesheet" />
         <span className="font-sans">name: {name}</span>
         <br />
-        <span className="font-sans">color: {color}</span>
+        <span className="font-sans" >color: {color}</span>
         <br />
         <span className="font-sans">age: {age}</span>
         <br />
