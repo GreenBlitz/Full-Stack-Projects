@@ -5,7 +5,10 @@ app.use(express.json());
 
 app.use((_req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
-  res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET,POST,PATCH,DELETE,OPTIONS",
+  );
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
   if (_req.method === "OPTIONS") {
@@ -82,17 +85,12 @@ app.get("/duck/:name", (req, res) => {
 });
 
 function findNewID() {
-  let i = 0;
-  let b = true;
-  while (b) {
-    i += 1;
-    for (let index = 0; index < ducks.length; index++) {
-      if (ducks[i].id !== i) {
-        b = false;
-      }
-    }
+  const usedIds = new Set(ducks.map((duck) => duck.id));
+  let id = 1;
+  while (usedIds.has(id)) {
+    id++;
   }
-  return i;
+  return id;
 }
 
 app.post("/ducks", (req, res) => {
@@ -107,4 +105,43 @@ app.post("/ducks", (req, res) => {
     message: "Student received!",
     student: req.body,
   });
+});
+
+app.delete("/ducks/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const duckIndex = ducks.findIndex((currentDuck) => currentDuck.id === id);
+  if (duckIndex === -1) {
+    res.status(404).json({ message: "Duck not found" });
+    return;
+  }
+  const [deletedDuck] = ducks.splice(duckIndex, 1);
+  res.status(200).json({ message: "Duck deleted", duck: deletedDuck });
+});
+
+app.patch("/ducks/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const duck = ducks.find((currentDuck) => currentDuck.id === id);
+
+  if (!duck) {
+    res.status(404).json({ message: "Duck not found" });
+    return;
+  }
+
+  const updates = req.body as Partial<Omit<Duck, "id">>;
+  if (!updates || typeof updates !== "object") {
+    res.status(400).json({ message: "Provide duck fields to update" });
+    return;
+  }
+
+  if (updates.name !== undefined) {
+    duck.name = updates.name;
+  }
+  if (updates.color !== undefined) {
+    duck.color = updates.color;
+  }
+  if (updates.age !== undefined) {
+    duck.age = updates.age;
+  }
+
+  res.status(200).json({ message: "Duck updated", duck });
 });
