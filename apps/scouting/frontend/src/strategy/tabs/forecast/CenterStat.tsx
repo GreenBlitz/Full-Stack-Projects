@@ -10,11 +10,7 @@ interface CenterStatProps {
 
 const DECIMAL_DIGIT_AMOUNT = 0;
 
-export const CenterStat: FC<CenterStatProps> = ({
-  label,
-  red,
-  blue,
-}) => (
+export const CenterStat: FC<CenterStatProps> = ({ label, red, blue }) => (
   <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
     {/* Red Value */}
     <div className="text-right">

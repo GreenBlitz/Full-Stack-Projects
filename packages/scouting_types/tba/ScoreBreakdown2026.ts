@@ -63,7 +63,6 @@ export type ScoreBreakdown2026 = t.TypeOf<typeof scoreBreakdown2026>;
 export const tbaMatches2026 = t.array(tbaMatch(scoreBreakdown2026, t.type({})));
 export type TBAMatches2026 = t.TypeOf<typeof tbaMatches2026>;
 
-
 export interface SimpleTBAMatch {
   alliances: {
     red: {

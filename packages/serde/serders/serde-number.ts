@@ -17,7 +17,7 @@ export const serdeUnsignedInt = (bitCount: number): Serde<number> => ({
 
     const sum = rangeArr(bitCount).reduce(
       (acc, i) => acc + (Number(serializedData.consumeBool()) << i),
-      sumStartingValue
+      sumStartingValue,
     );
     return sum;
   },

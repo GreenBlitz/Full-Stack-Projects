@@ -20,4 +20,3 @@ execSync(`turbo run ${environment} --filter=${workspace}*`, {
   stdio: "inherit",
   env: { ...process.env },
 });
-

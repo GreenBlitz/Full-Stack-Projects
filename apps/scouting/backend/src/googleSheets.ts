@@ -1,5 +1,5 @@
 //בס"ד
-import { BeeScoutingForm } from "@repo/scouting_types";
+import { ScouterInfo, TeamMatchData } from "@repo/scouting_types";
 import { google } from "googleapis";
 import { Db } from "mongodb";
 
@@ -9,7 +9,8 @@ import { flow, pipe } from "fp-ts/lib/function";
 import { fold, map } from "fp-ts/lib/TaskEither";
 import { firstElement } from "@repo/array-functions";
 
-const sheetsRange = "teamPerMatch";
+const beeTeamMatchSheetsRange = "teamPerMatch";
+const beeScoutersSheetsRange = "raw data";
 
 const DIS1_SHEETS = "1-V___4ap8EHyyuqQS8m3SLbXOEmdxlOILD8gGPWott4";
 const DIS2_SHEETS = "1hSeyFbC_jHAvKJ4egzjXniyr0PuuyCPVM4nVCxm9DXA";
@@ -18,9 +19,18 @@ const DCMP_SHEETS = "1fDkguEWZcUk7wBVQNIjBazM9-z_kyCCgvndGjyPMIYs";
 const SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"];
 const KEY_FILE_PATH = path.join(__dirname, "../src/sheets-key.json");
 
-export const getBeeScoutCollection = flow(
+const LEADERBOARD_TEAM = "4590 - GreenBlitz";
+const INCREMENT = 1;
+const NOT_FOUND_INDEX = -1;
+
+export const getBeeTeamMatchDataCollection = flow(
   getDb,
-  map((db) => db.collection<BeeScoutingForm>("beeScout")),
+  map((db) => db.collection<TeamMatchData>("beeTeamMatchData")),
+);
+
+export const getBeeScouterCollection = flow(
+  getDb,
+  map((db) => db.collection<ScouterInfo>("beeScouters")),
 );
 
 const googleAuthentication = new google.auth.GoogleAuth({
@@ -56,7 +66,24 @@ const formatData = (data: string[][]) => {
   });
 };
 
-const structureData = (data: Record<string, string>[]): BeeScoutingForm[] => {
+const fetchData = async (sheetID: string, spreadSheetsRange: string) => {
+  try {
+    const rawSheetData = await getSheetData(sheetID, spreadSheetsRange);
+
+    if (!rawSheetData) {
+      console.log("connection to sheets failed");
+    }
+
+    return rawSheetData;
+  } catch (err) {
+    console.error(`ERROR in fetch ${spreadSheetsRange} data:`, err);
+    return [];
+  }
+};
+
+const structureBeeTeamMatchData = (
+  data: Record<string, string>[],
+): TeamMatchData[] => {
   const unfilteredData = data.map((row) => {
     if (row.D_Played === "0") {
       return false;
@@ -105,59 +132,101 @@ const structureData = (data: Record<string, string>[]): BeeScoutingForm[] => {
       timesStole: Number(row.T_CollectionZonesOpAlliance),
     };
   });
-  return unfilteredData.filter((row): row is BeeScoutingForm => row !== false);
+  return unfilteredData.filter((row): row is TeamMatchData => row !== false);
 };
 
-const updateData = async (db: Db) => {
-  try {
-    // console.log("dis 1: " + DIS1_SHEETS);
-    // console.log("dis 2: " + DIS2_SHEETS);
-
-    console.log("dcmp: " + DCMP_SHEETS);
-
-    // const rawDis1 = await getSheetData(DIS1_SHEETS, sheetsRange);
-    // const rawDis2 = await getSheetData(DIS2_SHEETS, sheetsRange);
-
-    // const rawCombined = [...(rawDis1 ?? []), ...(rawDis2 ?? [])];
-
-    const rawDcmp = await getSheetData(DCMP_SHEETS, sheetsRange);
-
-    if (!rawDcmp) {
-      console.log("connection to sheets failed");
-      return;
+const structureBeeScoutersData = (
+  data: Record<string, string>[],
+): ScouterInfo[] => {
+  return data.reduce((accumulator: ScouterInfo[], row) => {
+    if (row.D_ScouterTeam !== LEADERBOARD_TEAM) {
+      return accumulator;
     }
 
-    const structured = structureData(formatData(rawDcmp));
-    const collection = db.collection<BeeScoutingForm>("beeScout");
+    const existingIndex = accumulator.findIndex(
+      (scouter) => scouter.name === row.D_ScouterName,
+    );
+
+    if (existingIndex === NOT_FOUND_INDEX) {
+      accumulator.push({ name: row.D_ScouterName, scoutedMatches: INCREMENT });
+      return accumulator;
+    }
+
+    return accumulator.with(existingIndex, {
+      name: accumulator[existingIndex].name,
+      scoutedMatches: accumulator[existingIndex].scoutedMatches + INCREMENT,
+    });
+  }, []);
+};
+
+const updateBeeTeamMatchData = async (db: Db, data: string[][]) => {
+  try {
+    const structured = structureBeeTeamMatchData(formatData(data));
+    const collection = db.collection<TeamMatchData>("beeTeamMatchData");
 
     if (structured.length < 10) {
       console.log(
-        `something went wrong - no data in new update in Bee A Scout, this is the data: ${structured}`,
+        `something went wrong - no data in new Bee a scout Team Match Data update, this is the data: ${structured}`,
       );
       return;
     }
     await collection.deleteMany({});
     await collection.insertMany(structured);
 
-    console.log("Updated Bee A Scout Data");
+    console.log("Updated Bee a scout Team Match Data");
     return structured;
   } catch (err) {
-    console.error("ERROR in bee a scout updateData:", err);
+    console.error("ERROR in Bee a scout Team Match Data update:", err);
+    return [];
+  }
+};
+
+const updateBeeScoutersData = async (db: Db, data: string[][]) => {
+  try {
+    const structured = structureBeeScoutersData(formatData(data));
+    const collection = db.collection<ScouterInfo>("beeScouters");
+
+    if (structured.length < 10) {
+      console.log(
+        `something went wrong - no data in new update in Bee a scout Scouters, this is the data: ${structured}`,
+      );
+      return;
+    }
+    await collection.deleteMany({});
+    await collection.insertMany(structured);
+
+    console.log("Updated Bee a scout Scouters Data");
+    return structured;
+  } catch (err) {
+    console.error("ERROR in Bee a scout Scouters updateData:", err);
     return [];
   }
 };
 
 const MILISECONDS_IN_FIVE_MINUTES = 300000;
 
-export const startBeeScoutSync = () => {
+export const startGoogleSheetsSync = () => {
   pipe(
     getDb(),
     fold(
       (err) => async () =>
-        console.error("DB connection with beeScout failed:", err.reason),
+        console.error("DB connection with google sheets failed:", err.reason),
       (db) => async () => {
-        updateData(db);
-        setInterval(() => updateData(db), MILISECONDS_IN_FIVE_MINUTES);
+        const teamMatchData =
+          (await fetchData(DCMP_SHEETS, beeTeamMatchSheetsRange)) ?? [];
+        updateBeeTeamMatchData(db, teamMatchData);
+        setInterval(
+          () => updateBeeTeamMatchData(db, teamMatchData),
+          MILISECONDS_IN_FIVE_MINUTES,
+        );
+
+        const scoutersData =
+          (await fetchData(DCMP_SHEETS, beeScoutersSheetsRange)) ?? [];
+        updateBeeScoutersData(db, scoutersData);
+        setInterval(
+          () => updateBeeScoutersData(db, scoutersData),
+          MILISECONDS_IN_FIVE_MINUTES,
+        );
       },
     ),
   )();

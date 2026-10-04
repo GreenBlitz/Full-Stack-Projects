@@ -58,10 +58,10 @@ export const mapObject = <K extends string, A, B>(
 
 export const mapKeys = <K1 extends string, A, K2 extends string>(
   obj: Record<K1, A>,
-  transformation: (key: K1,value: A) => K2,
+  transformation: (key: K1, value: A) => K2,
 ) => {
   const entries: [K2, A][] = Object.entries<A>(obj).map(([key, value]) => [
-    transformation(key as K1,value) as K2,
+    transformation(key as K1, value) as K2,
     value,
   ]);
 

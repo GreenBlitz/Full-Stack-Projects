@@ -1,7 +1,7 @@
 //בס"ד
 import type React from "react";
 import { useEffect, useState } from "react";
-import { fetchTeamNumbers } from "../fetches";
+import { fetchTeamNumbers } from "../api/fetches";
 import type { TinderStats } from "@repo/scouting_types";
 import { TeamCard } from "./TinderStatBox";
 
