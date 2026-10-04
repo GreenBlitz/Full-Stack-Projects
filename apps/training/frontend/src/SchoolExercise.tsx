@@ -20,7 +20,7 @@ async function createStudent() {
   return response;
 }
 
-const App: FC = () => {
+const SchoolExercise: FC = () => {
   const [school, setSchool] = useState("");
   const [student, setStudent] = useState("");
 
@@ -45,4 +45,4 @@ const App: FC = () => {
   );
 };
 
-export default App;
+export default SchoolExercise;
