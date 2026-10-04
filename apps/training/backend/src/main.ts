@@ -22,3 +22,11 @@ app.get("/school", (req, res) =>
     students: students,
   }),
 );
+
+app.use(express.json());
+
+app.post("/students", (req, res) => {
+  console.log(req.body);
+  res.send("Student received!");
+});
+
