@@ -205,6 +205,7 @@ function flipcard(flipedonot: flippable) {
 
 const x: flippable = { isFaceUp: true };
 console.log(flipcard(x));
+
 const card: card = {
   suit: "heart",
   rank: "4",
