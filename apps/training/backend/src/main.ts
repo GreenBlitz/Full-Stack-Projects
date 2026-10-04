@@ -1,7 +1,10 @@
 import express from "express";
-import axios from "axios";
 
 const app = express();
+
+const cors = require("cors");
+app.use(cors());
+
 const students: string[] = [];
 
 app.listen(3001, () => {
@@ -19,15 +22,3 @@ app.get("/school", (req, res) =>
     students: students,
   }),
 );
-
-async function getSchool() {
-  const response = await axios.get("http://localhost:3001/school");
-  console.log(response.data);
-}
-
-app.use(express.json());
-
-app.get("/students", (req, res) => {
-  console.log(req.body);
-  res.send(`Student ${req.body} received!`);
-});
