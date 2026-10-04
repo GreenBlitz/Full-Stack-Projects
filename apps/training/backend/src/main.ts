@@ -1,4 +1,5 @@
 import express from "express";
+import { number, string } from "io-ts";
 
 const app = express();
 app.use(express.json());
@@ -9,13 +10,42 @@ app.use((_req, res, next) => {
     "Access-Control-Allow-Methods",
     "GET,POST,PATCH,DELETE,OPTIONS",
   );
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, x-api-password");
 
   if (_req.method === "OPTIONS") {
     res.sendStatus(204);
     return;
   }
 
+  next();
+});
+
+const checkIfItsARealDuck: express.RequestHandler = (_req, res, next) => {
+  if (typeof _req.body.name !== "string" || _req.body.name === "") {
+    res.send(400).json("please enter string");
+    return;
+  }
+  if (typeof _req.body.color !== "string" || _req.body.color === "") {
+    res.send(400).json("please enter string");
+    return;
+  }
+  if (typeof _req.body.age !== "number" || _req.body.age < 0) {
+    res.send(400).json("please enter a positive number");
+    return;
+  }
+  next();
+};
+
+const requirePassword: express.RequestHandler = (_req, res, next) => {
+  if (_req.get("x-api-password") !== "pass123") {
+    res.sendStatus(401);
+    return;
+  }
+  next();
+};
+
+app.use((_req, res, next) => {
+  console.log(`${_req.method} ${_req.path}`);
   next();
 });
 
@@ -62,7 +92,7 @@ const ducks: Duck[] = [
   { name: "feather", age: 6, color: "grey", id: 7 },
   { name: "beaky", age: 2, color: "brown", id: 33 },
   { name: "splash", age: 3, color: "white", id: 55 },
-  { name: "peck", age: 5, color: "speckled", id: 23 },
+  { name: "peck", age: 5, color: "black", id: 23 },
   { name: "charlie", age: 7, color: "yellow", id: 44 },
 ];
 
@@ -93,7 +123,7 @@ function findNewID() {
   return id;
 }
 
-app.post("/ducks", (req, res) => {
+app.post("/ducks", requirePassword, checkIfItsARealDuck, (req, res) => {
   const temp: Duck = {
     name: req.body.name,
     color: req.body.color,
@@ -107,7 +137,7 @@ app.post("/ducks", (req, res) => {
   });
 });
 
-app.delete("/ducks/:id", (req, res) => {
+app.delete("/ducks/:id", requirePassword, (req, res) => {
   const id = Number(req.params.id);
   const duckIndex = ducks.findIndex((currentDuck) => currentDuck.id === id);
   if (duckIndex === -1) {
@@ -118,7 +148,7 @@ app.delete("/ducks/:id", (req, res) => {
   res.status(200).json({ message: "Duck deleted", duck: deletedDuck });
 });
 
-app.patch("/ducks/:id", (req, res) => {
+app.patch("/ducks/:id", requirePassword, (req, res) => {
   const id = Number(req.params.id);
   const duck = ducks.find((currentDuck) => currentDuck.id === id);
 
@@ -144,4 +174,30 @@ app.patch("/ducks/:id", (req, res) => {
   }
 
   res.status(200).json({ message: "Duck updated", duck });
+});
+
+app.get("/ducks/color", (req, res) => {
+  const { color } = req.query;
+  if (typeof color !== "string") {
+    res.status(400).json({ message: "Provide a color query parameter" });
+    return;
+  }
+  const temp = ducks.filter((ducks) => ducks.color === color);
+  res.status(200).json(temp);
+});
+
+app.get("/ducks/age", (req, res) => {
+  const { age: ageQuery } = req.query;
+  if (typeof ageQuery !== "string") {
+    res.status(400).json({ message: "Provide a age query parameter" });
+    return;
+  }
+  const age = Number(ageQuery);
+  if (!Number.isFinite(age)) {
+    res.status(400).json({ message: "Age must be a valid number" });
+    return;
+  }
+
+  const temp = ducks.filter((duck) => duck.age === age);
+  res.status(200).json(temp);
 });
