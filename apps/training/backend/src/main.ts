@@ -1,5 +1,6 @@
 import express from "express";
 import { number, string } from "io-ts";
+import { randomInt } from "node:crypto";
 
 const app = express();
 app.use(express.json());
@@ -22,15 +23,15 @@ app.use((_req, res, next) => {
 
 const checkIfItsARealDuck: express.RequestHandler = (_req, res, next) => {
   if (typeof _req.body.name !== "string" || _req.body.name === "") {
-    res.send(400).json("please enter string");
+    res.status(400).json({ message: "Please enter a name." });
     return;
   }
   if (typeof _req.body.color !== "string" || _req.body.color === "") {
-    res.send(400).json("please enter string");
+    res.status(400).json({ message: "Please enter a color." });
     return;
   }
   if (typeof _req.body.age !== "number" || _req.body.age < 0) {
-    res.send(400).json("please enter a positive number");
+    res.status(400).json({ message: "Age must be zero or greater." });
     return;
   }
   next();
@@ -132,7 +133,7 @@ app.post("/ducks", requirePassword, checkIfItsARealDuck, (req, res) => {
   };
   ducks.push(temp);
   res.status(201).json({
-    message: "Student received!",
+    message: "duck received!",
     student: req.body,
   });
 });
@@ -200,4 +201,15 @@ app.get("/ducks/age", (req, res) => {
 
   const temp = ducks.filter((duck) => duck.age === age);
   res.status(200).json(temp);
+});
+
+// bakcend 3333333 try and catch
+
+app.get("/doNothing", (req, res) => {
+  const temp: number = 1;
+  if (temp === 1) {
+    res.status(400).json({ message: "unlucky" });
+    return;
+  }
+  res.send("tretr");
 });
