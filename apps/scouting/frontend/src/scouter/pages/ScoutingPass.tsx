@@ -70,7 +70,7 @@ export const ScoutingPass: React.FC = () => {
   }
 
   return (
-    <div className="bg-slate-900 border border-emerald-500/20 rounded-xl overflow-hidden shadow-2xl">
+    <div className="bg-slate-900 border min-h-screen border-emerald-500/20 rounded-xl overflow-hidden shadow-2xl">
       <div className="bg-emerald-500/10 p-4 border-b border-emerald-500/20">
         <h2 className="text-emerald-400 font-black tracking-tighter text-xl uppercase">
           Scouting Pass
@@ -120,6 +120,9 @@ export const ScoutingPass: React.FC = () => {
               {scouterTitle}
             </span>
           </div>
+          <p className="text-slate-400 text-xs italic">
+            Total XP: {scouter.scoutedMatches}
+          </p>
           <div className="flex flex-row items-center w-full">
             {SCOUTING_PASS_TIERS.map((tier, i) => {
               const prevXp = SCOUTING_PASS_TIERS[i - 1]?.xp ?? tier.xp;
