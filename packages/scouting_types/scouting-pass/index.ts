@@ -5,12 +5,24 @@ export interface ScoutingPassLevel {
   color: string;
 }
 
+export type TierCosmetic = {
+  text: string;
+  icon?: React.ComponentType<{ className?: string }>;
+  label?: string;
+  color?: string;
+};
+
 export interface ScoutingPassTier {
   tier: number;
   xp: number;
   reward: string;
   icon?: React.ComponentType<{ className?: string }>;
+  cosmetic?: TierCosmetic;
 }
+
+export const getUnlockedTiers = (xp: number): ScoutingPassTier[] => {
+  return SCOUTING_PASS_TIERS.filter((tier) => tier.xp <= xp);
+};
 
 export const SCOUTING_PASS_LEVELS: ScoutingPassLevel[] = [
   {

@@ -131,9 +131,9 @@ export const ScoutingPass: React.FC = () => {
                       />
                     </div>
                   )}
-                  <div className="w-25">
+                  <div className="w-1/12">
                     <ScoutingPassTier
-                      {...tier}
+                      tier={tier}
                       active={tier.xp <= scouter.scoutedMatches}
                     />
                   </div>
