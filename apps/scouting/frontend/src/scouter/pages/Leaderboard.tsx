@@ -1,10 +1,12 @@
-// בס"ד
-
 import type React from "react";
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
-import type { CompetitionLeaderboard } from "@repo/scouting_types";
+import {
+  type CompetitionLeaderboard,
+  getUnlockedTiers,
+} from "@repo/scouting_types";
 import { isEmpty } from "@repo/array-functions";
+import { TierCosmeticBadge } from "../components/TierCosmeticBadge";
 
 const leaderboardUrl = "/api/v1/leaderboard/";
 
@@ -14,7 +16,7 @@ export const scouterColor: Record<string, string> = {
   Roni: "text-pink-300",
 };
 
-const fetchCompetitionData = async () => {
+export const fetchCompetitionData = async () => {
   const response = await axios.get(leaderboardUrl).catch((errorText) => {
     throw new Error(`Server Error: ${errorText}`);
   });
@@ -71,10 +73,16 @@ export const Leaderboard: React.FC = () => {
 
   return (
     <div className="bg-slate-900 border border-emerald-500/20 rounded-xl overflow-hidden shadow-2xl">
-      <div className="bg-emerald-500/10 p-4 border-b border-emerald-500/20">
+      <div className="bg-emerald-500/10 p-4 border-b border-emerald-500/20 justify-between flex items-center gap-4">
         <h2 className="text-emerald-400 font-black tracking-tighter text-xl uppercase">
           scouter Leaderboard
         </h2>
+        <a
+          href="/scouting-pass"
+          className="px-4 py-2 bg-white font-bold tracking-widest rounded-md hover:bg-gray-300 text-md"
+        >
+          View Scouting Pass
+        </a>
       </div>
 
       <div className="p-2">
@@ -93,6 +101,7 @@ export const Leaderboard: React.FC = () => {
               const isGold = index === FIRST_PLACE_INDEX;
               const isSilver = index === SECOND_PLACE_INDEX;
               const isBronze = index === THIRD_PLACE_INDEX;
+              const unlockedTiers = getUnlockedTiers(scouter.scoutedMatches);
 
               return (
                 <tr
@@ -114,11 +123,28 @@ export const Leaderboard: React.FC = () => {
                   </td>
 
                   <td className="px-4 py-3">
-                    <span
-                      className={`font-bold transition-colors ${customColor}`}
-                    >
-                      {scouter.name}
-                    </span>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span
+                        className={`font-bold transition-colors ${customColor}`}
+                      >
+                        {scouter.name}
+                      </span>
+                      {unlockedTiers.some((tier) => tier.cosmetic) && (
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          {unlockedTiers.map(
+                            ({ tier, cosmetic }, cosmeticIndex) =>
+                              cosmetic ? (
+                                <TierCosmeticBadge
+                                  key={`${scouter.name}-${cosmeticIndex}`}
+                                  tier={tier}
+                                  cosmetic={cosmetic}
+                                  size="sm"
+                                />
+                              ) : null,
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </td>
 
                   <td className="px-4 py-3 text-right last:rounded-r-lg">
