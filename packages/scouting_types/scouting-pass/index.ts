@@ -24,6 +24,13 @@ export const getUnlockedTiers = (xp: number): ScoutingPassTier[] => {
   return SCOUTING_PASS_TIERS.filter((tier) => tier.xp <= xp);
 };
 
+export const getUnlockedTitle = (xp: number): string => {
+  return SCOUTING_PASS_LEVELS.reduce(
+    (title, level) => (level.xp <= xp && level.title ? level.title : title),
+    "",
+  );
+};
+
 export const SCOUTING_PASS_LEVELS: ScoutingPassLevel[] = [
   {
     xp: 0,

@@ -114,5 +114,7 @@ button:focus-visible {
 
 @source inline("{hover:,}bg-{red,rose,yellow,emerald,blue}-{50,{100..900..100},950}");
 @source inline("m{r,l}-{1,{2..92..2},96,auto}");
+/* Used for scouting pass levels */
+@source inline("bg-{slate-400,gray-400,zinc-400,emerald-500,teal-500,cyan-500,sky-500,blue-500,indigo-500,violet-500,purple-500,fuchsia-500,amber-400}");
 
 @import "tailwindcss";

@@ -1,6 +1,7 @@
 import type React from "react";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import {
+  getUnlockedTitle,
   SCOUTING_PASS_LEVELS,
   SCOUTING_PASS_TIERS,
   type CompetitionLeaderboard,
@@ -30,6 +31,9 @@ export const ScoutingPass: React.FC = () => {
       ) || SCOUTING_PASS_LEVELS[0],
     [scouter?.scoutedMatches],
   );
+  const scouterTitle = useMemo(() => {
+    return getUnlockedTitle(scouter?.scoutedMatches ?? 0);
+  }, [scouter?.scoutedMatches]);
 
   useEffect(() => {
     setLoading(true);
@@ -113,7 +117,7 @@ export const ScoutingPass: React.FC = () => {
               {scouterLevel.level}
             </span>
             <span className="text-slate-400 text-sm italic">
-              {scouterLevel.title}
+              {scouterTitle}
             </span>
           </div>
           <div className="flex flex-row items-center w-full">
