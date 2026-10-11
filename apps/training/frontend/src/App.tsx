@@ -1,9 +1,10 @@
-//import Duckpage from "./ducks/DuckpageComponent.tsx";
+import Duckpage from "./ducks/DuckpageComponent.tsx";
 import axios from "axios";
 import SchoolPage from "./School/SchoolPageComponen.tsx";
 import TryAndCatchPage from "./tryAndCatch/TryAndCatchPage";
 import { useState } from "react";
-
+import { createContext } from "react";
+import "./styling.css";
 // Local development only: credentials in frontend code are visible to users.
 axios.defaults.headers.common["x-api-password"] = "pass123";
 
@@ -35,9 +36,17 @@ async function filterDucksByAge() {
 }
 filterDucksByAge();
 
+interface ThemeContextType {
+  theme: "light" | "dark";
+  toggleMode: () => void;
+}
+
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
 const App = () => {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
 
   const addducktemp = async () => {
     setLoading(true);
@@ -63,15 +72,23 @@ const App = () => {
     }
   };
 
+  const toggleMode = () => {
+    setTheme((current) => (current === "light" ? "dark" : "light"));
+  };
+
   return (
-    <>
-      <SchoolPage />
-      <TryAndCatchPage />
-      <button onClick={addducktemp} disabled={loading}>
-        {loading ? "Loading..." : "Add duck"}
-      </button>
-      {message && <p role="status">{message}</p>}
-    </>
+    <ThemeContext value={{ theme, toggleMode }}>
+      <div className="app" data-theme={theme}>
+        <SchoolPage />
+        <TryAndCatchPage />
+        <button onClick={addducktemp} disabled={loading}>
+          {loading ? "Loading..." : "Add duck"}
+        </button>
+        {message && <p role="status">{message}</p>}
+        <Duckpage />
+        <button onClick={toggleMode}>change theme</button>
+      </div>
+    </ThemeContext>
   );
 };
 

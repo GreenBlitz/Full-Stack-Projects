@@ -6,6 +6,7 @@ import axios from "axios";
 const App: FC = () => {
   return (
     <>
+      <h1> School Page </h1>
       <SchoolButton />
       <StudentButton />
     </>

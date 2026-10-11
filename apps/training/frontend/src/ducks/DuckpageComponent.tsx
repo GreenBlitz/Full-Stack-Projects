@@ -11,9 +11,6 @@ import { RngDuck } from "./componentsEyal/RngDuck";
 import { AddDuck } from "./componentsEyal/AddDuck";
 import axios from "axios";
 
-
-import "./styling.css";
-
 const initialDucks: Duck[] = [
   {
     DuckName: "it that betrays",
@@ -52,24 +49,19 @@ const initialDucks: Duck[] = [
   },
 ];
 async function getSchool() {
-  const response = await axios.get(
-    "http://localhost:3001/school"
-  );
+  const response = await axios.get("http://localhost:3001/school");
   console.log(response.data);
 }
 type Student = {
   name: string;
   grade: number;
 };
-const temtemp : Student = {name:"greg", grade:89}
+const temtemp: Student = { name: "greg", grade: 89 };
 async function createStudent(student: Student) {
-  const response = await axios.post(
-    "http://localhost:3001/students",
-    student,
-  );
+  const response = await axios.post("http://localhost:3001/students", student);
   console.log(response.data);
 }
-createStudent(temtemp); 
+createStudent(temtemp);
 
 const App: FC = () => {
   const [ducks, setDucks] = useState<Duck[]>(initialDucks);
@@ -93,16 +85,52 @@ const App: FC = () => {
       />
       <CountDuck ducks={ducks}></CountDuck>
       <HowManyDucks ducks={ducks}></HowManyDucks>
-      <input style={{ backgroundColor: "lightgray", border: "1px solid #ccc", padding: "10px" }} type="text" placeholder="enter a duck color" value={color}  onChange={(event) => setColor(event.target.value)} />
+      <input
+        style={{
+          backgroundColor: "lightgray",
+          border: "1px solid #ccc",
+          padding: "10px",
+        }}
+        type="text"
+        placeholder="enter a duck color"
+        value={color}
+        onChange={(event) => setColor(event.target.value)}
+      />
       <CountDuckByColor ducks={ducks} color={color} />
-      <button onClick={() => setDucks([...ducks].sort((a, b) => a.DuckName.localeCompare(b.DuckName)))}>Sort Ducks by Name</button>
-      <button onClick={() => setDucks([...ducks].sort((a, b) => a.DuckColor.localeCompare(b.DuckColor)))}>Sort Ducks by color</button>
-      <button onClick={() => setDucks([...ducks].sort((a, b) => a.DuckAge - b.DuckAge))}>Sort Ducks by age</button>
-      <button onClick={() => setRandomDuck(RngDuck({ ducks }))} disabled={ducks.length === 0}>Random Duck</button>
-       {randomDuck && <Ducks ducks={[randomDuck]} />}
+      <button
+        onClick={() =>
+          setDucks(
+            [...ducks].sort((a, b) => a.DuckName.localeCompare(b.DuckName)),
+          )
+        }
+      >
+        Sort Ducks by Name
+      </button>
+      <button
+        onClick={() =>
+          setDucks(
+            [...ducks].sort((a, b) => a.DuckColor.localeCompare(b.DuckColor)),
+          )
+        }
+      >
+        Sort Ducks by color
+      </button>
+      <button
+        onClick={() =>
+          setDucks([...ducks].sort((a, b) => a.DuckAge - b.DuckAge))
+        }
+      >
+        Sort Ducks by age
+      </button>
+      <button
+        onClick={() => setRandomDuck(RngDuck({ ducks }))}
+        disabled={ducks.length === 0}
+      >
+        Random Duck
+      </button>
+      {randomDuck && <Ducks ducks={[randomDuck]} />}
     </div>
   );
 };
 
 export default App;
-
