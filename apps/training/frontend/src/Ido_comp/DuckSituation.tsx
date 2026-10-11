@@ -1,10 +1,14 @@
 import type { DuckProps } from "./Duck";
 
-export function Duck_Situation(ramdom_duck_list: DuckProps[]) {
-  if (ramdom_duck_list.length == 0) {
+interface random_duck_props{
+  random_duck_list: DuckProps[]
+}
+
+export function DuckSituation({random_duck_list}: random_duck_props) {
+  if (random_duck_list.length == 0) {
     return <h2> אין ברווזים😭 </h2>;
   } 
-  else if (ramdom_duck_list.length < 6) {
+  else if (random_duck_list.length < 6) {
     return <h2> המצב בשליטה👍 </h2>;
   } 
   else {

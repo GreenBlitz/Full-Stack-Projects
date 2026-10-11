@@ -1,13 +1,13 @@
 // בס"ד
 
 import { useState, type FC } from "react";
-import { Duck } from "./Ido_comp/Duck";
+import { Duck, type DuckProps } from "./Ido_comp/Duck";
 import { Ducks } from "./Ido_comp/Ducks";
 import { MoreDuck } from "./Ido_comp/MoreDuck";
-import { Duck_Situation } from "./Ido_comp/DuckSituation";
+import { DuckSituation } from "./Ido_comp/DuckSituation";
 
 const App: FC = () => {
-  const [the_duck_list, set_the_duck_list] = useState([
+  const [the_duck_list, set_the_duck_list] = useState<DuckProps[]>([
     { name: "Asaf", colour: "red", age: 250 },
     { name: "Daniel", colour: "blue", age: 18 },
     { name: "Maya", colour: "green", age: 32 },
@@ -22,6 +22,7 @@ const App: FC = () => {
 
   return (
     <>
+      {(document.title = `Ducks (${the_duck_list.length})`)}
       <div
         style={{
           color: "#9df0ff",
@@ -46,6 +47,15 @@ const App: FC = () => {
         <Ducks ducks={the_duck_list} />
       </div>
 
+        <div
+        style={{
+          color: "#fc9dff",
+          border: "2px solid #741477",
+          borderRadius: "50px",
+          padding: "20px",
+          marginBottom: "16px",
+        }}
+        >
       <button
         style={{
           background: "#185372",
@@ -61,12 +71,32 @@ const App: FC = () => {
       >
         del duck WIwi
       </button>
-
-      <MoreDuck
-        the_duck_list={the_duck_list}
-        set_the_duck_list={set_the_duck_list}
-      />
-      <Duck_Situation {...the_duck_list} />
+      </div>
+      <div
+          style ={{
+            color: "#fc9dff",
+            border: "2px solid #741477",
+            borderRadius: "50px",
+            padding: "20px",
+            marginBottom: "16px",
+         }}
+         >
+        <MoreDuck
+          the_duck_list={the_duck_list}
+          set_the_duck_list={set_the_duck_list}
+        />
+      </div>
+      <div
+      style={{
+          color: "#fc9dff",
+          border: "2px solid #741477",
+          borderRadius: "50px",
+          padding: "20px",
+          marginBottom: "16px",
+        }}
+        >
+      <DuckSituation random_duck_list={the_duck_list} />
+      </div>
     </>
   );
 };
