@@ -8,6 +8,7 @@ import type {
 } from "@repo/scouting_types";
 import { BooleanStats } from "./BooleanStats";
 import { FRC_TEAMS } from "@repo/frc";
+import { StatusCodes } from "http-status-codes";
 
 export const PIT_SCOUT_URL = "/api/v1/pit/";
 
