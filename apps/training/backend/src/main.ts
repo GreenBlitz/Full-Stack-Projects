@@ -17,3 +17,6 @@ app.get("/welcome", (req, res) => {
   res.send("Welcome to my server!");
 });
 
+app.get("/ducks", (req, res) => {
+  res.send("No ducks yet")
+})
