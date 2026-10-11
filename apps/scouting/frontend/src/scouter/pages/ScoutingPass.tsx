@@ -108,7 +108,7 @@ export const ScoutingPass: React.FC = () => {
         </select>
       </div>
       {scouter && (
-        <div className="p-4 w-4/5 mx-auto flex flex-col items-center justify-center gap-4 bg-slate-800 rounded-2xl shadow-lg shadow-black/20">
+        <div className="p-4 w-8/9 mx-auto flex flex-col items-center justify-center gap-4 bg-slate-800 rounded-2xl shadow-lg shadow-black/20">
           <h3 className="font-bold text-lg">{scouter.name}'s Scouting Pass</h3>
           <div className="flex flex-row items-center gap-2">
             <span

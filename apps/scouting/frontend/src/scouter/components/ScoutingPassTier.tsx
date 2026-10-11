@@ -21,7 +21,7 @@ export const ScoutingPassTier: React.FC<ScoutingPassTierProps> = ({
     >
       {Icon && <Icon className="h-10 w-10" />}
       <p>XP: {tier.xp}</p>
-      <p>Reward: {tier.reward}</p>
+      <p>{tier.reward}</p>
       {tier.cosmetic && (
         <div>
           <p className="text-slate-400 text-sm italic">Cosmetic:</p>

@@ -1,3 +1,8 @@
+import { FaTrophy as Trophy, FaSeedling as Seedling } from "react-icons/fa";
+import { MdLibraryMusic as Music, MdFrontHand as Hand } from "react-icons/md";
+import { GiHighFive as HighFive } from "react-icons/gi";
+import { LuCandy as Candy, LuTarget as Target } from "react-icons/lu";
+
 export interface ScoutingPassLevel {
   xp: number;
   level: number;
@@ -6,7 +11,7 @@ export interface ScoutingPassLevel {
 }
 
 export type TierCosmetic = {
-  text: string;
+  text?: string;
   icon?: React.ComponentType<{ className?: string }>;
   label?: string;
   color?: string;
@@ -111,41 +116,58 @@ export const SCOUTING_PASS_TIERS: ScoutingPassTier[] = [
   {
     tier: 1,
     xp: 5,
-    reward: "tier 1 reward",
+    reward: "You get to choose a team to scout",
+    icon: Hand,
   },
   {
     tier: 2,
     xp: 10,
-    reward: "tier 2 reward",
+    reward: "Sweet Treat! You get a piece of candy",
+    icon: Candy,
   },
   {
     tier: 3,
     xp: 15,
-    reward: "tier 3 reward",
+    reward: "Acknowledgement badge",
+    cosmetic: {
+      label: "Seedling Badge",
+      icon: Seedling,
+      color: "teal-400",
+    },
   },
   {
     tier: 4,
     xp: 25,
-    reward: "tier 4 reward",
+    reward: "High Five from the captains",
+    icon: HighFive,
   },
   {
     tier: 5,
     xp: 30,
-    reward: "tier 5 reward",
+    reward: "TBD",
   },
   {
     tier: 6,
     xp: 40,
-    reward: "tier 6 reward",
+    reward:
+      "Power of Decision: You get to choose teams for the rest of the competition",
+    icon: Target,
   },
   {
     tier: 7,
     xp: 50,
-    reward: "tier 7 reward",
+    reward: "Public display of Excellence",
+    cosmetic: {
+      text: "Excellence",
+      icon: Trophy,
+      color: "amber-400",
+      label: "Excellence Badge",
+    },
   },
   {
     tier: 8,
     xp: 60,
-    reward: "tier 8 reward",
+    reward: "Music privileges for the bus",
+    icon: Music,
   },
 ];
