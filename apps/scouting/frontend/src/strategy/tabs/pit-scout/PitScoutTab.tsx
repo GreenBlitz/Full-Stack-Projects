@@ -66,7 +66,7 @@ export const PitScoutTab: FC = () => {
         const text = await res.text();
         setStatus("error");
         setErrorMsg(
-          res.status === 409
+          res.status === StatusCodes.CONFLICT
             ? "A pit scout form already exists for this team."
             : text || "Submission failed.",
         );
