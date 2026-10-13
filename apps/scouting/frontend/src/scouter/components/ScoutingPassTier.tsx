@@ -1,10 +1,10 @@
 import { type ScoutingPassTier as ScoutingPassTierType } from "@repo/scouting_types";
 import { TierCosmeticBadge } from "./TierCosmeticBadge";
 
-type ScoutingPassTierProps = {
+interface ScoutingPassTierProps {
   tier: ScoutingPassTierType;
   active: boolean;
-};
+}
 
 export const ScoutingPassTier: React.FC<ScoutingPassTierProps> = ({
   tier,

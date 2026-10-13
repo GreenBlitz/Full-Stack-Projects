@@ -8,7 +8,7 @@ import {
   type ScouterInfo,
   type ScoutingPassLevel,
 } from "@repo/scouting_types";
-import { isEmpty } from "@repo/array-functions";
+import { firstElement, isEmpty } from "@repo/array-functions";
 import { fetchCompetitionData } from "./Leaderboard";
 import { ScoutingPassTier } from "../components/ScoutingPassTier";
 
@@ -28,7 +28,7 @@ export const ScoutingPass: React.FC = () => {
         (current, level) =>
           level.xp <= (scouter?.scoutedMatches ?? 0) ? level : current,
         undefined,
-      ) || SCOUTING_PASS_LEVELS[0],
+      ) || firstElement(SCOUTING_PASS_LEVELS),
     [scouter?.scoutedMatches],
   );
   const scouterTitle = useMemo(() => {
@@ -40,9 +40,8 @@ export const ScoutingPass: React.FC = () => {
     fetchCompetitionData()
       .then((res) => {
         setData(res);
-        setLoading(false);
       })
-      .catch(() => {
+      .finally(() => {
         setLoading(false);
       });
   }, []);

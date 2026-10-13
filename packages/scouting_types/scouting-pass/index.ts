@@ -1,7 +1,7 @@
 import { FaTrophy as Trophy, FaSeedling as Seedling } from "react-icons/fa";
-import { MdLibraryMusic as Music, MdFrontHand as Hand } from "react-icons/md";
+import { MdLibraryMusic as Music } from "react-icons/md";
 import { GiHighFive as HighFive } from "react-icons/gi";
-import { LuCandy as Candy, LuTarget as Target } from "react-icons/lu";
+import { LuCandy as Candy } from "react-icons/lu";
 
 export interface ScoutingPassLevel {
   xp: number;
@@ -25,16 +25,14 @@ export interface ScoutingPassTier {
   cosmetic?: TierCosmetic;
 }
 
-export const getUnlockedTiers = (xp: number): ScoutingPassTier[] => {
-  return SCOUTING_PASS_TIERS.filter((tier) => tier.xp <= xp);
-};
+export const getUnlockedTiers = (xp: number): ScoutingPassTier[] =>
+  SCOUTING_PASS_TIERS.filter((tier) => tier.xp <= xp);
 
-export const getUnlockedTitle = (xp: number): string => {
-  return SCOUTING_PASS_LEVELS.reduce(
+export const getUnlockedTitle = (xp: number): string =>
+  SCOUTING_PASS_LEVELS.reduce(
     (title, level) => (level.xp <= xp && level.title ? level.title : title),
     "",
   );
-};
 
 export const SCOUTING_PASS_LEVELS: ScoutingPassLevel[] = [
   {
@@ -116,8 +114,7 @@ export const SCOUTING_PASS_TIERS: ScoutingPassTier[] = [
   {
     tier: 1,
     xp: 5,
-    reward: "You get to choose a team to scout",
-    icon: Hand,
+    reward: "TBD",
   },
   {
     tier: 2,
@@ -149,9 +146,7 @@ export const SCOUTING_PASS_TIERS: ScoutingPassTier[] = [
   {
     tier: 6,
     xp: 40,
-    reward:
-      "Power of Decision: You get to choose teams for the rest of the competition",
-    icon: Target,
+    reward: "TBD",
   },
   {
     tier: 7,
