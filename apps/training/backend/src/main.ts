@@ -46,4 +46,8 @@ app.post("/ducks", (req, res) => {
   res.send(req.body);
 });
 
-app.delete("/ducks/:name", )
+app.delete("/ducks/:name", (req, res) => {
+  if (req.params) res.status(204);
+  else res.status(404);
+});
+
