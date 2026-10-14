@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { Card } from "../../Card";
 
 export function SayErrorComponet() {
   const [message, setMessage] = useState("");
@@ -26,8 +27,10 @@ export function SayErrorComponet() {
       <button onClick={sayError} disabled={loading}>
         {loading ? "Loading..." : "Say error"}
       </button>
-      {loading && <p role="status">Loading...</p>}
-      {message && <p role="status">{message}</p>}
+      <Card>
+        {loading && <p role="status">Loading...</p>}
+        {message && <p role="status">{message}</p>}
+      </Card>
     </div>
   );
 }

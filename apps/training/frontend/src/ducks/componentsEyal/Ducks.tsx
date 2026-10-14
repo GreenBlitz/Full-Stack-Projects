@@ -1,12 +1,13 @@
 import type { Duck } from "./DuckCard";
+import { DuckCard } from "./DuckCard";
 
 interface Ducksprops{
     ducks: Duck[]
 }
 
 export function Ducks ({ducks}: Ducksprops) {
-    return  <span> {ducks.map((duck) =>(
-            <div key={duck.DuckName} style={{ color: duck.DuckColor }}> {duck.DuckAge}, {duck.DuckName}</div> ) )}
-    </span>
+    return  <div> {ducks.map((duck) =>(
+            <DuckCard key={duck.DuckName} {...duck} /> ) )}
+    </div>
 }
 

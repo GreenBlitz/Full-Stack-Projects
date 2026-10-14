@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
+import { Card } from "../../Card";
 
 async function getSchool() {
   const response = await axios.get("http://localhost:3001/school");
@@ -18,9 +19,11 @@ export function SchoolButton() {
     <>
       <button onClick={handleClick}>Load School</button>
       {school && (
-        <p>
-          {school.name} - {school.city}
-        </p>
+        <Card>
+          <p>
+            {school.name} - {school.city}
+          </p>
+        </Card>
       )}
     </>
   );

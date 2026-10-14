@@ -11,66 +11,27 @@ import { RngDuck } from "./componentsEyal/RngDuck";
 import { AddDuck } from "./componentsEyal/AddDuck";
 import axios from "axios";
 
-const initialDucks: Duck[] = [
-  {
-    DuckName: "it that betrays",
-    DuckColor: "lightGray",
-    DuckAge: 2,
-  },
-  {
-    DuckName: "emrakuls crusher",
-    DuckColor: "lightblue",
-    DuckAge: 2,
-  },
-  {
-    DuckName: "it that herolds the end",
-    DuckColor: "lightGray",
-    DuckAge: 1,
-  },
-  {
-    DuckName: "Ulamog, the Ceaseless Hunger",
-    DuckColor: "white",
-    DuckAge: 5,
-  },
-  {
-    DuckName: "Kozilek, the Great Distortion",
-    DuckColor: "blue",
-    DuckAge: 4,
-  },
-  {
-    DuckName: "Emrakul, the Promised End",
-    DuckColor: "purple",
-    DuckAge: 6,
-  },
-  {
-    DuckName: "Void Winnower",
-    DuckColor: "black",
-    DuckAge: 3,
-  },
-];
-async function getSchool() {
-  const response = await axios.get("http://localhost:3001/school");
-  console.log(response.data);
-}
-type Student = {
-  name: string;
-  grade: number;
-};
-const temtemp: Student = { name: "greg", grade: 89 };
-async function createStudent(student: Student) {
-  const response = await axios.post("http://localhost:3001/students", student);
-  console.log(response.data);
-}
-createStudent(temtemp);
-
 const App: FC = () => {
-  const [ducks, setDucks] = useState<Duck[]>(initialDucks);
+  const [ducks, setDucks] = useState<Duck[]>([]);
   const [color, setColor] = useState("");
   const [randomDuck, setRandomDuck] = useState<Duck>();
   useEffect(() => {
-    getSchool().catch((error) => {
-      console.error("Could not load school:", error);
-    });
+    axios
+      .get<{ name: string; color: string; age: number }[]>(
+        "http://localhost:3001/ducks",
+      )
+      .then(({ data }) => {
+        setDucks(
+          data.map(({ name, color, age }) => ({
+            DuckName: name,
+            DuckColor: color,
+            DuckAge: age,
+          })),
+        );
+      })
+      .catch((error: unknown) => {
+        console.error("Could not load ducks:", error);
+      });
   }, []);
 
   return (

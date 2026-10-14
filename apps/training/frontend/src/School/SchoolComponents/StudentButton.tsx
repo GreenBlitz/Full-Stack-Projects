@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
+import { Card } from "../../Card";
 
 type Student = {
   name: string;
@@ -32,7 +33,7 @@ export function StudentButton() {
         <input name="grade" placeholder="enter grade" />
         <button type="submit">add student</button>
       </form>
-      {studentData && <p>{studentData}</p>}
+      {studentData && <Card>{studentData}</Card>}
     </>
   );
 }

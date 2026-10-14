@@ -80,21 +80,20 @@ interface Duck {
   name: string;
   color: string;
   age: number;
-  id: number;
 }
 
 const ducks: Duck[] = [
-  { name: "joe", age: 29, color: "brown", id: 2 },
-  { name: "daisy", age: 3, color: "yellow", id: 12 },
-  { name: "quickers", age: 5, color: "white", id: 1 },
-  { name: "mallard", age: 2, color: "green", id: 3 },
-  { name: "puddles", age: 1, color: "yellow", id: 5 },
-  { name: "waddles", age: 4, color: "black", id: 6 },
-  { name: "feather", age: 6, color: "grey", id: 7 },
-  { name: "beaky", age: 2, color: "brown", id: 33 },
-  { name: "splash", age: 3, color: "white", id: 55 },
-  { name: "peck", age: 5, color: "black", id: 23 },
-  { name: "charlie", age: 7, color: "yellow", id: 44 },
+  { name: "joe", age: 29, color: "brown" },
+  { name: "daisy", age: 3, color: "yellow" },
+  { name: "quickers", age: 5, color: "white" },
+  { name: "mallard", age: 2, color: "green" },
+  { name: "puddles", age: 1, color: "yellow" },
+  { name: "waddles", age: 4, color: "black" },
+  { name: "feather", age: 6, color: "grey" },
+  { name: "beaky", age: 2, color: "brown" },
+  { name: "splash", age: 3, color: "white" },
+  { name: "peck", age: 5, color: "black" },
+  { name: "charlie", age: 7, color: "yellow" },
 ];
 
 app.get("/", (req, res) => {
@@ -115,32 +114,28 @@ app.get("/duck/:name", (req, res) => {
   res.json(duck);
 });
 
-function findNewID() {
-  const usedIds = new Set(ducks.map((duck) => duck.id));
-  let id = 1;
-  while (usedIds.has(id)) {
-    id++;
-  }
-  return id;
-}
-
 app.post("/ducks", requirePassword, checkIfItsARealDuck, (req, res) => {
+  if (ducks.some((duck) => duck.name === req.body.name)) {
+    res.status(409).json({ message: "A duck with that name already exists." });
+    return;
+  }
+
   const temp: Duck = {
     name: req.body.name,
     color: req.body.color,
     age: req.body.age,
-    id: findNewID(),
   };
   ducks.push(temp);
   res.status(201).json({
     message: "duck received!",
-    student: req.body,
+    duck: temp,
   });
 });
 
-app.delete("/ducks/:id", requirePassword, (req, res) => {
-  const id = Number(req.params.id);
-  const duckIndex = ducks.findIndex((currentDuck) => currentDuck.id === id);
+app.delete("/ducks/:name", requirePassword, (req, res) => {
+  const duckIndex = ducks.findIndex(
+    (currentDuck) => currentDuck.name === req.params.name,
+  );
   if (duckIndex === -1) {
     res.status(404).json({ message: "Duck not found" });
     return;
@@ -149,23 +144,20 @@ app.delete("/ducks/:id", requirePassword, (req, res) => {
   res.status(200).json({ message: "Duck deleted", duck: deletedDuck });
 });
 
-app.patch("/ducks/:id", requirePassword, (req, res) => {
-  const id = Number(req.params.id);
-  const duck = ducks.find((currentDuck) => currentDuck.id === id);
+app.patch("/ducks/:name", requirePassword, (req, res) => {
+  const duck = ducks.find(
+    (currentDuck) => currentDuck.name === req.params.name,
+  );
 
   if (!duck) {
     res.status(404).json({ message: "Duck not found" });
     return;
   }
 
-  const updates = req.body as Partial<Omit<Duck, "id">>;
+  const updates = req.body as Partial<Omit<Duck, "name">>;
   if (!updates || typeof updates !== "object") {
     res.status(400).json({ message: "Provide duck fields to update" });
     return;
-  }
-
-  if (updates.name !== undefined) {
-    duck.name = updates.name;
   }
   if (updates.color !== undefined) {
     duck.color = updates.color;
