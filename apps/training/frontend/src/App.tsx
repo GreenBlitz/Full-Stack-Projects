@@ -1,6 +1,7 @@
 // בס"ד
 import { useState, type FC } from "react";
 import { Ducks1 } from "./assets/Ducks1";
+import { ducks3 } from "./Addduck";
 
 const counterStartingValue = 0;
 const countIncrement = 1;
@@ -14,7 +15,11 @@ const App: FC = () => {
     { name: " cutie ", color: " yellow ", age: 5 },
   ]);
   const [count, setCount] = useState<string | number>(counterStartingValue);
-
+  return (
+    <button
+      onClick={() => setducks((ducks1) => ducks1.slice(0, +ducks3))}
+    ></button>
+  );
   return (
     <>
       <Ducks1 ducks={ducks2} />

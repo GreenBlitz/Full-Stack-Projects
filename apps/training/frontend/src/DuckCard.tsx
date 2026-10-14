@@ -1,4 +1,3 @@
-import "./index.css";
 const name: string = "gree";
 const color: string = "red";
 const age: number = 5;
