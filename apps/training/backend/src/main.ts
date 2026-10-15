@@ -47,7 +47,15 @@ app.post("/ducks", (req, res) => {
 });
 
 app.delete("/ducks/:name", (req, res) => {
-  if (req.params) res.status(204);
+  if (req.params.name) res.status(204);
   else res.status(404);
 });
 
+app.patch("/ducks/:name", (req, res) => {
+  const duck = ducks.find((duckToFind) => req.params.name);
+  if (!duck) res.status(404);
+  else {
+    if (req.body.age) duck.age = req.body.age;
+    if(req.body.name) duck.name = req.
+  }
+});
