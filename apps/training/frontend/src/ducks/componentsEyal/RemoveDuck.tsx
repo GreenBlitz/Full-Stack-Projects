@@ -8,7 +8,7 @@ interface RemoveLastDuckProps {
 }
 
 async function deleteDucktemp(DuckToDelete: string) {
-  const temp = "http://localhost:3001/ducks/" + DuckToDelete;
+  const temp = "http://localhost:4590/ducks/" + DuckToDelete;
   const response = await axios.delete(temp);
   console.log(response.data);
 }

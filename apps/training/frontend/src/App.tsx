@@ -8,14 +8,11 @@ import "./styling.css";
 // Local development only: credentials in frontend code are visible to users.
 axios.defaults.headers.common["x-api-password"] = "pass123";
 
-// async function deleteDucktemp() {
-//   const response = await axios.delete("http://localhost:3001/ducks/mallard");
-//   console.log(response.data);
-// }
+//
 // deleteDucktemp();
 
 // async function changeDucktemp() {
-//   const response = await axios.patch("http://localhost:3001/ducks/quickers", {
+//   const response = await axios.patch("http://localhost:4590/ducks/quickers", {
 //     age: 19,
 //   });
 //   console.log(response.data);
@@ -24,14 +21,14 @@ axios.defaults.headers.common["x-api-password"] = "pass123";
 
 // async function filterDucksByColor() {
 //   const response = await axios.get(
-//     "http://localhost:3001/ducks/color?color=black",
+//     "http://localhost:4590/ducks/color?color=black",
 //   );
 //   console.log(response.data);
 // }
 // filterDucksByColor();
 
 // async function filterDucksByAge() {
-//   const response = await axios.get("http://localhost:3001/ducks/age?age=3");
+//   const response = await axios.get("http://localhost:4590/ducks/age?age=3");
 //   console.log(response.data);
 // }
 // filterDucksByAge();
@@ -52,7 +49,7 @@ const App = () => {
     setLoading(true);
     setMessage("");
     try {
-      const response = await axios.post("http://localhost:3001/ducks", {
+      const response = await axios.post("http://localhost:4590/ducks", {
         name: "greg",
         age: 14,
         color: "black",

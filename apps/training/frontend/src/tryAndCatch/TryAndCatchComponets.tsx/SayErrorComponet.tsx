@@ -9,7 +9,7 @@ export function SayErrorComponet() {
   const sayError = async () => {
     setLoading(true);
     try {
-      await axios.get("http://localhost:3001/doNothing");
+      await axios.get("http://localhost:4590/doNothing");
       setMessage("The request succeeded.");
     } catch (error) {
       if (axios.isAxiosError<{ message?: string }>(error)) {

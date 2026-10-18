@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Card } from "../../Card";
 
 async function getSchool() {
-  const response = await axios.get("http://localhost:3001/school");
+  const response = await axios.get("http://localhost:4590/school");
   return response.data;
 }
 

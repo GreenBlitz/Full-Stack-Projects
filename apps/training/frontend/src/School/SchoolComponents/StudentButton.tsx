@@ -8,7 +8,7 @@ type Student = {
 };
 
 async function createStudent(student: Student) {
-  const response = await axios.post("http://localhost:3001/students", student);
+  const response = await axios.post("http://localhost:4590/students", student);
   console.log(response.data);
   return response.data;
 }

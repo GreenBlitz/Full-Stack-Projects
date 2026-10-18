@@ -18,7 +18,7 @@ const App: FC = () => {
   useEffect(() => {
     axios
       .get<{ name: string; color: string; age: number }[]>(
-        "http://localhost:3001/ducks",
+        "http://localhost:4590/ducks",
       )
       .then(({ data }) => {
         setDucks(

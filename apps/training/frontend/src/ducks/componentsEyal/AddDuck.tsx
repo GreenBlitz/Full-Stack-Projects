@@ -20,7 +20,7 @@ export function AddDuck({ onAddDuck }: AddDuckProps) {
     };
 
     try {
-      await axios.post("http://localhost:3001/ducks", {
+      await axios.post("http://localhost:4590/ducks", {
         name: duck.DuckName,
         color: duck.DuckColor,
         age: duck.DuckAge,
