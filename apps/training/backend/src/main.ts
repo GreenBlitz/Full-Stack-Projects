@@ -53,9 +53,14 @@ app.delete("/ducks/:name", (req, res) => {
 
 app.patch("/ducks/:name", (req, res) => {
   const duck = ducks.find((duckToFind) => req.params.name);
-  if (!duck) res.status(404);
+  if (!duck) res.status(404).json("Duck not found");
   else {
-    if (req.body.age) duck.age = req.body.age;
-    if(req.body.name) duck.name = req.
+    const updates = req.body;
+    for (let key in updates) {
+      if (duck[key] !== undefined) {
+        duck[key] = updates[key];
+      }
+    }
+    res.json(duck);
   }
 });
