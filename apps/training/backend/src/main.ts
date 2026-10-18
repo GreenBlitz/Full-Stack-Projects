@@ -2,6 +2,7 @@ import express from "express";
 import helmet from "helmet";
 import cors from "cors";
 import { some } from "fp-ts/lib/OptionT";
+import { dialogflow } from "googleapis/build/src/apis/dialogflow";
 
 const app = express();
 
@@ -47,8 +48,8 @@ app.post("/ducks", (req, res) => {
 });
 
 app.delete("/ducks/:name", (req, res) => {
-  if (req.params.name) res.status(204);
-  else res.status(404);
+  if (req.params.name) res.status(204).json(req.params);
+  else res.status(404).json("Duck not found!");
 });
 
 app.patch("/ducks/:name", (req, res) => {
@@ -63,4 +64,15 @@ app.patch("/ducks/:name", (req, res) => {
     }
     res.json(duck);
   }
+});
+
+app.get("/ducks", (req, res) => {
+  const filteredDucks = [...ducks];
+  if (req.query.name)
+    filteredDucks.filter((duck) => duck.name === req.query.name);
+  if (req.query.color)
+    filteredDucks.filter((duck) => duck.name === req.query.color);
+  if (req.query.age)
+    filteredDucks.filter((duck) => duck.age + "" === req.query.age);
+  res.send(filteredDucks);
 });
