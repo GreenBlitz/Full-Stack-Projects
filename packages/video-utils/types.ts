@@ -1,5 +1,4 @@
 //בס"ד
-import type React from "react";
 
 export interface VideoPlayerHandle {
   currentTime: number;
@@ -10,4 +9,5 @@ export interface VideoPlayerHandle {
 }
 
 export type VideoSource =
-  { type: "file"; src: string } | { type: "youtube"; videoId: string };
+  | { type: "file"; src: string }
+  | { type: "youtube"; videoId: string };
