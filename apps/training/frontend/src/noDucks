@@ -7,12 +7,11 @@ interface DuckMessage {
 export function DuckMessage({ tucks }: DuckMessage) {
   const ducks =
     tucks.length === 0
-      ? "no ducks :("
+      ? "no ducks"
       : tucks.length <= 5
         ? "things are under control!"
         : tucks.length > 6
           ? "too many"
           : "";
-
   return ducks;
 }
