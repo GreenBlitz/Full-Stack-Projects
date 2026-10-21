@@ -4,7 +4,7 @@ import { useState } from "react";
 function App() {
   const [name, setName] = useState<string>("");
   const [color, setColor] = useState<string>("");
-  const [age, setAge] = useState<number>(0);
+  const [age, setAge] = useState<number>( );
   const [nameToUpdate, setNameToUpdate] = useState<string>("");
   const [filteredDucks, setFilteredDucks] = useState([]);
   const [duck, setDuck] = useState<string>("No duck was sent/deleted/edited");
@@ -24,14 +24,16 @@ function App() {
   function deleteDuck(duck: DuckProps) {
     axios
       .delete(`http://localhost:3001/ducks/${duck.name}`)
-      .then((response) => setDuck(response.data+" was deleted!"));
+      .then((res) => setDuck(res.data + " was deleted!"));
   }
 
   function updateDuck(name: string, duck: DuckProps) {
     if (name) {
       axios
         .patch("http://localhost:3001/ducks/", { name: name, duck: duck })
-        .then((res) => setDuck(res.data.duck+" was updated (updated to this)!"));
+        .then((res) =>
+          setDuck(res.data.duck + " was updated (updated to this)!"),
+        );
     }
   }
 
@@ -122,9 +124,11 @@ function App() {
         <button
           onClick={(e) => {
             e.preventDefault();
-            filterDucks({name, color, age})
+            filterDucks({ name, color, age });
           }}
-        >Filter ducks</button>
+        >
+          Filter ducks
+        </button>
       </form>
       <div>{duck}</div>
     </>
