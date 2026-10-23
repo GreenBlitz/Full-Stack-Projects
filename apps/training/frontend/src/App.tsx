@@ -21,12 +21,13 @@ function App() {
       .then((response) => setDuck(response.data));
   }
 
-  function deleteDuck(duck: DuckProps) {
+  function deleteDuck(name:string) {
     axios
-      .delete(`http://localhost:3001/ducks/${duck.name}`)
-      .then((res) => setDuck(res.data + " was deleted!"));
+      .delete(`http://localhost:3001/ducks/${name}`)
+      .then((res) => setDuck(res.data.name + " was deleted!"));
   }
 
+  //Doesn't work
   function updateDuck(name: string, duck: DuckProps) {
     if (name) {
       axios
@@ -37,6 +38,7 @@ function App() {
     }
   }
 
+  //Doesn't work
   function filterDucks({ name, color, age }: DuckProps) {
     axios
       .get("http://localhost:3001/ducks", {
@@ -60,7 +62,6 @@ function App() {
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          required
         />
         <br />
         <br />
@@ -70,7 +71,6 @@ function App() {
           type="text"
           value={color}
           onChange={(e) => setColor(e.target.value)}
-          required
         />
         <br />
         <br />
@@ -80,7 +80,6 @@ function App() {
           type="number"
           value={age}
           onChange={(e) => setAge(Number(e.target.value))}
-          required
         />
         <br />
         <button
@@ -96,7 +95,7 @@ function App() {
         <button
           onClick={(e) => {
             e.preventDefault();
-            deleteDuck({ name: name, color: color, age: age });
+            deleteDuck(name);
           }}
         >
           Delete Duck

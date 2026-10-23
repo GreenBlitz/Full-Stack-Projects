@@ -48,8 +48,14 @@ app.post("/ducks", (req, res) => {
 });
 
 app.delete("/ducks/:name", (req, res) => {
-  if (req.params.name) res.status(204).json(req.params);
-  else res.status(404).json("Duck not found!");
+  const idx = ducks.findIndex((duck) => duck.name === req.params.name);
+
+  if (idx === -1) {
+    return res.status(404).json({ message: "Duck not found!" });
+  }
+
+  const [deletedDuck] = ducks.splice(idx, 1);
+  return res.json({ name: deletedDuck.name });
 });
 
 app.patch("/ducks/:name", (req, res) => {
@@ -75,4 +81,9 @@ app.get("/ducks", (req, res) => {
   if (req.query.age)
     filteredDucks.filter((duck) => duck.age + "" === req.query.age);
   res.send(filteredDucks);
+});
+
+app.use("/ducks", (req, res, next) => {
+  console.log(req.method + " request made to " + req.url);
+  next();
 });
