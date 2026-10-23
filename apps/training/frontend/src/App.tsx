@@ -4,7 +4,7 @@ import { useState } from "react";
 function App() {
   const [name, setName] = useState<string>("");
   const [color, setColor] = useState<string>("");
-  const [age, setAge] = useState<number>( );
+  const [age, setAge] = useState<number>();
   const [nameToUpdate, setNameToUpdate] = useState<string>("");
   const [filteredDucks, setFilteredDucks] = useState([]);
   const [duck, setDuck] = useState<string>("No duck was sent/deleted/edited");
@@ -21,7 +21,7 @@ function App() {
       .then((response) => setDuck(response.data));
   }
 
-  function deleteDuck(name:string) {
+  function deleteDuck(name: string) {
     axios
       .delete(`http://localhost:3001/ducks/${name}`)
       .then((res) => setDuck(res.data.name + " was deleted!"));
@@ -31,9 +31,9 @@ function App() {
   function updateDuck(name: string, duck: DuckProps) {
     if (name) {
       axios
-        .patch("http://localhost:3001/ducks/", { name: name, duck: duck })
+        .patch(`http://localhost:3001/ducks/${name}`, { duck: duck })
         .then((res) =>
-          setDuck(res.data.duck + " was updated (updated to this)!"),
+          setDuck(res.data + " was updated (updated to this)!"),
         );
     }
   }
@@ -49,7 +49,7 @@ function App() {
         },
       })
       .then((res) => {
-        setFilteredDucks(res.data);
+        setFilteredDucks(res.data.filteredDucks);
       });
   }
 

@@ -1,8 +1,6 @@
 import express from "express";
 import helmet from "helmet";
 import cors from "cors";
-import { some } from "fp-ts/lib/OptionT";
-import { dialogflow } from "googleapis/build/src/apis/dialogflow";
 
 const app = express();
 
@@ -59,15 +57,12 @@ app.delete("/ducks/:name", (req, res) => {
 });
 
 app.patch("/ducks/:name", (req, res) => {
-  const duck = ducks.find((duckToFind) => req.params.name);
-  if (!duck) res.status(404).json("Duck not found");
+  const duck = ducks.find((duck) => req.params.name===duck.name);
+  if (!duck) res.status(404).json({ message: "Duck not found" });
   else {
-    const updates = req.body;
-    for (let key in updates) {
-      if (duck[key] !== undefined) {
-        duck[key] = updates[key];
-      }
-    }
+    if (req.body.duck.age) duck.age = req.body.duck.age;
+    if (req.body.duck.color) duck.color = req.body.duck.color;
+    if (req.body.duck.name) duck.name = req.body.duck.name;
     res.json(duck);
   }
 });
@@ -80,7 +75,7 @@ app.get("/ducks", (req, res) => {
     filteredDucks.filter((duck) => duck.name === req.query.color);
   if (req.query.age)
     filteredDucks.filter((duck) => duck.age + "" === req.query.age);
-  res.send(filteredDucks);
+  res.json({ filteredDucks: filteredDucks });
 });
 
 app.use("/ducks", (req, res, next) => {
