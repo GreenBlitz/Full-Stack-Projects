@@ -28,9 +28,9 @@ const ducks: DuckProps[] = [
   { name: "Adam Dar", color: "Yellow", age: 16 },
 ];
 
-app.get("/ducks", (req, res) => {
-  res.send(ducks);
-});
+// app.get("/ducks", (req, res) => {
+//   res.send(ducks);
+// });
 
 app.get("/ducks/:name", (req, res) => {
   const { name } = req.params;
@@ -57,7 +57,7 @@ app.delete("/ducks/:name", (req, res) => {
 });
 
 app.patch("/ducks/:name", (req, res) => {
-  const duck = ducks.find((duck) => req.params.name===duck.name);
+  const duck = ducks.find((duck) => req.params.name === duck.name);
   if (!duck) res.status(404).json({ message: "Duck not found" });
   else {
     if (req.body.duck.age) duck.age = req.body.duck.age;
@@ -69,13 +69,17 @@ app.patch("/ducks/:name", (req, res) => {
 
 app.get("/ducks", (req, res) => {
   const filteredDucks = [...ducks];
-  if (req.query.name)
-    filteredDucks.filter((duck) => duck.name === req.query.name);
-  if (req.query.color)
-    filteredDucks.filter((duck) => duck.name === req.query.color);
-  if (req.query.age)
-    filteredDucks.filter((duck) => duck.age + "" === req.query.age);
-  res.json({ filteredDucks: filteredDucks });
+  for (let i = 0; i < filteredDucks.length; i++) {
+    if (req.query.name)
+      if (req.query.name !== filteredDucks[i].name) filteredDucks.splice(i, 1);
+    if (req.query.age)
+      if (Number(req.query.age) !== filteredDucks[i].age)
+        filteredDucks.splice(i, 1);
+    if (req.query.color)
+      if (req.query.color !== filteredDucks[i].color)
+        filteredDucks.splice(i, 1);
+  }
+  res.json({ filteredDucks: filteredDucks, ducks: ducks });
 });
 
 app.use("/ducks", (req, res, next) => {

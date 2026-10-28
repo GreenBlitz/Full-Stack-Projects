@@ -6,7 +6,8 @@ function App() {
   const [color, setColor] = useState<string>("");
   const [age, setAge] = useState<number>();
   const [nameToUpdate, setNameToUpdate] = useState<string>("");
-  const [filteredDucks, setFilteredDucks] = useState([]);
+  const [filteredDucks, setFilteredDucks] = useState("");
+  const [ducks, setDucks] = useState("");
   const [duck, setDuck] = useState<string>("No duck was sent/deleted/edited");
 
   interface DuckProps {
@@ -27,18 +28,14 @@ function App() {
       .then((res) => setDuck(res.data.name + " was deleted!"));
   }
 
-  //Doesn't work
   function updateDuck(name: string, duck: DuckProps) {
     if (name) {
       axios
         .patch(`http://localhost:3001/ducks/${name}`, { duck: duck })
-        .then((res) =>
-          setDuck(res.data + " was updated (updated to this)!"),
-        );
+        .then((res) => setDuck(res.data + " was updated (updated to this)!"));
     }
   }
 
-  //Doesn't work
   function filterDucks({ name, color, age }: DuckProps) {
     axios
       .get("http://localhost:3001/ducks", {
@@ -49,7 +46,8 @@ function App() {
         },
       })
       .then((res) => {
-        setFilteredDucks(res.data.filteredDucks);
+        setFilteredDucks(JSON.stringify(res.data.filteredDucks, null, 2));
+        setDucks(JSON.stringify(res.data.ducks, null, 2))
       });
   }
 
@@ -130,6 +128,7 @@ function App() {
         </button>
       </form>
       <div>{duck}</div>
+      <div>{filteredDucks}</div>
     </>
   );
 }
