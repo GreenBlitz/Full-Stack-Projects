@@ -5,23 +5,31 @@
 // });
 import express from "express";
 const app = express();
-app.get("/", (req, res) => {
+
+app.use(express.json());
+
+app.get("/hello", (req, res) => {
   res.send("Welcome to my server!");
 });
+
 app.get("/school", (req, res) => {
   res.json({
     name: "Karni",
     city: "Tel Aviv",
     students: ["Amit", "Noam"],
   });
-  app.use(express.json());
-
-  app.post("/students", (req, res) => {
-    console.log(req.body);
-
-    res.send("Student received!");
-  });
 });
+
+app.get("/student", (req, res) => {
+  res.json("Ori");
+});
+
+app.post("/students", (req, res) => {
+  console.log(req.body);
+
+  res.json(req.body);
+});
+
 app.listen(3000, () => {
   console.log("Server is running!");
 });
