@@ -1,3 +1,4 @@
+import { User } from "@repo/polyblitz-types";
 import { Db, MongoClient } from "mongodb";
 
 const url =
