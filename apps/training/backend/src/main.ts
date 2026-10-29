@@ -8,8 +8,19 @@ app.use(cors());
 app.use(express.json());
 app.use(helmet());
 
+const ducks: DuckProps[] = [
+  { name: "Ido", color: "White", age: 15 },
+  { name: "Zib", color: "Idk What Color I Am", age: 15 },
+  { name: "Adam Dar", color: "Yellow", age: 16 },
+];
+
 app.listen(3001, () => {
   console.log("Server is running!");
+});
+
+app.use("/ducks", (req, res, next) => {
+  console.log(req.method + " request made to " + req.originalUrl);
+  next();
 });
 
 app.get("/", (req, res) => {
@@ -21,12 +32,6 @@ interface DuckProps {
   color: string;
   age: number;
 }
-
-const ducks: DuckProps[] = [
-  { name: "Ido", color: "White", age: 15 },
-  { name: "Zib", color: "Idk What Color I Am", age: 15 },
-  { name: "Adam Dar", color: "Yellow", age: 16 },
-];
 
 // app.get("/ducks", (req, res) => {
 //   res.send(ducks);
@@ -80,9 +85,4 @@ app.get("/ducks", (req, res) => {
         filteredDucks.splice(i, 1);
   }
   res.json({ filteredDucks: filteredDucks, ducks: ducks });
-});
-
-app.use("/ducks", (req, res, next) => {
-  console.log(req.method + " request made to " + req.url);
-  next();
 });

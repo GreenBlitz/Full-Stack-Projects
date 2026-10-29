@@ -19,7 +19,7 @@ function App() {
   function sendDuck(duck: DuckProps) {
     axios
       .post("http://localhost:3001/ducks", duck)
-      .then((response) => setDuck(response.data));
+      .then((response) => setDuck(JSON.stringify(response.data, null, 2)));
   }
 
   function deleteDuck(name: string) {
@@ -47,7 +47,7 @@ function App() {
       })
       .then((res) => {
         setFilteredDucks(JSON.stringify(res.data.filteredDucks, null, 2));
-        setDucks(JSON.stringify(res.data.ducks, null, 2))
+        setDucks(JSON.stringify(res.data.ducks, null, 2));
       });
   }
 
