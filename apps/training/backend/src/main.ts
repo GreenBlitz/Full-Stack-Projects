@@ -14,7 +14,7 @@ const ducks: DuckProps[] = [
   { name: "Adam Dar", color: "Yellow", age: 16 },
 ];
 
-app.listen(3001, () => {
+app.listen(4590, () => {
   console.log("Server is running!");
 });
 
@@ -33,10 +33,6 @@ interface DuckProps {
   age: number;
 }
 
-// app.get("/ducks", (req, res) => {
-//   res.send(ducks);
-// });
-
 app.get("/ducks/:name", (req, res) => {
   const { name } = req.params;
   const duck = ducks.find((d) => {
@@ -45,32 +41,62 @@ app.get("/ducks/:name", (req, res) => {
   res.send(duck);
 });
 
-app.post("/ducks", (req, res) => {
-  ducks.push(req.body);
-  res.send(req.body);
-});
+app.post(
+  "/ducks",
+  (req, res, next) => {
+    if (req.header("duck-password") === "duckyDuck") next();
+    else {
+      res.status(401).json({ message: "Unauthorized" });
+      next("route");
+    }
+  },
+  (req, res) => {
+    ducks.push(req.body);
+    res.send(req.body);
+  },
+);
 
-app.delete("/ducks/:name", (req, res) => {
-  const idx = ducks.findIndex((duck) => duck.name === req.params.name);
+app.delete(
+  "/ducks/:name",
+  (req, res, next) => {
+    if (req.header("duck-password") === "duckyDuck") next();
+    else {
+      res.status(401).json({ message: "Unauthorized" });
+      next("route");
+    }
+  },
+  (req, res) => {
+    const idx = ducks.findIndex((duck) => duck.name === req.params.name);
 
-  if (idx === -1) {
-    return res.status(404).json({ message: "Duck not found!" });
-  }
+    if (idx === -1) {
+      return res.status(404).json({ message: "Duck not found!" });
+    }
 
-  const [deletedDuck] = ducks.splice(idx, 1);
-  return res.json({ name: deletedDuck.name });
-});
+    const [deletedDuck] = ducks.splice(idx, 1);
+    return res.json({ name: deletedDuck.name });
+  },
+);
 
-app.patch("/ducks/:name", (req, res) => {
-  const duck = ducks.find((duck) => req.params.name === duck.name);
-  if (!duck) res.status(404).json({ message: "Duck not found" });
-  else {
-    if (req.body.duck.age) duck.age = req.body.duck.age;
-    if (req.body.duck.color) duck.color = req.body.duck.color;
-    if (req.body.duck.name) duck.name = req.body.duck.name;
-    res.json(duck);
-  }
-});
+app.patch(
+  "/ducks/:name",
+  (req, res, next) => {
+    if (req.header("duck-password") === "duckyDuck") next();
+    else {
+      res.status(401).json({ message: "Unauthorized" });
+      next("route");
+    }
+  },
+  (req, res) => {
+    const duck = ducks.find((duck) => req.params.name === duck.name);
+    if (!duck) res.status(404).json({ message: "Duck not found" });
+    else {
+      if (req.body.duck.age) duck.age = req.body.duck.age;
+      if (req.body.duck.color) duck.color = req.body.duck.color;
+      if (req.body.duck.name) duck.name = req.body.duck.name;
+      res.json(duck);
+    }
+  },
+);
 
 app.get("/ducks", (req, res) => {
   const filteredDucks = [...ducks];

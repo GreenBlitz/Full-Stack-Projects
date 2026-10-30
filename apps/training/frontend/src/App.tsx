@@ -5,6 +5,7 @@ function App() {
   const [name, setName] = useState<string>("");
   const [color, setColor] = useState<string>("");
   const [age, setAge] = useState<number>();
+  const [password, setPassword] = useState<string>("");
   const [nameToUpdate, setNameToUpdate] = useState<string>("");
   const [filteredDucks, setFilteredDucks] = useState("");
   const [ducks, setDucks] = useState("");
@@ -18,27 +19,43 @@ function App() {
 
   function sendDuck(duck: DuckProps) {
     axios
-      .post("http://localhost:3001/ducks", duck)
+      .post("http://localhost:4590/ducks", duck, {
+        headers: {
+          "duck-password": password,
+        },
+      })
       .then((response) => setDuck(JSON.stringify(response.data, null, 2)));
   }
 
   function deleteDuck(name: string) {
     axios
-      .delete(`http://localhost:3001/ducks/${name}`)
+      .delete(`http://localhost:4590/ducks/${name}`, {
+        headers: {
+          "duck-password": password,
+        },
+      })
       .then((res) => setDuck(res.data.name + " was deleted!"));
   }
 
   function updateDuck(name: string, duck: DuckProps) {
     if (name) {
       axios
-        .patch(`http://localhost:3001/ducks/${name}`, { duck: duck })
+        .patch(
+          `http://localhost:4590/ducks/${name}`,
+          { duck: duck },
+          {
+            headers: {
+              "duck-password": password,
+            },
+          },
+        )
         .then((res) => setDuck(res.data + " was updated (updated to this)!"));
     }
   }
 
   function filterDucks({ name, color, age }: DuckProps) {
     axios
-      .get("http://localhost:3001/ducks", {
+      .get("http://localhost:4590/ducks", {
         params: {
           name: name,
           color: color,
@@ -126,6 +143,15 @@ function App() {
         >
           Filter ducks
         </button>
+        <br />
+        <br />
+        <label>Password:</label>
+        <br />
+        <input
+          type="text"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
       </form>
       <div>{duck}</div>
       <div>{filteredDucks}</div>
