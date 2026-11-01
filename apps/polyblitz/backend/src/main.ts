@@ -22,6 +22,7 @@ async function initializeCollections() {
 }
 
 async function startServer() {
+  initializeCollections();
   app.listen(port, () => {
     console.log(`Backend listening on port ${port}`);
   });
@@ -59,15 +60,15 @@ async function findNewid(): Promise<number> {
 }
 
 app.post("/User", async (req, res) => {
-  const result = UserSchema.safeParse(req);
+  const result = UserSchema.safeParse(req.body);
   if (!result.success) {
-    res.json(result.error.issues);
+    res.status(400).json(result.error.issues);
     return;
   }
   try {
     const temp: User = {
-      name: req.body.name,
-      money: req.body.money,
+      name: result.data.name,
+      money: result.data.money,
       isAdmin: false,
       id: await findNewid(),
     };
@@ -99,12 +100,23 @@ app.get("/User/:id", async (req, res) => {
       res.status(404).json({ message: "User not found" });
       return;
     }
-    res.json(User);
+    res.status(200).json(User);
   } catch (error) {
     console.error("Failed to find Duck:", error);
     res.status(500).json({ message: "Failed to find User" });
   }
 });
+
+async function getWagerArrayByid(id: number) {
+  const bets = await getBetCollection().find({}).toArray();
+  const optionsOne = bets.map((bet) => bet.optionOne);
+  const optionsTwo = bets.map((bet) => bet.optionTwo);
+  const wager = [
+    optionsOne.map((option) => option.wagers),
+    optionsTwo.map((option) => option.wagers),
+  ];
+  return wager.flat(2).filter((wager) => wager.userID === id);
+}
 
 app.get("/User/:id/wagers", async (req, res) => {
   const result = UserSchema.shape.id.safeParse(req);
@@ -123,20 +135,12 @@ app.get("/User/:id/wagers", async (req, res) => {
       return;
     }
     try {
-      const bets = await getBetCollection().find({}).toArray();
-      const optionsOne = bets.map((bet) => bet.optionOne);
-      const optionsTwo = bets.map((bet) => bet.optionTwo);
-      const wager = [
-        optionsOne.map((option) => option.wagers),
-        optionsTwo.map((option) => option.wagers),
-      ];
-      const userWager = wager.flat(2).filter((wager) => wager.userID === id);
-      res.json(userWager);
+      res.status(200).json(getWagerArrayByid(id));
     } catch (error) {
       res.json({ message: "failed to open data base" });
     }
   } catch (error) {
-    console.error("Failed to find Duck:", error);
+    console.error("Failed to find User:", error);
     res.status(500).json({ message: "Failed to find User" });
   }
 });
@@ -144,7 +148,7 @@ app.get("/User/:id/wagers", async (req, res) => {
 app.get("/bets", async (req, res) => {
   try {
     const bets = await getBetCollection().find({}).toArray();
-    res.json(bets);
+    res.status(200).json(bets);
   } catch (error) {
     console.error("Failed to get bets:", error);
     res.status(500).json({ message: "Failed to get bets" });
@@ -159,7 +163,7 @@ app.post("/bets", async (req, res) => {
   }
   try {
     const inserted = await getBetCollection().insertOne(result.data);
-    res.status(201).json({ message: "inserted" });
+    res.status(201).json(inserted);
   } catch (error) {
     console.error("Failed to create bet:", error);
     res.status(500).json({ message: "Failed to create bet" });
