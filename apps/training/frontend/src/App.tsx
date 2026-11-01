@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function App() {
   const [name, setName] = useState<string>("");
@@ -10,8 +10,6 @@ function App() {
   const [filteredDucks, setFilteredDucks] = useState("");
   const [ducks, setDucks] = useState();
   const [duck, setDuck] = useState<string>("No duck was sent/deleted/edited");
-
-
 
   interface DuckProps {
     name: string;
@@ -26,7 +24,9 @@ function App() {
           "duck-password": password,
         },
       })
-      .then((response) => setDuck(JSON.stringify(response.data, null, 2)));
+      .then((response) => {
+        setDuck(JSON.stringify(response.data, null, 2));
+      });
   }
 
   function deleteDuck(name: string) {
@@ -157,7 +157,7 @@ function App() {
       </form>
       <div>ducks</div>
       <div>{JSON.stringify(ducks, null, 2)}</div>
-      <br/>
+      <br />
       <div>filtered ducks</div>
       <div>{filteredDucks}</div>
     </>
