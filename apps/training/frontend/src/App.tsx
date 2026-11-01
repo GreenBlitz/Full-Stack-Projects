@@ -8,8 +8,10 @@ function App() {
   const [password, setPassword] = useState<string>("");
   const [nameToUpdate, setNameToUpdate] = useState<string>("");
   const [filteredDucks, setFilteredDucks] = useState("");
-  const [ducks, setDucks] = useState("");
+  const [ducks, setDucks] = useState();
   const [duck, setDuck] = useState<string>("No duck was sent/deleted/edited");
+
+
 
   interface DuckProps {
     name: string;
@@ -64,7 +66,7 @@ function App() {
       })
       .then((res) => {
         setFilteredDucks(JSON.stringify(res.data.filteredDucks, null, 2));
-        setDucks(JSON.stringify(res.data.ducks, null, 2));
+        setDucks(res.data.ducks);
       });
   }
 
@@ -153,7 +155,10 @@ function App() {
           onChange={(e) => setPassword(e.target.value)}
         />
       </form>
-      <div>{duck}</div>
+      <div>ducks</div>
+      <div>{JSON.stringify(ducks, null, 2)}</div>
+      <br/>
+      <div>filtered ducks</div>
       <div>{filteredDucks}</div>
     </>
   );
