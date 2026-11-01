@@ -44,9 +44,13 @@ app.get("/student", (req, res) => {
 });
 
 app.post("/students", (req, res) => {
+  console.log()
+})
+
+app.post("/students", (req, res) => {
   console.log(req.body);
 
-  res.send("Student received!");
+  res.json(req.body);
 });
 
 app.use(express.json());
@@ -64,8 +68,8 @@ app.post("/student", (req, res) => {
   res.status(200).json({ ok: true, received: req.body });
 });
 
-app.post("/ducks", (req, res) => {
-  console.log("POST /ducks", req.body);
+app.post("/student", (req, res) => {
+  console.log("POST /student", req.body);
   res.status(200).json({ ok: true, received: req.body });
 });
 
