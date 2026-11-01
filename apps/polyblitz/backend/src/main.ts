@@ -15,10 +15,13 @@ const port = process.env.BACKEND_PORT ?? defaultPort;
 let UserCollection: Collection<User> | undefined;
 let BetCollection: Collection<bet> | undefined;
 
-async function startServer() {
+async function initializeCollections() {
   const db = await openDatabase();
   UserCollection = db.collection<User>("Users");
   BetCollection = db.collection<bet>("Bets");
+}
+
+async function startServer() {
   app.listen(port, () => {
     console.log(`Backend listening on port ${port}`);
   });
