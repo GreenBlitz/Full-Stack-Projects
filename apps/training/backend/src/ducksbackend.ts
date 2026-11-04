@@ -1,5 +1,7 @@
 import express from "express";
+import { useEffect, useState } from "react";
 import { Duck } from "../../frontend/src/DuckCard";
+import { data } from "react-router-dom";
 const app = express();
 app.use(express.json());
 interface duck {
@@ -50,6 +52,19 @@ app.patch("/ducks/:name", (req, res) => {
   Object.assign(duck, req.body);
   res.json(duck);
 });
+app.get("/ducks", (req, res) => {
+  const color =
+    typeof req.query.color === "string" ? req.query.color.trim() : "";
+  const filteredDucks = color
+    ? Ducks.filter((duck) => duck.color.trim() === color)
+    : Ducks;
+  res.json(filteredDucks);
+});
+app.use((req, res, next) => {
+  console.log("time:", Date.now());
+  next();
+});
+
 app.listen(3000, () => {
   console.log("Server is running!");
 });

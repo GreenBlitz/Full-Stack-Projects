@@ -5,7 +5,7 @@ type School1 = {
   city: string;
   students: string[];
 };
-export function App() {
+export function Axios1() {
   const [School, setSchool] = useState<School1 | null>(null);
 
   async function getSchool() {
