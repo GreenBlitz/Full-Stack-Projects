@@ -2,7 +2,8 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 
 function App() {
-  const [message, setMessage] = useState<string | null>();
+  const [message, setMessage] = useState<string>("");
+  const [loading, setLoading] = useState<string>("");
 
   interface Duck {
     name: string;
@@ -11,6 +12,7 @@ function App() {
   }
 
   async function tryShowingSomething() {
+    setLoading("Loading...");
     try {
       const res = await axios.get("http://localhost:4590/ducks");
       setMessage(res.data);
@@ -22,6 +24,8 @@ function App() {
       } else {
         setMessage("An unexpected error occurred");
       }
+    } finally {
+      setLoading("");
     }
   }
 
@@ -29,6 +33,7 @@ function App() {
     <>
       <button onClick={tryShowingSomething}>Try to recieve</button>
       {message && <div>{message}</div>}
+      {loading && <div>{loading}</div>}
     </>
   );
 }
