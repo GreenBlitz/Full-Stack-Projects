@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 
 function App() {
-  const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>();
 
   interface Duck {
     name: string;
@@ -10,21 +10,25 @@ function App() {
     age: number;
   }
 
-  function tryShowingSomething() {
+  async function tryShowingSomething() {
     try {
-      axios
-        .get("http://localhost:4590/ducks")
-        .then((res) => console.log(res.data));
-    } catch (error) {
-      console.log(error);
-      console.log("Something went wrong");
+      const res = await axios.get("http://localhost:4590/ducks");
+      setMessage(res.data);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        setMessage(error.response?.data?.message ?? error.message);
+      } else if (error instanceof Error) {
+        setMessage(error.message);
+      } else {
+        setMessage("An unexpected error occurred");
+      }
     }
   }
 
   return (
     <>
       <button onClick={tryShowingSomething}>Try to recieve</button>
-      {error && <div>{error}</div>}
+      {message && <div>{message}</div>}
     </>
   );
 }
