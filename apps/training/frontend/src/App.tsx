@@ -2,27 +2,118 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 
 function App() {
-  const [message, setMessage] = useState<string>("");
+  const [name, setName] = useState<string>("");
+  const [color, setColor] = useState<string>("");
+  const [age, setAge] = useState<number>();
+  const [password, setPassword] = useState<string>("");
+  const [nameToUpdate, setNameToUpdate] = useState<string>("");
+  const [filteredDucks, setFilteredDucks] = useState("");
+  const [ducks, setDucks] = useState();
+  const [duck, setDuck] = useState<string>("No duck was sent/deleted/edited");
+  const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<string>("");
 
-  interface Duck {
+  interface DuckProps {
     name: string;
     color: string;
     age: number;
   }
 
-  async function tryShowingSomething() {
+  async function sendDuck(duck: DuckProps) {
     setLoading("Loading...");
     try {
-      const res = await axios.get("http://localhost:4590/ducks");
-      setMessage(res.data);
+      const response = await axios.post("http://localhost:4590/ducks", duck, {
+        headers: {
+          "duck-password": password,
+        },
+      });
+      setDuck(JSON.stringify(response.data, null, 2));
+            setError("");
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
-        setMessage(error.response?.data?.message ?? error.message);
+        setError(error.response?.data?.message ?? error.message);
       } else if (error instanceof Error) {
-        setMessage(error.message);
+        setError(error.message);
       } else {
-        setMessage("An unexpected error occurred");
+        setError("An unexpected error occurred");
+      }
+    } finally {
+      setLoading("");
+    }
+  }
+
+  async function deleteDuck(name: string) {
+    setLoading("Loading...");
+    try {
+      const res = await axios.delete(`http://localhost:4590/ducks/${name}`, {
+        headers: {
+          "duck-password": password,
+        },
+      });
+      setDuck(res.data.name + " was deleted!");
+      setError("");
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        setError(error.response?.data?.message ?? error.message);
+      } else if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("An unexpected error occurred");
+      }
+    } finally {
+      setLoading("");
+    }
+  }
+
+  async function updateDuck(name: string, duck: DuckProps) {
+    if (name) {
+      setLoading("Loading...");
+      try {
+        const res = await axios.patch(
+          `http://localhost:4590/ducks/${name}`,
+          { duck: duck },
+          {
+            headers: {
+              "duck-password": password,
+            },
+          },
+        );
+        setDuck(res.data + " was updated (updated to this)!");
+        setError("");
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          setError(error.response?.data?.message ?? error.message);
+        } else if (error instanceof Error) {
+          setError(error.message);
+        } else {
+          setError("An unexpected error occurred");
+        }
+      } finally {
+        setLoading("");
+      }
+    }
+  }
+
+  async function filterDucks({ name, color, age }: DuckProps) {
+    setLoading("Loading...")
+    try {
+      const res = await axios.get("http://localhost:4590/ducks", {
+        params: {
+          name: name,
+          color: color,
+          age: age,
+        },
+      });
+      setFilteredDucks(JSON.stringify(res.data.filteredDucks, null, 2));
+      setDucks(res.data.ducks);
+      setError("");
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        setError(error.response?.data?.message ?? error.message);
+      } else if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("An unexpected error occurred");
       }
     } finally {
       setLoading("");
@@ -31,8 +122,95 @@ function App() {
 
   return (
     <>
-      <button onClick={tryShowingSomething}>Try to recieve</button>
-      {message && <div>{message}</div>}
+      <form>
+        <label>Name:</label>
+        <br />
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+        <br />
+        <br />
+        <label>Color:</label>
+        <br />
+        <input
+          type="text"
+          value={color}
+          onChange={(e) => setColor(e.target.value)}
+        />
+        <br />
+        <br />
+        <label>Age:</label>
+        <br />
+        <input
+          type="number"
+          value={age}
+          onChange={(e) => setAge(Number(e.target.value))}
+        />
+        <br />
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            sendDuck({ name: name, color: color, age: age });
+          }}
+        >
+          Add Duck
+        </button>
+        <br />
+        <br />
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            deleteDuck(name);
+          }}
+        >
+          Delete Duck
+        </button>
+        <br />
+        <br />
+        <label>Name to update: </label>
+        <br />
+        <input
+          type="text"
+          value={nameToUpdate}
+          onChange={(e) => setNameToUpdate(e.target.value)}
+        />
+        <br />
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            updateDuck(nameToUpdate, { name: name, color: color, age: age });
+          }}
+        >
+          Update duck
+        </button>
+        <br />
+        <br />
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            filterDucks({ name, color, age });
+          }}
+        >
+          Filter ducks
+        </button>
+        <br />
+        <br />
+        <label>Password:</label>
+        <br />
+        <input
+          type="text"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+      </form>
+      <div>ducks</div>
+      <div>{JSON.stringify(ducks, null, 2)}</div>
+      <br />
+      <div>filtered ducks</div>
+      <div>{filteredDucks}</div>
+      {error && <div>{error}</div>}
       {loading && <div>{loading}</div>}
     </>
   );

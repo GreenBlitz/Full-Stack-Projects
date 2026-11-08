@@ -10,6 +10,8 @@ function App() {
   const [filteredDucks, setFilteredDucks] = useState("");
   const [ducks, setDucks] = useState();
   const [duck, setDuck] = useState<string>("No duck was sent/deleted/edited");
+  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<string>("");
 
   interface DuckProps {
     name: string;
@@ -17,32 +19,55 @@ function App() {
     age: number;
   }
 
-  function sendDuck(duck: DuckProps) {
-    axios
-      .post("http://localhost:4590/ducks", duck, {
+  async function sendDuck(duck: DuckProps) {
+    setLoading("Loading...");
+    try {
+      const response = await axios.post("http://localhost:4590/ducks", duck, {
         headers: {
           "duck-password": password,
         },
-      })
-      .then((response) => {
-        setDuck(JSON.stringify(response.data, null, 2));
       });
+      setDuck(JSON.stringify(response.data, null, 2));
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        setError(error.response?.data?.message ?? error.message);
+      } else if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("An unexpected error occurred");
+      }
+    } finally {
+      setLoading("");
+    }
   }
 
-  function deleteDuck(name: string) {
-    axios
-      .delete(`http://localhost:4590/ducks/${name}`, {
+  async function deleteDuck(name: string) {
+    setLoading("Loading...");
+    try {
+      const res = await axios.delete(`http://localhost:4590/ducks/${name}`, {
         headers: {
           "duck-password": password,
         },
-      })
-      .then((res) => setDuck(res.data.name + " was deleted!"));
+      });
+      setDuck(res.data.name + " was deleted!");
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        setError(error.response?.data?.message ?? error.message);
+      } else if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("An unexpected error occurred");
+      }
+    } finally {
+      setLoading("");
+    }
   }
 
-  function updateDuck(name: string, duck: DuckProps) {
+  async function updateDuck(name: string, duck: DuckProps) {
     if (name) {
-      axios
-        .patch(
+      setLoading("Loading...");
+      try {
+        const res = await axios.patch(
           `http://localhost:4590/ducks/${name}`,
           { duck: duck },
           {
@@ -50,13 +75,24 @@ function App() {
               "duck-password": password,
             },
           },
-        )
-        .then((res) => setDuck(res.data + " was updated (updated to this)!"));
+        );
+        setDuck(res.data + " was updated (updated to this)!");
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          setError(error.response?.data?.message ?? error.message);
+        } else if (error instanceof Error) {
+          setError(error.message);
+        } else {
+          setError("An unexpected error occurred");
+        }
+      } finally {
+        setLoading("");
+      }
     }
   }
 
-  function filterDucks({ name, color, age }: DuckProps) {
-    axios
+  async function filterDucks({ name, color, age }: DuckProps) {
+    try{const res = await axios
       .get("http://localhost:4590/ducks", {
         params: {
           name: name,
@@ -64,10 +100,19 @@ function App() {
           age: age,
         },
       })
-      .then((res) => {
+      
         setFilteredDucks(JSON.stringify(res.data.filteredDucks, null, 2));
-        setDucks(res.data.ducks);
-      });
+        setDucks(res.data.ducks);}catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        setError(error.response?.data?.message ?? error.message);
+      } else if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("An unexpected error occurred");
+      }
+    } finally {
+      setLoading("");
+    }
   }
 
   return (
@@ -160,6 +205,8 @@ function App() {
       <br />
       <div>filtered ducks</div>
       <div>{filteredDucks}</div>
+      {error && <div>{error}</div>}
+      {loading && <div>{loading}</div>}
     </>
   );
 }
