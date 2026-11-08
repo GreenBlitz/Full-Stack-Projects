@@ -44,7 +44,14 @@ app.get("/student", (req, res) => {
 });
 
 app.post("/students", (req, res) => {
-  console.log()
+  res.json({
+    "message": "Student received!",
+    "student": {
+        "name": "Alice",
+        "grade": 10
+    }
+}
+)
 })
 
 app.post("/students", (req, res) => {
