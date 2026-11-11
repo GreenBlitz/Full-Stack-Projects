@@ -108,5 +108,3 @@ UserRouter.get("/User/:id/wagers", async (req, res) => {
       .json({ message: "Failed to find User" });
   }
 });
-
-export default UserRouter;

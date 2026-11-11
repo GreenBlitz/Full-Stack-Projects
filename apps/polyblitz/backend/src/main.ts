@@ -9,10 +9,11 @@ import { LeaderBoardRouter } from "./routes/LeaderBoardRouter";
 import { UserRouter } from "./routes/UserRouter";
 import { BetRouter } from "./routes/BetRouter";
 
+const URL = "http://localhost:3000";
 const app = express();
 app.use((req, res, next) => {
   const origin = req.headers.origin;
-  if (origin === "http://localhost:3000") {
+  if (origin === URL) {
     res.setHeader("Access-Control-Allow-Origin", origin);
   }
   res.setHeader("Vary", "Origin");
