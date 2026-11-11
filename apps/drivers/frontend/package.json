@@ -1,5 +1,5 @@
 {
-  "name": "template-frontend",
+  "name": "drivers-frontend",
   "version": "1.0.0",
   "description": "Frontend for the application",
   "main": "index.js",
