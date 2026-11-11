@@ -31,7 +31,6 @@ function stringToMatch(string: string): Match {
 
 const logFileSchema = z.object({
   name: z.string(),
-  file: z.instanceof(Express.Multer.File),
   date: z.date(),
   match: matchSchema,
 });
@@ -54,12 +53,12 @@ export function fileToLogFile(file: Express.Multer.File): LogFile {
   const match = stringToMatch(
     name.slice(name.lastIndexOf("_") + 1, name.lastIndexOf(".")),
   );
-  return { name, file, date, match };
+  return { name, date, match };
 }
 
 export const drivingScoresSchema = z.object({
   joystickNormSpeedPeaks: z.number(),
-  joystickAngleSpeedPeaks: z.number(),
+  joystickAngularSpeedPeaks: z.number(),
 });
 
 export const drivingDataSchema = z.object({
