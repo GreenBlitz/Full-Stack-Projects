@@ -70,7 +70,7 @@ UserRouter.get("/User/:id", async (req, res) => {
 });
 
 UserRouter.get("/User/:id/wagers", async (req, res) => {
-  const numberOfArraysInWager = 2;
+  const NUMBER_OF_ARRAYS_IN_WAGER = 2;
   const result = UserSchema.shape.id.safeParse(Number(req.params.id));
   if (!result.success) {
     res.status(StatusCodes.BAD_REQUEST).json(result.error.issues);
@@ -93,7 +93,7 @@ UserRouter.get("/User/:id/wagers", async (req, res) => {
         optionsTwo.map((option) => option.wagers),
       ];
       const userWagers = wagers
-        .flat(numberOfArraysInWager)
+        .flat(NUMBER_OF_ARRAYS_IN_WAGER)
         .filter((wager) => wager.userID === id);
       res.status(StatusCodes.OK).json(userWagers);
     } catch (error) {

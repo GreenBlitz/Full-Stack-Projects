@@ -5,9 +5,9 @@ import { apiRouter } from "./routes";
 import { Collection } from "mongodb";
 import { openDatabase } from "./db";
 import { User, bet } from "@repo/polyblitz-types";
-import LeaderBoardRouter from "./routes/LeaderBoardRouter";
-import UserRouter from "./routes/UserRouter";
-import BetRouter from "./routes/BetRouter";
+import { LeaderBoardRouter } from "./routes/LeaderBoardRouter";
+import { UserRouter } from "./routes/UserRouter";
+import { BetRouter } from "./routes/BetRouter";
 
 const app = express();
 app.use((req, res, next) => {
