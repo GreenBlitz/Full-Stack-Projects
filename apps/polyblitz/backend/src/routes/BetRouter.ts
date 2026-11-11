@@ -1,13 +1,21 @@
 import { Router } from "express";
-import { GetACollection } from "../main";
+import { GetBetCollection } from "../main";
 import { BetSchema } from "@repo/polyblitz-types";
 import { StatusCodes } from "http-status-codes";
 
-const BetRouter: Router = Router();
+export const BetRouter: Router = Router();
+
+async function findNewid(): Promise<number> {
+  const betIDarray = GetBetCollection()
+    .find({}, { projection: { name: 0, money: 0, isAdmin: 0 } })
+    .toArray();
+  const usedIds = (await betIDarray).map((user) => user.id);
+  return Math.max(0, ...usedIds) + 1;
+}
 
 BetRouter.get("/bets", async (req, res) => {
   try {
-    const bets = await GetACollection("Bet").find({}).toArray();
+    const bets = await GetBetCollection().find({}).toArray();
     res.status(StatusCodes.OK).json(bets);
   } catch (error) {
     console.error("Failed to get bets:", error);
@@ -18,13 +26,16 @@ BetRouter.get("/bets", async (req, res) => {
 });
 
 BetRouter.post("/bets", async (req, res) => {
-  const result = BetSchema.safeParse(req.body);
+  const result = BetSchema.omit({ id: true }).safeParse(req.body);
   if (!result.success) {
     res.status(StatusCodes.BAD_REQUEST).json(result.error.issues);
     return;
   }
   try {
-    await GetACollection("Bet").insertOne(result.data);
+    await GetBetCollection().insertOne({
+      ...result.data,
+      id: await findNewid(),
+    });
     res.status(StatusCodes.CREATED).json({ message: "inserted" });
   } catch (error) {
     console.error("Failed to create bet:", error);
@@ -43,7 +54,7 @@ BetRouter.get("/bets/:id", async (req, res) => {
   const id = result.data;
 
   try {
-    const bet = await GetACollection("Bet").findOne({ id: id });
+    const bet = await GetBetCollection().findOne({ id: id });
     if (!bet) {
       res.status(StatusCodes.NOT_FOUND).json({ message: "bet not found" });
       return;
@@ -56,5 +67,3 @@ BetRouter.get("/bets/:id", async (req, res) => {
       .json({ message: "Failed to find bet" });
   }
 });
-
-export default BetRouter;

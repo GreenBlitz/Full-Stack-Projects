@@ -10,6 +10,24 @@ import UserRouter from "./routes/UserRouter";
 import BetRouter from "./routes/BetRouter";
 
 const app = express();
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin === "http://localhost:3000") {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+  res.setHeader("Vary", "Origin");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+  );
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  if (req.method === "OPTIONS") {
+    res.sendStatus(204);
+    return;
+  }
+  next();
+});
 app.use(express.json());
 app.use("/api/v1", apiRouter);
 
@@ -29,6 +47,8 @@ async function initializeCollections() {
 }
 
 async function startServer() {
+  // Connect once at startup and reuse these collection handles for every request.
+  await initializeCollections();
   app.listen(port, () => {
     console.log(`Backend listening on port ${port}`);
   });
@@ -39,19 +59,12 @@ startServer().catch((error: unknown) => {
   process.exitCode = 1;
 });
 
-// Hey Karni, you are probably wondering what I did here, so I will tell you.
-// Inserting into the DB doesn't work if the function returns a union type for some reason,
-//  so I asked the AI to fix it. It added this, which changes the output type based on the input.
-export function GetACollection(name: "User"): Collection<User>;
-export function GetACollection(name: "Bet"): Collection<bet>;
-export function GetACollection(
-  name: "User" | "Bet",
-): Collection<User> | Collection<bet> {
-  if (name === "User") {
-    if (!UserCollection) throw new Error("User collection is not connected");
-    return UserCollection;
-  }
+export function GetUserCollection(): Collection<User> {
+  if (!UserCollection) throw new Error("User collection is not connected");
+  return UserCollection;
+}
 
-  if (!BetCollection) throw new Error("Bet collection is not connected");
+export function GetBetCollection(): Collection<bet> {
+  if (!BetCollection) throw new Error("bet collection is not connected");
   return BetCollection;
 }

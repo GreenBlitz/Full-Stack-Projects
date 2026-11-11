@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { GetACollection } from "../main";
+import { GetBetCollection, GetUserCollection } from "../main";
 import { UserSchema, User } from "@repo/polyblitz-types";
 import { StatusCodes } from "http-status-codes";
 
-const UserRouter: Router = Router();
+export const UserRouter: Router = Router();
 
 async function findNewid(): Promise<number> {
-  const UserIDarray = GetACollection("User")
+  const UserIDarray = GetUserCollection()
     .find({}, { projection: { name: 0, money: 0, isAdmin: 0 } })
     .toArray();
   const usedIds = (await UserIDarray).map((user) => user.id);
@@ -14,20 +14,26 @@ async function findNewid(): Promise<number> {
 }
 
 UserRouter.post("/User", async (req, res) => {
-  const result = UserSchema.safeParse(req.body);
-  if (!result.success) {
-    res.status(StatusCodes.BAD_REQUEST).json(result.error.issues);
+  const resultName = UserSchema.shape.name.safeParse(req.body.name);
+  if (!resultName.success) {
+    res.status(StatusCodes.BAD_REQUEST).json(resultName.error.issues);
+    return;
+  }
+  const resultPass = UserSchema.shape.password.safeParse(req.body.password);
+  if (!resultPass.success) {
+    res.status(StatusCodes.BAD_REQUEST).json(resultPass.error.issues);
     return;
   }
   try {
     const temp: User = {
       name: req.body.name,
-      money: req.body.money,
+      password: req.body.password,
+      money: 250,
       isAdmin: false,
       id: await findNewid(),
     };
 
-    await GetACollection("User").insertOne(temp);
+    await GetUserCollection().insertOne(temp);
 
     res.status(StatusCodes.CREATED).json({
       message: "User received!",
@@ -49,7 +55,7 @@ UserRouter.get("/User/:id", async (req, res) => {
   const id = result.data;
 
   try {
-    const User = await GetACollection("User").findOne({ id: id });
+    const User = await GetUserCollection().findOne({ id: id });
     if (!User) {
       res.status(StatusCodes.NOT_FOUND).json({ message: "User not found" });
       return;
@@ -64,6 +70,7 @@ UserRouter.get("/User/:id", async (req, res) => {
 });
 
 UserRouter.get("/User/:id/wagers", async (req, res) => {
+  const numberOfArraysInWager = 2;
   const result = UserSchema.shape.id.safeParse(Number(req.params.id));
   if (!result.success) {
     res.status(StatusCodes.BAD_REQUEST).json(result.error.issues);
@@ -72,20 +79,22 @@ UserRouter.get("/User/:id/wagers", async (req, res) => {
   const id = result.data;
 
   try {
-    const User = await GetACollection("User").findOne({ id: id });
+    const User = await GetUserCollection().findOne({ id: id });
     if (!User) {
       res.status(StatusCodes.NOT_FOUND).json({ message: "User not found" });
       return;
     }
     try {
-      const bets = await GetACollection("Bet").find({}).toArray();
+      const bets = await GetBetCollection().find({}).toArray();
       const optionsOne = bets.map((bet) => bet.optionOne);
       const optionsTwo = bets.map((bet) => bet.optionTwo);
       const wagers = [
         optionsOne.map((option) => option.wagers),
         optionsTwo.map((option) => option.wagers),
       ];
-      const userWagers = wagers.flat(2).filter((wager) => wager.userID === id);
+      const userWagers = wagers
+        .flat(numberOfArraysInWager)
+        .filter((wager) => wager.userID === id);
       res.status(StatusCodes.OK).json(userWagers);
     } catch (error) {
       res

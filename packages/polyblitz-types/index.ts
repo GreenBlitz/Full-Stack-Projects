@@ -1,3 +1,4 @@
+import { MdPassword } from "react-icons/md";
 import { z } from "zod";
 
 export const UserSchema = z.object({
@@ -5,6 +6,7 @@ export const UserSchema = z.object({
   id: z.number(),
   money: z.number(),
   isAdmin: z.boolean(),
+  password: z.string(),
 });
 
 export const WagerSchema = z.object({
