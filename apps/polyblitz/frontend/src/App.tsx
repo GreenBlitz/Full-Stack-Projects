@@ -1,35 +1,19 @@
 // בס"ד
 import { useState, type FC } from "react";
+import type { User } from "@repo/polyblitz-types";
+import { AddUser } from "./pages/sign_up";
+import { Login } from "./pages/log_in";
 
-const counterStartingValue = 0;
-const countIncrement = 1;
-const maxCountingValue = 5;
-const importantMessage = "MI BOMBO";
+export type PublicUser = Omit<User, "password">;
+
 const App: FC = () => {
-  const [count, setCount] = useState<string | number>(counterStartingValue);
-
+  const [user, setUser] = useState<PublicUser | null>(null);
   return (
-    <div className="mx-auto">
-      <h1>GreenBlitz Full-Stack Project:</h1>
-      <div className="card">
-        <button
-          onClick={() => {
-            setCount((prevCount) =>
-              typeof prevCount === "number"
-                ? prevCount >= maxCountingValue
-                  ? importantMessage
-                  : prevCount + countIncrement
-                : prevCount + "!",
-            );
-          }}
-        >
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-    </div>
+    <>
+      <AddUser onSignUp={setUser}></AddUser>
+      <Login onLogin={setUser}></Login>
+      {user && <p>Current user: {user.name}</p>}
+    </>
   );
 };
 
