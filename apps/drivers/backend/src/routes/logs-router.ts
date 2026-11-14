@@ -1,4 +1,4 @@
-import express, { Router } from "express";
+import { Router } from "express";
 import multer from "multer";
 import { runPythonScript } from "@repo/python";
 import {
@@ -9,7 +9,6 @@ import {
 import { db } from "../db";
 
 export const logsRouter = Router();
-logsRouter.use(express.json());
 
 const upload = multer({
   dest: "temp/uploads/",
@@ -22,9 +21,10 @@ logsRouter.post("/", upload.single("file"), async (req, res) => {
   if (req.file) {
     const logFile = fileToLogFile(req.file);
 
-    const script = await runPythonScript("scripts/wpilog_parsing/main.py", [
-      req.file.path,
-    ]);
+    const script = await runPythonScript(
+      "../../../scripts/wpilog_parsing/main.py",
+      [req.file.path],
+    );
     const drivingScores = drivingScoresSchema.parse(JSON.parse(script));
     const drivingData: DrivingData = { log: logFile, scores: drivingScores };
 

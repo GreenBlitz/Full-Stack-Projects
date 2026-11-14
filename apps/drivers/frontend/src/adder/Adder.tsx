@@ -8,7 +8,7 @@ export const Adder = () => {
     const file = changeEvent.target.files?.item(0) as File;
     const formData = new FormData();
     formData.append("file", file);
-    axios.post("http://localhost:3000/logs/", formData).then((res) => {
+    axios.post("http://localhost:4590/api/v1/logs/", formData).then((res) => {
       setMessage(res.statusText);
     });
   };

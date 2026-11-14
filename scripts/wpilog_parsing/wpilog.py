@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from bisect import bisect_right
 from dataclasses import dataclass
+from itertools import pairwise
 from typing import Any, Callable, Dict, Iterator, NamedTuple, List, Optional
 from wpiutil.log import DataLogReader, DataLogRecord
 
@@ -38,21 +39,22 @@ class Signal:
         differentiated_signal = Signal(f"differentiated {self.name}", self.type, self.metadata)
         for (current_time, current_value), (next_time, next_value) in pairwise(self):
             differentiated_signal.append(next_time, (next_value - current_value) / (next_time - current_time))
+        return differentiated_signal
 
     def append(self, timestamp: float, value: Any) -> None:
         self._values.append(value)
         self._times.append(timestamp)
 
     def __iter__(self) -> Iterator[TimedValue]:
-        return map(TimedValue, self._times, self._vals)
+        return map(TimedValue, self._times, self._values)
 
     def __len__(self) -> int:
         return len(self._values)
 
     def __getitem__(self, i):
         if isinstance(i, slice):
-            return list(map(TimedValue, self._times[i], self._vals[i]))
-        return TimedValue(self._times[i], self._vals[i])
+            return list(map(TimedValue, self._times[i], self._values[i]))
+        return TimedValue(self._times[i], self._values[i])
 
     def __repr__(self) -> str:
         return f"Signal({self.name!r}, type={self.type!r}, samples={len(self)})"
@@ -117,7 +119,7 @@ class WpiLog:
     def __getitem__(self, name: str) -> Signal:
         return self._signals[name]
 
-    def get(self, name: str, default=None):
+    def get(self, name: str, default=Signal("", "", "")) -> Signal:
         return self._signals.get(name, default)
 
     def __contains__(self, name: str) -> bool:

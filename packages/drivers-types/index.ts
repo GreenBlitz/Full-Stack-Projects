@@ -38,6 +38,9 @@ const logFileSchema = z.object({
 type LogFile = z.infer<typeof logFileSchema>;
 
 function stringToDate(string: string) {
+  if (string[0] !== "2") {
+    return new Date();
+  }
   const year = Number(string.slice(0, 4));
   const month = Number(string.slice(4, 6));
   const day = Number(string.slice(6, 8));

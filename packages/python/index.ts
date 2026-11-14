@@ -5,7 +5,7 @@ export function runPythonScript(
   args: string[],
 ): Promise<string> {
   return new Promise((resolve, reject) => {
-    const pythonProcess = spawn("python3", [scriptPath, ...args]);
+    const pythonProcess = spawn("python", [scriptPath, ...args]);
     let outputData = "";
     let errorData = "";
     pythonProcess.stdout.on("data", (data) => {
