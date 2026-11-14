@@ -6,6 +6,7 @@ import {
   drivingScoresSchema,
   fileToLogFile,
 } from "@repo/drivers-types";
+import { db } from "../db";
 
 export const logsRouter = Router();
 logsRouter.use(express.json());
@@ -15,7 +16,9 @@ const upload = multer({
   limits: { fileSize: 200 * 1024 * 1024 },
 });
 
-logsRouter.post("/", upload.single("logFile"), async (req, res) => {
+const drivingDataCollection = db.collection<DrivingData>("logs");
+
+logsRouter.post("/", upload.single("file"), async (req, res) => {
   if (req.file) {
     const logFile = fileToLogFile(req.file);
 
@@ -24,6 +27,9 @@ logsRouter.post("/", upload.single("logFile"), async (req, res) => {
     ]);
     const drivingScores = drivingScoresSchema.parse(JSON.parse(script));
     const drivingData: DrivingData = { log: logFile, scores: drivingScores };
+
+    const insertion = await drivingDataCollection.insertOne(drivingData);
+    res.sendStatus(insertion.acknowledged ? 201 : 500);
   } else {
     res.sendStatus(400);
   }
