@@ -1,7 +1,12 @@
 import type { FormEvent } from "react";
 import axios from "axios";
+import type { PublicUser } from "../App";
 
-export function AddUser() {
+export function AddUser({
+  onSignUp,
+}: {
+  onSignUp: (user: PublicUser) => void;
+}) {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -17,6 +22,7 @@ export function AddUser() {
         },
       );
       console.log(response.data);
+      onSignUp(response.data);
       form.reset();
     } catch (error) {
       console.error("Could not add user:", error);
@@ -27,7 +33,7 @@ export function AddUser() {
     <form onSubmit={handleSubmit}>
       <input name="name" placeholder="enter user name" />
       <input name="password" placeholder="enter password" />
-      <button type="submit">Add User</button>
+      <button type="submit">make new user</button>
     </form>
   );
 }
