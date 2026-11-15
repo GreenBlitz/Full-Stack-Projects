@@ -34,9 +34,9 @@ app.use("/api", apiRouter);
 
 const defaultPort = 4590;
 const port = process.env.BACKEND_PORT ?? defaultPort;
-app.use("Users", userRouter);
-app.use("Bet", betRouter);
-app.use("LeaderBoard", leaderBoardRouter);
+app.use("/Users", userRouter);
+app.use("/Bet", betRouter);
+app.use("/LeaderBoard", leaderBoardRouter);
 
 let UserCollection: Collection<User> | undefined;
 let BetCollection: Collection<Bet> | undefined;
