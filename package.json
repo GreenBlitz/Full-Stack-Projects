@@ -42,7 +42,7 @@
     "http-status-codes": "^2.3.0",
     "io-ts": "^2.2.22",
     "is-odd": "^3.0.1",
-    "mongodb": "^7.3.0",
+    "mongodb": "7.8",
     "qrcode.react": "^4.2.0",
     "react": "^19.2.4",
     "react-chartjs-2": "^5.3.1",

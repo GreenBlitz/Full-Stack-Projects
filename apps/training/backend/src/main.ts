@@ -1,6 +1,8 @@
 import express from "express";
 import helmet from "helmet";
 import cors from "cors";
+import { type DuckProps } from "../../frontend/src/Duck/duckComponents/Duck";
+import { MongoClient, ServerApiVersion } from "mongodb";
 
 const app = express();
 
@@ -8,11 +10,31 @@ app.use(cors());
 app.use(express.json());
 app.use(helmet());
 
-const ducks: DuckProps[] = [
-  { name: "Ido", color: "White", age: 15 },
-  { name: "Zib", color: "Idk What Color I Am", age: 15 },
-  { name: "Adam Dar", color: "Yellow", age: 16 },
-];
+const connection = "mongodb://localhost:24590";
+const client = new MongoClient(connection, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  },
+});
+
+async function runStableAPIConnect() {
+  try {
+    // Connect the client to the server (optional starting in v4.7)
+    await client.connect();
+
+    // Send a ping to confirm a successful connection
+    const result = await client.db('admin').command({ ping: 1 });
+    console.log(
+      'Pinged your deployment. You successfully connected to MongoDB!'
+    );
+    return result;
+  } finally {
+    // Ensures that the client will close when you finish/error
+    await client.close();
+  }
+}
 
 const allowedColors: string[] = [
   "AliceBlue",
@@ -178,12 +200,6 @@ app.get("/", (req, res) => {
   res.send("Welcome to my server!");
 });
 
-interface DuckProps {
-  name: string;
-  color: string;
-  age: number;
-}
-
 app.get("/ducks/:name", (req, res) => {
   const { name } = req.params;
   const duck = ducks.find((d) => {
@@ -204,7 +220,7 @@ app.post(
   (req, res, next) => {
     if (
       req.body.name !== undefined &&
-      allowedColors.findIndex((color)=>req.body.color===color) !== -1 &&
+      allowedColors.findIndex((color) => req.body.color === color) !== -1 &&
       req.body.age > 0
     )
       next();

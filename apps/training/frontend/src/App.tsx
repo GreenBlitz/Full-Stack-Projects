@@ -1,5 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { Duck, type DuckProps } from "./Duck/duckComponents/Duck";
+import { Ducks } from "./Duck/duckComponents/Ducks";
 
 function App() {
   const [name, setName] = useState<string>("");
@@ -7,17 +9,11 @@ function App() {
   const [age, setAge] = useState<number>();
   const [password, setPassword] = useState<string>("");
   const [nameToUpdate, setNameToUpdate] = useState<string>("");
-  const [filteredDucks, setFilteredDucks] = useState("");
-  const [ducks, setDucks] = useState();
+  const [filteredDucks, setFilteredDucks] = useState([]);
+  const [ducks, setDucks] = useState([]);
   const [duck, setDuck] = useState<string>("No duck was sent/deleted/edited");
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<string>("");
-
-  interface DuckProps {
-    name: string;
-    color: string;
-    age: number;
-  }
 
   async function sendDuck(duck: DuckProps) {
     setLoading("Loading...");
@@ -28,7 +24,7 @@ function App() {
         },
       });
       setDuck(JSON.stringify(response.data, null, 2));
-            setError("");
+      setError("");
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         setError(error.response?.data?.message ?? error.message);
@@ -95,7 +91,7 @@ function App() {
   }
 
   async function filterDucks({ name, color, age }: DuckProps) {
-    setLoading("Loading...")
+    setLoading("Loading...");
     try {
       const res = await axios.get("http://localhost:4590/ducks", {
         params: {
@@ -104,7 +100,7 @@ function App() {
           age: age,
         },
       });
-      setFilteredDucks(JSON.stringify(res.data.filteredDucks, null, 2));
+      setFilteredDucks(res.data.filteredDucks);
       setDucks(res.data.ducks);
       setError("");
     } catch (error: unknown) {
@@ -206,10 +202,10 @@ function App() {
         />
       </form>
       <div>ducks</div>
-      <div>{JSON.stringify(ducks, null, 2)}</div>
+      <Ducks ducks={ducks} />
       <br />
       <div>filtered ducks</div>
-      <div>{filteredDucks}</div>
+      <Ducks ducks={filteredDucks} />
       {error && <div>{error}</div>}
       {loading && <div>{loading}</div>}
     </>
