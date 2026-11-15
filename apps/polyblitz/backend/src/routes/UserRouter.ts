@@ -5,6 +5,17 @@ import { StatusCodes } from "http-status-codes";
 
 export const UserRouter: Router = Router();
 
+export async function getUserByName(name: string): Promise<User | null> {
+  return GetUserCollection().findOne({ name });
+}
+function checkIfNameIsUnique(name: string): boolean {
+  const temp = GetUserCollection().find({ name }).toArray;
+  if (temp.length > 0) {
+    return false;
+  }
+  return true;
+}
+
 async function findNewid(): Promise<number> {
   const UserIDarray = GetUserCollection()
     .find({}, { projection: { name: 0, money: 0, isAdmin: 0 } })
@@ -24,6 +35,12 @@ UserRouter.post("/User", async (req, res) => {
     res.status(StatusCodes.BAD_REQUEST).json(resultPass.error.issues);
     return;
   }
+  const IsNameUnique = checkIfNameIsUnique(req.body.name);
+  if (IsNameUnique) {
+    res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "User name already taken" });
+  }
   try {
     const temp: User = {
       name: req.body.name,
@@ -35,14 +52,44 @@ UserRouter.post("/User", async (req, res) => {
 
     await GetUserCollection().insertOne(temp);
 
-    res.status(StatusCodes.CREATED).json({
-      message: "User received!",
-    });
+    const { password: _password, ...publicUser } = temp;
+    res.status(StatusCodes.CREATED).json(publicUser);
   } catch (error) {
     console.error("Failed to add user :", error);
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ message: "Failed to add user" });
+  }
+});
+
+UserRouter.post("/login", async (req, res) => {
+  const resultName = UserSchema.shape.name.safeParse(req.body.name);
+  if (!resultName.success) {
+    res.status(StatusCodes.BAD_REQUEST).json(resultName.error.issues);
+    return;
+  }
+  const resultPass = UserSchema.shape.password.safeParse(req.body.password);
+  if (!resultPass.success && !resultName.success) {
+    res.status(StatusCodes.BAD_REQUEST).json(resultPass.error.issues);
+    return;
+  }
+
+  try {
+    const user = await getUserByName(resultName.data);
+    if (!user || user.password !== resultPass.data) {
+      res
+        .status(StatusCodes.UNAUTHORIZED)
+        .json({ message: "Invalid name or password" });
+      return;
+    }
+
+    const { password: _password, ...publicUser } = user;
+    res.status(StatusCodes.OK).json(publicUser);
+  } catch (error) {
+    console.error("Failed to log in:", error);
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: "Login failed" });
   }
 });
 
@@ -108,5 +155,3 @@ UserRouter.get("/User/:id/wagers", async (req, res) => {
       .json({ message: "Failed to find User" });
   }
 });
-
-export default UserRouter;
