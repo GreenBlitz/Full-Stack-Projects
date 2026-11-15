@@ -8,6 +8,13 @@ export const UserRouter: Router = Router();
 export async function getUserByName(name: string): Promise<User | null> {
   return GetUserCollection().findOne({ name });
 }
+function checkIfNameIsUnique(name: string): boolean {
+  const temp = GetUserCollection().find({ name }).toArray;
+  if (temp.length > 0) {
+    return false;
+  }
+  return true;
+}
 
 async function findNewid(): Promise<number> {
   const UserIDarray = GetUserCollection()
@@ -27,6 +34,12 @@ UserRouter.post("/User", async (req, res) => {
   if (!resultPass.success) {
     res.status(StatusCodes.BAD_REQUEST).json(resultPass.error.issues);
     return;
+  }
+  const IsNameUnique = checkIfNameIsUnique(req.body.name);
+  if (IsNameUnique) {
+    res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: "User name already taken" });
   }
   try {
     const temp: User = {
@@ -56,7 +69,7 @@ UserRouter.post("/login", async (req, res) => {
     return;
   }
   const resultPass = UserSchema.shape.password.safeParse(req.body.password);
-  if (!resultPass.success) {
+  if (!resultPass.success && !resultName.success) {
     res.status(StatusCodes.BAD_REQUEST).json(resultPass.error.issues);
     return;
   }

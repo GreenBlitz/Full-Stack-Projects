@@ -1,6 +1,7 @@
 import type { FormEvent } from "react";
 import axios from "axios";
-import type { PublicUser } from "../App";
+import type { PublicUser } from "@repo/polyblitz-types";
+import type { FrontEndURL } from "../main";
 
 export function AddUser({
   onSignUp,
@@ -14,18 +15,15 @@ export function AddUser({
     const formData = new FormData(form);
 
     try {
-      const response = await axios.post(
-        "http://localhost:4590/api/Users/User",
-        {
-          name: String(formData.get("name")),
-          password: String(formData.get("password")),
-        },
-      );
+      const response = await axios.post("`${FrontEndURL}`/Users/User", {
+        name: String(formData.get("name")),
+        password: String(formData.get("password")),
+      });
       console.log(response.data);
       onSignUp(response.data);
       form.reset();
     } catch (error) {
-      console.error("Could not add user:", error);
+      console.error("Could not sign in:", error);
     }
   };
 
@@ -33,7 +31,7 @@ export function AddUser({
     <form onSubmit={handleSubmit}>
       <input name="name" placeholder="enter user name" />
       <input name="password" placeholder="enter password" />
-      <button type="submit">make new user</button>
+      <button type="submit">sign in</button>
     </form>
   );
 }

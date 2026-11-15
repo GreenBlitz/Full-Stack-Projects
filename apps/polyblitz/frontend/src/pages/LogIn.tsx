@@ -1,6 +1,6 @@
 import type { FormEvent } from "react";
 import axios from "axios";
-import type { PublicUser } from "../App";
+import type { PublicUser } from "@repo/polyblitz-types";
 
 export function Login({ onLogin }: { onLogin: (user: PublicUser) => void }) {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
