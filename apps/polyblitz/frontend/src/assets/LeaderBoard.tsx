@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
-import { fetchLeaderboard, type LeaderboardUser } from "./api";
+import axios from "axios";
+import type { User } from "@repo/polyblitz-types"
 
 export function Leaderboard() {
-  const [users, setUsers] = useState<LeaderboardUser[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchLeaderboard()
-      .then((data) => setUsers(data))
+    axios
+      .get("http://localhost:4590/api/leaderboard/leaderboard")
+      .then((res) => setUsers(res.data.sortedUsers))
       .catch((err) => setError(err.message));
   }, []);
 
@@ -16,8 +18,8 @@ export function Leaderboard() {
   return (
     <ol>
       {users.map((user) => (
-        <li key={user._id}>
-          {user.username}: ${user.money}
+        <li>
+          {user.name}: ${user.money}
         </li>
       ))}
     </ol>
