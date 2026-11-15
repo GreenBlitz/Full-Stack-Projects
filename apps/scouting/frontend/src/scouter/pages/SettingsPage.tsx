@@ -161,10 +161,7 @@ const SettingsPage: FC = () => {
               description="Automatically start timer when point is set"
               checked={isSettingsKey.startTimerOnSetPoint}
               onChange={(event) => {
-                updateSetting(
-                  "startTimerOnSetPoint",
-                  event.target.checked,
-                );
+                updateSetting("startTimerOnSetPoint", event.target.checked);
               }}
             />
           </div>
@@ -180,9 +177,9 @@ const SettingsPage: FC = () => {
               …), <code className="text-zinc-300">set_number</code>,{" "}
               <code className="text-zinc-300">match_number</code>, and{" "}
               <code className="text-zinc-300">red</code> /{" "}
-              <code className="text-zinc-300">blue</code> as team numbers
-              (close → middle → far). Manual rows override TBA for the same
-              match when both exist.
+              <code className="text-zinc-300">blue</code> as team numbers (close
+              → middle → far). Manual rows override TBA for the same match when
+              both exist.
             </p>
             <div className="flex flex-col gap-2">
               <label className="text-sm text-zinc-300" htmlFor="sched-comp">

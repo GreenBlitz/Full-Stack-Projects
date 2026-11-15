@@ -54,9 +54,7 @@ export const mergeSchedulePreferManual = (
   for (const slot of manualSlots) {
     byKey.set(matchSlotKey(slot.match), slot);
   }
-  return [...byKey.values()].sort((a, b) =>
-    compareMatches(a.match, b.match),
-  );
+  return [...byKey.values()].sort((a, b) => compareMatches(a.match, b.match));
 };
 
 export type ManualSchedulesByCompetition = Partial<

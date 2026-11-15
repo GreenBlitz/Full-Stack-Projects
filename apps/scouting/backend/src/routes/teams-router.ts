@@ -29,7 +29,6 @@ import { groupBy } from "fp-ts/lib/NonEmptyArray";
 import { isEmpty, mapObject } from "@repo/array-functions";
 import { foldResponse, flatTryCatch } from "@repo/flow-utils";
 
-
 export const teamsRouter = Router();
 
 const uniqueNoShowMatches = (forms: ScoutingForm[]): Match[] => {
@@ -119,9 +118,7 @@ teamsRouter.get("/", async (req, res) => {
       ),
     ),
     map((teams) => mapObject(teams, (forms) => ({ forms }))),
-    map((teams) =>
-      mapObject(teams, (team) => processTeam(team.forms)),
-    ),
+    map((teams) => mapObject(teams, (team) => processTeam(team.forms))),
     bindTo("teams"),
     foldResponse(res),
   )();

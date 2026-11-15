@@ -36,7 +36,9 @@ const ToggleSetting: FC<ToggleSettingProps> = ({
       </div>
       <span
         className={`px-3 py-1 rounded-full text-xs font-bold border ${
-          checked ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" : "bg-zinc-800 text-zinc-400 border-zinc-700"
+          checked
+            ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
+            : "bg-zinc-800 text-zinc-400 border-zinc-700"
         }`}
       >
         {checked ? "Enabled" : "Disabled"}

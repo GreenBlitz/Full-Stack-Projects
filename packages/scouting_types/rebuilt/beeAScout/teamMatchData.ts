@@ -34,7 +34,7 @@ const superCodec = t.type({
   evasionLevel: t.number,
 });
 
-const beeScoutingFormCodec = t.type({
+const teamMatchDataCodec = t.type({
   teamNumber: t.number,
   matchNumber: t.number,
   auto: autoCodec,
@@ -45,6 +45,6 @@ const beeScoutingFormCodec = t.type({
   timesStole: t.number,
 });
 
-export type BeeScoutingForm = t.TypeOf<typeof beeScoutingFormCodec>;
+export type TeamMatchData = t.TypeOf<typeof teamMatchDataCodec>;
 
 export * from "./general";
