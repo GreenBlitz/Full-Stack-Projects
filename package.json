@@ -10,7 +10,8 @@
     "deploy": "npm run build && npm run serve",
     "check-types": "turbo run check-types",
     "generate": "tsx scripts/generateProject.ts",
-    "delete": "tsx scripts/deleteProject.ts"
+    "delete": "tsx scripts/deleteProject.ts",
+    "teams": "tsx scripts/fetchTeams.ts"
   },
   "engines": {
     "node": ">=18"

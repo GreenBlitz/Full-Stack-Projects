@@ -1,8 +1,9 @@
 // בס"ד
 
 import type React from "react";
-import { useMemo, useState, useEffect } from "react";
-import type { Competition, CompetitionLeaderboard } from "@repo/scouting_types";
+import { useEffect, useMemo, useState } from "react";
+import axios from "axios";
+import type { CompetitionLeaderboard } from "@repo/scouting_types";
 import { isEmpty } from "@repo/array-functions";
 
 const leaderboardUrl = "/api/v1/leaderboard/";
@@ -13,36 +14,21 @@ export const scouterColor: Record<string, string> = {
   Roni: "text-pink-300",
 };
 
-const fetchCompetitionData = async (competition: Competition) => {
-  const params = new URLSearchParams({ competition: competition });
-  const url = `${leaderboardUrl}?${params.toString()}`;
-
-  const response = await fetch(url, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
+const fetchCompetitionData = async () => {
+  const response = await axios.get(leaderboardUrl).catch((errorText) => {
     throw new Error(`Server Error: ${errorText}`);
-  }
-
-  const data = await response.json();
+  });
+  const data = response.data;
   return data.competitionScouters as CompetitionLeaderboard;
 };
-interface ScouterLeaderboardProps {
-  competition: Competition;
-}
 
-export const Leaderboard: React.FC<ScouterLeaderboardProps> = ({
-  competition,
-}) => {
+export const Leaderboard: React.FC = () => {
   const [data, setData] = useState<CompetitionLeaderboard | null>(null);
   const [isLoading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     setLoading(true);
-    fetchCompetitionData(competition)
+    fetchCompetitionData()
       .then((res) => {
         setData(res);
         setLoading(false);
@@ -50,11 +36,11 @@ export const Leaderboard: React.FC<ScouterLeaderboardProps> = ({
       .catch(() => {
         setLoading(false);
       });
-  }, [competition]);
+  }, []);
 
   const sortedScouters = useMemo(() => {
-    if (!data?.Scouters) return [];
-    return [...data.Scouters].sort((scouter1, scouter2) => {
+    if (!data?.scouters) return [];
+    return [...data.scouters].sort((scouter1, scouter2) => {
       if (scouter2.scoutedMatches !== scouter1.scoutedMatches) {
         return scouter2.scoutedMatches - scouter1.scoutedMatches;
       }
@@ -73,7 +59,7 @@ export const Leaderboard: React.FC<ScouterLeaderboardProps> = ({
   if (!data) {
     return (
       <div className="bg-slate-900 border border-red-500/20 rounded-xl p-10 text-center text-slate-500 italic">
-        Failed to load leaderboard for {competition}.
+        Failed to load leaderboard.
       </div>
     );
   }

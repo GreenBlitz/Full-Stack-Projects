@@ -1,7 +1,7 @@
 // בס"ד
 import express from "express";
 import { apiRouter } from "./routes";
-import { startBeeScoutSync } from "./googleSheets";
+import { startGoogleSheetsSync } from "./googleSheets";
 
 const app = express();
 
@@ -14,7 +14,7 @@ app.set("query parser", "extended");
 app.use(express.json());
 app.use("/api/v1", apiRouter);
 // startUpdatingEPAS();
-startBeeScoutSync();
+startGoogleSheetsSync();
 
 app.listen(port, () => {
   console.log(`Production server running at http://localhost:${port}`);

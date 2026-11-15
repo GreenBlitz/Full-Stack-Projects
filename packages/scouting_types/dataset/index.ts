@@ -1,5 +1,3 @@
-// בס"ד
-
 import type { PointStyle } from "chart.js";
 
 export interface DataPoint {
