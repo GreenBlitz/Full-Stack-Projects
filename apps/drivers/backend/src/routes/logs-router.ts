@@ -1,5 +1,6 @@
 import { Router } from "express";
 import multer from "multer";
+import StatusCodes from "http-status-codes";
 import { runPythonScript } from "@repo/python";
 import {
   DrivingData,
@@ -25,16 +26,20 @@ logsRouter.post("/", upload.single("file"), async (req, res) => {
     const scriptResult = await runPythonScript(parsingScriptPath, [
       req.file.path,
     ]).catch((err) => {
-      res.status(500).send(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(err);
     });
     if (scriptResult) {
       const drivingScores = drivingScoresSchema.parse(JSON.parse(scriptResult));
       const drivingData: DrivingData = { log: logFile, scores: drivingScores };
 
       const insertion = await drivingDataCollection.insertOne(drivingData);
-      res.sendStatus(insertion.acknowledged ? 201 : 500);
+      res.sendStatus(
+        insertion.acknowledged
+          ? StatusCodes.CREATED
+          : StatusCodes.INTERNAL_SERVER_ERROR,
+      );
     }
   } else {
-    res.sendStatus(400);
+    res.sendStatus(StatusCodes.BAD_REQUEST);
   }
 });
