@@ -1,4 +1,3 @@
-import { MdPassword } from "react-icons/md";
 import { z } from "zod";
 
 export const UserSchema = z.object({
@@ -32,4 +31,4 @@ export const BetSchema = z.object({
 export type User = z.infer<typeof UserSchema>;
 export type Wager = z.infer<typeof WagerSchema>;
 export type BetOption = z.infer<typeof BetOptionSchema>;
-export type bet = z.infer<typeof BetSchema>;
+export type Bet = z.infer<typeof BetSchema>;

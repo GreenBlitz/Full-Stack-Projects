@@ -4,10 +4,10 @@ import express from "express";
 import { apiRouter } from "./routes";
 import { Collection } from "mongodb";
 import { openDatabase } from "./db";
-import { User, bet } from "@repo/polyblitz-types";
-import { LeaderBoardRouter } from "./routes/LeaderBoardRouter";
-import { UserRouter } from "./routes/UserRouter";
-import { BetRouter } from "./routes/BetRouter";
+import { User, Bet } from "@repo/polyblitz-types";
+import { LeaderBoardRouter as leaderBoardRouter } from "./routes/LeaderBoardRouter";
+import { UserRouter as userRouter } from "./routes/UserRouter";
+import { BetRouter as betRouter } from "./routes/BetRouter";
 
 const app = express();
 app.use((req, res, next) => {
@@ -29,21 +29,21 @@ app.use((req, res, next) => {
   next();
 });
 app.use(express.json());
-app.use("/api/v1", apiRouter);
+app.use("/api", apiRouter);
 
 const defaultPort = 4590;
 const port = process.env.BACKEND_PORT ?? defaultPort;
-app.use("/api/Users", UserRouter);
-app.use("/api/Bet", BetRouter);
-app.use("/api/LeaderBoard", LeaderBoardRouter);
+app.use("/Users", userRouter);
+app.use("/Bet", betRouter);
+app.use("/LeaderBoard", leaderBoardRouter);
 
 let UserCollection: Collection<User> | undefined;
-let BetCollection: Collection<bet> | undefined;
+let BetCollection: Collection<Bet> | undefined;
 
 async function initializeCollections() {
   const db = await openDatabase();
   UserCollection = db.collection<User>("Users");
-  BetCollection = db.collection<bet>("Bets");
+  BetCollection = db.collection<Bet>("Bets");
 }
 
 async function startServer() {
@@ -64,7 +64,7 @@ export function GetUserCollection(): Collection<User> {
   return UserCollection;
 }
 
-export function GetBetCollection(): Collection<bet> {
+export function GetBetCollection(): Collection<Bet> {
   if (!BetCollection) throw new Error("bet collection is not connected");
   return BetCollection;
 }
