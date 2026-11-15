@@ -1,4 +1,5 @@
 // בס"ד
+import cors from "cors";
 import express from "express";
 import { apiRouter } from "./routes";
 
@@ -7,6 +8,8 @@ const app = express();
 const defaultPort = 4590;
 const port = process.env.BACKEND_PORT ?? defaultPort;
 
+app.use(cors({ origin: "http://localhost:3000" }));
+app.use(express.json());
 app.use("/api/v1", apiRouter);
 
 app.listen(port, () => {
