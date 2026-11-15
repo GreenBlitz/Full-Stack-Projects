@@ -1,7 +1,7 @@
 import type { FormEvent } from "react";
 import axios from "axios";
 import type { PublicUser } from "@repo/polyblitz-types";
-import type { FrontEndURL } from "../main";
+import { FrontEndURL } from "../App";
 
 export function AddUser({
   onSignUp,
@@ -15,7 +15,7 @@ export function AddUser({
     const formData = new FormData(form);
 
     try {
-      const response = await axios.post("`${FrontEndURL}`/Users/User", {
+      const response = await axios.post(`${FrontEndURL}/Users/User`, {
         name: String(formData.get("name")),
         password: String(formData.get("password")),
       });

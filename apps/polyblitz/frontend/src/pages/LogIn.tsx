@@ -1,6 +1,7 @@
 import type { FormEvent } from "react";
 import axios from "axios";
 import type { PublicUser } from "@repo/polyblitz-types";
+import { FrontEndURL } from "../App";
 
 export function Login({ onLogin }: { onLogin: (user: PublicUser) => void }) {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -12,10 +13,10 @@ export function Login({ onLogin }: { onLogin: (user: PublicUser) => void }) {
     try {
       const name = String(formData.get("name"));
       const password = String(formData.get("password"));
-      const response = await axios.post(
-        "http://localhost:4590/api/Users/login",
-        { name: name, password: password },
-      );
+      const response = await axios.post(`${FrontEndURL}/Users/login`, {
+        name: name,
+        password: password,
+      });
       console.log("Login successful:", response.data);
       onLogin(response.data);
       form.reset();
