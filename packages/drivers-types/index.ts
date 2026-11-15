@@ -42,7 +42,7 @@ function stringToDate(string: string) {
     return new Date();
   }
   const year = Number(string.slice(0, 4));
-  const month = Number(string.slice(4, 6));
+  const month = Number(string.slice(4, 6)) - 1;
   const day = Number(string.slice(6, 8));
   const hour = Number(string.slice(9, 11));
   const minute = Number(string.slice(11, 13));

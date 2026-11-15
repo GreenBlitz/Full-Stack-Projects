@@ -16,20 +16,24 @@ const upload = multer({
 });
 
 const drivingDataCollection = db.collection<DrivingData>("logs");
+const parsingScriptPath = process.cwd() + "/scripts/wpilog_parsing/main.py";
 
 logsRouter.post("/", upload.single("file"), async (req, res) => {
   if (req.file) {
     const logFile = fileToLogFile(req.file);
 
-    const script = await runPythonScript(
-      "../../../scripts/wpilog_parsing/main.py",
-      [req.file.path],
-    );
-    const drivingScores = drivingScoresSchema.parse(JSON.parse(script));
-    const drivingData: DrivingData = { log: logFile, scores: drivingScores };
+    const scriptResult = await runPythonScript(parsingScriptPath, [
+      req.file.path,
+    ]).catch((err) => {
+      res.status(500).send(err);
+    });
+    if (scriptResult) {
+      const drivingScores = drivingScoresSchema.parse(JSON.parse(scriptResult));
+      const drivingData: DrivingData = { log: logFile, scores: drivingScores };
 
-    const insertion = await drivingDataCollection.insertOne(drivingData);
-    res.sendStatus(insertion.acknowledged ? 201 : 500);
+      const insertion = await drivingDataCollection.insertOne(drivingData);
+      res.sendStatus(insertion.acknowledged ? 201 : 500);
+    }
   } else {
     res.sendStatus(400);
   }

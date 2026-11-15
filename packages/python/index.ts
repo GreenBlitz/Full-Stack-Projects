@@ -6,6 +6,13 @@ export function runPythonScript(
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     const pythonProcess = spawn("python", [scriptPath, ...args]);
+    pythonProcess.on("error", (error) => {
+      if (error.message.includes("ENOENT")) {
+        return reject("Python is not installed or not in PATH");
+      } else {
+        return reject(`Python script failed to start: ${error.message}`);
+      }
+    });
     let outputData = "";
     let errorData = "";
     pythonProcess.stdout.on("data", (data) => {
@@ -17,7 +24,7 @@ export function runPythonScript(
 
     pythonProcess.on("close", (code) => {
       if (code !== 0) {
-        return reject(new Error(`Python script failed: ${errorData}`));
+        return reject(`Python script failed: ${errorData}`);
       }
       resolve(outputData);
     });

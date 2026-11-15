@@ -23,10 +23,10 @@ def joystick_speed_peaks(log: WpiLog):
     norm_speed_peaks_counter = 0
     angle_speed_peaks_counter = 0
     for norm_speed in joystick_norm_speed_signal:
-        if norm_speed.value > MAXIMUM_JOYSTICK_NORM_SPEED:
+        if math.fabs(norm_speed.value) > MAXIMUM_JOYSTICK_NORM_SPEED:
             norm_speed_peaks_counter += 1
     for angle_speed in joystick_angle_speed_signal:
-        if angle_speed.value > MAXIMUM_JOYSTICK_ANGLE_SPEED:
+        if math.fabs(angle_speed.value) > MAXIMUM_JOYSTICK_ANGLE_SPEED:
             angle_speed_peaks_counter += 1
 
     return norm_speed_peaks_counter, angle_speed_peaks_counter
