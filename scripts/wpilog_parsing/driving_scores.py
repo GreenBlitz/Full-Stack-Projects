@@ -7,6 +7,14 @@ MAXIMUM_JOYSTICK_NORM_SPEED = 10
 MAXIMUM_JOYSTICK_ANGLE_SPEED = 10
 
 
+def get_driving_scores_JSON(log: WpiLog):
+    joystick_norm_speed_peaks, joystick_angular_speed_peaks = joystick_speed_peaks(log)
+    return {
+        "joystickNormSpeedPeaks": joystick_norm_speed_peaks,
+        "joystickAngularSpeedPeaks": joystick_angular_speed_peaks
+    }
+
+
 def joystick_speed_peaks(log: WpiLog):
     joystick_axis_values_signal = log.get(JOYSTICK_AXIS_VALUES_SIGNAL_NAME)
     joystick_norm_signal = Signal("joystick norm", "float")
