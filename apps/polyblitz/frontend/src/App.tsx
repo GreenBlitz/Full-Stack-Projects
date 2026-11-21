@@ -1,36 +1,25 @@
 // בס"ד
-import { useState, type FC } from "react";
+import { use, useState, type FC } from "react";
+import { BrowserRouter as Router, Route, Link, Routes } from "react-router-dom";
+import Navbar from "./Navbar/Navbar";
+import Home from "./components/Home";
+import Products from "./components/Products";
+import Services from "./components/Services";
 
-const counterStartingValue = 0;
-const countIncrement = 1;
-const maxCountingValue = 5;
-const importantMessage = "MI BOMBO";
 const App: FC = () => {
-  const [count, setCount] = useState<string | number>(counterStartingValue);
-
+  const [pages, setPages] = useState(["Products", "Services"]);
   return (
-    <div className="mx-auto">
-      <h1>GreenBlitz Full-Stack Project:</h1>
-      <div className="card">
-        <button
-          onClick={() => {
-            setCount((prevCount) =>
-              typeof prevCount === "number"
-                ? prevCount >= maxCountingValue
-                  ? importantMessage
-                  : prevCount + countIncrement
-                : prevCount + "!",
-            );
-          }}
-        >
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-    </div>
+    <>
+      <Router>
+        <Navbar pages={pages} />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/services" element={<Services />} />
+          {/* <Route path="/about" element={<About />} /> */}
+        </Routes>
+      </Router>
+    </>
   );
 };
-
 export default App;
