@@ -10,9 +10,6 @@ export interface NavbarProps {
 const Navbar = ({ pages }: NavbarProps) => {
   return (
     <ul>
-      <li>
-        <Link to="/">Home</Link>
-      </li>
       {pages.map((page) => (
         <li>
           <Link to={`/${page.toLowerCase()}`}>{page}</Link>
