@@ -9,6 +9,13 @@ MAXIMUM_JOYSTICK_ANGLE_SPEED = 10
 MINIMUM_STILL_JOYSTICK_NORM = 0.07
 
 
+def get_driving_scores_JSON(log: WpiLog):
+    return {
+        "timeStillSeconds": time_still_seconds(log),
+        "joystickNormSpeedPeaks": joystick_norm_speed_peaks(log),
+        "joystickAngularSpeedPeaks": joystick_angular_speed_peaks(log)
+    }
+
 def getJoystickNorm(name, joystick_axis_values_signal: Signal, x_index, y_index):
     joystick_norm_signal = Signal(name, "float")
     for time, axis_values in joystick_axis_values_signal:
@@ -49,13 +56,13 @@ def joystick_norm_speed_peaks(log: WpiLog):
     return norm_speed_peaks_counter
 
 
-def joystick_angle_speed_peaks(log: WpiLog):
+def joystick_angular_speed_peaks(log: WpiLog):
     joystick_axis_values_signal = log.get(JOYSTICK_AXIS_VALUES_SIGNAL_NAME)
-    joystick_angle_speed_signal = getJoystickAngle("joystick angle", joystick_axis_values_signal, 0, 1).differentiate()
-    angle_speed_peaks_counter = 0
+    joystick_angular_speed_signal = getJoystickAngle("joystick angle", joystick_axis_values_signal, 0, 1).differentiate()
+    angular_speed_peaks_counter = 0
 
-    for angle_speed in joystick_angle_speed_signal:
+    for angle_speed in joystick_angular_speed_signal:
         if math.fabs(angle_speed.value) > MAXIMUM_JOYSTICK_ANGLE_SPEED:
-            angle_speed_peaks_counter += 1
+            angular_speed_peaks_counter += 1
 
-    return angle_speed_peaks_counter
+    return angular_speed_peaks_counter
