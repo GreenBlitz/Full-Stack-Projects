@@ -1,23 +1,17 @@
 // בס"ד
 import { use, useState, type FC } from "react";
 import { BrowserRouter as Router, Route, Link, Routes } from "react-router-dom";
-import Navbar from "./Navbar/Navbar";
-import Home from "./components/Home";
-import Products from "./components/Products";
-import Services from "./components/Services";
+import Navbar from "./components/Navbar/Navbar";
 
 const App: FC = () => {
-  const [pages, setPages] = useState(["Home", "Products", "Services"]);
   return (
     <>
       <Router>
-        <Navbar pages={pages} />
+        <Navbar/>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/products" element={<Products />} />
-          <Route path="/services" element={<Services />} />
-          {/* <Route path="/about" element={<About />} /> */}
+          <Route path="/main" element={<div>Main Bet Page</div>}/> {/*Replace div with page*/}
+          <Route path="/create" element={<div>Create Bet</div>}/> {/*Replace div with page*/}
+          <Route path="/admin" element={<div>Admin Page</div>}/> {/*Replace div with page, make admin only accesible for admins*/}
         </Routes>
       </Router>
     </>
