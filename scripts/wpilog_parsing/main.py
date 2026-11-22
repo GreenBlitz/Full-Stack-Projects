@@ -8,12 +8,7 @@ from wpilog import WpiLog
 def main():
     path = sys.argv[1]
     log = WpiLog.load(path)
-    joystick_norm_speed_peaks, joystick_angular_speed_peaks = driving_scores.joystick_speed_peaks(log)
-    result = {
-        "joystickNormSpeedPeaks": joystick_norm_speed_peaks,
-        "joystickAngularSpeedPeaks": joystick_angular_speed_peaks
-    }
-    print(json.dumps(result))
+    print(json.dumps(driving_scores.get_driving_scores_JSON(log)))
 
 
 if __name__ == '__main__':
