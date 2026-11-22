@@ -65,7 +65,7 @@ export function filter<T>(filtered: NonNullable<T>, filterBy: DeepPartial<T>) {
     return filterBy.getTime() === filtered.getTime();
   }
   if (typeof filterBy === "object" && typeof filtered === "object") {
-    Object.keys(filterBy).every((key) => {
+    return Object.keys(filterBy).every((key) => {
       return filter(filtered[key], filterBy[key]);
     });
   }
