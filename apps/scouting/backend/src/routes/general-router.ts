@@ -33,22 +33,25 @@ export const calculateGeneralForTeam = (
   forms: TeamMatchData[],
   team: string,
 ): GeneralTeamBeeData => {
+  const noBrokenForms = forms.filter((form) => {
+    !form.robotBroke;
+  });
   const auto = {
-    ...calculateFuelForTeamPhase(forms.map((form) => form.auto)),
-    climbPoints: calculateAverage(forms, (form) =>
+    ...calculateFuelForTeamPhase(noBrokenForms.map((form) => form.auto)),
+    climbPoints: calculateAverage(noBrokenForms, (form) =>
       form.auto.climb ? AUTO_CLIMB_POINTS : AUTO_NO_CLIMB_POINTS,
     ),
   };
   const tele = {
-    ...calculateFuelForTeamPhase(forms.map((form) => form.tele)),
+    ...calculateFuelForTeamPhase(noBrokenForms.map((form) => form.tele)),
     climbPoints: calculateAverage(
-      forms,
+      noBrokenForms,
       (form) => form.tele.climb.height * TELE_CLIMB_LEVEL_POINTS,
     ),
   };
 
-  const defenseGames = forms.filter((form) => form.super.didDefense);
-  const evasionGames = forms.filter((form) => form.super.didEvasions);
+  const defenseGames = noBrokenForms.filter((form) => form.super.didDefense);
+  const evasionGames = noBrokenForms.filter((form) => form.super.didEvasions);
 
   return {
     team,
@@ -60,7 +63,7 @@ export const calculateGeneralForTeam = (
       climbPoints: auto.climbPoints + tele.climbPoints,
     },
     super: {
-      driving: calculateAverage(forms, (form) => form.super.driveLevel),
+      driving: calculateAverage(noBrokenForms, (form) => form.super.driveLevel),
       defenseRating: calculateAverage(
         defenseGames,
         (form) => form.super.defenseLevel,
@@ -72,8 +75,9 @@ export const calculateGeneralForTeam = (
       ),
       timesEvaded: evasionGames.length,
     },
-    timesPlayed: forms.length,
-    timesStole: calculateSum(forms, (form) => form.timesStole),
+    timesPlayed: noBrokenForms.length,
+    timesStole: calculateSum(noBrokenForms, (form) => form.timesStole),
+    timesBroke: calculateSum(forms, (form) => (form.robotBroke ? 1 : 0)),
   };
 };
 

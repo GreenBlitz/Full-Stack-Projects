@@ -43,6 +43,7 @@ const teamMatchDataCodec = t.type({
   comp: t.string,
   notes: t.string,
   timesStole: t.number,
+  robotBroke: t.boolean,
 });
 
 export type TeamMatchData = t.TypeOf<typeof teamMatchDataCodec>;

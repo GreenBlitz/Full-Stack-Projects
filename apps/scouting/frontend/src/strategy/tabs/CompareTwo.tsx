@@ -216,6 +216,7 @@ export const CompareTwo: React.FC = () => {
                         periodData={team.total}
                         max={maxTotalScore}
                         title="Full Game"
+                        brokenMatches={team.gamesBroke}
                       />
                     </div>
                   )}
@@ -226,6 +227,7 @@ export const CompareTwo: React.FC = () => {
                         periodData={team.auto}
                         max={maxAutoScore}
                         title="Auto"
+                        brokenMatches={team.gamesBroke}
                       />
                     </div>
                   )}

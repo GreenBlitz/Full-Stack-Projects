@@ -11,6 +11,8 @@ import { TeamMatchData, TeamPageTeamBeeData } from "@repo/scouting_types";
 import { calculateSum, firstElement, mapObject } from "@repo/array-functions";
 import { calculateGeneralForTeam } from "./general-router";
 
+const MAX_RECENCY = "100";
+
 export const teamPageRouter = Router();
 
 const findDataOverMatches = (
@@ -36,10 +38,20 @@ const findDataOverMatches = (
   );
 };
 
-export const applyRecency = (forms: TeamMatchData[], recency: number) =>
+export const applyRecency = (forms: TeamMatchData[], recency: number) => {
   forms
     .sort((formA, formB) => formA.matchNumber - formB.matchNumber)
     .slice(-recency);
+
+  return recency === Number(MAX_RECENCY)
+    ? forms
+    : forms.filter((form) => !form.robotBroke);
+};
+
+export const getGamesBroken = (forms: TeamMatchData[]): string[] =>
+  forms
+    .filter((form) => form.robotBroke)
+    .map((form) => String(form.matchNumber));
 
 const calculateTeamDataForTeam = (
   forms: TeamMatchData[],
@@ -48,7 +60,7 @@ const calculateTeamDataForTeam = (
   const recentForms = applyRecency(forms, recency);
 
   const teamAverages = calculateGeneralForTeam(
-    recentForms,
+    recentForms.filter((form) => !form.robotBroke),
     firstElement(recentForms).teamNumber.toString(),
   );
 
@@ -92,11 +104,12 @@ const calculateTeamDataForTeam = (
     },
     notes: recentForms.map((form) => form.notes),
     timesStole: calculateSum(recentForms, (form) => form.timesStole),
+    gamesBroke: getGamesBroken(forms),
   };
 };
 
 const parseRecency = (recencyString: string) =>
-  parseInt(recencyString ?? "100");
+  parseInt(recencyString ?? MAX_RECENCY);
 
 teamPageRouter.get("/matches/:recency", async (req, res) => {
   await pipe(

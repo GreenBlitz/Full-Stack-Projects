@@ -111,13 +111,19 @@ export const TeamTab: FC = () => {
             periodData={teamData.total}
             max={400}
             title="Full Game"
+            brokenMatches={teamData.gamesBroke}
           />
         </div>
       )}
 
       {teamData && (
         <div className="w-full max-w-2xl my-5">
-          <ThrowBarChart periodData={teamData.auto} max={70} title="Auto" />
+          <ThrowBarChart
+            periodData={teamData.auto}
+            max={70}
+            title="Auto"
+            brokenMatches={teamData.gamesBroke}
+          />
         </div>
       )}
 

@@ -130,6 +130,7 @@ const structureBeeTeamMatchData = (
       comp: row.Comp,
       notes: row.G_Comments,
       timesStole: Number(row.T_CollectionZonesOpAlliance),
+      robotBroke: false,
     };
   });
   return unfilteredData.filter((row): row is TeamMatchData => row !== false);
