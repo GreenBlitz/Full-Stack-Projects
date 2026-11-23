@@ -33,9 +33,7 @@ export const calculateGeneralForTeam = (
   forms: TeamMatchData[],
   team: string,
 ): GeneralTeamBeeData => {
-  const noBrokenForms = forms.filter((form) => {
-    !form.robotBroke;
-  });
+  const noBrokenForms = forms.filter((form) => !form.robotBroke);
   const auto = {
     ...calculateFuelForTeamPhase(noBrokenForms.map((form) => form.auto)),
     climbPoints: calculateAverage(noBrokenForms, (form) =>

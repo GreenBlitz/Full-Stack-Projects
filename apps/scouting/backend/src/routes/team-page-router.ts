@@ -60,7 +60,7 @@ const calculateTeamDataForTeam = (
   const recentForms = applyRecency(forms, recency);
 
   const teamAverages = calculateGeneralForTeam(
-    recentForms.filter((form) => !form.robotBroke),
+    recentForms,
     firstElement(recentForms).teamNumber.toString(),
   );
 
