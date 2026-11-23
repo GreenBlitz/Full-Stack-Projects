@@ -181,7 +181,7 @@ const updateBeeTeamMatchData = async (db: Db, data: string[][]) => {
           },
           update: {
             $set: sheetFields,
-            $setOnInsert: { robotBroke: false },
+            $setOnInsert: { robotBroke: false }, 
           },
           upsert: true,
         },

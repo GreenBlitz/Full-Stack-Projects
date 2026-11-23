@@ -10,6 +10,7 @@ import { groupBy } from "fp-ts/lib/NonEmptyArray";
 import { TeamMatchData, TeamPageTeamBeeData } from "@repo/scouting_types";
 import { calculateSum, firstElement, mapObject } from "@repo/array-functions";
 import { calculateGeneralForTeam } from "./general-router";
+import { chain, left, right } from "fp-ts/lib/TaskEither";
 
 const MAX_RECENCY = "100";
 
@@ -149,4 +150,40 @@ teamPageRouter.get("/teamNumbers", async (req, res) => {
   )();
 });
 
-teamPageRouter.patch
+teamPageRouter.patch("/broke/:teamNumber/:matchNumber", async (req, res) => {
+  const teamNumber = Number(req.params.teamNumber);
+  const matchNumber = Number(req.params.matchNumber);
+
+  if (!Number.isInteger(teamNumber) || !Number.isInteger(matchNumber)) {
+    res.status(StatusCodes.BAD_REQUEST).send("Invalid team or match number");
+    return;
+  }
+
+  const robotBroke =
+    typeof req.body?.robotBroke === "boolean" ? req.body.robotBroke : true;
+
+  await pipe(
+    getBeeTeamMatchDataCollection(),
+    flatTryCatch(
+      (collection) =>
+        collection.updateMany(
+          { teamNumber, matchNumber },
+          { $set: { robotBroke } },
+        ),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `error updating robotBroke ${error}`,
+      }),
+    ),
+    chain((result) =>
+      result.matchedCount === 0
+        ? left({
+            status: StatusCodes.NOT_FOUND,
+            reason: `no form for team ${teamNumber} in match ${matchNumber}`,
+          })
+        : right(result),
+    ),
+    map(() => ({ teamNumber, matchNumber, robotBroke })),
+    foldResponse(res),
+  )();
+});
