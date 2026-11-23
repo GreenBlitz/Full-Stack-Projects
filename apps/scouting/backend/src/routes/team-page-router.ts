@@ -148,3 +148,5 @@ teamPageRouter.get("/teamNumbers", async (req, res) => {
     foldResponse(res),
   )();
 });
+
+teamPageRouter.patch
