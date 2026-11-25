@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { GetBetCollection } from "../main";
-import { BetSchema } from "@repo/polyblitz-types";
+import { BetOptionSchema, BetSchema, WagerSchema } from "@repo/polyblitz-types";
 import { StatusCodes } from "http-status-codes";
 
 export const BetRouter: Router = Router();
@@ -69,10 +69,16 @@ BetRouter.get("/bets/:id", async (req, res) => {
 });
 
 BetRouter.post("/bets/:id/wagers", async (req, res) => {
-  const result = BetSchema.shape.id.safeParse(Number(req.params.id));
-  if (!result.success) {
-    res.status(StatusCodes.BAD_REQUEST).json(result.error.issues);
+  const ResultID = BetSchema.shape.id.safeParse(Number(req.params.id));
+  if (!ResultID.success) {
+    res.status(StatusCodes.BAD_REQUEST).json(ResultID.error.issues);
     return;
   }
-  const id = result.data;
+  const id = ResultID.data;
+  const ResultWager = WagerSchema.shape.safeParse(req.params.id);
+  if (!ResultWager.success) {
+    res.status(StatusCodes.BAD_REQUEST).json(ResultWager.error.issues);
+    return;
+  }
+  const wager = ResultWager.data;
 });
