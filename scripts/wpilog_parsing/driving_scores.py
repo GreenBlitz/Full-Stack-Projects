@@ -16,6 +16,7 @@ def get_driving_scores_JSON(log: WpiLog):
         "joystickAngularSpeedPeaks": joystick_angular_speed_peaks(log)
     }
 
+
 def getJoystickNorm(name, joystick_axis_values_signal: Signal, x_index, y_index):
     joystick_norm_signal = Signal(name, "float")
     for time, axis_values in joystick_axis_values_signal:
@@ -39,7 +40,8 @@ def time_still_seconds(log: WpiLog):
     left_joystick_norm_signal = getJoystickNorm("left joystick norm", joystick_axis_values_signal, 0, 1)
     cycles_still_counter = 0
     for left_joystick_norm, axis_values in zip(left_joystick_norm_signal, joystick_axis_values_signal):
-        if left_joystick_norm.value < MINIMUM_STILL_JOYSTICK_NORM & axis_values.value[5] < MINIMUM_STILL_JOYSTICK_NORM:
+        if ((left_joystick_norm.value < MINIMUM_STILL_JOYSTICK_NORM)
+                and (axis_values.value[5] < MINIMUM_STILL_JOYSTICK_NORM)):
             cycles_still_counter += 1
     return cycles_still_counter * SECONDS_PER_CYCLE
 
@@ -58,7 +60,8 @@ def joystick_norm_speed_peaks(log: WpiLog):
 
 def joystick_angular_speed_peaks(log: WpiLog):
     joystick_axis_values_signal = log.get(JOYSTICK_AXIS_VALUES_SIGNAL_NAME)
-    joystick_angular_speed_signal = getJoystickAngle("joystick angle", joystick_axis_values_signal, 0, 1).differentiate()
+    joystick_angular_speed_signal = getJoystickAngle("joystick angle", joystick_axis_values_signal, 0,
+                                                     1).differentiate()
     angular_speed_peaks_counter = 0
 
     for angle_speed in joystick_angular_speed_signal:
