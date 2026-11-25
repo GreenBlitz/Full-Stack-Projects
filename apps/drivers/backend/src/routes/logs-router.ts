@@ -52,14 +52,13 @@ logsRouter.post("/", upload.single("file"), async (req, res) => {
 
 logsRouter.get("/", async (req, res) => {
   try {
-    const filterBy = z
-      .deepPartial(drivingDataSchema)
-      .parse(JSON.parse(req.body));
+    const filter = z.deepPartial(drivingDataSchema).parse(JSON.parse(req.body));
 
-    const sortedFilteredCursor = drivingDataCollection
-      .find(filterBy)
-      .sort({ "log.date": -1 });
-    res.status(StatusCodes.OK).send(sortedFilteredCursor);
+    const drivingDataArray = await drivingDataCollection
+      .find<DrivingData>(filter)
+      .sort({ "log.date": -1 })
+      .toArray();
+    res.status(StatusCodes.OK).send(drivingDataArray);
   } catch (error) {
     res.status(StatusCodes.BAD_REQUEST).send(error);
   }
