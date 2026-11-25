@@ -25,8 +25,6 @@ app.get("/student", (req, res) => {
 });
 
 app.post("/students", (req, res) => {
-  console.log(req.body);
-
   res.json(req.body);
 });
 

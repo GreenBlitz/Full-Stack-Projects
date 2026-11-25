@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
+
 type School1 = {
   name: string;
   city: string;
