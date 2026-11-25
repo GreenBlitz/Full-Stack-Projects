@@ -54,11 +54,16 @@ logsRouter.get("/", async (req, res) => {
   try {
     const filter = z.deepPartial(drivingDataSchema).parse(JSON.parse(req.body));
 
-    const drivingDataArray = await drivingDataCollection
+    drivingDataCollection
       .find<DrivingData>(filter)
       .sort({ "log.date": -1 })
-      .toArray();
-    res.status(StatusCodes.OK).send(drivingDataArray);
+      .toArray()
+      .then((drivingDataArray) => {
+        res.status(StatusCodes.OK).send(drivingDataArray);
+      })
+      .catch((error) => {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error);
+      });
   } catch (error) {
     res.status(StatusCodes.BAD_REQUEST).send(error);
   }
