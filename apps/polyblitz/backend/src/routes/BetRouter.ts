@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { GetBetCollection } from "../main";
-import { BetSchema } from "@repo/polyblitz-types";
+import { BetOptionSchema, BetSchema, WagerSchema } from "@repo/polyblitz-types";
 import { StatusCodes } from "http-status-codes";
 
 export const BetRouter: Router = Router();

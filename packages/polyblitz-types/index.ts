@@ -32,3 +32,4 @@ export type User = z.infer<typeof UserSchema>;
 export type Wager = z.infer<typeof WagerSchema>;
 export type BetOption = z.infer<typeof BetOptionSchema>;
 export type Bet = z.infer<typeof BetSchema>;
+export type PublicUser = Omit<User, "password">;
