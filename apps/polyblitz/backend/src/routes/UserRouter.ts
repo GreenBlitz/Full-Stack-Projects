@@ -8,6 +8,7 @@ export const UserRouter: Router = Router();
 export async function getUserByName(name: string): Promise<User | null> {
   return GetUserCollection().findOne({ name });
 }
+
 function checkIfNameIsUnique(name: string): boolean {
   const temp = GetUserCollection().find({ name }).toArray;
   if (temp.length > 0) {
@@ -35,11 +36,11 @@ UserRouter.post("/User", async (req, res) => {
     res.status(StatusCodes.BAD_REQUEST).json(resultPass.error.issues);
     return;
   }
-  const IsNameUnique = checkIfNameIsUnique(req.body.name);
-  if (IsNameUnique) {
+  if (!checkIfNameIsUnique(req.body.name)) {
     res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "User name already taken" });
+    return;
   }
   try {
     const temp: User = {

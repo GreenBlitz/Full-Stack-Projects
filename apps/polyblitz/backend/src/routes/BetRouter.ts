@@ -67,3 +67,12 @@ BetRouter.get("/bets/:id", async (req, res) => {
       .json({ message: "Failed to find bet" });
   }
 });
+
+BetRouter.post("/bets/:id/wagers", async (req, res) => {
+  const result = BetSchema.shape.id.safeParse(Number(req.params.id));
+  if (!result.success) {
+    res.status(StatusCodes.BAD_REQUEST).json(result.error.issues);
+    return;
+  }
+  const id = result.data;
+});
