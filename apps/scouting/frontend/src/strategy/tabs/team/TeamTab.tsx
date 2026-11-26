@@ -111,7 +111,7 @@ export const TeamTab: FC = () => {
             periodData={teamData.total}
             max={400}
             title="Full Game"
-            brokenMatches={teamData.gamesBroke}
+            brokenMatches={teamData.qualsRobotBroke}
           />
         </div>
       )}
@@ -122,7 +122,7 @@ export const TeamTab: FC = () => {
             periodData={teamData.auto}
             max={70}
             title="Auto"
-            brokenMatches={teamData.gamesBroke}
+            brokenMatches={teamData.qualsRobotBroke}
           />
         </div>
       )}

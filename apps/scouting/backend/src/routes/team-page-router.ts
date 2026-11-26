@@ -12,7 +12,7 @@ import { calculateSum, firstElement, mapObject } from "@repo/array-functions";
 import { calculateGeneralForTeam } from "./general-router";
 import { chain, left, right } from "fp-ts/lib/TaskEither";
 
-const MAX_RECENCY = "100";
+const MAX_RECENCY = 100;
 
 export const teamPageRouter = Router();
 
@@ -40,19 +40,17 @@ const findDataOverMatches = (
 };
 
 export const applyRecency = (forms: TeamMatchData[], recency: number) => {
-  forms
+  const recentForms = forms
     .sort((formA, formB) => formA.matchNumber - formB.matchNumber)
     .slice(-recency);
 
-  return recency === Number(MAX_RECENCY)
-    ? forms
-    : forms.filter((form) => !form.robotBroke);
+  return recency === MAX_RECENCY
+    ? recentForms
+    : recentForms.filter((form) => !form.robotBroke);
 };
 
-export const getGamesBroken = (forms: TeamMatchData[]): string[] =>
-  forms
-    .filter((form) => form.robotBroke)
-    .map((form) => String(form.matchNumber));
+export const getGamesBroken = (forms: TeamMatchData[]): number[] =>
+  forms.filter((form) => form.robotBroke).map((form) => form.matchNumber);
 
 const calculateTeamDataForTeam = (
   forms: TeamMatchData[],
@@ -105,7 +103,7 @@ const calculateTeamDataForTeam = (
     },
     notes: recentForms.map((form) => form.notes),
     timesStole: calculateSum(recentForms, (form) => form.timesStole),
-    gamesBroke: getGamesBroken(forms),
+    qualsRobotBroke: getGamesBroken(forms),
   };
 };
 

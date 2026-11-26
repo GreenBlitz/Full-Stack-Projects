@@ -20,9 +20,9 @@ const sendRobotBroke = async (
         robotBroke ? "broke" : "didn't break"
       }`,
     );
-    return;
+  } else {
+    alert(`Couldn't update! ${await response.text()}`);
   }
-  alert(`Couldn't update! ${await response.text()}`);
 };
 
 const inputClass =
