@@ -67,3 +67,7 @@ BetRouter.get("/bets/:id", async (req, res) => {
       .json({ message: "Failed to find bet" });
   }
 });
+
+BetRouter.post("/admin/bets/:id/resolve", (req, res)=>{
+  
+})
