@@ -51,7 +51,6 @@ export const ThrowBarChart: FC<{
     },
   ];
 
- 
   return (
     <>
       <div className="w-full max-w-xl mx-auto bg-slate-900/40 backdrop-blur-md border border-white/5 p-4 rounded-2xl text-center">
