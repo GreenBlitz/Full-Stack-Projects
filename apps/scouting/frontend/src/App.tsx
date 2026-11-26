@@ -15,6 +15,7 @@ import { Tinder } from "./strategy/tabs/Tinder";
 import { PitScoutTab } from "./strategy/tabs/pit-scout/PitScoutTab";
 import { Picklist } from "./strategy/tabs/picklist/Picklist";
 import { PitManageTab } from "./strategy/tabs/pit-scout/PitManageTab";
+import { RobotBrokePage } from "./scouter/pages/RobotBrokePage";
 
 const App: FC = () => {
   return (
@@ -22,6 +23,7 @@ const App: FC = () => {
       <Route path="/" element={<Navigate to="/strategy" replace />} />
 
       <Route path="/pit" element={<PitScoutTab />} />
+      <Route path="/broke" element={<RobotBrokePage />} />
       <Route path="/pit/manage" element={<PitManageTab />} />
       <Route path="/scout" element={<ScoutMatch />} />
       <Route path="/leaderboard" element={<Leaderboard />} />

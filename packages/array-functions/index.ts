@@ -10,7 +10,8 @@ export const calculateSum = <T>(
 export const calculateAverage = <T>(
   arr: T[],
   transformation: (value: T) => number,
-): number => calculateSum(arr, transformation) / arr.length;
+): number =>
+  arr.length === 0 ? 0 : calculateSum(arr, transformation) / arr.length;
 
 const MEDIAN_LOCATION = 2;
 export const calculateMedian = <T>(

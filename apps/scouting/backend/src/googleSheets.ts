@@ -130,6 +130,7 @@ const structureBeeTeamMatchData = (
       comp: row.Comp,
       notes: row.G_Comments,
       timesStole: Number(row.T_CollectionZonesOpAlliance),
+      robotBroke: false,
     };
   });
   return unfilteredData.filter((row): row is TeamMatchData => row !== false);
@@ -170,8 +171,29 @@ const updateBeeTeamMatchData = async (db: Db, data: string[][]) => {
       );
       return;
     }
-    await collection.deleteMany({});
-    await collection.insertMany(structured);
+
+    await collection.bulkWrite(
+      structured.map(({ robotBroke: _ignored, ...sheetFields }) => ({
+        updateOne: {
+          filter: {
+            teamNumber: sheetFields.teamNumber,
+            matchNumber: sheetFields.matchNumber,
+          },
+          update: {
+            $set: sheetFields,
+            $setOnInsert: { robotBroke: false }, 
+          },
+          upsert: true,
+        },
+      })),
+    );
+
+    await collection.deleteMany({
+      $nor: structured.map(({ teamNumber, matchNumber }) => ({
+        teamNumber,
+        matchNumber,
+      })),
+    });
 
     console.log("Updated Bee a scout Team Match Data");
     return structured;

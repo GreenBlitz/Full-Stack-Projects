@@ -18,25 +18,36 @@ export const ThrowBarChart: FC<{
   periodData: TeamPageTeamBeeData["auto" | "total"];
   max: number;
   title: string;
-}> = ({ periodData, max, title }) => {
+  brokenMatches: string[];
+}> = ({ periodData, max, title, brokenMatches }) => {
+  const { fuelScoredPerGame, fuelPassedPerGame } = periodData.fuelPerGame;
+
+  const broken = new Set(brokenMatches);
+
+  const split = (perGame: Record<string, number>, isBroken: boolean) =>
+    Object.fromEntries(
+      Object.entries(perGame).map(([match, value]) => [
+        match,
+        broken.has(match) === isBroken ? value : 0,
+      ]),
+    );
+
   const datasets = [
     {
       name: "Scored",
       color: "violet",
-      points: Object.fromEntries(
-        Object.entries(periodData.fuelPerGame.fuelScoredPerGame).map(
-          ([match, value]) => [match, value],
-        ),
-      ),
+      points: split(fuelScoredPerGame, false),
+    },
+    { name: "Passed", color: "cyan", points: split(fuelPassedPerGame, false) },
+    {
+      name: "Scored (robot broke)",
+      color: "#b91c1c",
+      points: split(fuelScoredPerGame, true),
     },
     {
-      name: "Passed",
-      color: "cyan",
-      points: Object.fromEntries(
-        Object.entries(periodData.fuelPerGame.fuelPassedPerGame).map(
-          ([match, value]) => [match, value],
-        ),
-      ),
+      name: "Passed (robot broke)",
+      color: "#f97316",
+      points: split(fuelPassedPerGame, true),
     },
   ];
 

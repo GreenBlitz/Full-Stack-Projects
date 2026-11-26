@@ -10,6 +10,9 @@ import { groupBy } from "fp-ts/lib/NonEmptyArray";
 import { TeamMatchData, TeamPageTeamBeeData } from "@repo/scouting_types";
 import { calculateSum, firstElement, mapObject } from "@repo/array-functions";
 import { calculateGeneralForTeam } from "./general-router";
+import { chain, left, right } from "fp-ts/lib/TaskEither";
+
+const MAX_RECENCY = 100;
 
 export const teamPageRouter = Router();
 
@@ -36,10 +39,20 @@ const findDataOverMatches = (
   );
 };
 
-export const applyRecency = (forms: TeamMatchData[], recency: number) =>
-  forms
+export const applyRecency = (forms: TeamMatchData[], recency: number) => {
+  const recentForms = forms
     .sort((formA, formB) => formA.matchNumber - formB.matchNumber)
     .slice(-recency);
+
+  return recency === MAX_RECENCY || recency === 0
+    ? recentForms
+    : recentForms.filter((form) => !form.robotBroke);
+};
+
+export const getGamesBroken = (forms: TeamMatchData[]): string[] =>
+  forms
+    .filter((form) => form.robotBroke)
+    .map((form) => String(form.matchNumber));
 
 const calculateTeamDataForTeam = (
   forms: TeamMatchData[],
@@ -92,11 +105,12 @@ const calculateTeamDataForTeam = (
     },
     notes: recentForms.map((form) => form.notes),
     timesStole: calculateSum(recentForms, (form) => form.timesStole),
+    qualsRobotBroke: getGamesBroken(forms),
   };
 };
 
 const parseRecency = (recencyString: string) =>
-  parseInt(recencyString ?? "100");
+  parseInt(recencyString ?? MAX_RECENCY);
 
 teamPageRouter.get("/matches/:recency", async (req, res) => {
   await pipe(
@@ -132,6 +146,44 @@ teamPageRouter.get("/teamNumbers", async (req, res) => {
     map((forms) => forms.map((form) => Number(form.teamNumber))),
     map((numbers) => [...new Set(numbers)]),
     bindTo("teamNumbers"),
+    foldResponse(res),
+  )();
+});
+
+teamPageRouter.patch("/broke/:teamNumber/:matchNumber", async (req, res) => {
+  const teamNumber = Number(req.params.teamNumber);
+  const matchNumber = Number(req.params.matchNumber);
+
+  if (!Number.isInteger(teamNumber) || !Number.isInteger(matchNumber)) {
+    res.status(StatusCodes.BAD_REQUEST).send("Invalid team or match number");
+    return;
+  }
+
+  const robotBroke =
+    typeof req.body?.robotBroke === "boolean" ? req.body.robotBroke : true;
+
+  await pipe(
+    getBeeTeamMatchDataCollection(),
+    flatTryCatch(
+      (collection) =>
+        collection.updateMany(
+          { teamNumber, matchNumber },
+          { $set: { robotBroke } },
+        ),
+      (error) => ({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        reason: `error updating robotBroke ${error}`,
+      }),
+    ),
+    chain((result) =>
+      result.matchedCount === 0
+        ? left({
+            status: StatusCodes.NOT_FOUND,
+            reason: `no form for team ${teamNumber} in match ${matchNumber}`,
+          })
+        : right(result),
+    ),
+    map(() => ({ teamNumber, matchNumber, robotBroke })),
     foldResponse(res),
   )();
 });

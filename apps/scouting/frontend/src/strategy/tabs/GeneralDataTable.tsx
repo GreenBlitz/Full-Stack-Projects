@@ -37,7 +37,8 @@ export type Column =
   | "Pass Full"
   | "Climb Full"
   | "Games Played"
-  | "Times Stole";
+  | "Times Stole"
+  | "Times Broke";
 
 type DataValue = ClimbLevel | number | undefined;
 
@@ -50,6 +51,7 @@ const columnToKey: Record<Column, DataAccessor> = {
   "Pass Tele": ({ tele: { fuelPassed } }) => fuelPassed,
   "Score Auto": ({ auto: { fuelScored } }) => fuelScored,
   "Pass Auto": ({ auto: { fuelPassed } }) => fuelPassed,
+  "Times Broke": ({ timesBroke }) => timesBroke,
   "Times Defended": ({ super: { timesDefended } }) => timesDefended,
   "Times Evaded": ({ super: { timesEvaded } }) => timesEvaded,
   "Score Full": ({ full: { fuelScored } }) => fuelScored,
@@ -160,6 +162,7 @@ export const GeneralDataTable: React.FC<GeneralDataTableProps> = ({
       createColumn("Score Tele", "text-red-500"),
       createColumn("Pass Tele", "text-violet-500"),
       createColumn("Driving", "text-orange-500"),
+      createColumn("Times Broke", "text-red-400"),
       createColumn("Times Defended", "text-pink-200"),
       createColumn("Evasion Rating", "text-purple-500"),
       createColumn("Times Evaded", "text-purple-200"),
