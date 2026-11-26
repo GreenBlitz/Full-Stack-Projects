@@ -1,36 +1,19 @@
 // בס"ד
-import { useState, type FC } from "react";
+import { BrowserRouter as Router, Route, Link, Routes } from "react-router-dom";
+import Navbar from "./components/Navbar/Navbar";
 
-const counterStartingValue = 0;
-const countIncrement = 1;
-const maxCountingValue = 5;
-const importantMessage = "MI BOMBO";
-const App: FC = () => {
-  const [count, setCount] = useState<string | number>(counterStartingValue);
-
+const App: any = () => {
   return (
-    <div className="mx-auto">
-      <h1>GreenBlitz Full-Stack Project:</h1>
-      <div className="card">
-        <button
-          onClick={() => {
-            setCount((prevCount) =>
-              typeof prevCount === "number"
-                ? prevCount >= maxCountingValue
-                  ? importantMessage
-                  : prevCount + countIncrement
-                : prevCount + "!",
-            );
-          }}
-        >
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-    </div>
+    <>
+      <Router>
+        <Navbar/>
+        <Routes>
+          <Route path="/bets" element={<div>Main Bet Page</div>}/> {/*Replace div with page*/}
+          <Route path="/create" element={<div>Create Bet</div>}/> {/*Replace div with page*/}
+          <Route path="/admin" element={<div>Admin Page</div>}/> {/*Replace div with page, make admin only accesible for admins*/}
+        </Routes>
+      </Router>
+    </>
   );
 };
-
 export default App;
