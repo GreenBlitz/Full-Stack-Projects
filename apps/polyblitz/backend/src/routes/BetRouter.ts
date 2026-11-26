@@ -1,7 +1,8 @@
 import { Router } from "express";
-import { GetBetCollection } from "../main";
-import { BetOptionSchema, BetSchema, WagerSchema } from "@repo/polyblitz-types";
+import { GetBetCollection, GetUserCollection } from "../main";
+import { BetSchema, WagerSchema } from "@repo/polyblitz-types";
 import { StatusCodes } from "http-status-codes";
+import { z } from "zod";
 
 export const BetRouter: Router = Router();
 
@@ -65,5 +66,70 @@ BetRouter.get("/bets/:id", async (req, res) => {
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ message: "Failed to find bet" });
+  }
+});
+
+BetRouter.post("/bets/:id/wagers", async (req, res) => {
+  const betIdResult = BetSchema.shape.id.safeParse(Number(req.params.id));
+  if (!betIdResult.success) {
+    res.status(StatusCodes.BAD_REQUEST).json(betIdResult.error.issues);
+    return;
+  }
+  const betId = betIdResult.data;
+
+  const wagerResult = WagerSchema.extend({
+    amountWagered: z.number().positive(),
+    option: z.enum(["optionOne", "optionTwo"]),
+  }).safeParse(req.body);
+  if (!wagerResult.success) {
+    res.status(StatusCodes.BAD_REQUEST).json(wagerResult.error.issues);
+    return;
+  }
+  const { userID, amountWagered, option } = wagerResult.data;
+
+  try {
+    const bet = await GetBetCollection().findOne({ id: betId });
+    const user = await GetUserCollection().findOne({ id: userID });
+
+    if (!bet) {
+      res.status(StatusCodes.NOT_FOUND).json({ message: "bet not found" });
+      return;
+    }
+    if (!user) {
+      res.status(StatusCodes.NOT_FOUND).json({ message: "user not found" });
+      return;
+    }
+    if (user.money < amountWagered) {
+      res.status(StatusCodes.BAD_REQUEST).json({ message: "insufficient balance" });
+      return;
+    }
+
+    const update =
+      option === "optionOne"
+        ? await GetBetCollection().updateOne(
+            { id: betId },
+            { $push: { "optionOne.wagers": { userID, amountWagered } } },
+          )
+        : await GetBetCollection().updateOne(
+            { id: betId },
+            { $push: { "optionTwo.wagers": { userID, amountWagered } } },
+          );
+
+    if (update.matchedCount === 0) {
+      res.status(StatusCodes.NOT_FOUND).json({ message: "bet not found" });
+      return;
+    }
+
+    await GetUserCollection().updateOne(
+      { id: userID },
+      { $inc: { money: -amountWagered } },
+    );
+
+    res.status(StatusCodes.CREATED).json({ message: "wager placed" });
+  } catch (error) {
+    console.error("Failed to place wager:", error);
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: "Failed to place wager" });
   }
 });

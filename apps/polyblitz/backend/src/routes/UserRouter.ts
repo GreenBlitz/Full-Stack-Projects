@@ -9,12 +9,9 @@ export async function getUserByName(name: string): Promise<User | null> {
   return GetUserCollection().findOne({ name });
 }
 
-function checkIfNameIsUnique(name: string): boolean {
-  const temp = GetUserCollection().find({ name }).toArray;
-  if (temp.length > 0) {
-    return false;
-  }
-  return true;
+async function checkIfNameIsUnique(name: string): Promise<boolean> {
+  const existingUser = await GetUserCollection().findOne({ name });
+  return existingUser === null;
 }
 
 async function findNewid(): Promise<number> {
@@ -36,7 +33,7 @@ UserRouter.post("/User", async (req, res) => {
     res.status(StatusCodes.BAD_REQUEST).json(resultPass.error.issues);
     return;
   }
-  if (!checkIfNameIsUnique(req.body.name)) {
+  if (!(await checkIfNameIsUnique(req.body.name))) {
     res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: "User name already taken" });
