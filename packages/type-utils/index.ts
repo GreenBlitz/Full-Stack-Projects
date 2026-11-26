@@ -50,24 +50,3 @@ export const createTypeCheckingEndpointFlow = <E, U>(
       mapLeft((errors) => onFail(failure(errors).join("\n"))),
     ),
   );
-
-type DeepPartial<T> = T extends Date
-  ? T
-  : T extends object
-    ? { [K in keyof T]?: DeepPartial<T[K]> }
-    : T;
-
-export function filter<T>(filtered: NonNullable<T>, filterBy: DeepPartial<T>) {
-  if (!filterBy) {
-    return true;
-  }
-  if (filterBy instanceof Date && filtered instanceof Date) {
-    return filterBy.getTime() === filtered.getTime();
-  }
-  if (typeof filterBy === "object" && typeof filtered === "object") {
-    return Object.keys(filterBy).every((key) => {
-      return filter(filtered[key], filterBy[key]);
-    });
-  }
-  return filterBy === filtered;
-}
