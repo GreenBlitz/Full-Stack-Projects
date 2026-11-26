@@ -49,8 +49,10 @@ export const applyRecency = (forms: TeamMatchData[], recency: number) => {
     : recentForms.filter((form) => !form.robotBroke);
 };
 
-export const getGamesBroken = (forms: TeamMatchData[]): number[] =>
-  forms.filter((form) => form.robotBroke).map((form) => form.matchNumber);
+export const getGamesBroken = (forms: TeamMatchData[]): string[] =>
+  forms
+    .filter((form) => form.robotBroke)
+    .map((form) => String(form.matchNumber));
 
 const calculateTeamDataForTeam = (
   forms: TeamMatchData[],
