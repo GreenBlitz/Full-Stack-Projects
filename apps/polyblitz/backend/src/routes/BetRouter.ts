@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { GetBetCollection } from "../main";
-import { BetSchema } from "@repo/polyblitz-types";
+import { BetSchema, BetOptionSchema, WagerSchema } from "@repo/polyblitz-types";
 import { StatusCodes } from "http-status-codes";
 
 export const BetRouter: Router = Router();
@@ -67,7 +67,3 @@ BetRouter.get("/bets/:id", async (req, res) => {
       .json({ message: "Failed to find bet" });
   }
 });
-
-BetRouter.post("/admin/bets/:id/resolve", (req, res)=>{
-  
-})

@@ -8,6 +8,7 @@ import { User, Bet } from "@repo/polyblitz-types";
 import { LeaderBoardRouter as leaderBoardRouter } from "./routes/LeaderBoardRouter";
 import { UserRouter as userRouter } from "./routes/UserRouter";
 import { BetRouter as betRouter } from "./routes/BetRouter";
+import { AdminRouter as adminRouter } from "./routes/AdminRouter";
 
 const app = express();
 app.use((req, res, next) => {
@@ -36,6 +37,7 @@ const port = process.env.BACKEND_PORT ?? defaultPort;
 app.use("/Users", userRouter);
 app.use("/Bet", betRouter);
 app.use("/LeaderBoard", leaderBoardRouter);
+app.use("/admin", adminRouter);
 
 let UserCollection: Collection<User> | undefined;
 let BetCollection: Collection<Bet> | undefined;
