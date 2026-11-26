@@ -60,6 +60,7 @@ export function fileToLogFile(file: Express.Multer.File): LogFile {
 }
 
 export const drivingScoresSchema = z.object({
+  timeStillSeconds: z.number(),
   joystickNormSpeedPeaks: z.number(),
   joystickAngularSpeedPeaks: z.number(),
 });
