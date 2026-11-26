@@ -1,35 +1,33 @@
 // בס"ד
-import { useState, type FC } from "react";
+import { useEffect, useState, type FC } from "react";
+import { AddUser } from "./pages/SignUp";
+import { Login } from "./pages/LogIn";
+import type { PublicUser, Bet } from "@repo/polyblitz-types";
+import { Bets } from "./pages/components/Bets";
+import axios from "axios";
 
-const counterStartingValue = 0;
-const countIncrement = 1;
-const maxCountingValue = 5;
-const importantMessage = "MI BOMBO";
+export const BackendURL = "http://localhost:4590";
+
 const App: FC = () => {
-  const [count, setCount] = useState<string | number>(counterStartingValue);
+  const [user, setUser] = useState<PublicUser | null>(null);
+  const [bets, setBets] = useState<Bet[]>([]);
+
+  useEffect(() => {
+    axios
+      .get<Bet[]>(`${BackendURL}/Bet/bets`)
+      .then(({ data }) => setBets(data))
+      .catch((error: unknown) => {
+        console.error("Could not load bets:", error);
+      });
+  }, []);
 
   return (
-    <div className="mx-auto">
-      <h1>GreenBlitz Full-Stack Project:</h1>
-      <div className="card">
-        <button
-          onClick={() => {
-            setCount((prevCount) =>
-              typeof prevCount === "number"
-                ? prevCount >= maxCountingValue
-                  ? importantMessage
-                  : prevCount + countIncrement
-                : prevCount + "!",
-            );
-          }}
-        >
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-    </div>
+    <>
+      <Bets user={user} bets={bets} />
+      <AddUser onSignUp={setUser}></AddUser>
+      <Login onLogin={setUser}></Login>
+      {user && <p>welcome to polyblitz: {user.name}</p>}
+    </>
   );
 };
 
