@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import type { User } from "@repo/polyblitz-types"
+import type { User } from "@repo/polyblitz-types";
 
 export function Leaderboard() {
   const [users, setUsers] = useState<User[]>([]);
