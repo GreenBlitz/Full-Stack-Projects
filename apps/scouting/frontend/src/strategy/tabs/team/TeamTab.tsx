@@ -80,7 +80,7 @@ export const TeamTab: FC = () => {
 
         <PitScoutResultsTab teamNumber={teamNumber} />
 
-        <div className="grid grid-cols-4 gap-4 w-full">
+        <div className="grid grid-cols-5 gap-4 w-full">
           <StatView
             statContent={teamData?.super.defense?.toFixed(2).toString()}
             statName={"Defense"}
@@ -97,6 +97,10 @@ export const TeamTab: FC = () => {
             statContent={teamData?.timesStole?.toFixed(2)}
             statName={"Times Stole"}
           />
+          <StatView
+            statContent={teamData?.qualsRobotBroke.length.toString()}
+            statName={"Times Broke"}
+          />
         </div>
       </div>
       {teamData && (
@@ -104,7 +108,6 @@ export const TeamTab: FC = () => {
           <SuperBarChart superData={teamData.super} />
         </div>
       )}
-
       {teamData && (
         <div className="w-full max-w-2xl my-5">
           <ThrowBarChart
@@ -115,7 +118,7 @@ export const TeamTab: FC = () => {
           />
         </div>
       )}
-
+      ``
       {teamData && (
         <div className="w-full max-w-2xl my-5">
           <ThrowBarChart
@@ -126,7 +129,6 @@ export const TeamTab: FC = () => {
           />
         </div>
       )}
-
       {teamData && (
         <div>
           <NotesCell notes={teamData.notes} />

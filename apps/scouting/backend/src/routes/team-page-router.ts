@@ -44,7 +44,7 @@ export const applyRecency = (forms: TeamMatchData[], recency: number) => {
     .sort((formA, formB) => formA.matchNumber - formB.matchNumber)
     .slice(-recency);
 
-  return recency === MAX_RECENCY
+  return recency === MAX_RECENCY || recency === 0
     ? recentForms
     : recentForms.filter((form) => !form.robotBroke);
 };
