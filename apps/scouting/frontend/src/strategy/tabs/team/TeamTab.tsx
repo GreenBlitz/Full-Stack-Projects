@@ -118,7 +118,6 @@ export const TeamTab: FC = () => {
           />
         </div>
       )}
-      ``
       {teamData && (
         <div className="w-full max-w-2xl my-5">
           <ThrowBarChart
