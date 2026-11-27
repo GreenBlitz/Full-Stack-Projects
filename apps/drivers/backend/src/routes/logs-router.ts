@@ -1,7 +1,6 @@
 import { Router } from "express";
 import multer from "multer";
 import StatusCodes from "http-status-codes";
-import { filter } from "@repo/type-utils";
 import { runPythonScript } from "@repo/python";
 import {
   DrivingData,
@@ -21,6 +20,10 @@ const upload = multer({
 
 const drivingDataCollection = db.collection<DrivingData>("logs");
 const parsingScriptPath = process.cwd() + "/scripts/wpilog_parsing/main.py";
+
+export async function indexDrivingDataCollection() {
+  return await drivingDataCollection.createIndex({ "log.date": -1 });
+}
 
 logsRouter.post("/", upload.single("file"), async (req, res) => {
   if (req.file) {
@@ -49,14 +52,18 @@ logsRouter.post("/", upload.single("file"), async (req, res) => {
 
 logsRouter.get("/", async (req, res) => {
   try {
-    const filterBy = z
-      .deepPartial(drivingDataSchema)
-      .parse(JSON.parse(req.body));
+    const filter = z.deepPartial(drivingDataSchema).parse(JSON.parse(req.body));
 
-    const filteredCollection = drivingDataCollection.find(
-      (drivingData: DrivingData) => filter(drivingData, filterBy),
-    );
-    res.status(StatusCodes.OK).send(filteredCollection);
+    drivingDataCollection
+      .find<DrivingData>(filter)
+      .sort({ "log.date": -1 })
+      .toArray()
+      .then((drivingDataArray) => {
+        res.status(StatusCodes.OK).send(drivingDataArray);
+      })
+      .catch((error) => {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error);
+      });
   } catch (error) {
     res.status(StatusCodes.BAD_REQUEST).send(error);
   }
