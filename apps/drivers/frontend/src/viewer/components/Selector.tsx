@@ -1,9 +1,9 @@
-import type { Dispatch, SetStateAction, SyntheticEvent } from "react";
+import type { SetStateAction, SyntheticEvent } from "react";
 import * as React from "react";
 import { type DrivingData, drivingDataSchema } from "@repo/drivers-types";
 
 interface SelectorProps {
-  setDrivingData: Dispatch<SetStateAction<DrivingData>>;
+  setDrivingData: React.Dispatch<SetStateAction<DrivingData>>;
   drivingDataArray: DrivingData[];
 }
 
