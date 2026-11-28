@@ -1,6 +1,6 @@
 import { type ChangeEvent, useState } from "react";
 import axios from "axios";
-import { serverURL } from "../App.tsx";
+import { SERVER_URL } from "../App.tsx";
 
 export const Adder = () => {
   const [message, setMessage] = useState("");
@@ -9,7 +9,7 @@ export const Adder = () => {
     const file = changeEvent.target.files?.item(0) as File;
     const formData = new FormData();
     formData.append("file", file);
-    axios.post(serverURL + "/logs", formData).then((res) => {
+    axios.post(SERVER_URL + "/logs", formData).then((res) => {
       setMessage(res.statusText);
     });
   };

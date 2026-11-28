@@ -3,7 +3,7 @@ import * as React from "react";
 import { type DrivingData, drivingDataSchema } from "@repo/drivers-types";
 
 interface SelectorProps {
-  setDrivingData: React.Dispatch<SetStateAction<DrivingData>>;
+  setDrivingData: React.Dispatch<SetStateAction<DrivingData | undefined>>;
   drivingDataArray: DrivingData[];
 }
 
